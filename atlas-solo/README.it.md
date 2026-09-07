@@ -115,13 +115,13 @@ pubblici, `atlas-browser` guida una pagina che gli hai indicato. Mandano la tua 
 |---|---|
 | regole iniettate a `low` (predefinito) | 2.165 |
 | regole iniettate a `high` | 2.357 |
-| descrizioni di skill, comandi e subagenti, sempre presenti | 2.631 |
+| descrizioni di skill, comandi e subagenti, sempre presenti | 2.634 |
 | promemoria per turno | 42-47 |
-| **totale al livello predefinito** | **4.796** |
+| **totale al livello predefinito** | **4.799** |
 
 La build `atlas-min` porta le descrizioni a 153 e le regole a 1.838, perche' contiene solo le
 sezioni sulla compressione. `atlas-solo` tiene tutte le regole e toglie i dieci subagenti: 1.270 di
-descrizioni invece di 2.631. Toglie anche `atlas-search` e `atlas-sources`, che sono la maniglia
+descrizioni invece di 2.634. Toglie anche `atlas-search` e `atlas-sources`, che sono la maniglia
 di un subagente che li non c'e' — la disciplina di ricerca sta comunque nella manopola `check`,
 dove vale per ogni risposta invece che per un comando solo.
 

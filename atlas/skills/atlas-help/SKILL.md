@@ -94,7 +94,7 @@ nothing.
 
 | build | contains | fixed cost at `low` |
 |---|---|---|
-| `atlas` | everything on this card | 4,796 |
+| `atlas` | everything on this card | 4,799 |
 | `atlas-solo` | same rules, no subagents, and eleven commands rather than thirteen | 3,435 |
 | `atlas-min` | compression only: one command, no `ask`, no `check`, no provenance marker | 1,991 |
 

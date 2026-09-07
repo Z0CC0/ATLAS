@@ -73,7 +73,7 @@ uninstalling, or delete that file — it is one line and nothing else depends on
 
 | build | what is in it | fixed cost per session at `low` |
 |---|---|---|
-| `atlas` | everything | 4,796 tokens |
+| `atlas` | everything | 4,799 tokens |
 | `atlas-solo` | same rules, no subagents | 3,435 tokens |
 | `atlas-min` | compression only: two levels, one command | 1,991 tokens |
 
@@ -152,19 +152,19 @@ Run-to-run noise with no plugin and the rules frozen: 0.4 points in English, 4.1
 | `low` | -32% | -41% |
 | `high` | -33% | -42% |
 
-**Fixed cost per session**, `atlas` build: 2,165 tokens of rules at `low`, 2,357 at `high`, plus 2,631 of skill, command and subagent descriptions that are loaded whether or not they are used. The per-turn reminder is 42–47 tokens; over a long session it is the largest number of all.
+**Fixed cost per session**, `atlas` build: 2,165 tokens of rules at `low`, 2,357 at `high`, plus 2,634 of skill, command and subagent descriptions that are loaded whether or not they are used. The per-turn reminder is 42–47 tokens; over a long session it is the largest number of all.
 
 | | tokens per session |
 |---|---|
 | rules injected at `low` (default) | 2,165 |
 | rules injected at `high` | 2,357 |
-| skill, command and subagent descriptions, always present | 2,631 |
+| skill, command and subagent descriptions, always present | 2,634 |
 | per-turn reminder | 42-47 |
-| **total at the default** | **4,796** |
+| **total at the default** | **4,799** |
 
 The `atlas-min` build cuts the descriptions to 153 and the rules to 1,838 by shipping only
 the compression sections. `atlas-solo` keeps every rule and drops the ten subagents: 1,270 in
-descriptions instead of 2,631. It also drops `atlas-search` and `atlas-sources`, which are
+descriptions instead of 2,634. It also drops `atlas-search` and `atlas-sources`, which are
 handles on a subagent it does not carry — the search discipline itself lives in the `check`
 dial, where it covers every answer rather than one command.
 

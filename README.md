@@ -87,7 +87,7 @@ uninstalling, or delete that file — it is one line and nothing else depends on
 
 | build | what is in it | fixed cost per session at `low` |
 |---|---|---|
-| `atlas` | everything | 4,796 tokens |
+| `atlas` | everything | 4,799 tokens |
 | `atlas-solo` | same rules, no subagents | 3,435 tokens |
 | `atlas-min` | compression only: two levels, one command | 1,991 tokens |
 
