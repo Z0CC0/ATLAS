@@ -1,5 +1,5 @@
 ---
-description: Places to read about a topic, not an answer
+description: Searches the web and hands back where to read, not the answer
 ---
 
 Use the `atlas-research` subagent in its **sources** shape: it comes back with where to go and

@@ -35,7 +35,7 @@ Funzionano entrambe le forme: `atlas high` scritto come intero messaggio, oppure
 | `/atlas:atlas-recap` | scrive un file di consegna della conversazione |
 | `/atlas:atlas-optimize` | legge le tue sessioni e dice quali manopole ti convengono |
 | `/atlas:atlas-search` | risponde solo da una ricerca web |
-| `/atlas:atlas-sources` | dove leggere di un argomento, invece della risposta |
+| `/atlas:atlas-sources` | cerca sul web e consegna dove leggere, non la risposta |
 | `/atlas:atlas-review` | rivede il diff corrente |
 | `/atlas:atlas-commit` | messaggio di commit per quello che hai in stage |
 | `/atlas:atlas-compress` | accorcia un file markdown |

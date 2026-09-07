@@ -41,7 +41,7 @@ All four persist across turns, restarts and projects until changed, and move ind
 | `/atlas:atlas-recap` | write a handover file for the conversation |
 | `/atlas:atlas-optimize` | read your own sessions and say which dials suit you |
 | `/atlas:atlas-search` | answer only from a web search |
-| `/atlas:atlas-sources` | where to read about a topic, instead of an answer |
+| `/atlas:atlas-sources` | searches the web and hands back where to read, not the answer |
 | `/atlas:atlas-review` | review the current diff |
 | `/atlas:atlas-commit` | commit message for the staged changes |
 | `/atlas:atlas-compress` | shorten a markdown file |
@@ -172,7 +172,7 @@ Run-to-run noise with no plugin and the rules frozen: 0.4 points in English, 4.1
 | `low` | -32% | -41% |
 | `high` | -33% | -42% |
 
-**Fixed cost per session**, `atlas` build: 2,165 tokens of rules at `low`, 2,357 at `high`, plus 2,631 of skill, command and subagent descriptions that are loaded whether or not they are used. The per-turn reminder is 42–47 tokens; over a long session it is the largest number of all. `atlas-solo` carries 1,270 of descriptions, `atlas-min` 153 and 1,838 tokens of rules.
+**Fixed cost per session**, `atlas` build: 2,165 tokens of rules at `low`, 2,357 at `high`, plus 2,634 of skill, command and subagent descriptions that are loaded whether or not they are used. The per-turn reminder is 42–47 tokens; over a long session it is the largest number of all. `atlas-solo` carries 1,270 of descriptions, `atlas-min` 153 and 1,838 tokens of rules.
 
 Token counts for the fixed costs are tiktoken (`o200k_base`), an approximation of Claude's tokenizer; the compression figures come from the API's own counts. Compare them with each other, not with a bill.
 

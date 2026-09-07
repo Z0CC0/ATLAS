@@ -31,7 +31,7 @@ All four persist across turns, restarts and projects until changed, and move ind
 | `/atlas:atlas-recap` | write a handover file for the conversation |
 | `/atlas:atlas-optimize` | read your own sessions and say which dials suit you |
 | `/atlas:atlas-search` | answer only from a web search |
-| `/atlas:atlas-sources` | where to read about a topic, instead of an answer |
+| `/atlas:atlas-sources` | searches the web and hands back where to read, not the answer |
 | `/atlas:atlas-review` | review the current diff |
 | `/atlas:atlas-commit` | commit message for the staged changes |
 | `/atlas:atlas-compress` | shorten a markdown file |

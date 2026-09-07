@@ -60,7 +60,7 @@ call it.
 | `atlas-help` | this card | 2.5k | |
 | `atlas-optimize` | reads your own sessions, prints the whole setup table, and says what each setup costs as a percentage | 1.9k | also reports what your memory files would cost in English, measured. It advises, it never translates them |
 | `atlas-search` | answers only from a live web search | 277 | **`atlas` build only.** It is the handle on the `atlas-research` subagent, so the pages it reads never land in your session — and without that subagent there is nothing behind it |
-| `atlas-sources` | where to go and read about a topic, instead of an answer: videos, discussions, articles, grouped, one line each | 93 | **`atlas` build only**, same reason. Same subagent, other shape: typing one of the two is what picks it, so neither guesses and neither asks |
+| `atlas-sources` | searches the web and hands back where to read, not the answer: videos, discussions, articles, grouped, one line each | 93 | **`atlas` build only**, same reason. Same subagent, other shape: typing one of the two is what picks it, so neither guesses and neither asks |
 | `atlas-review` | what is wrong with the current diff, one problem per line: where, what breaks, the fix | 223 | four tiers, `breaks` first. `nothing found` is the whole answer when there is nothing |
 | `atlas-commit` | commit message for what is staged | 109 | written in normal prose whatever the level: it leaves the conversation |
 | `atlas-compress <file>` | shortens a markdown file, every fact kept | 142 | writes a backup first |
