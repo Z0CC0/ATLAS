@@ -1,0 +1,23 @@
+Here's the arc, and it's really a story about a promise being kept in increasingly strange ways.
+
+It starts in 1978 with the **8086**, a 16-bit chip built as a source-compatible growth path from the 8080 — so existing software investment carried forward. That compatibility promise is the thread that runs through everything else.
+
+In 1982 the **80286** adds protected mode, but there's a catch that trips up the whole industry for years: once you switch into protected mode, you can't get back to real mode without a reboot. It's a one-way door.
+
+The **80386** in 1985 is the real turning point — 32-bit, paged virtual memory, and virtual 8086 mode, which finally lets protected mode coexist with running old real-mode software instead of locking it out. This is arguably where "x86" as a serious general-purpose architecture takes shape.
+
+The **486** (1989) is more about engineering than architecture: it pulls the first-level cache and the math coprocessor onto the chip itself, cutting the latency of what used to be separate components.
+
+With the **Pentium** in 1993, x86 goes superscalar — two integer pipelines that can retire two instructions per cycle. This is the beginning of extracting parallelism the programmer never asked for.
+
+Then comes the real inflection point: the **Pentium Pro** in 1995 introduces out-of-order execution, and — critically — starts translating x86 instructions into internal micro-ops before executing them. From here on, x86 stops being the actual machine and becomes an *interface*. What's underneath no longer resembles the instruction set at all; it's a translation layer over a completely different internal engine.
+
+The **Pentium 4** (2000) chases raw clock speed with a very long pipeline, and runs straight into the power wall — you can't keep scaling frequency without the chip cooking itself.
+
+Then something happens that hadn't happened before: in 2003, **AMD** — not Intel — defines the 64-bit extension of the architecture, AMD64, and Intel ends up adopting AMD's instruction set. It's the first time the dominant extension to x86 doesn't originate from Intel.
+
+By 2006, with the **Core 2**, the industry's whole strategy pivots — from chasing frequency (which had hit its wall with the Pentium 4) to chasing core count instead. Meanwhile, running alongside all of this, x86's vector capabilities keep expanding generation after generation: MMX, then SSE, then AVX, then AVX-512.
+
+Today, the instruction set itself is almost the least interesting part of the story. The real complexity — and the real engineering — lives in the layers underneath what a programmer ever sees: branch prediction, cache hierarchy, speculative execution. Which is exactly why **Spectre and Meltdown** landed so hard in 2018 — they revealed that speculative execution, one of the core tricks making all this performance possible, had been carrying a security cost that decades of chip design had never actually priced in.
+
+So the shape of the whole history is: a 16-bit chip that promised compatibility, spending fifty years having that promise kept by burying ever more machinery — out-of-order execution, micro-op translation, speculation — underneath an instruction set that stopped describing the real hardware sometime around 1995.

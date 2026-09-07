@@ -1,0 +1,11 @@
+Prima domanda: cosa cambia davvero nel monolite. Le parti stabili non guadagnano nulla a essere spezzate — spendi lì sarebbe sprecato.
+
+Seconda: dove finiscono le transazioni. Una transazione che attraversa due servizi diventa un problema distribuito — se i confini non sono già lì nei dati/nel dominio, qualsiasi split successivo te lo fa pagare caro.
+
+Sulla strategia di migrazione: scarta la riscrittura completa in parallelo. Il vecchio continua a cambiare, la copia non lo raggiunge mai — quasi sempre fallisce. Meglio lo strangolamento progressivo: router davanti, un pezzo alla volta, il vecchio resta autorevole finché il nuovo non è verificato.
+
+Sui microservizi: costano in operatività, non in codice. Ogni servizio vuole rilascio, monitoraggio, log, allarmi, e qualcuno che se ne occupi. Sotto i cinque sviluppatori quel costo supera quasi sempre il beneficio — vale la pena guardare onestamente quanto è grande il team prima di innamorarsi dell'architettura.
+
+L'opzione che nessuno cita abbastanza: monolite modulare. Confini interni netti, un solo rilascio, e la possibilità di estrarre un modulo il giorno che serve davvero — non prima.
+
+E la domanda che conta davvero non è tecnica: cosa deve poter fare il team fra un anno che oggi non può. Se non hai una risposta concreta a questa, qualsiasi architettura sceglierai sarà una scommessa senza bersaglio.

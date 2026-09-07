@@ -1,0 +1,7 @@
+File locali più raccoglitore che spedisce altrove.
+
+A mille richieste/minuto: file da soli, ricerca solo grep, rotazione manuale o disco pieno; su più macchine nessuna ricerca centralizzata, connessione a ognuna. Servizio gestito: ricerca immediata, allarmi, retention automatica, ma costo per volume — a quel traffico cresce in fretta, e log fuori da tua infrastruttura vanno ripuliti da dati personali prima. Database: ricerca comoda e nota, ma stesso DB dell'app mette log e richieste in competizione — sotto carico log riempiono cache e connessioni che servivano alle richieste vere.
+
+Combinazione file+raccoglitore evita tutto: scrittura locale, niente attesa di rete o disco esterno, poi il raccoglitore spedisce a valle.
+
+Regola sempre valida: scrittura log mai nel percorso critico della richiesta.

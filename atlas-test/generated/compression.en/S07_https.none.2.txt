@@ -1,0 +1,13 @@
+When you type an `https://` address into your browser, the browser and the server first negotiate a secure channel before any actual webpage content moves — that's really all HTTPS is: your normal HTTP traffic, just carried inside a connection that TLS has encrypted.
+
+Here's the sequence:
+
+Your browser opens the connection and tells the server which TLS versions and cipher suites it's able to support. The server picks one version and one cipher from that list, and along with that choice sends over its certificate. That certificate is what ties a domain name to a public key, and it's signed by a certificate authority — so your browser checks that signature by following a chain of trust upward until it reaches a root certificate it already has stored and trusts. This is how your browser confirms it's actually talking to the real key-holder for that domain, not an impostor.
+
+One important nuance here: the certificate only proves that whoever controls the domain also controls that specific key. It says nothing about who that entity actually is — a certificate doesn't vouch for a company's identity or trustworthiness, just for domain-to-key ownership.
+
+Once the certificate is verified, the client and server derive a shared session key — nowadays typically via an elliptic curve Diffie-Hellman exchange. This session key ends up being symmetric, even though the setup used asymmetric cryptography, because asymmetric encryption is too computationally expensive to use for the actual bulk of your traffic. So the expensive asymmetric math is only used briefly to safely agree on a cheap symmetric key.
+
+From that point on, everything you send is encrypted and authenticated with that session key. That's what makes HTTPS meaningful in practice: nobody sitting in the middle of the connection can read your traffic, and nobody can tamper with it either, since any modification would be detected.
+
+One more practical detail: how long this setup takes has actually improved — TLS 1.2 needed two round trips between client and server before any data could flow, while TLS 1.3 collapsed that down to a single round trip, making the connection noticeably faster to establish.

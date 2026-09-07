@@ -1,0 +1,11 @@
+File locali più raccoglitore che li spedisce altrove.
+
+File da soli: costo zero, nessuna dipendenza, ma ricerca solo grep, rotazione manuale altrimenti disco pieno, e su più macchine bisogna collegarsi a ognuna — a mille richieste al minuto diventa fastidioso in fretta.
+
+Servizio gestito diretto dall'app: ricerca immediata, allarmi, conservazione automatica, ma paghi per volume e a quel traffico il volume cresce in fretta; inoltre i log escono dalla tua infrastruttura, vanno ripuliti dai dati personali prima.
+
+Database: ricerca comoda e nota, ma se usi lo stesso database dell'app, log e richieste vere competono per cache e connessioni — sotto carico i log rubano risorse a chi serve davvero.
+
+Con file locali l'app scrive sul disco locale, mai sulla rete, quindi non aspetta mai la scrittura del log. Un raccoglitore (es. Fluent Bit, Vector, Promtail) legge i file e li spedisce al servizio gestito o al database in un secondo momento, con ripulitura dei dati personali fatta lì.
+
+Regola che vale sempre: la scrittura del log non deve stare nel percorso critico della richiesta.

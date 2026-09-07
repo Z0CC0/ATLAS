@@ -1,0 +1,3 @@
+5080 vs 4080: 5080 Blackwell, 4080 Ada Lovelace. Memoria GDDR7 vs GDDR6X, banda 960 GB/s vs 717 GB/s. Consumo 360W vs 320W. Connettore alimentazione 16 pin, invariato.
+
+Rasterizzatore puro: solo 10-15% guadagno reale. Salto grande sta nella generazione fotogrammi, non nel raster.

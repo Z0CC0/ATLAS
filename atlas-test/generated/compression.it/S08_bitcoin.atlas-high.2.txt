@@ -1,0 +1,11 @@
+Bitcoin nasce da un problema irrisolto fino ad allora: come evitare che qualcuno spenda due volte la stessa moneta digitale, senza affidarsi a un ente centrale che tenga i conti. L'idea affonda le radici nell'ambiente cypherpunk, dove tentativi precedenti come b-money e bit gold avevano provato ad affrontare il tema senza però risolvere un punto chiave: come ordinare le transazioni nel tempo in modo affidabile.
+
+La soluzione arriva nel 2008, quando compare un documento firmato Satoshi Nakamoto — uno pseudonimo dietro cui non si è mai scoperta un'identità reale. Il testo si intitola "Bitcoin: A Peer-to-Peer Electronic Cash System" e propone un meccanismo elegante: una catena di blocchi, ognuno collegato al precedente, la cui sequenza viene stabilita da una prova di lavoro. Questo rende costosissimo tornare indietro e riscrivere la storia delle transazioni, perché chi volesse farlo dovrebbe rifare il lavoro computazionale non solo per il blocco che vuole alterare, ma per tutti quelli successivi.
+
+Il progetto passa dalla teoria alla pratica il 3 gennaio 2009, quando viene generato il primo blocco della catena. Al suo interno Satoshi inserisce il titolo di un articolo del Times che parlava di un salvataggio bancario: un dettaglio che funziona insieme come prova che il blocco non è stato creato prima di quella data, e come dichiarazione implicita delle ragioni politiche dietro il progetto.
+
+Il sistema è pensato per emettere moneta in modo prevedibile e limitato: chi genera un blocco riceve una ricompensa che parte da 50 bitcoin e si dimezza ogni 210.000 blocchi, un ciclo di circa quattro anni. Seguendo questa progressione, il totale di bitcoin che potrà mai esistere tende asintoticamente a 21 milioni, senza mai superarli.
+
+Per un po' Bitcoin resta un esperimento quasi solo tecnico, finché nel 2010 avviene quella che è considerata la prima transazione commerciale documentata: qualcuno paga due pizze con 10.000 bitcoin.
+
+Satoshi Nakamoto continua a essere presente ancora per un po', ma nel 2011 smette di partecipare pubblicamente al progetto e sparisce. I bitcoin che gli vengono attribuiti non sono mai stati mossi da allora.

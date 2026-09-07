@@ -1,0 +1,19 @@
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+`t` nella chiusura, non nella funzione restituita: altrimenti ogni chiamata avrebbe il suo timer, niente debounce.
+
+`clearTimeout` prima di ogni `setTimeout`: senza, i timer si accumulano e la funzione parte più volte.
+
+Argomenti con spread (`...args`): senza, `fn` li riceve vuoti.
+
+Questa versione non ritorna nulla. Serve il valore di ritorno → serve una Promise.
+
+Caso opposto (esegui subito, poi ignora per un periodo) → throttle, funzione diversa.

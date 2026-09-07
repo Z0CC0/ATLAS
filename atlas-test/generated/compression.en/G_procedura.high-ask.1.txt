@@ -1,0 +1,8 @@
+Don't run `ALTER TABLE ALTER COLUMN TYPE` directly — rewrites whole table under ACCESS EXCLUSIVE lock, service down full duration.
+
+First, check convertibility: count rows where value isn't all digits.
+Second, add column: `ALTER TABLE t ADD COLUMN colonna_int integer`.
+Third, backfill in batches of 10k rows — no long lock.
+Fourth, trigger syncs old and new columns during migration.
+Fifth, switch code to read new column, ship it.
+Sixth, only then: `ALTER TABLE t DROP COLUMN colonna` — irreversible, data gone without a backup restore.

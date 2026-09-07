@@ -1,0 +1,11 @@
+At a thousand requests a minute, put your logs in local files and ship them off the box with a collector — not a managed service directly, and not your database.
+
+Here's the reasoning:
+
+- **Skip the database.** Search there is convenient, but your logs would be competing with real user traffic for the same connections and cache space. Under load, log writes start eating resources your actual requests need — you'd be degrading the app to log about the app.
+- **Skip a bare files-only setup too, at this volume.** Files alone are free and dependency-free, but you have no cross-machine search — if you scale past one instance, you're SSHing into each box and grepping separately. You'd also need to hand-configure log rotation or the disk fills up.
+- **Skip sending straight to a managed service from the app.** Instant search, alerting, and retention are great, but you pay by volume, and a thousand requests a minute generates volume fast. It also means logs leave your infrastructure, so you'd need to strip personal data before every log line goes out.
+
+**The setup that fits your traffic:** write logs to local files, then run a collector (e.g., Fluentd, Vector, Filebeat) that tails those files and ships them wherever you want — a managed service, a log database, whatever — asynchronously, in the background.
+
+This satisfies the one rule that always holds: **writing a log must never sit in the critical path of a request.** The app writes to a local file (fast, no network round-trip) and moves on. The collector handles shipping, batching, retry, and — if you're forwarding to a managed service — can be the place you scrub personal data before it leaves your infrastructure. You get centralized search without your request latency ever depending on where the logs end up.

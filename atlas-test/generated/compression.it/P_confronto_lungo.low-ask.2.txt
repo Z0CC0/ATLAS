@@ -1,0 +1,11 @@
+File locali più raccoglitore che spedisce altrove. A mille richieste al minuto è la scelta ragionevole: l'applicazione non aspetta mai la scrittura del log.
+
+Perché non le altre due da sole:
+
+**File puro** — costo zero, nessuna dipendenza, ma ricerca è grep e rotazione manuale (altrimenti disco pieno). E su più macchine non c'è ricerca centralizzata, devi collegarti a ognuna.
+
+**Servizio gestito puro** — ricerca immediata, allarmi, conservazione automatica, ma paghi a volume e a questo traffico il volume cresce in fretta. In più i log escono dalla tua infrastruttura, quindi vanno ripuliti dai dati personali prima.
+
+**Database** — scartalo per i log applicativi: ricerca comoda, ma se scrivi log nello stesso database dell'app metti in competizione due carichi diversi. Sotto carico i log riempiono cache e connessioni che servivano alle richieste vere.
+
+La regola che vale sempre, qualunque cosa tu scelga: la scrittura del log non deve stare nel percorso critico della richiesta. Il raccoglitore locale rispetta questa regola by design — scrivi su file, e chi spedisce altrove (verso il servizio gestito, se poi vuoi ricerca e allarmi) lo fa in modo asincrono, fuori dal path della risposta.

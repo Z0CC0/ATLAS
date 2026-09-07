@@ -1,0 +1,1 @@
+const locks the name, not the value — reassignment blocked, internal mutation not (object via const still changeable inside). let reassignable. Both block scoped; var isn't.

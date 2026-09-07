@@ -1,0 +1,5 @@
+Prompt caching stores the already-processed prefix of a request; requests that start the same way skip reprocessing it. Match is prefix-only — one different character near the start kills reuse from there on. So stable content (system instructions, docs, tool defs) goes first, changing content last.
+
+First request costs more — writing to cache costs more than reading. Gain starts on request two, grows with turn count.
+
+Pays off: long conversations, large stable context. Doesn't: one-off requests that differ from each other — you pay the write, never read it back. A per-turn changing line early on, like a clock, breaks reuse for everything after it.

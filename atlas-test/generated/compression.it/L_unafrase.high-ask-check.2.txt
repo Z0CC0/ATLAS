@@ -1,0 +1,3 @@
+Sì.
+
+Vale per liste, tuple, dizionari, insiemi, stringhe — vuoti, falsi in booleano.

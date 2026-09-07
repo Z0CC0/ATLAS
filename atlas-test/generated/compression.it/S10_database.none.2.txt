@@ -1,0 +1,15 @@
+Per una piattaforma che deve gestire ordini, catalogo, ricerca testuale e analisi insieme, la scelta non è "quale database" ma "con cosa iniziare e quando aggiungere altro".
+
+**Parti da Postgres, non da un'architettura multi-database.** Postgres regge tutti e quattro i carichi in modo accettabile, e su un punto è insostituibile: le transazioni sugli ordini non sono negoziabili, e lì Postgres dà garanzie serie. MySQL ti darebbe lo stesso livello sugli ordini ma è più debole su tipi di dato e query complesse, quindi non porta nessun vantaggio reale rispetto a Postgres per il tuo caso.
+
+Sul catalogo, MongoDB è tentante per gli schemi variabili, ma le transazioni multi-documento sono arrivate tardi e costano — un compromesso che vale la pena solo se lo schema flessibile è un problema vero, non ipotetico.
+
+Gli altri due carichi sono dove Postgres comincia a scricchiolare, ma con soglie precise:
+- **Ricerca testuale**: la ricerca integrata di Postgres basta sotto il milione di documenti, sopra diventa debole. Elasticsearch è molto superiore (rilevanza, sinonimi, tolleranza a errori di battitura), ma aggiungerlo prima del milione di documenti è quasi sempre prematuro.
+- **Analisi**: Postgres regge fino a decine di milioni di righe, poi le scansioni diventano lente. ClickHouse è molto superiore qui, con scansioni colonnari ordini di grandezza più veloci — ma non è pensato per gli ordini, gli aggiornamenti puntuali sono il suo punto debole.
+
+**La configurazione tipica quando servono davvero** è: Postgres come archivio autorevole, con Elasticsearch e ClickHouse alimentati da lì (mai il contrario — Elasticsearch in particolare non va usato come archivio autorevole).
+
+**Il punto da non sottovalutare**: ogni sistema che aggiungi porta con sé un problema di sincronizzazione e uno di allineamento dei dati tra i sistemi. E il costo vero non è la licenza di Elasticsearch o ClickHouse, è il tempo delle persone che devono tenerli in piedi, monitorarli, gestire i disallineamenti.
+
+**Consiglio pratico**: parti con Postgres da solo. Aggiungi Elasticsearch o ClickHouse solo quando un carico specifico lo impone con numeri alla mano — cioè quando superi davvero il milione di documenti in ricerca o le decine di milioni di righe in analisi, non prima. Aggiungere complessità in anticipo ti costa in manutenzione senza darti nulla in cambio finché quei numeri non li tocchi.

@@ -1,0 +1,9 @@
+Local files plus a shipper.
+
+App writes to local files, zero cost, no dependency. Rotation and grep set up by hand or disk fills. No cross-machine search, must connect to each machine.
+
+A collector reads those files and ships them elsewhere. App never waits on the write — that's the rule that always holds, log write can't sit in the request's critical path.
+
+Skip managed service as primary: instant search, alerts, retention, but billed by volume, and at 1k req/min volume grows fast. Logs leave your infra, personal data must be stripped first. Fine as the collector's destination once stripped, not fine as the direct write target.
+
+Skip the app's own database: search is convenient but logs compete with real requests for cache and connections. Under load logs fill what requests needed.

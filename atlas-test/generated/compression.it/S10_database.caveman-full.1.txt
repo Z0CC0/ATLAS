@@ -1,0 +1,15 @@
+Confronto database per piattaforma ordini + catalogo + ricerca + analisi.
+
+**Postgres solo**: regge tutti e quattro carichi accettabile, nessuno eccellente. Transazioni serie — non negoziabile per ordini. Ricerca testuale integrata ok sotto milione documenti, debole sopra. Analisi ok fino decine milioni righe, poi scansioni lente.
+
+**MySQL**: pari a Postgres su ordini, ma piu' debole tipi dato e query complesse. Nessun vantaggio su Postgres qui.
+
+**MongoDB**: schema variabile semplifica catalogo, ma transazioni multi-documento arrivate tardi e costano. Per ordini rischio.
+
+**Elasticsearch**: superiore su ricerca — rilevanza, sinonimi, tolleranza errori battitura. Ma non archivio autorevole: serve alimentarlo da altro DB, mai sostituto.
+
+**ClickHouse**: superiore su analisi, scansioni colonnari ordini grandezza avanti. Non per ordini — aggiornamenti puntuali suo punto debole.
+
+**Raccomandazione**: parti solo con Postgres come archivio autorevole. Aggiungi Elasticsearch o ClickHouse solo quando carico specifico lo impone con numeri concreti — Elasticsearch prima milione documenti quasi sempre prematuro.
+
+Setup tipico maturo: Postgres autorevole + Elasticsearch e ClickHouse alimentati da li'. Ma occhio: ogni sistema aggiunto porta problema sincronizzazione + allineamento dati. Costo vero non licenza, e' tempo persone che mantengono sistema in piedi.

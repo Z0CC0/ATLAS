@@ -1,0 +1,17 @@
+Diretto niente: `ALTER TABLE ... ALTER COLUMN TYPE integer` riscrive intera tabella sotto ACCESS EXCLUSIVE lock — servizio fermo per tutta la durata, su dieci milioni di righe inaccettabile in produzione.
+
+Percorso sicuro, a tappe.
+
+Prima verifica convertibilità: conta righe dove valore non contiene solo cifre. Se zero, procedi.
+
+Poi `ALTER TABLE t ADD COLUMN colonna_int integer` — colonna nuova, nessun lock lungo, tabella esistente intatta.
+
+Riempi colonna nuova a blocchi da diecimila righe per volta, non in un colpo solo, per non tenere lock lungo sulla tabella durante il backfill.
+
+Durante la migrazione aggiungi trigger che tiene allineate le due colonne — ogni scrittura su colonna vecchia si riflette su quella nuova, così righe modificate dopo il tuo backfill restano coerenti.
+
+Quando backfill completo e trigger attivo: cambia codice applicativo per leggere da colonna nuova, rilascia.
+
+Solo dopo, e solo quando sei certo che nulla legga più colonna vecchia: `ALTER TABLE t DROP COLUMN colonna`.
+
+Attenzione su questo ultimo passo: irreversibile. Una volta eliminata colonna vecchia, dati non tornano senza ripristino da backup. Nessun secondo tentativo sul lock economico se scopri un bug dopo.

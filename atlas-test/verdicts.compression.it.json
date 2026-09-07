@@ -1,0 +1,1342 @@
+{
+  "A_ricerca.atlas-high.1.txt::parita' di temperatura": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.atlas-high.1.txt::polistrumentista": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.atlas-high.1.txt::calo di temperatura serale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.atlas-high.2.txt::parita' di temperatura": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.atlas-high.2.txt::polistrumentista": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.atlas-high.2.txt::calo di temperatura serale": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.atlas-low.1.txt::parita' di temperatura": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.atlas-low.1.txt::calo di temperatura serale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.atlas-low.2.txt::calo di temperatura serale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.atlasmin-high.1.txt::calo di temperatura serale": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.atlasmin-high.2.txt::polistrumentista": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.atlasmin-low.1.txt::calo di temperatura serale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.atlasmin-low.2.txt::9 ore e 15": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.atlasmin-low.2.txt::9 ore e 40": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.high-ask-check.1.txt::parita' di temperatura": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.high-ask-check.1.txt::calo di temperatura serale": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.high-ask-check.2.txt::parita' di temperatura": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.high-ask-check.2.txt::polistrumentista": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.high-ask-check.2.txt::calo di temperatura serale": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.high-ask.1.txt::parita' di temperatura": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.high-ask.1.txt::polistrumentista": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.high-ask.2.txt::parita' di temperatura": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.high-ask.2.txt::calo di temperatura serale": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.high-check.1.txt::parita' di temperatura": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.high-check.1.txt::polistrumentista": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.high-check.2.txt::parita' di temperatura": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.high-check.2.txt::polistrumentista": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.high-check.2.txt::calo di temperatura serale": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.low-ask-check.2.txt::parita' di temperatura": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.low-ask-check.2.txt::polistrumentista": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.low-ask-check.2.txt::calo di temperatura serale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.low-ask.1.txt::calo di temperatura serale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.low-ask.2.txt::parita' di temperatura": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.low-ask.2.txt::calo di temperatura serale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.low-check.1.txt::parita' di temperatura": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.low-check.1.txt::calo di temperatura serale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.low-check.2.txt::calo di temperatura serale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.none.1.txt::parita' di temperatura": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.none.2.txt::parita' di temperatura": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.none.2.txt::9 ore e 15": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.atlas-high.1.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.atlas-high.1.txt::percorso di errore": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.atlas-high.1.txt::prima e dopo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.atlas-high.2.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.atlas-high.2.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.atlas-high.2.txt::prima e dopo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.atlas-low.2.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.atlas-low.2.txt::se il carico reale lo richiede": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.atlasmin-high.1.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.atlasmin-high.1.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.atlasmin-high.1.txt::prima e dopo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.atlasmin-high.2.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.atlasmin-high.2.txt::prima e dopo": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.atlasmin-low.1.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.atlasmin-low.1.txt::se il carico reale lo richiede": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.atlasmin-low.2.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.atlasmin-low.2.txt::se il carico reale lo richiede": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.atlasmin-low.2.txt::prima e dopo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.high-ask-check.1.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.high-ask-check.2.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.high-ask-check.2.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.high-ask-check.2.txt::se il carico reale lo richiede": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.high-ask-check.2.txt::prima e dopo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.high-ask.1.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.high-ask.1.txt::prima e dopo": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.high-ask.2.txt::prima e dopo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.high-check.1.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.high-check.1.txt::latenze crescenti": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.high-check.1.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.high-check.1.txt::maschera": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.high-check.1.txt::prima e dopo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.high-check.2.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.high-check.2.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.high-check.2.txt::prima e dopo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.low-ask-check.1.txt::connection pool": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.low-ask-check.1.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.low-ask-check.2.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.caveman-full.1.txt::parita' di temperatura": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.caveman-full.2.txt::parita' di temperatura": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.caveman-full.2.txt::calo di temperatura serale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.caveman-lite.1.txt::centro": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.caveman-lite.2.txt::parita' di temperatura": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.caveman-ultra.1.txt::parita' di temperatura": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.caveman-ultra.2.txt::parita' di temperatura": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.caveman-ultra.2.txt::calo di temperatura serale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.caveman-full.1.txt::connection pool": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.caveman-full.1.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.caveman-full.1.txt::latenze crescenti": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.caveman-full.1.txt::errori immediati": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.caveman-full.1.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.caveman-full.1.txt::se il carico reale lo richiede": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.caveman-full.1.txt::prima e dopo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.caveman-full.2.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.caveman-full.2.txt::latenze crescenti": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.caveman-full.2.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.caveman-full.2.txt::se il carico reale lo richiede": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.caveman-full.2.txt::prima e dopo": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.caveman-lite.1.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.caveman-lite.1.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.caveman-lite.1.txt::se il carico reale lo richiede": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.caveman-lite.1.txt::prima e dopo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.caveman-lite.2.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.caveman-lite.2.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.caveman-lite.2.txt::se il carico reale lo richiede": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.caveman-lite.2.txt::prima e dopo": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.caveman-ultra.1.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.caveman-ultra.1.txt::latenze crescenti": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.caveman-ultra.1.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.caveman-ultra.1.txt::se il carico reale lo richiede": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.caveman-ultra.1.txt::prima e dopo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.caveman-ultra.2.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.caveman-ultra.2.txt::errori immediati": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.caveman-ultra.2.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.caveman-ultra.2.txt::se il carico reale lo richiede": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.caveman-ultra.2.txt::prima e dopo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.low-ask-check.2.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.low-ask-check.2.txt::prima e dopo": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.low-ask.1.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.low-ask.1.txt::se il carico reale lo richiede": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.low-ask.1.txt::prima e dopo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.low-ask.2.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.low-ask.2.txt::prima e dopo": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.low-check.1.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.low-check.1.txt::se il carico reale lo richiede": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.low-check.1.txt::prima e dopo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.low-check.2.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.low-check.2.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.low-check.2.txt::se il carico reale lo richiede": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.low-check.2.txt::prima e dopo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.none.1.txt::latenze crescenti": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.none.1.txt::errori immediati": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.none.1.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.none.1.txt::maschera": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.none.1.txt::se il carico reale lo richiede": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.none.2.txt::latenze crescenti": {
+    "present": true,
+    "answer": "SI"
+  },
+  "C_breve.atlasmin-high.1.txt::B-tree": {
+    "present": false,
+    "answer": "NO"
+  },
+  "C_breve.atlasmin-high.1.txt::scansione sequenziale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "C_breve.atlasmin-high.2.txt::scansione sequenziale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "C_breve.atlasmin-low.1.txt::scansione sequenziale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "C_breve.atlasmin-low.2.txt::scansione sequenziale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "C_breve.caveman-full.1.txt::scansione sequenziale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "C_breve.caveman-lite.2.txt::cardinalit": {
+    "present": true,
+    "answer": "SI"
+  },
+  "C_breve.caveman-lite.2.txt::indice parziale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "C_breve.caveman-ultra.2.txt::scansione sequenziale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "C_breve.high-ask.1.txt::scansione sequenziale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "C_breve.high-ask.2.txt::scansione sequenziale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "C_breve.low-ask-check.1.txt::scansione sequenziale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "C_breve.low-ask-check.2.txt::scansione sequenziale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "C_breve.low-ask.1.txt::cardinalit": {
+    "present": true,
+    "answer": "SI"
+  },
+  "C_breve.low-ask.2.txt::scansione sequenziale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "C_breve.low-check.1.txt::scansione sequenziale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "D_lista.atlasmin-low.2.txt::Strict-Transport-Security": {
+    "present": true,
+    "answer": "SI"
+  },
+  "E_confronto.atlasmin-high.1.txt::mille lavori al minuto": {
+    "present": true,
+    "answer": "SI"
+  },
+  "E_confronto.atlasmin-low.1.txt::latenza": {
+    "present": true,
+    "answer": "SI"
+  },
+  "E_confronto.atlasmin-low.1.txt::servizio in piu'": {
+    "present": true,
+    "answer": "SI"
+  },
+  "E_confronto.caveman-full.2.txt::mille lavori al minuto": {
+    "present": true,
+    "answer": "SI"
+  },
+  "E_confronto.caveman-ultra.2.txt::servizio in piu'": {
+    "present": true,
+    "answer": "SI"
+  },
+  "E_confronto.high-check.2.txt::mille lavori al minuto": {
+    "present": true,
+    "answer": "SI"
+  },
+  "E_confronto.high-check.2.txt::latenza": {
+    "present": true,
+    "answer": "SI"
+  },
+  "E_confronto.high-check.2.txt::millisecondo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "E_confronto.high-check.2.txt::servizio in piu'": {
+    "present": true,
+    "answer": "SI"
+  },
+  "E_confronto.low-ask-check.1.txt::latenza": {
+    "present": true,
+    "answer": "SI"
+  },
+  "E_confronto.low-check.1.txt::latenza": {
+    "present": true,
+    "answer": "SI"
+  },
+  "F_codice.atlas-high.1.txt::non restituisce": {
+    "present": true,
+    "answer": "SI"
+  },
+  "F_codice.atlas-high.2.txt::non restituisce": {
+    "present": true,
+    "answer": "SI"
+  },
+  "F_codice.atlasmin-high.1.txt::non restituisce": {
+    "present": true,
+    "answer": "SI"
+  },
+  "F_codice.caveman-full.1.txt::non restituisce": {
+    "present": true,
+    "answer": "SI"
+  },
+  "F_codice.caveman-full.2.txt::non restituisce": {
+    "present": true,
+    "answer": "SI"
+  },
+  "F_codice.caveman-ultra.1.txt::non restituisce": {
+    "present": false,
+    "answer": "NO"
+  },
+  "F_codice.caveman-ultra.2.txt::non restituisce": {
+    "present": true,
+    "answer": "SI"
+  },
+  "F_codice.high-ask.1.txt::non restituisce": {
+    "present": true,
+    "answer": "SI"
+  },
+  "F_codice.high-ask.2.txt::non restituisce": {
+    "present": true,
+    "answer": "SI"
+  },
+  "F_codice.high-check.1.txt::non restituisce": {
+    "present": true,
+    "answer": "SI"
+  },
+  "H_lunga.none.2.txt::un carattere": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.atlas-high.1.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.atlas-high.2.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.atlasmin-high.2.txt::leggibile": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.caveman-full.1.txt::leggibile": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.caveman-full.1.txt::limite di frequenza": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.caveman-full.1.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.caveman-full.2.txt::leggibile": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.caveman-full.2.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.caveman-lite.1.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.caveman-lite.2.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.caveman-ultra.1.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.caveman-ultra.2.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.high-ask.1.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.high-check.1.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.low-ask-check.1.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.low-ask-check.2.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.low-ask.1.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.low-ask.2.txt::strumenti per sviluppatori": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.low-ask.2.txt::limite di frequenza": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.low-ask.2.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.low-check.1.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.low-check.2.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.none.1.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "L_unafrase.atlas-high.1.txt::dizionario": {
+    "present": true,
+    "answer": "SI"
+  },
+  "L_unafrase.atlas-high.1.txt::stringa": {
+    "present": true,
+    "answer": "SI"
+  },
+  "L_unafrase.atlas-low.1.txt::dizionario": {
+    "present": true,
+    "answer": "SI"
+  },
+  "L_unafrase.atlas-low.1.txt::stringa": {
+    "present": true,
+    "answer": "SI"
+  },
+  "L_unafrase.high-ask-check.1.txt::dizionario": {
+    "present": true,
+    "answer": "SI"
+  },
+  "L_unafrase.high-ask-check.1.txt::stringa": {
+    "present": true,
+    "answer": "SI"
+  },
+  "L_unafrase.high-ask-check.2.txt::dizionario": {
+    "present": true,
+    "answer": "SI"
+  },
+  "L_unafrase.high-ask-check.2.txt::stringa": {
+    "present": true,
+    "answer": "SI"
+  },
+  "L_unafrase.high-ask.1.txt::dizionario": {
+    "present": true,
+    "answer": "SI"
+  },
+  "L_unafrase.high-ask.1.txt::stringa": {
+    "present": false,
+    "answer": "NO"
+  },
+  "L_unafrase.high-ask.2.txt::dizionario": {
+    "present": true,
+    "answer": "SI"
+  },
+  "L_unafrase.high-ask.2.txt::stringa": {
+    "present": true,
+    "answer": "SI"
+  },
+  "L_unafrase.high-check.2.txt::dizionario": {
+    "present": true,
+    "answer": "SI"
+  },
+  "L_unafrase.high-check.2.txt::stringa": {
+    "present": true,
+    "answer": "SI"
+  },
+  "L_unafrase.low-ask.1.txt::dizionario": {
+    "present": true,
+    "answer": "SI"
+  },
+  "L_unafrase.low-ask.1.txt::stringa": {
+    "present": true,
+    "answer": "SI"
+  },
+  "L_unafrase.low-ask.2.txt::dizionario": {
+    "present": true,
+    "answer": "SI"
+  },
+  "L_unafrase.low-ask.2.txt::stringa": {
+    "present": true,
+    "answer": "SI"
+  },
+  "M_aperta.atlasmin-high.1.txt::estrarre": {
+    "present": false,
+    "answer": "Manca il testo dell'informazione da veri"
+  },
+  "M_aperta.caveman-full.1.txt::riscrittura completa": {
+    "present": false,
+    "answer": "NO"
+  },
+  "M_aperta.caveman-full.1.txt::estrarre": {
+    "present": false,
+    "answer": "NO"
+  },
+  "M_aperta.caveman-ultra.1.txt::riscrittura completa": {
+    "present": false,
+    "answer": "NO"
+  },
+  "M_aperta.high-ask-check.1.txt::estrarre": {
+    "present": false,
+    "answer": "NO"
+  },
+  "M_aperta.high-ask-check.2.txt::cinque sviluppatori": {
+    "present": true,
+    "answer": "SI"
+  },
+  "M_aperta.high-ask-check.2.txt::estrarre": {
+    "present": false,
+    "answer": "NO"
+  },
+  "M_aperta.high-check.1.txt::estrarre": {
+    "present": true,
+    "answer": "SI"
+  },
+  "M_aperta.high-check.2.txt::riscrittura completa": {
+    "present": false,
+    "answer": "NO"
+  },
+  "N_spiegazione.atlas-low.1.txt::sotto il secondo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "N_spiegazione.atlas-low.2.txt::sotto il secondo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "N_spiegazione.atlasmin-high.1.txt::subito dopo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "N_spiegazione.atlasmin-high.2.txt::sotto il secondo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "N_spiegazione.atlasmin-low.1.txt::sotto il secondo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "N_spiegazione.atlasmin-low.2.txt::sotto il secondo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "N_spiegazione.caveman-full.1.txt::sotto il secondo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "N_spiegazione.high-ask.2.txt::subito dopo": {
+    "present": false,
+    "answer": "NO"
+  },
+  "N_spiegazione.low-ask-check.2.txt::sotto il secondo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "N_spiegazione.low-ask.1.txt::sotto il secondo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "N_spiegazione.low-check.1.txt::regioni": {
+    "present": true,
+    "answer": "SI"
+  },
+  "N_spiegazione.low-check.2.txt::sotto il secondo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "N_spiegazione.none.1.txt::convergono": {
+    "present": true,
+    "answer": "SI"
+  },
+  "O_critica.atlasmin-low.2.txt::punto di ingresso": {
+    "present": true,
+    "answer": "SI"
+  },
+  "O_critica.caveman-ultra.1.txt::nessun percorso": {
+    "present": false,
+    "answer": "NO"
+  },
+  "O_critica.caveman-ultra.2.txt::nessun percorso": {
+    "present": false,
+    "answer": "NO"
+  },
+  "O_critica.high-ask-check.1.txt::nessun percorso": {
+    "present": false,
+    "answer": "NO"
+  },
+  "O_critica.high-ask.1.txt::nessun percorso": {
+    "present": false,
+    "answer": "NO"
+  },
+  "O_critica.high-ask.2.txt::nessun percorso": {
+    "present": false,
+    "answer": "NO"
+  },
+  "O_critica.high-ask.2.txt::punto di ingresso": {
+    "present": true,
+    "answer": "SI"
+  },
+  "O_critica.low-ask-check.1.txt::punto di ingresso": {
+    "present": true,
+    "answer": "SI"
+  },
+  "O_critica.low-ask-check.2.txt::punto di ingresso": {
+    "present": true,
+    "answer": "SI"
+  },
+  "O_critica.low-ask.1.txt::punto di ingresso": {
+    "present": true,
+    "answer": "SI"
+  },
+  "O_critica.low-ask.2.txt::nessun percorso": {
+    "present": false,
+    "answer": "NO"
+  },
+  "O_critica.low-check.2.txt::punto di ingresso": {
+    "present": true,
+    "answer": "SI"
+  },
+  "P_confronto_lungo.atlas-high.2.txt::stesso database": {
+    "present": true,
+    "answer": "SI"
+  },
+  "P_confronto_lungo.atlasmin-high.2.txt::disco": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.atlasmin-high.2.txt::piu' macchine": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.atlasmin-high.2.txt::volume": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.atlasmin-high.2.txt::stesso database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.caveman-full.1.txt::stesso database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.caveman-full.2.txt::stesso database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.caveman-lite.2.txt::disco": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.caveman-lite.2.txt::volume": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.caveman-ultra.2.txt::piu' macchine": {
+    "present": true,
+    "answer": "SI"
+  },
+  "P_confronto_lungo.caveman-ultra.2.txt::allarmi": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.high-ask-check.1.txt::stesso database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.high-ask.2.txt::piu' macchine": {
+    "present": true,
+    "answer": "SI"
+  },
+  "P_confronto_lungo.high-ask.2.txt::stesso database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.high-check.1.txt::piu' macchine": {
+    "present": true,
+    "answer": "SI"
+  },
+  "P_confronto_lungo.high-check.2.txt::stesso database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S02_capitale.atlasmin-low.2.txt::Sydney": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S02_capitale.high-ask-check.2.txt::Sydney": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S03_letconst.caveman-lite.2.txt::riassegn": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S03_letconst.caveman-lite.2.txt::oggetto": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S03_letconst.caveman-lite.2.txt::ambito di blocco": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S03_letconst.caveman-ultra.1.txt::riassegn": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S03_letconst.caveman-ultra.1.txt::oggetto": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S03_letconst.caveman-ultra.2.txt::riassegn": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S03_letconst.caveman-ultra.2.txt::oggetto": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S03_letconst.caveman-ultra.2.txt::ambito di blocco": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S03_letconst.high-ask-check.1.txt::ambito di blocco": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S03_letconst.high-check.1.txt::ambito di blocco": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S04_meteo_domani.atlas-high.1.txt::nuvoloso": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S04_meteo_domani.atlas-high.1.txt::nord-ovest": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S04_meteo_domani.atlas-low.2.txt::nuvoloso": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S04_meteo_domani.caveman-full.1.txt::nuvoloso": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S04_meteo_domani.caveman-ultra.1.txt::nuvoloso": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S04_meteo_domani.caveman-ultra.2.txt::nuvoloso": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S04_meteo_domani.high-ask-check.1.txt::sereno": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S04_meteo_domani.high-ask-check.1.txt::nuvoloso": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S04_meteo_domani.high-ask-check.2.txt::nord-ovest": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S04_meteo_domani.high-ask.1.txt::nuvoloso": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S04_meteo_domani.none.2.txt::nuvoloso": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S06_meteo_settimana.atlas-high.2.txt::lunedi": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S06_meteo_settimana.atlas-high.2.txt::marted": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S06_meteo_settimana.atlas-high.2.txt::gioved": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S06_meteo_settimana.atlas-high.2.txt::venerd": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S06_meteo_settimana.atlas-high.2.txt::sabato": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S07_https.caveman-full.1.txt::certificato": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S07_https.caveman-full.1.txt::chiave pubblica": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S07_https.caveman-full.1.txt::catena": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S07_https.caveman-full.1.txt::curve ellittiche": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S07_https.caveman-full.1.txt::simmetrica": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S07_https.caveman-full.1.txt::andata e ritorno": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S07_https.caveman-full.1.txt::in mezzo": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S07_https.high-ask.1.txt::Diffie-Hellman": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S07_https.high-ask.1.txt::curve ellittiche": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S07_https.high-check.2.txt::andata e ritorno": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S08_bitcoin.atlas-high.2.txt::doppia spesa": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S08_bitcoin.none.1.txt::doppia spesa": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.atlas-high.2.txt::milione": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.atlas-low.1.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.atlas-low.2.txt::aggiornamenti puntuali": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.atlas-low.2.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.atlasmin-high.1.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.atlasmin-low.1.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.atlasmin-low.2.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.caveman-full.1.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.caveman-lite.1.txt::aggiornamenti puntuali": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.caveman-lite.2.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.caveman-ultra.1.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.caveman-ultra.2.txt::MongoDB": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.caveman-ultra.2.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.high-ask-check.1.txt::aggiornamenti puntuali": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.high-ask-check.1.txt::sincronizzazione": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.high-ask-check.2.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.high-ask.1.txt::sincronizzazione": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.high-ask.1.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.high-ask.2.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.high-check.1.txt::aggiornamenti puntuali": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.high-check.1.txt::sincronizzazione": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.high-check.2.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.low-ask-check.1.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.low-ask-check.2.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.low-ask.1.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.low-ask.2.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.low-check.1.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.low-check.2.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.none.1.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.none.2.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  }
+}

@@ -1,0 +1,15 @@
+Before rewrite, sort few things:
+
+**What actually changes.** Find which parts of monolith see real churn. Stable parts gain nothing from split — don't touch them.
+
+**Transaction boundaries.** Map where transactions sit now. A transaction spanning two services becomes distributed problem — expensive one.
+
+**Skip parallel rewrite.** Building new system alongside old almost always fails: old keeps changing, copy never catches up.
+
+**Use strangler pattern instead.** Router in front, move one piece at a time, keep old system authoritative until new piece verified.
+
+**Microservices cost ops, not just code.** Each service wants own releases, monitoring, logs, alerts, owner. Below five developers, that ops cost usually exceeds benefit.
+
+**Consider modular monolith.** Sharp internal boundaries, one release, but option to extract module later when genuinely needed. Underrated middle ground.
+
+**Real question isn't technical.** Ask: what must team do in year that it can't do today? Answer decides architecture, not tech preference.

@@ -1,0 +1,13 @@
+File locale + raccoglitore che spedisce altrove. Non database, non servizio gestito diretto.
+
+Perche':
+
+File puro: costo zero, no dipendenze, ma ricerca solo grep e rotazione manuale (disco pieno se scordi) — e su piu' macchine niente ricerca centrale, devi collegarti a ognuna.
+
+Servizio gestito diretto: ricerca subito, allarmi, conservazione automatica — ma a mille richieste/minuto volume cresce in fretta e costa. Piu' i log escono dalla tua infrastruttura: vanno ripuliti da dati personali prima.
+
+Database: ricerca comoda, ma log e query applicative competono per stesso carico. Sotto carico i log riempiono cache e connessioni che servivano le richieste vere. Da evitare.
+
+Soluzione a mille richieste/minuto: applicazione scrive su file locale (veloce, nessuna attesa), un raccoglitore separato legge quei file e li spedisce al servizio gestito o dove serve. Applicazione non aspetta mai I/O di rete per il log.
+
+Regola che vale sempre: scrittura log mai nel percorso critico della richiesta.

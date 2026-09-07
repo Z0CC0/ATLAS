@@ -1,0 +1,11 @@
+At a thousand requests a minute, write your logs to local files and run a collector alongside the app that ships them off to wherever you actually want to search them. The reason is simple: writing a log entry must never sit in the critical path of a request. If a request has to wait on the log write succeeding, you've coupled your API's latency to your logging system's latency, and that's a bad trade no matter which storage you pick.
+
+Here's why the other two options don't fit as well on their own:
+
+**A database** feels natural to search, but your application's database is already busy serving real requests. Logs and requests are two very different workloads, and under load the log writes will compete for the same caches and connections the actual requests need. You'd be stealing capacity from the thing you're trying to observe.
+
+**A managed logging service** gives you instant search, alerting, and retention handled for you — genuinely convenient. But you pay by volume, and at a thousand requests a minute that volume adds up fast. It also means your logs leave your own infrastructure, so you need to strip personal data before anything ships out.
+
+**Plain local files** cost nothing and have no dependency, but they don't scale operationally: searching means grep, rotation needs manual configuration or your disk fills, and if you run on more than one machine there's no way to search across them — you have to connect to each one individually.
+
+The files-plus-collector approach gets you the best of these: the app writes to a local file (cheap, fast, no network round-trip), and a separate collector process tails that file and forwards it to a managed service or wherever you centralize search — asynchronously, off the request path. You get centralized search and retention without ever making a request wait on it.

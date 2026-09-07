@@ -1,0 +1,13 @@
+Solo integrità nel database — vincoli, foreign key, unicità, controlli di dominio. Logica di business nell'applicazione, dietro un unico entry point, con accesso diretto al database riservato alle migration.
+
+Vantaggio reale dei trigger: nessun percorso li bypassa, nemmeno uno script lanciato a mano. Ma:
+
+invisibili a chi legge il codice applicativo — una modifica che sembra semplice ne fa scattare altre senza traccia
+
+non testabili con gli strumenti già in uso dal team — servono test contro un database reale
+
+debug peggiore — un errore nel trigger arriva come scrittura fallita, senza dire quale regola l'ha causato
+
+migration fragili — l'ordine dei trigger conta e non è dichiarato da nessuna parte
+
+L'entry point unico dà la stessa garanzia del trigger, a condizione che nessuno scriva sul database aggirandolo.

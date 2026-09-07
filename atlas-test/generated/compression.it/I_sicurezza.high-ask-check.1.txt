@@ -1,0 +1,9 @@
+No.
+
+Offuscamento non serve: tutto ciò che arriva al browser è leggibile, si smonta con dev tools o guardando le richieste di rete.
+
+Chiave sul server. Frontend chiama endpoint del tuo backend, backend chiama il servizio esterno.
+
+Endpoint con rate limit — altrimenti diventa uso gratuito della tua chiave per chiunque.
+
+Se la chiave è già finita nel frontend/repo: compromessa, va ruotata subito, non solo rimossa dal codice. Toglierla da un commit non basta, resta nella cronologia — chi ha un clone ce l'ha già.

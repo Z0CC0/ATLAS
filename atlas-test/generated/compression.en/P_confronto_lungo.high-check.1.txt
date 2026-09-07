@@ -1,0 +1,9 @@
+Local files plus a shipping collector. App writes to local disk, collector forwards elsewhere — write never blocks the request.
+
+Files alone: free, no dependency, but grep for search, manual rotation, disk fills unmonitored. Multi-machine search: none — connect to each box separately.
+
+Managed service: instant search, alerts, retention, automatic — but cost scales with volume, and at 1k req/min volume is large. Also logs leave your infra: strip PII first.
+
+Database: search is convenient but logs and app traffic fight over the same connections and cache. Under load, logging starves the real requests.
+
+Rule that never bends: log write must never sit in the request's critical path.

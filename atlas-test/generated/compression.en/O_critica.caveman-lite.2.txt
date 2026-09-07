@@ -1,0 +1,7 @@
+Trigger idea sound safe but bite back.
+
+Real upside: no path skip rule, not even hand-run script. Cost hide elsewhere.
+
+Trigger invisible in app code — someone read app logic, see nothing, trigger fire anyway, no trace of what happen. Not tested with team's usual tools, need real DB running for that. Debugging worse: error arrive as failed write, no word on which rule caused it. Migrations get fragile too — trigger order matters, order declared nowhere.
+
+Better: keep DB for integrity only — constraints, foreign keys, uniqueness, domain checks. Business logic live in app, behind single entry point. That entry point give same guarantee as trigger, long as direct DB access stay reserved for migrations only.

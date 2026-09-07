@@ -1,0 +1,13 @@
+Postgres solo, poi aggiungi per carico specifico con numeri in mano.
+
+Ordini: solo Postgres o MySQL, transazioni serie non negoziabili. MySQL equivalente qui, ma più debole su tipi dato e query complesse — nessun vantaggio su Postgres per te.
+
+Catalogo: Postgres regge, schema fisso. MongoDB semplifica se schemi variabili, ma transazioni multi-documento arrivate tardi, costano — non serve senza quel bisogno reale.
+
+Ricerca testuale: Postgres integrata, sufficiente sotto un milione documenti, debole sopra. Elasticsearch molto superiore — rilevanza, sinonimi, tolleranza errori battitura — ma non archivio autorevole, va alimentato da altro DB, non sostituisce. Aggiungerlo prima del milione documenti quasi sempre prematuro.
+
+Analisi: Postgres regge fino a decine milioni righe, poi scansioni lente. ClickHouse molto superiore, colonnare, ordini grandezza avanti — ma non per ordini, aggiornamenti puntuali punto debole.
+
+Config tipica: Postgres autorevole, Elasticsearch e ClickHouse alimentati da lì. Ogni sistema aggiunto porta sincronizzazione e allineamento dati da gestire. Costo vero non licenza, tempo persone che li tengono in piedi.
+
+Regola pratica: parti Postgres solo. Aggiungi Elasticsearch quando ricerca supera il milione documenti e la qualità integrata non basta più. Aggiungi ClickHouse quando le analisi su decine milioni righe iniziano a rallentare in modo misurabile. Non prima.

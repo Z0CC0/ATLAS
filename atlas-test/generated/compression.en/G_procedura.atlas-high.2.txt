@@ -1,0 +1,12 @@
+Don't touch the column directly. `ALTER TABLE t ALTER COLUMN colonna TYPE integer` rewrites the whole table under an ACCESS EXCLUSIVE lock — service down for the full duration on ten million rows.
+
+Instead, six steps:
+
+1. Count rows where the value isn't all digits — confirms every value actually converts before you commit to anything.
+2. `ALTER TABLE t ADD COLUMN colonna_int integer` — new column, no rewrite.
+3. Backfill it in batches of 10k rows at a time, not one UPDATE — keeps every lock short.
+4. Add a trigger keeping `colonna` and `colonna_int` in sync while the backfill runs, so nothing written mid-migration is lost.
+5. Point the application code at `colonna_int`, ship it.
+6. Only then, `ALTER TABLE t DROP COLUMN colonna`.
+
+Step 6 is irreversible — once dropped, that data's gone; only a backup restore brings it back. Don't run it until step 5 is live and stable.

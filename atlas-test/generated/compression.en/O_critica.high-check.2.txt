@@ -1,0 +1,7 @@
+Bad idea. Skip it.
+
+Real upside: no path bypasses it, not even a hand-run script.
+
+Costs: invisible to anyone reading app code — a simple-looking change fires triggers elsewhere, no trace. Untestable with your normal tooling — needs a real DB to test against. Debugging degrades to a failed write with no indication which rule fired. Migrations get fragile — trigger order matters, declared nowhere.
+
+Better: DB keeps only integrity — constraints, FKs, uniqueness, domain checks. Business logic in the app, behind one entry point. Same bypass-proof guarantee, as long as direct DB access stays reserved for migrations.

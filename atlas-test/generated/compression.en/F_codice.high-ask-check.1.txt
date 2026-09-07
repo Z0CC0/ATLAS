@@ -1,0 +1,15 @@
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+t: outside returned function, in closure — inside it, each call gets own timer, no debounce.
+clearTimeout before each setTimeout — else timers stack, fn fires more than once.
+Spread forwards args — else fn gets nothing.
+Returns nothing — need a Promise if return value matters.
+Run-then-ignore instead of wait-then-run = throttle, different function.

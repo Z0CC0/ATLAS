@@ -1,0 +1,5 @@
+`let` and `const` both block scope, unlike `var`.
+
+`let` lets you reassign the variable later. `const` doesn't — once set, name stays bound to that value.
+
+But with an object: `const` only locks the binding, not the contents. Properties inside can still change.

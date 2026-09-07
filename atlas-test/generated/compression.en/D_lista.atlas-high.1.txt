@@ -1,0 +1,15 @@
+For a static site, seven headers cover you:
+
+**Strict-Transport-Security**: `max-age=31536000; includeSubDomains` — forces the browser onto HTTPS.
+
+**Content-Security-Policy**: `default-src 'self'` — blocks third-party script injection. Add `frame-ancestors 'none'` here too, which covers clickjacking on its own.
+
+**X-Content-Type-Options**: `nosniff` — stops the browser from guessing content types.
+
+**Referrer-Policy**: `strict-origin-when-cross-origin` — keeps the full path from leaking to other sites on outbound links.
+
+**X-Frame-Options**: `DENY` — clickjacking protection; redundant if you already set `frame-ancestors 'none'` in the CSP, but harmless to include for older browsers that don't read CSP frame-ancestors.
+
+**Permissions-Policy**: disable camera, microphone, and geolocation if you're not using them, e.g. `camera=(), microphone=(), geolocation=()`.
+
+**Skip X-XSS-Protection** — it's deprecated, modern browsers ignore it, and old versions actually introduced vulnerabilities.

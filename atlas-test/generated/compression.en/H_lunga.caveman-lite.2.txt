@@ -1,0 +1,11 @@
+Prompt caching stores already-processed prefix of request, so identical-start requests later skip reprocessing it.
+
+Catch: works on prefix only. One different character at start, no reuse past that point. So put stable parts first (system instructions, docs, tool definitions), changing parts after — reverse order breaks cache.
+
+First request costs more: writing to cache costs more than normal read. Gain starts second request onward, grows with turn count.
+
+Pays off: long conversations, large stable context (system prompt, attached docs, tool defs) reused across many turns.
+
+Doesn't pay off: single requests that differ from each other — you pay write cost, never read it back.
+
+Watch for: one changing line early in prompt (e.g. clock) kills reuse of everything after it, even if rest identical.

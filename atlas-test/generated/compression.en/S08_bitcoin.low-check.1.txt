@@ -1,0 +1,11 @@
+2008: paper appears, signed Satoshi Nakamoto — pseudonym, never identified. Title: *Bitcoin: A Peer-to-Peer Electronic Cash System*. Problem tackled: double spending without central body keeping ledger. Solution: chain of blocks ordered by proof of work — rewriting past becomes expensive, since it'd require redoing work for every later block.
+
+3 January 2009: first block generated, containing headline of Times article about bank bailout — works both as timestamp and statement of intent.
+
+Block reward starts at 50 bitcoin, halves every 210,000 blocks (~4 years). Total issued tends to 21 million, no further.
+
+2010: first documented commercial transaction — two pizzas paid with 10,000 bitcoin.
+
+2011: Satoshi stops taking part publicly. Those bitcoin never moved since.
+
+Project grows out of cypherpunk scene, after earlier attempts — b-money, bit gold — that didn't solve ordering.

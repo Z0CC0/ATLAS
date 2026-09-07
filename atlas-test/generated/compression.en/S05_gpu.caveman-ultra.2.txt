@@ -1,0 +1,3 @@
+5080 vs 4080: Blackwell vs Ada Lovelace architecture. GDDR7 vs GDDR6X memory. Bandwidth 960 GB/s vs 717 GB/s. Power draw 360W vs 320W, both 16-pin connector.
+
+Raw rasterization gain: only 10-15%. Real leap: frame generation.

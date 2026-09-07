@@ -1,0 +1,11 @@
+5080 usa architettura Blackwell, 4080 Ada Lovelace.
+
+5080 monta GDDR7, 4080 GDDR6X.
+
+Banda memoria: da circa 717 a circa 960 GB/s.
+
+Consumo dichiarato: da 320 a 360W.
+
+Connettore alimentazione resta 16 pin.
+
+Salto piu' grande: generazione fotogrammi, non rasterizzatore puro. Li' guadagno reale ordine 10-15%.

@@ -1,0 +1,9 @@
+Eventual consistency: after write, replicas disagree briefly, converge if writes stop. Same region under 1 second, cross-region seconds.
+
+Trade: against availability. Strong consistency system must refuse requests when replicas can't talk.
+
+Hits you right after write — post comment, reload, comment gone. Common fix: route that session's reads to primary replica (only for user who just wrote, not everyone).
+
+Not defect, choice. Most systems at scale pick it deliberately.
+
+Unacceptable cases, few and clear: account balances, seat availability, unique identifiers. There, need strong consistency instead.

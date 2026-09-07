@@ -1,0 +1,11 @@
+HTTPS: HTTP dentro un canale cifrato da TLS.
+
+Handshake: client apre connessione, dichiara versioni TLS e cifrari supportati. Server risponde, sceglie cifrario e versione, manda il certificato. Certificato lega dominio a chiave pubblica, firmato da una CA. Client verifica la firma risalendo la catena fino a una radice già in memoria.
+
+Poi client e server concordano una chiave di sessione — oggi tipicamente Diffie-Hellman su curve ellittiche. Chiave simmetrica: l'asimmetrica costa troppo per il traffico vero.
+
+Da lì traffico cifrato e autenticato: nessuno in mezzo lo legge o lo modifica.
+
+TLS 1.3: un solo giro andata/ritorno. TLS 1.2: due.
+
+Nota: il certificato dice solo che quel dominio controlla quella chiave — non dice chi gestisce il sito.

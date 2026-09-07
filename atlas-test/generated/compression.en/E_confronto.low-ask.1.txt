@@ -1,0 +1,7 @@
+Postgres, for small project.
+
+SELECT FOR UPDATE SKIP LOCKED handles up to ~1000 jobs/min — plenty at your scale. Job sits in same transaction as data, so never starts while matching write rolls back. Persistence free: process dies, queue survives.
+
+Redis: more volume, sub-millisecond latency, but one more service to run/monitor/upgrade, and persistence needs AOF configured — without it, restart loses queued jobs.
+
+Move to Redis when volume genuinely demands it, not before.

@@ -1,0 +1,12 @@
+Direct `ALTER TABLE t ALTER COLUMN colonna TYPE integer` rewrites whole table under ACCESS EXCLUSIVE lock — service down entire duration. Avoid on ten million rows in prod.
+
+Do instead:
+
+1. Check every existing value convertible — count rows not all digits.
+2. Add new column: `ALTER TABLE t ADD COLUMN colonna_int integer`.
+3. Backfill in batches of ten thousand rows, no long lock held.
+4. Add trigger keeping both columns in sync during migration.
+5. Change code to read new column, ship.
+6. Only then, drop old column: `ALTER TABLE t DROP COLUMN colonna`.
+
+Step 6 irreversible — once dropped, data doesn't come back without restore from backup.

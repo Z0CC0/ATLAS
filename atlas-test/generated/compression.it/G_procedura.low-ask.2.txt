@@ -1,0 +1,5 @@
+Non farlo con ALTER TABLE ALTER COLUMN TYPE diretto: riscrive intera tabella sotto ACCESS EXCLUSIVE lock, servizio fermo per durata intera.
+
+Prima verifica valori esistenti convertibili, conta righe con contenuto non solo cifre. Poi aggiungi colonna nuova: ALTER TABLE t ADD COLUMN colonna_int integer. Riempi a blocchi da diecimila righe per volta, evita lock lungo su tabella intera. Aggiungi trigger che tiene allineate due colonne durante migrazione. Cambia codice per leggere da colonna nuova, rilascia. Solo dopo, elimina colonna vecchia: ALTER TABLE t DROP COLUMN colonna.
+
+Sesto passo irreversibile: dati eliminati non tornano senza ripristino da backup. Conferma tutto prima di arrivarci.

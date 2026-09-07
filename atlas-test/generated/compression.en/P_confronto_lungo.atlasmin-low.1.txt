@@ -1,0 +1,11 @@
+Local files plus a collector that ships them elsewhere.
+
+At 1000 req/min, that's the sensible choice — writing the log must never sit in the critical path of the request, and none of the other two options guarantee that under this load.
+
+Files alone: zero cost, no dependency, but grep and rotation are manual, and searching across machines means connecting to each one — no unified view.
+
+Managed service: instant search, alerts, automatic retention — but you pay by volume, and at this rate volume grows fast. Logs also leave your infrastructure, so personal data must be stripped first.
+
+Database: familiar search, but it competes with the app's own workload — under load, logs eat caches and connections the real requests needed.
+
+So: write locally (cheap, no dependency, doesn't block the request), let a collector ship the logs elsewhere for search/retention/alerting. The app never waits on that shipping.

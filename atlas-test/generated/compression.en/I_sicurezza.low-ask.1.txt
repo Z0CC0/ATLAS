@@ -1,0 +1,7 @@
+No.
+
+Anything shipped to the browser can be read: dev tools, page source, network tab. Obfuscation only raises the effort, not the barrier.
+
+Keep the key server-side. Frontend calls your own backend endpoint, backend calls the actual service. Put a rate limit on that endpoint, or anyone can burn through your key for free.
+
+And since this key was already committed and pushed, treat it as compromised: rotate it now. Removing it from the code doesn't help — it's still in git history, and anyone who cloned the repo already has it.

@@ -1,0 +1,11 @@
+Prompt caching stores the already-processed prefix of a request. A later request starting identically skips reprocessing that prefix — reads it from cache instead.
+
+Match has to be exact from character one. One difference at the start, and nothing after that point reuses. So stable material goes first, variable material after — not the reverse.
+
+Writing to cache costs more than a normal read, so the first request is pricier than usual. Gain starts from the second request on, and compounds with more turns.
+
+Pays off: long conversations, large stable context — system prompt, attached docs, tool definitions.
+
+Doesn't pay off: one-off requests that differ from each other. You pay the write cost and never get a read back.
+
+Watch for a line that changes every turn near the top — a clock, a timestamp. That kills reuse for everything after it in the prefix.

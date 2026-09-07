@@ -1,0 +1,9 @@
+No.
+
+Anything that reaches the browser is readable — obfuscation falls apart the moment someone opens dev tools or checks the network requests.
+
+Key belongs on the server. Frontend calls your own backend endpoint, backend calls the service.
+
+That endpoint needs a rate limit, or it becomes a free way to use your key.
+
+If the key's already been published, treat it as compromised and rotate it now — removing it from the code isn't enough, it stays in repo history and anyone with a clone already has it.

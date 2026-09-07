@@ -1,0 +1,3 @@
+5080 Blackwell, GDDR7, 717→960 GB/s banda, 320→360W. 4080 Ada Lovelace, GDDR6X.
+
+Rasterizzazione pura: +10-15%. Salto grosso viene dalla generazione fotogrammi, non dal render classico. Connettore alimentazione: 16 pin su entrambe.

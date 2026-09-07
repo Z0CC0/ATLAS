@@ -1,0 +1,15 @@
+Ecco cos'è la consistenza eventuale, in pratica.
+
+Quando scrivi qualcosa in un sistema distribuito (più repliche dello stesso dato), quella scrittura non arriva istantaneamente ovunque. La consistenza eventuale è la garanzia — più debole di quella "forte" — che se smetti di scrivere, prima o poi (in tempo finito) tutte le repliche convergeranno sullo stesso valore. Non "subito", ma "eventualmente".
+
+**Perché esiste questo compromesso.** Un sistema che vuole consistenza forte (tutte le repliche sempre allineate) deve, quando due repliche non riescono a parlarsi tra loro, rifiutare le richieste piuttosto che rischiare di rispondere con dati vecchi. Quindi la scelta è: o accetti che a volte i dati siano un po' disallineati, o accetti che a volte il sistema rifiuti richieste. La consistenza eventuale sceglie la prima strada, in cambio di maggiore disponibilità.
+
+**Dove la senti sulla tua pelle.** Il caso tipico è "leggi ciò che hai appena scritto": pubblichi un commento, ricarichi la pagina, e per un attimo non lo vedi — perché la lettura è finita su una replica che non ha ancora ricevuto l'aggiornamento.
+
+**Come si risolve di solito**, senza rinunciare al vantaggio di scalabilità: non forzi consistenza forte per tutti, ma fai in modo che la sessione che ha appena scritto legga dalla replica primaria (quella sicuramente aggiornata), mentre tutte le altre sessioni continuano a leggere normalmente dalle repliche secondarie.
+
+**Quanto dura il disallineamento?** In pratica poco: sotto il secondo tra repliche nella stessa regione, qualche secondo se le repliche sono in regioni geografiche diverse.
+
+**Il punto più importante:** non è un bug da eliminare, è una scelta di design. La maggior parte dei sistemi che devono scalare la sceglie deliberatamente, perché il costo di rifiutare richieste ogni volta che le repliche non si sincronizzano sarebbe peggiore.
+
+**Quando invece NON va bene**, ed è meglio pagare il costo della consistenza forte: sono pochi casi ma facili da riconoscere — saldo di un conto corrente, disponibilità di posti (volo, concerto), unicità di un identificativo (es. username). Lì un disallineamento anche di un secondo può causare un doppio addebito, un overbooking o due utenti con lo stesso ID.

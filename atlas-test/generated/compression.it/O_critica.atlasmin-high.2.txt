@@ -1,0 +1,7 @@
+Sconsigliato.
+
+Vantaggio reale: nessun percorso applicativo aggira la regola, nemmeno uno script manuale.
+
+Ma: trigger invisibili al codice applicativo — una modifica semplice ne attiva altre senza traccia. Non testabili con gli strumenti del team, serve un DB vero. Debug peggiore: errore trigger arriva come fallimento scrittura, senza indicare quale regola. Migrazioni fragili: ordine trigger conta, non dichiarato da nessuna parte.
+
+Alternativa: in DB solo integrità — vincoli, FK, unicità, controlli di dominio. Logica business in app, dietro un unico punto di ingresso. Stessa garanzia del trigger, se accesso diretto al DB riservato alle migrazioni.

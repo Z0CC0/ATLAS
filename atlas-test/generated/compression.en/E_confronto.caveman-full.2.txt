@@ -1,0 +1,7 @@
+Postgres better fit here.
+
+SKIP LOCKED handle up to ~1000 jobs/minute, plenty for small project. Job lives in same transaction as data write, so job never fire if write rolls back — no separate broker to keep in sync. Process dies, queue survive, no extra config needed.
+
+Redis win on raw throughput and sub-millisecond latency, but cost extra: one more service to run, monitor, upgrade. Persistence not default either — without AOF on, restart wipe queued jobs.
+
+For small project, none of Redis's throughput edge matter yet. Use Postgres. Move to Redis only when volume actually outgrow SKIP LOCKED.

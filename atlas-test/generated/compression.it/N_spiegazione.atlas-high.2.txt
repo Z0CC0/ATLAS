@@ -1,0 +1,11 @@
+Consistenza eventuale: dopo una scrittura le repliche non concordano subito, convergono entro tempo finito se le scritture si fermano. Stesso datacenter: convergenza sotto il secondo. Fra regioni: secondi.
+
+Compromesso con la disponibilità: consistenza forte forza rifiuto richieste quando le repliche non comunicano.
+
+Ti riguarda: pubblichi un commento, ricarichi, non lo vedi — hai letto la replica sbagliata.
+
+Fix comune: la sessione che ha appena scritto legge dalla replica primaria, non tutte le sessioni.
+
+Non un difetto, una scelta: la maggioranza dei sistemi scalabili la accetta apposta.
+
+Dove non va bene, pochi casi riconoscibili: saldo conto, disponibilità posti, unicità identificativo.

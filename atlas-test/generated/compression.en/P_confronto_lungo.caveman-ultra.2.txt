@@ -1,0 +1,9 @@
+File local, no dependency, zero cost. Search means grep, rotation config manual, disk fill if forget.
+
+Managed service: search instant, alert built-in, retention automatic. Pay by volume — thousand requests/minute, volume grow fast. Data leaves your infrastructure, personal data strip before send.
+
+Database: search familiar, but log write compete with real request for same DB. Under load log fill cache and connection real request need.
+
+Multi-machine search across files: not exist. Connect each machine separate.
+
+At thousand requests/minute: use local files plus collector, ship log elsewhere after write. Rule always hold: log write never sit in request critical path.

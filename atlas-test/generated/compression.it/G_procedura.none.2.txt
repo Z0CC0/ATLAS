@@ -1,0 +1,26 @@
+Ecco come farlo senza fermare il servizio.
+
+Un `ALTER TABLE t ALTER COLUMN colonna TYPE integer` diretto sembra la soluzione ovvia, ma su dieci milioni di righe è pericoloso: riscrive l'intera tabella tenendo un lock ACCESS EXCLUSIVE per tutta la durata dell'operazione, quindi il servizio resta fermo finché non finisce. Da evitare in produzione.
+
+L'approccio sicuro è graduale:
+
+1. **Verifica preventiva**: prima di toccare qualsiasi cosa, conta quante righe esistenti *non* contengono solo cifre. Se ce ne sono, la conversione fallirebbe o produrrebbe dati sbagliati, quindi vanno gestite (o corrette a monte) prima di procedere.
+
+2. **Aggiungi la colonna nuova** in parallelo, senza toccare quella vecchia:
+   ```sql
+   ALTER TABLE t ADD COLUMN colonna_int integer;
+   ```
+   Questo è un'operazione leggera, non riscrive la tabella.
+
+3. **Popola la colonna nuova a blocchi**, ad esempio diecimila righe alla volta, invece che con un unico `UPDATE` massivo — così eviti di tenere un lock lungo sull'intera tabella e lasci "respirare" il database tra un blocco e l'altro.
+
+4. **Aggiungi un trigger** che, durante tutta la fase di migrazione, tenga sincronizzate le due colonne: ogni scrittura sulla vecchia colonna si riflette automaticamente sulla nuova, così non perdi allineamento tra il backfill a blocchi e il traffico live.
+
+5. **Cambia il codice applicativo** per leggere dalla colonna nuova, e rilasciarlo. Solo a questo punto la colonna `colonna_int` diventa quella "vera" dal punto di vista dell'applicazione.
+
+6. **Solo dopo**, quando sei certo che tutto funzioni correttamente con la colonna nuova, elimini quella vecchia:
+   ```sql
+   ALTER TABLE t DROP COLUMN colonna;
+   ```
+
+Attenzione a questo ultimo passo: è **irreversibile**. Una volta eliminata la colonna vecchia, quei dati non tornano indietro se non ripristinando da backup. Assicurati quindi di aver validato bene il funzionamento con la colonna nuova (e magari di aver tenuto un periodo di osservazione) prima di eseguire il `DROP COLUMN`.

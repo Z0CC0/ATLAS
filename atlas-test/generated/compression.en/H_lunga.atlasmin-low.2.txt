@@ -1,0 +1,9 @@
+Prompt caching keeps already-processed prefix of request, so later requests starting same way skip paying for it again.
+
+Reuse works only on prefix — one different character at start, nothing after reuses. So stable parts go first, changing parts after, not reverse.
+
+Writing to cache costs more than normal read, so first request costs more. Gain starts from second request onward, grows with turn count.
+
+Pays off on long conversations with large stable context — system instructions, attached docs, tool definitions. Doesn't pay off on single requests differing from each other: you pay write, never read it back.
+
+Watch for this: system line changing every turn, like a clock, kills reuse of everything after it.

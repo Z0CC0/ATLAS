@@ -1,0 +1,11 @@
+Files, managed service or database — depends what you're optimizing for, but at thousand req/min one option wins clearly.
+
+Files: zero cost, no dependency, but search means grep by hand, and rotation isn't automatic — set it up yourself or disk fills. Across several machines, no unified search exists — connect to each one separately.
+
+Managed service: instant search, alerts, retention automatic. But billed by volume, and at your rate volume grows fast — cost climbs. Also logs leave your infrastructure, so personal data must be stripped before they go out.
+
+Database: search familiar, convenient — but app database and log writes are two different workloads competing for same resources. Under load, logs fill caches and connections real requests need.
+
+At thousand req/min, sensible choice: local files, plus collector shipping them elsewhere. App never waits on log write.
+
+Rule that always holds, regardless of choice: writing log must never sit in critical path of request.

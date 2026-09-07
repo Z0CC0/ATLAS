@@ -1,0 +1,3 @@
+No. Su colonna a bassa cardinalità (tre valori) il B-tree di norma non usato: planner preferisce seq scan quando filtro seleziona oltre ~5-10% delle righe — e con tre valori ogni valore ne copre tipicamente molto di più. Indice comunque costa scrittura e spazio, senza beneficio.
+
+Eccezione: indice parziale sul valore raro (se uno dei tre è raro) — quello funziona.

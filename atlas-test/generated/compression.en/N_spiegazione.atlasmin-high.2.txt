@@ -1,0 +1,7 @@
+Eventual consistency: after write, replicas disagree briefly, converge in finite time once writes stop. Same-region convergence under a second, cross-region rises to seconds.
+
+Trade-off: strong consistency forces refusal of requests when replicas can't communicate — you're trading against availability.
+
+Hits you directly on read-after-write: user posts comment, reloads, comment gone. Fix: route that session's reads to the primary replica post-write, not everyone's.
+
+Not a bug — deliberate choice most systems at scale accept. Exceptions where it's unacceptable: account balances, seat availability, identifier uniqueness.

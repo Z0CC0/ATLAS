@@ -1,0 +1,34 @@
+{
+  "name": "atlas-min",
+  "version": "0.44.0",
+  "description": "Compression only: two levels (low/high) and what makes them work. No rigour dial, no verification, no subagents, no extra commands. The rules that go beyond compression are removed from the package, not switched off. For anyone who wants shorter answers and nothing else.",
+  "author": {
+    "name": "ZoCCo"
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/atlas-activate.js\"",
+            "timeout": 5,
+            "statusMessage": "ATLAS"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/atlas-tracker.js\"",
+            "timeout": 5,
+            "statusMessage": "ATLAS"
+          }
+        ]
+      }
+    ]
+  }
+}

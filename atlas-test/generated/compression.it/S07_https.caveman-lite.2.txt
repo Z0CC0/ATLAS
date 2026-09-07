@@ -1,0 +1,11 @@
+HTTPS = HTTP dentro canale cifrato da TLS.
+
+Funziona così: client apre connessione, dichiara versioni TLS e cifrari supportati. Server risponde scegliendo cifrario e versione, manda il suo certificato. Certificato lega un dominio a una chiave pubblica, firmato da un'autorità di certificazione (CA). Client verifica firma risalendo la catena fino a una radice già in memoria (trust store).
+
+Poi client e server concordano una chiave di sessione, oggi tipicamente via Diffie-Hellman su curve ellittiche. Questa chiave è simmetrica perché cifratura asimmetrica costa troppo per il traffico vero e proprio.
+
+Da quel punto il traffico è cifrato e autenticato: chi sta in mezzo non può leggerlo né modificarlo.
+
+TLS 1.3 riduce lo scambio a un solo giro di andata e ritorno (contro i due di TLS 1.2), quindi connessione più veloce.
+
+Un punto da tenere a mente: il certificato non dice nulla su chi gestisce il sito. Dice solo che quel dominio controlla quella chiave — non è una garanzia di affidabilità o identità dell'operatore.

@@ -1,0 +1,13 @@
+Prima di scegliere l'architettura, c'è una sequenza di domande da farsi in ordine, e conviene rispettarla perché ognuna condiziona la successiva.
+
+Parti da cosa cambia davvero nel monolite. Non tutto merita di essere toccato: le parti stabili non guadagnano nulla dall'essere spezzate in servizi separati, quindi la mappa delle modifiche frequenti è il primo dato da raccogliere, non l'architettura target.
+
+Subito dopo guarda dove stanno i confini delle transazioni. Se oggi una singola operazione tocca dati che dovrebbero finire in due servizi diversi, quella è una transazione che attraversa un confine di rete — e diventa un problema distribuito che nel monolite semplicemente non esisteva. Questo confine, più che il dominio "logico", è quello che decide dove è sicuro tagliare.
+
+Sul come farlo: scarta l'idea di riscrivere tutto da zero in parallelo. Il vecchio sistema continua a ricevere modifiche mentre lo riscrivi, e la copia nuova non lo raggiunge quasi mai — è un pattern che fallisce quasi sempre. L'alternativa che funziona è lo strangolamento progressivo: metti un router davanti al monolite, sposti un pezzo alla volta, e il vecchio resta l'autorità finché il nuovo pezzo non è verificato in produzione. Questo approccio non ti obbliga a decidere subito tutta l'architettura finale.
+
+Sui microservizi, prima di puntarci: costano di più in operatività, non in codice. Ogni servizio in più vuole il suo rilascio, il suo monitoraggio, i suoi log, i suoi allarmi e qualcuno che se ne occupi quando squilla il telefono. Sotto i cinque sviluppatori questo costo operativo supera quasi sempre il beneficio che i microservizi dovrebbero portare.
+
+C'è un'opzione intermedia di cui si parla poco ed è spesso la scelta giusta in questa fase: il monolite modulare. Confini interni netti tra i moduli, un solo rilascio da gestire, e la possibilità concreta di estrarre un modulo come servizio a sé il giorno in cui ce n'è davvero bisogno — senza aver pagato il costo operativo dei microservizi prima di averne beneficio.
+
+Infine, la domanda che pesa più di tutte le altre non è tecnica: cosa deve poter fare il tuo team fra un anno che oggi non può fare? La risposta a questa domanda, più della dimensione del codice o della moda architetturale del momento, è quella che dovrebbe guidare la scelta finale.

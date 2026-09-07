@@ -1,0 +1,23 @@
+8086, 1978. 16-bit, grown out of 8080, source-compatible with it.
+
+80286, 1982. Adds protected mode. No way back to real mode without a reboot.
+
+80386, 1985. 32-bit. Paged virtual memory. Virtual 8086 mode.
+
+486, 1989. L1 cache and the FPU move onto the chip.
+
+Pentium, 1993. Superscalar — two integer pipelines, two instructions retired per cycle.
+
+Pentium Pro, 1995. Out-of-order execution. x86 instructions get translated into internal micro-ops. From here x86 is an interface — not the real machine underneath anymore.
+
+Pentium 4, 2000. Chases frequency, very long pipeline, hits the power wall.
+
+2003: AMD extends to 64-bit — AMD64. Intel adopts the same instruction set. First time the dominant extension doesn't come from Intel.
+
+2006, Core 2. Direction shifts: frequency out, core count in.
+
+Across all these generations, vector extensions keep growing — MMX, SSE, AVX, AVX-512.
+
+Today the complexity has moved down a layer: branch prediction, cache hierarchy, speculative execution.
+
+2018: Spectre and Meltdown. Speculative execution had a security cost nobody had priced in.

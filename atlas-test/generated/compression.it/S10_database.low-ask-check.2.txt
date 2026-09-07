@@ -1,0 +1,15 @@
+Parti da Postgres solo. Aggiungi Elasticsearch o ClickHouse solo quando carico specifico lo impone, con numeri alla mano — non prima.
+
+Postgres regge tutti quattro carichi (ordini, catalogo, ricerca testuale, analisi) in modo accettabile, nessuno eccellente. Dà transazioni serie — su ordini non negoziabili. Ricerca testuale integrata, sufficiente sotto milione documenti, debole sopra. Regge analisi fino decine milioni righe, poi scansioni lente.
+
+MySQL equivalente su ordini, più debole su tipi dato e query complesse — non offre vantaggio su Postgres qui.
+
+MongoDB semplifica catalogo con schemi variabili, ma transazioni multi-documento arrivate tardi e costano — problema su ordini.
+
+Elasticsearch molto superiore su ricerca testuale: rilevanza, sinonimi, tolleranza errori battitura. Non archivio autorevole — va alimentato da altro database, non sostituirlo.
+
+ClickHouse molto superiore su analisi, scansioni colonnari ordini grandezza avanti. Non serve per ordini — aggiornamenti puntuali punto debole.
+
+Configurazione tipica per piattaforma come tua: Postgres come archivio autorevole, più Elasticsearch e ClickHouse alimentati da lì. Ma ogni sistema aggiunto porta problema sincronizzazione e problema allineamento dati. Elasticsearch prima milione documenti quasi sempre prematuro.
+
+Costo vero sistemi specializzati non licenza — tempo persone che li tengono in piedi.

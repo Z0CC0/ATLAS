@@ -1,0 +1,13 @@
+Eventual consistency: after a write, replicas don't agree immediately — they converge in finite time if writes stop.
+
+Trade-off is against availability. A system demanding strong consistency must refuse requests when replicas can't talk to each other.
+
+Matters right after you write: you post a comment, reload, comment's not there yet.
+
+Fix: read-your-writes — route the session that just wrote to the primary replica, not everyone.
+
+Convergence: under a second same region, seconds across regions.
+
+Not a defect, a choice — most systems that scale accept it deliberately.
+
+Unacceptable cases, few and recognizable: account balances, seat availability, uniqueness of an identifier.

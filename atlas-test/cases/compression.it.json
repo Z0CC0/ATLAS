@@ -1,0 +1,1280 @@
+{
+  "_language": "it",
+  "_nota": "Compressione, italiano. Dieci domande di media lunghezza, quattro aperte, dieci in scala di lunghezza crescente. Ogni caso ha la domanda, la scheda di fatti che la risposta deve contenere, e l elenco dei dettagli da ritrovare. Sostituibile: node genera.mjs --casi <tuo-file>",
+  "A_ricerca": {
+    "question": "Che tempo fa oggi a Los Angeles, a che ora fa buio, e cosa posso fare stasera?",
+    "notes": [
+      "ora locale 10:20 PDT",
+      "nuvolosita sparsa in mattinata, schiarita nel pomeriggio",
+      "massima prevista fra 86 e 93 gradi Fahrenheit (30-34 gradi Celsius), varia secondo la fonte e la zona",
+      "il centro e' il punto piu' caldo, la costa resta piu' fresca",
+      "minima notturna intorno ai 69 gradi Fahrenheit (21 gradi Celsius)",
+      "aria secca rispetto a New York: il caldo si sente meno a parita' di temperatura",
+      "tramonto alle 19:35, fra circa 9 ore e 15 minuti",
+      "buio pieno (fine del crepuscolo civile) alle 20:00, fra circa 9 ore e 40 minuti",
+      "luna al primo quarto, illuminata al 52 per cento, cielo abbastanza scuro nella prima parte della notte",
+      "concerto jazz gratuito all'Hammer Museum, quartiere Westwood, nel cortile all'aperto, con Machado Mijiga, polistrumentista; gratis, all'aperto, nella fascia oraria giusta per godersi il calo di temperatura serale",
+      "Mt. Joy al Greek Theatre alle 20:00; anfiteatro immerso nel Griffith Park, fra i posti migliori della citta' per un concerto estivo, a poca distanza dal Griffith Observatory se si arriva prima per il tramonto"
+    ],
+    "source": "web",
+    "facts": [
+      [
+        "10:20"
+      ],
+      [
+        "86",
+        "30"
+      ],
+      [
+        "93",
+        "34"
+      ],
+      [
+        "69",
+        "21"
+      ],
+      [
+        "parita' di temperatura",
+        "parità di temperatura",
+        "stessa temperatura"
+      ],
+      [
+        "19:35"
+      ],
+      [
+        "20:00"
+      ],
+      [
+        "9 ore e 15",
+        "9h 15",
+        "9h15",
+        "9 h 15"
+      ],
+      [
+        "9 ore e 40",
+        "9h 40",
+        "9h40",
+        "9 h 40"
+      ],
+      [
+        "52"
+      ],
+      [
+        "primo quarto"
+      ],
+      [
+        "Hammer Museum"
+      ],
+      [
+        "Westwood"
+      ],
+      [
+        "Machado Mijiga"
+      ],
+      [
+        "polistrumentista"
+      ],
+      [
+        "calo di temperatura serale",
+        "calo di temperatura"
+      ],
+      [
+        "Mt. Joy"
+      ],
+      [
+        "Greek Theatre"
+      ],
+      [
+        "Griffith Park"
+      ],
+      [
+        "Griffith Observatory"
+      ],
+      [
+        "costa"
+      ],
+      [
+        "centro"
+      ],
+      [
+        "gratuito",
+        "gratis"
+      ]
+    ]
+  },
+  "B_tecnica": {
+    "question": "La mia API va sempre piu' lenta sotto carico finche' non si blocca. Cosa sta succedendo e come lo sistemo?",
+    "notes": [
+      "la causa e' un esaurimento del connection pool, non una query lenta",
+      "nel middleware in db/session.py:47 la connessione viene rilasciata solo nel percorso di successo",
+      "quando l'handler solleva un'eccezione il release() non viene mai raggiunto e la connessione resta occupata fino al timeout",
+      "dopo qualche centinaio di richieste fallite il pool si svuota e ogni richiesta successiva va in attesa",
+      "per questo si vedono latenze crescenti invece di errori immediati",
+      "la correzione e' avvolgere l'acquisizione in un try/finally, in modo che il rilascio avvenga anche sul percorso di errore, con questo codice: conn = pool.acquire() / try: return handler(conn, request) / finally: pool.release(conn)",
+      "aumentare pool_size sembra risolvere ma maschera soltanto il problema: sposta piu' in la' il momento in cui il pool si esaurisce senza eliminare la perdita di connessioni",
+      "pool_size va aumentato solo dopo aver applicato la correzione, se il carico reale lo richiede",
+      "per riprodurre il comportamento prima e dopo la modifica si esegue: pytest tests/test_pool.py -k exhaustion -x"
+    ],
+    "source": "dai tuoi file",
+    "facts": [
+      [
+        "connection pool"
+      ],
+      [
+        "db/session.py:47"
+      ],
+      [
+        "middleware"
+      ],
+      [
+        "release"
+      ],
+      [
+        "try/finally",
+        "try / finally"
+      ],
+      [
+        "pool.acquire"
+      ],
+      [
+        "pool.release"
+      ],
+      [
+        "latenze crescenti"
+      ],
+      [
+        "errori immediati"
+      ],
+      [
+        "percorso di errore",
+        "anche in caso di errore",
+        "anche sull'errore"
+      ],
+      [
+        "pool_size"
+      ],
+      [
+        "maschera",
+        "mascher"
+      ],
+      [
+        "se il carico reale lo richiede",
+        "se il carico lo richiede",
+        "solo se serve davvero"
+      ],
+      [
+        "pytest tests/test_pool.py -k exhaustion -x"
+      ],
+      [
+        "prima e dopo"
+      ]
+    ]
+  },
+  "C_breve": {
+    "question": "Conviene mettere un indice su una colonna che ha solo tre valori distinti?",
+    "notes": [
+      "no, su una colonna a bassa cardinalita' l'indice B-tree di norma non viene usato",
+      "il planner preferisce una scansione sequenziale quando il filtro seleziona piu' di circa il 5-10 per cento delle righe",
+      "l'indice costa comunque scrittura e spazio",
+      "l'eccezione e' un indice parziale sul valore raro, che invece funziona"
+    ],
+    "source": "conoscenza interna",
+    "facts": [
+      [
+        "no"
+      ],
+      [
+        "cardinalit"
+      ],
+      [
+        "B-tree",
+        "btree"
+      ],
+      [
+        "scansione sequenziale",
+        "sequential scan",
+        "seq scan"
+      ],
+      [
+        "5",
+        "10"
+      ],
+      [
+        "scrittura"
+      ],
+      [
+        "spazio"
+      ],
+      [
+        "indice parziale",
+        "parziale"
+      ]
+    ]
+  },
+  "D_lista": {
+    "question": "Quali header di sicurezza dovrei mettere su un sito che serve solo pagine statiche?",
+    "notes": [
+      "Strict-Transport-Security con max-age di almeno 31536000 secondi e includeSubDomains, obbliga il browser a usare HTTPS",
+      "Content-Security-Policy con default-src 'self', e' quello che blocca l'iniezione di script di terze parti",
+      "X-Content-Type-Options impostato a nosniff, impedisce al browser di indovinare il tipo di contenuto",
+      "Referrer-Policy impostato a strict-origin-when-cross-origin, evita di far uscire il percorso completo verso altri siti",
+      "X-Frame-Options impostato a DENY oppure frame-ancestors 'none' dentro la Content-Security-Policy, contro il clickjacking",
+      "Permissions-Policy per spegnere camera, microfono e geolocalizzazione se il sito non li usa",
+      "X-XSS-Protection e' deprecato e va omesso: i browser moderni lo ignorano e in vecchie versioni introduceva vulnerabilita'"
+    ],
+    "source": "conoscenza interna",
+    "facts": [
+      [
+        "Strict-Transport-Security"
+      ],
+      [
+        "31536000"
+      ],
+      [
+        "includeSubDomains"
+      ],
+      [
+        "Content-Security-Policy"
+      ],
+      [
+        "default-src"
+      ],
+      [
+        "X-Content-Type-Options"
+      ],
+      [
+        "nosniff"
+      ],
+      [
+        "Referrer-Policy"
+      ],
+      [
+        "strict-origin-when-cross-origin"
+      ],
+      [
+        "X-Frame-Options"
+      ],
+      [
+        "DENY",
+        "frame-ancestors"
+      ],
+      [
+        "Permissions-Policy"
+      ],
+      [
+        "camera"
+      ],
+      [
+        "geolocalizzazione",
+        "geolocation"
+      ],
+      [
+        "X-XSS-Protection"
+      ],
+      [
+        "deprecat"
+      ]
+    ]
+  },
+  "E_confronto": {
+    "question": "Per una coda di lavori in background su un progetto piccolo, meglio Redis o Postgres?",
+    "notes": [
+      "Postgres con SELECT FOR UPDATE SKIP LOCKED basta fino a circa mille lavori al minuto",
+      "con Postgres il lavoro sta nella stessa transazione dei dati, quindi non esiste il caso in cui il lavoro parte e la scrittura viene annullata",
+      "Postgres da' la persistenza gratis: se il processo muore la coda e' ancora li'",
+      "Redis regge molto piu' volume e ha latenza piu' bassa, sotto il millisecondo",
+      "Redis richiede un servizio in piu' da gestire, monitorare e aggiornare",
+      "con Redis la persistenza va configurata: senza AOF attivo un riavvio perde i lavori in coda",
+      "per un progetto piccolo la raccomandazione e' Postgres, e si passa a Redis quando il volume lo impone davvero"
+    ],
+    "source": "conoscenza interna",
+    "facts": [
+      [
+        "SKIP LOCKED"
+      ],
+      [
+        "mille lavori al minuto",
+        "1000 lavori",
+        "1.000 lavori"
+      ],
+      [
+        "stessa transazione"
+      ],
+      [
+        "persistenza"
+      ],
+      [
+        "latenza"
+      ],
+      [
+        "millisecondo"
+      ],
+      [
+        "servizio in piu'",
+        "servizio aggiuntivo"
+      ],
+      [
+        "AOF"
+      ],
+      [
+        "riavvio"
+      ],
+      [
+        "Postgres"
+      ],
+      [
+        "Redis"
+      ]
+    ],
+    "giudizio": "Arriva a una raccomandazione fra i due, non resta un elenco neutro. Da verificare leggendo."
+  },
+  "F_codice": {
+    "question": "Come faccio a fare il debounce di una funzione in JavaScript senza librerie?",
+    "notes": [
+      "l'implementazione e': function debounce(fn, ms) { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); }; }",
+      "clearTimeout va chiamato prima di ogni nuovo setTimeout, altrimenti si accumulano timer e la funzione parte piu' volte",
+      "la variabile t deve stare nella chiusura, non dentro la funzione restituita, o ogni chiamata avrebbe il proprio timer e il debounce non avverrebbe",
+      "gli argomenti vanno inoltrati con lo spread, altrimenti la funzione chiamata li riceve vuoti",
+      "questa versione non restituisce niente: se serve il valore di ritorno serve una Promise",
+      "per il caso opposto, cioe' eseguire subito e poi ignorare per un periodo, serve un throttle, che e' un'altra funzione"
+    ],
+    "source": "conoscenza interna",
+    "facts": [
+      [
+        "clearTimeout"
+      ],
+      [
+        "setTimeout"
+      ],
+      [
+        "debounce"
+      ],
+      [
+        "chiusura",
+        "closure"
+      ],
+      [
+        "spread",
+        "...args"
+      ],
+      [
+        "non restituisce",
+        "nessun valore di ritorno"
+      ],
+      [
+        "Promise"
+      ],
+      [
+        "throttle"
+      ]
+    ]
+  },
+  "G_procedura": {
+    "question": "Come cambio il tipo di una colonna da varchar a integer su una tabella con dieci milioni di righe, in produzione?",
+    "notes": [
+      "primo: verificare che ogni valore esistente sia convertibile, contando le righe che non contengono solo cifre",
+      "secondo: aggiungere una colonna nuova, ALTER TABLE t ADD COLUMN colonna_int integer",
+      "terzo: riempirla a blocchi da diecimila righe per volta, per non tenere un lock lungo sulla tabella",
+      "quarto: aggiungere un trigger che tenga allineate le due colonne durante la migrazione",
+      "quinto: cambiare il codice per leggere dalla colonna nuova, e rilasciarlo",
+      "sesto e solo dopo: eliminare la colonna vecchia con ALTER TABLE t DROP COLUMN colonna",
+      "il sesto passo e' irreversibile: una volta eliminata la colonna i dati non tornano senza un ripristino da backup",
+      "un ALTER TABLE ALTER COLUMN TYPE diretto riscrive tutta la tabella tenendo un ACCESS EXCLUSIVE lock, cioe' il servizio e' fermo per tutta la durata"
+    ],
+    "source": "conoscenza interna",
+    "facts": [
+      [
+        "ADD COLUMN"
+      ],
+      [
+        "diecimila",
+        "10.000",
+        "10000"
+      ],
+      [
+        "lock"
+      ],
+      [
+        "trigger"
+      ],
+      [
+        "DROP COLUMN"
+      ],
+      [
+        "irreversibil"
+      ],
+      [
+        "backup"
+      ],
+      [
+        "ACCESS EXCLUSIVE"
+      ],
+      [
+        "riscrive"
+      ]
+    ]
+  },
+  "H_lunga": {
+    "question": "Mi spieghi come funziona la cache dei prompt e quando conviene?",
+    "notes": [
+      "la cache conserva il prefisso di una richiesta gia' elaborato, in modo che le richieste successive con lo stesso inizio non lo ripaghino per intero",
+      "funziona solo sul prefisso: basta un carattere diverso all'inizio e da quel punto in poi non c'e' piu' riuso",
+      "quindi le parti stabili vanno messe prima e quelle che cambiano dopo, non il contrario",
+      "scrivere nella cache costa piu' di una lettura normale, quindi la prima richiesta e' piu' cara",
+      "il guadagno arriva dalla seconda richiesta in avanti, e cresce con il numero di turni",
+      "conviene su conversazioni lunghe con un contesto grande e stabile: istruzioni di sistema, documentazione allegata, definizioni di strumenti",
+      "non conviene su richieste singole e diverse fra loro, dove si paga la scrittura senza mai rileggere",
+      "la voce di sistema che cambia a ogni turno, come un orario, annulla il riuso di tutto quello che viene dopo"
+    ],
+    "source": "conoscenza interna",
+    "facts": [
+      [
+        "prefisso"
+      ],
+      [
+        "un carattere",
+        "carattere diverso"
+      ],
+      [
+        "stabil"
+      ],
+      [
+        "prima"
+      ],
+      [
+        "piu' cara",
+        "piu' caro",
+        "costa di piu'"
+      ],
+      [
+        "seconda richiesta",
+        "dalla seconda"
+      ],
+      [
+        "turni",
+        "conversazioni lunghe"
+      ],
+      [
+        "strumenti",
+        "tool"
+      ],
+      [
+        "richieste singole",
+        "richiesta singola",
+        "una tantum"
+      ],
+      [
+        "orario",
+        "timestamp"
+      ]
+    ]
+  },
+  "I_sicurezza": {
+    "question": "Posso mettere la chiave API dentro il frontend se la offusco un po'?",
+    "notes": [
+      "no: qualsiasi cosa arrivi al browser e' leggibile, e l'offuscamento si annulla aprendo gli strumenti per sviluppatori o guardando le richieste di rete",
+      "la chiave va tenuta sul server, e il frontend chiama un endpoint del proprio backend che a sua volta chiama il servizio",
+      "sul backend l'endpoint deve avere un limite di frequenza, o diventa un modo gratuito per usare la chiave altrui",
+      "se la chiave e' gia' stata pubblicata va considerata compromessa e ruotata subito, non solo rimossa dal codice",
+      "toglierla da un commit non basta: resta nella cronologia del repository e chiunque abbia un clone la possiede gia'"
+    ],
+    "source": "conoscenza interna",
+    "facts": [
+      [
+        "no"
+      ],
+      [
+        "leggibile",
+        "visibile"
+      ],
+      [
+        "strumenti per sviluppatori",
+        "devtools",
+        "richieste di rete"
+      ],
+      [
+        "server",
+        "backend"
+      ],
+      [
+        "limite di frequenza",
+        "rate limit"
+      ],
+      [
+        "ruotat",
+        "ruotare"
+      ],
+      [
+        "compromessa"
+      ],
+      [
+        "cronologia",
+        "history"
+      ]
+    ]
+  },
+  "L_unafrase": {
+    "question": "In Python, una lista vuota e' falsa in un contesto booleano?",
+    "notes": [
+      "si",
+      "vale per tutte le collezioni vuote: lista, tupla, dizionario, insieme e stringa"
+    ],
+    "source": "conoscenza interna",
+    "facts": [
+      [
+        "si"
+      ],
+      [
+        "vuot"
+      ],
+      [
+        "dizionario",
+        "dict"
+      ],
+      [
+        "stringa"
+      ]
+    ]
+  },
+  "M_aperta": {
+    "question": "Sto per riscrivere un servizio che oggi e' un monolite PHP. Cosa dovrei considerare prima di decidere l'architettura?",
+    "notes": [
+      "il primo dato da avere e' quale parte del monolite cambia davvero: le parti stabili non guadagnano nulla dall'essere spezzate",
+      "il secondo e' dove stanno i confini delle transazioni, perche' una transazione che attraversa due servizi diventa un problema distribuito",
+      "una riscrittura completa in parallelo al vecchio sistema fallisce quasi sempre: il vecchio continua a cambiare e la copia non lo raggiunge mai",
+      "l'alternativa e' lo strangolamento progressivo: si mette un router davanti, si sposta un pezzo per volta, il vecchio resta autorevole finche' il nuovo non e' verificato",
+      "i microservizi costano di piu' in operativita': ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupa",
+      "sotto i cinque sviluppatori il costo operativo dei microservizi supera quasi sempre il beneficio",
+      "il monolite modulare e' l'opzione poco citata: confini interni netti, un solo rilascio, e la possibilita' di estrarre un modulo il giorno che serve davvero",
+      "la domanda decisiva non e' tecnica: cosa deve poter fare il team fra un anno che oggi non puo'"
+    ],
+    "source": "conoscenza interna",
+    "facts": [
+      [
+        "parte che cambia",
+        "cambia davvero",
+        "parti stabili"
+      ],
+      [
+        "transazion"
+      ],
+      [
+        "riscrittura completa",
+        "in parallelo"
+      ],
+      [
+        "strangolamento",
+        "router",
+        "un pezzo per volta"
+      ],
+      [
+        "operativit",
+        "rilascio"
+      ],
+      [
+        "monitoraggio"
+      ],
+      [
+        "cinque sviluppatori",
+        "5 sviluppatori"
+      ],
+      [
+        "monolite modulare"
+      ],
+      [
+        "estrarre"
+      ],
+      [
+        "fra un anno",
+        "un anno"
+      ]
+    ]
+  },
+  "N_spiegazione": {
+    "question": "Mi spieghi cos'e' la consistenza eventuale e perche' dovrebbe interessarmi?",
+    "notes": [
+      "consistenza eventuale significa che dopo una scrittura le repliche non concordano subito, ma convergono entro un tempo finito se le scritture si fermano",
+      "il compromesso e' con la disponibilita': un sistema che pretende consistenza forte deve rifiutare richieste quando le repliche non si parlano",
+      "riguarda chi legge subito dopo aver scritto: l'utente pubblica un commento, ricarica, e non lo vede",
+      "la soluzione comune e' leggere dalla replica primaria per la sessione che ha appena scritto, non per tutte",
+      "il tempo di convergenza tipico su repliche nella stessa regione e' sotto il secondo, fra regioni diverse sale a secondi",
+      "non e' un difetto da eliminare ma una scelta: la maggior parte dei sistemi che scalano la accetta di proposito",
+      "i casi dove non e' accettabile sono pochi e riconoscibili: saldi di conto, disponibilita' di posti, unicita' di un identificativo"
+    ],
+    "source": "conoscenza interna",
+    "facts": [
+      [
+        "convergono",
+        "convergenza"
+      ],
+      [
+        "disponibilit"
+      ],
+      [
+        "consistenza forte"
+      ],
+      [
+        "subito dopo",
+        "appena scritto"
+      ],
+      [
+        "replica primaria",
+        "primaria"
+      ],
+      [
+        "sotto il secondo"
+      ],
+      [
+        "regioni"
+      ],
+      [
+        "scelta"
+      ],
+      [
+        "saldi",
+        "conto"
+      ],
+      [
+        "posti"
+      ]
+    ]
+  },
+  "O_critica": {
+    "question": "Voglio mettere tutta la logica di business nei trigger del database cosi' e' impossibile aggirarla. Che ne pensi?",
+    "notes": [
+      "il vantaggio e' reale: nessun percorso applicativo puo' saltare la regola, nemmeno uno script eseguito a mano",
+      "ma i trigger sono invisibili a chi legge il codice applicativo: una modifica che sembra semplice ne attiva altre senza traccia",
+      "non si testano con gli strumenti che il team usa gia': servono prove che girano contro un database vero",
+      "il debug e' peggiore: un errore dentro un trigger arriva come fallimento della scrittura, senza dire quale regola l'ha causato",
+      "le migrazioni diventano fragili, perche' l'ordine dei trigger conta e non e' dichiarato da nessuna parte",
+      "l'alternativa e' tenere in database solo cio' che protegge l'integrita' — vincoli, chiavi esterne, unicita', controlli di dominio — e la logica di business nell'applicazione, dietro un solo punto di ingresso",
+      "quel punto di ingresso unico da' la stessa garanzia del trigger, se l'accesso diretto al database e' riservato alle migrazioni"
+    ],
+    "source": "conoscenza interna",
+    "facts": [
+      [
+        "nessun percorso",
+        "saltare",
+        "aggirare"
+      ],
+      [
+        "invisibil"
+      ],
+      [
+        "test"
+      ],
+      [
+        "debug"
+      ],
+      [
+        "migrazioni"
+      ],
+      [
+        "ordine dei trigger",
+        "ordine"
+      ],
+      [
+        "vincoli",
+        "chiavi esterne",
+        "unicit"
+      ],
+      [
+        "punto di ingresso"
+      ],
+      [
+        "migrazioni"
+      ]
+    ]
+  },
+  "P_confronto_lungo": {
+    "question": "Dovrei tenere i log su file, su un servizio gestito o su un database? Il progetto e' un'API con un migliaio di richieste al minuto.",
+    "notes": [
+      "file: costo zero, nessuna dipendenza, ma la ricerca e' grep e la rotazione va configurata a mano o il disco si riempie",
+      "file: la ricerca su piu' macchine non esiste, bisogna collegarsi a ognuna",
+      "servizio gestito: ricerca immediata, allarmi, conservazione automatica, ma si paga per volume e a mille richieste al minuto il volume cresce in fretta",
+      "servizio gestito: i log escono dalla propria infrastruttura, quindi vanno ripuliti dai dati personali prima di uscire",
+      "database: la ricerca e' comoda e nota, ma scrivere log nello stesso database dell'applicazione mette in competizione due carichi molto diversi",
+      "database: sotto carico, i log riempiono cache e connessioni che servivano alle richieste vere",
+      "a mille richieste al minuto la scelta ragionevole e' file locali piu' un raccoglitore che li spedisce altrove, cosi' l'applicazione non aspetta mai la scrittura del log",
+      "la regola che vale sempre: la scrittura del log non deve stare nel percorso critico della richiesta"
+    ],
+    "source": "conoscenza interna",
+    "facts": [
+      [
+        "grep",
+        "ricerca"
+      ],
+      [
+        "rotazione"
+      ],
+      [
+        "disco"
+      ],
+      [
+        "piu' macchine",
+        "ogni macchina"
+      ],
+      [
+        "allarmi"
+      ],
+      [
+        "volume"
+      ],
+      [
+        "dati personali"
+      ],
+      [
+        "stesso database",
+        "competizione",
+        "due carichi"
+      ],
+      [
+        "connessioni"
+      ],
+      [
+        "raccoglitore",
+        "collector",
+        "spedisce"
+      ],
+      [
+        "percorso critico"
+      ]
+    ]
+  },
+  "S01_ora": {
+    "question": "Che ore sono a Londra?",
+    "notes": [
+      "sono le 14:20 ora locale di Londra"
+    ],
+    "source": "conoscenza interna",
+    "facts": [
+      [
+        "14:20"
+      ]
+    ]
+  },
+  "S02_capitale": {
+    "question": "Qual e' la capitale dell'Australia?",
+    "notes": [
+      "la capitale e' Canberra",
+      "non e' Sydney, che e' solo la citta' piu' popolosa"
+    ],
+    "source": "conoscenza interna",
+    "facts": [
+      [
+        "Canberra"
+      ],
+      [
+        "Sydney"
+      ]
+    ]
+  },
+  "S03_letconst": {
+    "question": "Che differenza c'e' fra let e const in JavaScript?",
+    "notes": [
+      "const impedisce di riassegnare il nome, non di modificare il valore",
+      "un oggetto dichiarato con const puo' cambiare al suo interno",
+      "let permette la riassegnazione",
+      "entrambi hanno ambito di blocco, a differenza di var"
+    ],
+    "source": "conoscenza interna",
+    "facts": [
+      [
+        "riassegn"
+      ],
+      [
+        "oggetto"
+      ],
+      [
+        "ambito di blocco",
+        "block scope",
+        "blocco"
+      ],
+      [
+        "var"
+      ]
+    ]
+  },
+  "S04_meteo_domani": {
+    "question": "Che tempo fara' domani a New York?",
+    "notes": [
+      "cielo sereno al mattino, nuvoloso dal pomeriggio",
+      "massima 24 gradi Celsius, minima 17",
+      "probabilita' di pioggia 30 per cento dopo le 18",
+      "vento da nord-ovest a 15 chilometri orari",
+      "umidita' intorno al 60 per cento"
+    ],
+    "source": "web",
+    "facts": [
+      [
+        "sereno"
+      ],
+      [
+        "nuvoloso"
+      ],
+      [
+        "24"
+      ],
+      [
+        "17"
+      ],
+      [
+        "30"
+      ],
+      [
+        "18"
+      ],
+      [
+        "nord-ovest"
+      ],
+      [
+        "15"
+      ],
+      [
+        "60"
+      ]
+    ]
+  },
+  "S05_gpu": {
+    "question": "Che differenza c'e' fra una RTX 5080 e una RTX 4080?",
+    "notes": [
+      "la 5080 usa l'architettura Blackwell, la 4080 Ada Lovelace",
+      "la 5080 monta memoria GDDR7, la 4080 GDDR6X",
+      "la banda di memoria passa da circa 717 a circa 960 gigabyte al secondo",
+      "il consumo dichiarato sale da 320 a 360 watt",
+      "il salto piu' grande e' sulla generazione di fotogrammi, non sul rasterizzatore puro",
+      "sul rasterizzatore il guadagno reale e' nell'ordine del 10-15 per cento",
+      "il connettore di alimentazione resta a 16 pin"
+    ],
+    "source": "conoscenza interna",
+    "facts": [
+      [
+        "Blackwell"
+      ],
+      [
+        "Ada Lovelace",
+        "Ada"
+      ],
+      [
+        "GDDR7"
+      ],
+      [
+        "GDDR6X"
+      ],
+      [
+        "960",
+        "717"
+      ],
+      [
+        "320"
+      ],
+      [
+        "360"
+      ],
+      [
+        "fotogrammi",
+        "frame"
+      ],
+      [
+        "10-15",
+        "10",
+        "15"
+      ],
+      [
+        "16 pin"
+      ]
+    ]
+  },
+  "S06_meteo_settimana": {
+    "question": "Dammi il meteo della settimana a New York.",
+    "notes": [
+      "lunedi: sereno, 24 gradi, minima 17",
+      "martedi: nuvoloso, 22 gradi, minima 16, pioggia debole in serata",
+      "mercoledi: pioggia per gran parte del giorno, 19 gradi, minima 15",
+      "giovedi: schiarite, 21 gradi, minima 14",
+      "venerdi: sereno, 25 gradi, minima 16",
+      "sabato: sereno e caldo, 28 gradi, minima 19",
+      "domenica: temporali nel pomeriggio, 26 gradi, minima 18",
+      "la settimana ha due giorni con precipitazioni significative, mercoledi e domenica",
+      "il fine settimana e' il periodo piu' caldo"
+    ],
+    "source": "web",
+    "facts": [
+      [
+        "lunedi",
+        "luned"
+      ],
+      [
+        "marted"
+      ],
+      [
+        "mercoled"
+      ],
+      [
+        "gioved"
+      ],
+      [
+        "venerd"
+      ],
+      [
+        "sabato"
+      ],
+      [
+        "domenica"
+      ],
+      [
+        "24"
+      ],
+      [
+        "22"
+      ],
+      [
+        "19"
+      ],
+      [
+        "21"
+      ],
+      [
+        "25"
+      ],
+      [
+        "28"
+      ],
+      [
+        "26"
+      ],
+      [
+        "temporali"
+      ],
+      [
+        "fine settimana",
+        "weekend"
+      ]
+    ]
+  },
+  "S07_https": {
+    "question": "Mi spieghi come funziona HTTPS?",
+    "notes": [
+      "HTTPS e' HTTP dentro un canale cifrato da TLS",
+      "il client apre la connessione e dichiara quali versioni di TLS e quali cifrari supporta",
+      "il server risponde scegliendo cifrario e versione, e manda il proprio certificato",
+      "il certificato lega un nome di dominio a una chiave pubblica ed e' firmato da un'autorita' di certificazione",
+      "il client verifica la firma risalendo la catena fino a una radice che ha gia' in memoria",
+      "client e server concordano una chiave di sessione, oggi tipicamente con uno scambio Diffie-Hellman su curve ellittiche",
+      "la chiave di sessione e' simmetrica perche' la cifratura asimmetrica costa troppo per il traffico vero",
+      "da quel punto in poi il traffico e' cifrato e autenticato, quindi ne' leggibile ne' modificabile da chi sta in mezzo",
+      "TLS 1.3 riduce lo scambio a un solo giro di andata e ritorno, contro i due di TLS 1.2",
+      "il certificato non dice nulla su chi gestisce il sito: dice solo che quel dominio controlla quella chiave"
+    ],
+    "source": "conoscenza interna",
+    "facts": [
+      [
+        "TLS"
+      ],
+      [
+        "cifrari",
+        "cifrario",
+        "cipher"
+      ],
+      [
+        "certificato"
+      ],
+      [
+        "chiave pubblica"
+      ],
+      [
+        "autorita",
+        "CA"
+      ],
+      [
+        "catena"
+      ],
+      [
+        "Diffie-Hellman",
+        "Diffie"
+      ],
+      [
+        "curve ellittiche",
+        "ellittic"
+      ],
+      [
+        "simmetrica"
+      ],
+      [
+        "1.3"
+      ],
+      [
+        "1.2"
+      ],
+      [
+        "andata e ritorno",
+        "round trip",
+        "giro"
+      ],
+      [
+        "in mezzo",
+        "man in the middle",
+        "intercett"
+      ]
+    ]
+  },
+  "S08_bitcoin": {
+    "question": "Spiegami come e' nato Bitcoin.",
+    "notes": [
+      "nel 2008 esce un documento firmato Satoshi Nakamoto, pseudonimo mai identificato",
+      "il documento si intitola Bitcoin: A Peer-to-Peer Electronic Cash System",
+      "il problema che affronta e' la doppia spesa senza un ente centrale che tenga il registro",
+      "la soluzione e' una catena di blocchi ordinata da una prova di lavoro",
+      "la prova di lavoro rende costoso riscrivere il passato, perche' andrebbe rifatta per ogni blocco successivo",
+      "il primo blocco viene generato il 3 gennaio 2009 e contiene il titolo di un articolo del Times su un salvataggio bancario",
+      "quel riferimento serve sia da marca temporale sia da dichiarazione di intenti",
+      "la ricompensa per blocco parte da 50 bitcoin e si dimezza ogni 210.000 blocchi, circa quattro anni",
+      "il totale emesso tende a 21 milioni e non oltre",
+      "la prima transazione commerciale documentata e' del 2010, due pizze pagate 10.000 bitcoin",
+      "Satoshi smette di partecipare pubblicamente nel 2011 e i suoi bitcoin non sono mai stati spostati",
+      "il progetto nasce nell'ambiente cypherpunk, dopo tentativi precedenti come b-money e bit gold che non risolvevano l'ordinamento"
+    ],
+    "source": "conoscenza interna",
+    "facts": [
+      [
+        "2008"
+      ],
+      [
+        "Satoshi Nakamoto",
+        "Satoshi"
+      ],
+      [
+        "Peer-to-Peer",
+        "peer to peer"
+      ],
+      [
+        "doppia spesa"
+      ],
+      [
+        "prova di lavoro",
+        "proof of work"
+      ],
+      [
+        "3 gennaio 2009",
+        "2009"
+      ],
+      [
+        "Times"
+      ],
+      [
+        "50"
+      ],
+      [
+        "210.000",
+        "210000"
+      ],
+      [
+        "quattro anni",
+        "4 anni"
+      ],
+      [
+        "21 milioni"
+      ],
+      [
+        "2010"
+      ],
+      [
+        "pizze",
+        "pizza"
+      ],
+      [
+        "10.000",
+        "10000"
+      ],
+      [
+        "2011"
+      ],
+      [
+        "cypherpunk"
+      ],
+      [
+        "b-money",
+        "bit gold"
+      ]
+    ]
+  },
+  "S09_x86": {
+    "question": "Raccontami l'evoluzione dell'architettura x86 dai primi anni ottanta a oggi.",
+    "notes": [
+      "l'8086 del 1978 e' a 16 bit e nasce come evoluzione dell'8080, con compatibilita' a livello di sorgente",
+      "l'80286 del 1982 introduce la modalita' protetta, ma non si puo' tornare a quella reale senza riavviare",
+      "l'80386 del 1985 porta i 32 bit, la memoria virtuale paginata e la modalita' virtuale 8086",
+      "il 486 del 1989 integra la cache di primo livello e il coprocessore matematico nel chip",
+      "il Pentium del 1993 e' superscalare: due pipeline intere che possono ritirare due istruzioni per ciclo",
+      "il Pentium Pro del 1995 introduce l'esecuzione fuori ordine e traduce le istruzioni x86 in micro-operazioni interne",
+      "da quel punto x86 e' un'interfaccia, non piu' la macchina reale sotto",
+      "il Pentium 4 del 2000 punta sulla frequenza con una pipeline lunghissima e sbatte contro il muro del consumo",
+      "AMD nel 2003 estende l'architettura a 64 bit con AMD64, e Intel adotta lo stesso insieme di istruzioni",
+      "e' la prima volta che l'estensione dominante non viene da Intel",
+      "dal 2006 la direzione cambia da frequenza a numero di nuclei, con il Core 2",
+      "le estensioni vettoriali crescono per generazioni: MMX, SSE, AVX, AVX-512",
+      "oggi la complessita' e' negli strati sotto: predizione dei salti, gerarchia di cache, esecuzione speculativa",
+      "Spectre e Meltdown nel 2018 mostrano che l'esecuzione speculativa aveva un costo di sicurezza mai considerato"
+    ],
+    "source": "conoscenza interna",
+    "facts": [
+      [
+        "8086"
+      ],
+      [
+        "1978"
+      ],
+      [
+        "80286",
+        "286"
+      ],
+      [
+        "modalita' protetta",
+        "protetta"
+      ],
+      [
+        "80386",
+        "386"
+      ],
+      [
+        "32 bit"
+      ],
+      [
+        "486"
+      ],
+      [
+        "cache"
+      ],
+      [
+        "Pentium"
+      ],
+      [
+        "superscalare"
+      ],
+      [
+        "Pentium Pro"
+      ],
+      [
+        "fuori ordine",
+        "out of order"
+      ],
+      [
+        "micro-operazioni",
+        "micro-op"
+      ],
+      [
+        "Pentium 4"
+      ],
+      [
+        "frequenza"
+      ],
+      [
+        "AMD64"
+      ],
+      [
+        "2003"
+      ],
+      [
+        "nuclei",
+        "core"
+      ],
+      [
+        "MMX",
+        "SSE",
+        "AVX"
+      ],
+      [
+        "Spectre"
+      ],
+      [
+        "Meltdown"
+      ],
+      [
+        "speculativa"
+      ]
+    ]
+  },
+  "S10_database": {
+    "question": "Devo scegliere il database per una piattaforma che gestisce ordini, catalogo, ricerca testuale e analisi. Confrontami le opzioni.",
+    "notes": [
+      "Postgres regge tutti e quattro i carichi in modo accettabile e nessuno in modo eccellente",
+      "Postgres da' transazioni serie, che sugli ordini non sono negoziabili",
+      "Postgres ha ricerca testuale integrata, sufficiente sotto il milione di documenti, debole sopra",
+      "Postgres regge l'analisi fino a decine di milioni di righe, poi le scansioni diventano lente",
+      "MySQL e' equivalente sugli ordini e piu' debole su tipi di dato e query complesse",
+      "MongoDB semplifica il catalogo con schemi variabili, ma le transazioni multi-documento sono arrivate tardi e costano",
+      "Elasticsearch e' molto superiore sulla ricerca testuale: rilevanza, sinonimi, tolleranza agli errori di battitura",
+      "Elasticsearch non e' un archivio autorevole: va alimentato da un altro database, non sostituirlo",
+      "ClickHouse e' molto superiore sull'analisi, con scansioni colonnari che stanno ordini di grandezza avanti",
+      "ClickHouse non serve per gli ordini: gli aggiornamenti puntuali sono il suo punto debole",
+      "la configurazione tipica e' Postgres come archivio autorevole, piu' Elasticsearch e ClickHouse alimentati da li'",
+      "ogni sistema aggiunto porta un problema di sincronizzazione e uno di allineamento dei dati",
+      "la regola pratica e' partire da Postgres solo, e aggiungere un sistema quando un carico specifico lo impone con numeri alla mano",
+      "aggiungere Elasticsearch prima del milione di documenti e' quasi sempre prematuro",
+      "il costo vero dei sistemi specializzati non e' la licenza ma il tempo delle persone che li tengono in piedi"
+    ],
+    "source": "conoscenza interna",
+    "facts": [
+      [
+        "Postgres"
+      ],
+      [
+        "transazioni"
+      ],
+      [
+        "ricerca testuale"
+      ],
+      [
+        "milione"
+      ],
+      [
+        "MySQL"
+      ],
+      [
+        "MongoDB"
+      ],
+      [
+        "schemi variabili",
+        "schema"
+      ],
+      [
+        "multi-documento",
+        "multidocumento"
+      ],
+      [
+        "Elasticsearch"
+      ],
+      [
+        "rilevanza"
+      ],
+      [
+        "sinonimi"
+      ],
+      [
+        "archivio autorevole",
+        "autorevole"
+      ],
+      [
+        "ClickHouse"
+      ],
+      [
+        "colonnar"
+      ],
+      [
+        "aggiornamenti puntuali",
+        "aggiornamenti"
+      ],
+      [
+        "sincronizzazione"
+      ],
+      [
+        "partire da Postgres",
+        "solo Postgres"
+      ],
+      [
+        "persone",
+        "tempo"
+      ]
+    ]
+  }
+}

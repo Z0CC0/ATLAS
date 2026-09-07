@@ -1,0 +1,11 @@
+Files, shipped elsewhere by a collector.
+
+At a thousand requests a minute: local files, collector ships them out, app never waits on the write.
+
+Bare files break down once you have several machines: no cross-machine search, each one grep'd separately, rotation configured by hand or disk fills.
+
+Managed service gives instant search, alerts, automatic retention, but volume costs money at this rate and personal data must be stripped before it leaves your infrastructure.
+
+Database competes with your real workload for the same caches and connections under load — logs and requests shouldn't share that.
+
+Rule that always holds: log write must never sit in the request's critical path. Files + collector satisfies it; database and synchronous shipping to a managed service don't.

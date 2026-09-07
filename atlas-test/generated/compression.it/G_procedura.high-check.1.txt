@@ -1,0 +1,17 @@
+ALTER TABLE ALTER COLUMN TYPE diretto: riscrive tutta la tabella, ACCESS EXCLUSIVE lock, servizio fermo per tutta la durata. Su dieci milioni di righe, in produzione, non praticabile.
+
+Migrazione a fasi, invece:
+
+Prima verifica: conta righe non solo-cifre, per capire se ogni valore è convertibile.
+
+Poi `ALTER TABLE t ADD COLUMN colonna_int integer` — colonna nuova, ADD veloce, nessuna riscrittura.
+
+Riempimento a blocchi da diecimila righe per volta — niente lock lungo sulla tabella.
+
+Trigger che allinea le due colonne durante la migrazione, per le scritture concorrenti.
+
+Codice cambiato per leggere dalla colonna nuova, rilascio.
+
+Solo dopo: `ALTER TABLE t DROP COLUMN colonna` — la vecchia.
+
+Il DROP è irreversibile: dati persi, tornano solo da un ripristino da backup. Non farlo finché il codice nuovo non è in produzione stabile e verificato.

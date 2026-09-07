@@ -1,0 +1,3 @@
+RTX 5080 vs 4080: Blackwell contro Ada Lovelace. GDDR7 contro GDDR6X, banda 960 GB/s contro 717. Consumo 360W contro 320W. Connettore 16 pin su entrambe.
+
+Rasterizzazione pura: +10-15%. Salto vero sta nella generazione di fotogrammi, non nel raster.

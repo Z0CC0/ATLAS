@@ -1,0 +1,23 @@
+x86 nasce 1978, 8086, 16 bit. Evoluzione dell'8080, compatibile a livello sorgente.
+
+1982: 80286 porta modalita' protetta. Difetto grosso: da protetta a reale serve riavvio, niente ritorno morbido.
+
+1985: 80386, salto a 32 bit. Arriva memoria virtuale paginata e modalita' virtuale 8086 (gira codice 16 bit dentro ambiente protetto).
+
+1989: 486 integra cache L1 e coprocessore matematico dentro il chip stesso. Prima erano pezzi separati.
+
+1993: Pentium diventa superscalare. Due pipeline intere, ritira due istruzioni per ciclo.
+
+1995: Pentium Pro, salto concettuale. Esecuzione fuori ordine, e istruzioni x86 tradotte in micro-operazioni interne. Da qui x86 e' solo interfaccia esterna, non piu' la macchina vera sotto — il core fa altro, x86 e' guscio di compatibilita'.
+
+2000: Pentium 4 punta tutto su frequenza, pipeline lunghissima. Sbatte contro muro del consumo energetico, strategia esaurita.
+
+2003: svolta politica, non solo tecnica. AMD estende x86 a 64 bit con AMD64. Intel adotta lo stesso set istruzioni. Prima volta che estensione dominante non arriva da Intel.
+
+Dal 2006, Core 2: direzione cambia da frequenza a numero di nuclei.
+
+In parallelo, generazioni di estensioni vettoriali: MMX, SSE, AVX, AVX-512.
+
+Oggi complessita' vera sta sotto: predizione dei salti, gerarchia di cache, esecuzione speculativa. x86 visibile e' solo la punta.
+
+2018: Spectre e Meltdown. Rivelano che esecuzione speculativa, usata da decenni per performance, aveva costo di sicurezza mai messo in conto.

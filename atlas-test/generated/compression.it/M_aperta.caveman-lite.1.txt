@@ -1,0 +1,12 @@
+Prima domanda non è tecnica, è: cosa deve poter fare il team fra un anno che oggi non può? Questo decide tutto il resto.
+
+Poi due dati concreti da raccogliere prima di scegliere:
+
+1. **Cosa cambia davvero nel monolite** — le parti stabili non guadagnano niente dall'essere spezzate. Non separare per principio, separa dove c'è cambiamento reale.
+2. **Dove stanno i confini delle transazioni** — una transazione che attraversa due servizi diventa un problema distribuito. Se il monolite ha transazioni che toccano più aree, quello è un vincolo forte su dove puoi tagliare.
+
+Su come farlo: evita la riscrittura completa in parallelo al vecchio sistema — fallisce quasi sempre, perché il vecchio continua a cambiare e la copia non lo raggiunge mai. Meglio lo strangolamento progressivo: router davanti, sposti un pezzo alla volta, il vecchio resta autorevole finché il nuovo non è verificato.
+
+Sui microservizi: costano di più in operatività — ogni servizio vuole rilascio, monitoraggio, log, allarmi e qualcuno che se ne occupi. Sotto i cinque sviluppatori questo costo supera quasi sempre il beneficio.
+
+Opzione poco citata ma spesso giusta: monolite modulare — confini interni netti, un solo rilascio, e la possibilità di estrarre un modulo il giorno in cui serve davvero.

@@ -1,0 +1,1 @@
+const stop reassign name, not value change. Object made with const still change inside — add props, fine, just can't point name to new object. let allow reassign. Both block scoped, var not.

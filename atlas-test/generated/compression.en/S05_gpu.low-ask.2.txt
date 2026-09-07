@@ -1,0 +1,1 @@
+5080 over 4080: Blackwell architecture vs Ada Lovelace, GDDR7 vs GDDR6X memory. Bandwidth ~717→~960 GB/s. Power draw 320W→360W, same 16-pin connector. Raw rasterisation gain only ~10-15% — real leap in frame generation, not rendering itself.

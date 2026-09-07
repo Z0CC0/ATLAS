@@ -1,0 +1,11 @@
+Consistenza eventuale: dopo scrittura, repliche non concordano subito. Convergono entro tempo finito, se scritture si fermano.
+
+Riguarda te? Sì, se leggi subito dopo scrivere. Pubblichi commento, ricarichi, non lo vedi — replica che rispose alla lettura non ancora sincronizzata.
+
+Perché scelta, non bug: pretendere consistenza forte forza sistema a rifiutare richieste quando repliche non si parlano tra loro (compromesso con disponibilità). Sistemi che scalano di solito accettano consistenza eventuale apposta, non per pigrizia.
+
+Tempi tipici: repliche stessa regione, convergenza sotto secondo. Fra regioni diverse, secondi.
+
+Fix comune: sessione che ha appena scritto legge dalla replica primaria — solo quella sessione, non tutte le letture del sistema.
+
+Dove NON va bene (pochi casi, riconoscibili): saldo conto, disponibilità posti, unicità identificativo. Lì serve consistenza forte, non eventuale.

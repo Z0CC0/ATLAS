@@ -1,0 +1,21 @@
+Non puoi farlo con un `ALTER TABLE t ALTER COLUMN colonna TYPE integer` diretto: quel comando riscrive l'intera tabella tenendo un lock **ACCESS EXCLUSIVE**, quindi con dieci milioni di righe il servizio resterebbe fermo per tutta la durata dell'operazione. In produzione va fatto a step, tenendo il vecchio e il nuovo dato allineati mentre il traffico continua.
+
+**1. Verifica preliminare.** Prima di tutto controlla che i dati esistenti siano davvero convertibili: conta quante righe contengono valori che non sono solo cifre. Se ce ne sono, li devi sistemare (o decidere come trattarli) prima di procedere, altrimenti la migrazione si blocca a metà.
+
+**2. Aggiungi la colonna nuova.**
+```sql
+ALTER TABLE t ADD COLUMN colonna_int integer;
+```
+Aggiungere una colonna è un'operazione rapida, non riscrive la tabella.
+
+**3. Riempila a blocchi.** Popola `colonna_int` a partire da `colonna` lavorando a blocchi di diecimila righe per volta (non in un'unica UPDATE massiva), così non tieni un lock lungo sulla tabella e il servizio continua a rispondere tra un blocco e l'altro.
+
+**4. Trigger di sincronizzazione.** Mentre migri i dati storici, il traffico in produzione continua a scrivere sulla colonna vecchia. Aggiungi un trigger che, a ogni insert/update su `colonna`, aggiorni automaticamente anche `colonna_int`, così le due colonne restano allineate per tutta la durata della migrazione.
+
+**5. Sposta il codice sulla colonna nuova.** Solo quando sei sicuro che tutto sia sincronizzato, modifica l'applicazione perché legga (e scriva) da `colonna_int` invece che da `colonna`, e rilascia questa modifica.
+
+**6. Solo alla fine, elimina la vecchia colonna.**
+```sql
+ALTER TABLE t DROP COLUMN colonna;
+```
+Questo passo va fatto per ultimo e con calma: è **irreversibile**. Una volta eliminata la colonna, i dati non tornano indietro se non ripristinando da un backup. Prima di eseguirlo assicurati che il codice in produzione non faccia più alcun riferimento alla colonna vecchia e che tu abbia comunque un backup recente come rete di sicurezza.

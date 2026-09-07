@@ -1,0 +1,1 @@
+const: name locked, reassignment fails. Value itself still mutable — object/array props changeable, just not swappable to a new reference. let: reassignable. Both const and let block-scoped, unlike var (function-scoped).

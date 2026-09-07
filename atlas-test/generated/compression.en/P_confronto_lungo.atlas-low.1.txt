@@ -1,0 +1,9 @@
+Local files plus a collector that ships them elsewhere.
+
+At a thousand requests a minute, files alone are fine to write to but grep across several machines doesn't exist — you'd connect to each one by hand, and rotation needs manual config or the disk fills.
+
+A managed service gives instant search, alerts, automatic retention, but you pay by volume, and at that request rate volume grows fast. It also means logs leave your infrastructure, so personal data must be stripped first.
+
+The database seems convenient since searching feels familiar, but it puts logging in competition with the real workload — under load logs fill caches and connections the actual requests needed.
+
+The rule that always holds: writing the log must never sit in the critical path of the request. Files plus a shipping collector satisfies that — the app writes locally and never waits on the log leaving the machine.

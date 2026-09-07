@@ -1,0 +1,13 @@
+Prima di decidere l'architettura, io partirei da queste domande, in quest'ordine.
+
+**Cosa cambia davvero, oggi, nel monolite.** Non tutto merita di essere toccato: le parti stabili non guadagnano nulla dall'essere spezzate in servizi separati. Mappa quali moduli ricevono modifiche frequenti e quali sono fermi da mesi — l'architettura nuova deve servire i primi, non tutti.
+
+**Dove sono i confini delle transazioni.** Questo è il vincolo tecnico più concreto: se oggi un'operazione tocca atomicamente due aree che stai pensando di separare, quella transazione diventa un problema distribuito nel momento in cui la spezzi. I confini delle transazioni esistenti ti dicono dove tagliare fa male e dove no.
+
+**Come farla, non se farla tutta insieme.** Una riscrittura completa in parallelo al vecchio sistema fallisce quasi sempre, perché il vecchio continua a cambiare mentre lo scrivi e la copia non lo raggiunge mai. L'alternativa che funziona è lo strangolamento progressivo: metti un router davanti, sposti un pezzo alla volta, e il vecchio resta autorevole finché il nuovo pezzo non è verificato in produzione.
+
+**Quanto puoi permetterti operativamente.** I microservizi non sono gratis: ogni servizio vuole il suo rilascio, il suo monitoraggio, i suoi log, i suoi allarmi, e qualcuno che se ne occupi. Sotto i cinque sviluppatori, questo costo operativo supera quasi sempre il beneficio che ne ricavi.
+
+**L'opzione che di solito nessuno considera: il monolite modulare.** Confini interni netti dentro un solo deploy, un solo rilascio, niente rete tra i moduli — e la possibilità di estrarre un modulo il giorno in cui ti serve davvero, non prima. Se il tuo team è piccolo, è probabilmente il punto di partenza più sensato, non un ripiego.
+
+**La domanda che decide tutto, ed è la meno tecnica delle sei:** cosa deve poter fare il tuo team fra un anno che oggi non può fare? Se non hai una risposta chiara, qualunque architettura tu scelga starai ottimizzando per un problema che non hai ancora, e i costi (soprattutto quelli operativi dei microservizi) li paghi comunque da subito.

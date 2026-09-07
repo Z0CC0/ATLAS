@@ -1,0 +1,3 @@
+No. Three distinct values means each roughly 33% of rows — planner prefers sequential scan once filter selects more than ~5-10%, so B-tree on this column normally not used. Meanwhile index still costs writes and disk space, paid for nothing.
+
+Exception: if one of the three values rare, partial index on that rare value does work.

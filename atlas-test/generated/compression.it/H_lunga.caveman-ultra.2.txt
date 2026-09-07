@@ -1,0 +1,11 @@
+Cache prompt salva prefisso già elaborato. Richieste dopo, stesso inizio, non ripagano quella parte intera.
+
+Funziona solo su prefisso: un carattere diverso all'inizio, riuso finisce da lì in poi. Quindi ordine conta: parti stabili prima (istruzioni sistema, documenti, definizioni strumenti), parti variabili dopo. Mai contrario.
+
+Costo: scrittura cache costa più di lettura normale. Prima richiesta più cara. Guadagno arriva da seconda richiesta in poi, cresce con numero turni.
+
+Conviene: conversazioni lunghe, contesto grande e stabile — system prompt, documentazione allegata, tool definitions.
+
+Non conviene: richieste singole o diverse tra loro. Paghi scrittura, mai rileggi, perdita netta.
+
+Attenzione: campo che cambia ogni turno (esempio: orario) messo in system prompt annulla riuso di tutto quello dopo. Va tenuto fuori dal prefisso stabile o spostato in fondo.

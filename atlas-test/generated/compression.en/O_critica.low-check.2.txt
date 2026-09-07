@@ -1,0 +1,5 @@
+Upside real: no app path skips rule, not even hand-run script.
+
+But triggers invisible to anyone reading app code — simple change fires others, no trace. Not tested with tools team already uses — need tests against real database. Debugging worse: error inside trigger arrives as failed write, without saying which rule caused it. Migrations fragile, since trigger order matters and declared nowhere.
+
+Better: keep in database only what protects integrity — constraints, foreign keys, uniqueness, domain checks. Business logic goes in app, behind single entry point. That entry point gives same guarantee as trigger, as long as direct database access stays reserved to migrations.

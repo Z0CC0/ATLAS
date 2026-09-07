@@ -1,0 +1,23 @@
+Nel 1978 Intel presenta l'8086, un processore a 16 bit pensato come evoluzione dell'8080, con cui mantiene compatibilità a livello di sorgente: è la radice da cui parte tutta la stirpe x86.
+
+Passano pochi anni e nel 1982 arriva l'80286, che introduce la modalità protetta — un salto concettuale importante, anche se ancora acerbo: una volta entrati in modalità protetta, tornare a quella reale richiede di riavviare la macchina, un limite che dà l'idea di quanto fosse ancora giovane l'idea.
+
+Il vero cambio di passo arriva nel 1985 con l'80386: porta l'architettura a 32 bit, introduce la memoria virtuale paginata e aggiunge la modalità virtuale 8086, che permette di far girare vecchio software 16 bit in un ambiente protetto. È il processore che rende x86 un'architettura moderna a tutti gli effetti.
+
+Nel 1989 il 486 fa un passo che oggi diamo per scontato: integra nello stesso chip la cache di primo livello e il coprocessore matematico, portando dentro al processore componenti che prima vivevano fuori.
+
+Nel 1993 il Pentium introduce il superscalare: due pipeline intere che permettono di ritirare due istruzioni per ciclo di clock, aumentando il parallelismo interno.
+
+Ma il cambiamento più profondo, filosoficamente, arriva nel 1995 con il Pentium Pro: introduce l'esecuzione fuori ordine e comincia a tradurre le istruzioni x86 in micro-operazioni interne. È il punto di svolta che ti serve per capire tutto ciò che segue: da quel momento x86 smette di essere "la macchina reale" e diventa un'interfaccia — un insieme di istruzioni che il processore accetta in ingresso, ma che internamente traduce e riorganizza a modo suo.
+
+Nel 2000 il Pentium 4 prova una strada diversa: punta tutto sulla frequenza di clock, con una pipeline lunghissima, ma finisce per sbattere contro il muro del consumo energetico — la frequenza da sola non basta più a garantire prestazioni sostenibili.
+
+Un momento storicamente notevole arriva nel 2003: è AMD, non Intel, a estendere l'architettura a 64 bit con AMD64, e sarà poi Intel ad adottare lo stesso insieme di istruzioni. È la prima volta che l'estensione dominante dell'architettura non nasce in casa Intel.
+
+Dal 2006, con il Core 2, la direzione di sviluppo cambia rotta: non si insegue più la frequenza, ma il numero di nuclei per chip.
+
+Parallelamente, generazione dopo generazione, crescono le estensioni vettoriali: MMX, poi SSE, poi AVX, fino ad AVX-512.
+
+Oggi, la vera complessità dell'architettura non sta più nell'insieme di istruzioni visibile al programmatore, ma negli strati sottostanti: predizione dei salti, gerarchia di cache, esecuzione speculativa — tutto ciò che il Pentium Pro aveva iniziato a nascondere sotto l'interfaccia x86.
+
+Ed è proprio lì, in quegli strati nascosti, che nel 2018 Spectre e Meltdown rivelano qualcosa di inatteso: l'esecuzione speculativa, che per decenni aveva dato solo vantaggi di prestazioni, nascondeva un costo di sicurezza che nessuno aveva mai davvero considerato.

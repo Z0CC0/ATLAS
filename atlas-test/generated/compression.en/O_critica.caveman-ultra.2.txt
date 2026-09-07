@@ -1,0 +1,9 @@
+Trigger-all-logic risky. Real upside: no bypass, even manual script.
+
+Cost heavy though:
+- Invisible from app code. Simple change fire other triggers, no trace.
+- No test with team's usual tools. Need real DB running for tests.
+- Debug worse. Error surface as failed write, no rule name attached.
+- Migrations fragile. Trigger order matter, nowhere declared.
+
+Better split: DB hold only integrity — constraints, foreign keys, uniqueness, domain checks. Business logic live in app, behind single entry point. Same bypass-proof guarantee, if direct DB access reserved for migrations only.

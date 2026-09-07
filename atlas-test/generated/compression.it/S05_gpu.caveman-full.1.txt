@@ -1,0 +1,7 @@
+5080 vs 4080, differenza chiave: architettura. 5080 usa Blackwell, 4080 usa Ada Lovelace.
+
+Memoria: 5080 monta GDDR7, 4080 GDDR6X. Banda sale da circa 717 a circa 960 GB/s.
+
+Consumo: 320W (4080) contro 360W (5080). Connettore alimentazione resta uguale, 16 pin.
+
+Prestazioni: guadagno vero sul rasterizzatore puro solo 10-15%. Salto grande sta nella generazione di fotogrammi, non nel rendering classico.

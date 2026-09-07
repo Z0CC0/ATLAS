@@ -1,0 +1,10 @@
+Set these on your static site:
+
+Strict-Transport-Security, max-age at least 31536000 seconds plus includeSubDomains — forces HTTPS.
+Content-Security-Policy with default-src 'self' — blocks third-party script injection.
+X-Content-Type-Options: nosniff — stops MIME-type guessing.
+Referrer-Policy: strict-origin-when-cross-origin — keeps full path from leaking to other sites.
+X-Frame-Options: DENY, or frame-ancestors 'none' in the CSP — against clickjacking.
+Permissions-Policy — switch off camera, microphone, geolocation if unused.
+
+Skip X-XSS-Protection: deprecated, modern browsers ignore it, older versions introduced vulnerabilities.

@@ -1,0 +1,34 @@
+{
+  "name": "atlas-solo",
+  "version": "0.44.0",
+  "description": "Four independent dials — compression (low/high), rigour (ask), check and silent — plus ten subagents that keep searches, logs, pages and big files out of your conversation. Compresses without losing a fact, and refuses to start building before the goal is clear. This variant ships without the ten subagents: same dials, about 1,350 fewer tokens per session.",
+  "author": {
+    "name": "ZoCCo"
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/atlas-activate.js\"",
+            "timeout": 5,
+            "statusMessage": "ATLAS"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/atlas-tracker.js\"",
+            "timeout": 5,
+            "statusMessage": "ATLAS"
+          }
+        ]
+      }
+    ]
+  }
+}

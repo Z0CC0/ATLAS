@@ -1,0 +1,17 @@
+Prima di scegliere architettura, controlla otto cose.
+
+**1. Cosa cambia davvero.** Guarda quale parte del monolite cambia spesso. Parti stabili non guadagnano niente da split.
+
+**2. Confini transazioni.** Trova dove stanno oggi. Transazione che attraversa due servizi diventa problema distribuito.
+
+**3. No riscrittura parallela.** Riscrivere tutto da zero mentre vecchio sistema continua girare fallisce quasi sempre: vecchio continua cambiare, copia non lo raggiunge mai.
+
+**4. Strangolamento progressivo invece.** Router davanti, sposta un pezzo alla volta, vecchio resta autorevole finché nuovo non verificato.
+
+**5. Costo operativo microservizi.** Ogni servizio vuole rilascio, monitoraggio, log, allarmi, persona che se ne occupa. Costa di più.
+
+**6. Sotto 5 sviluppatori:** costo operativo microservizi supera quasi sempre beneficio.
+
+**7. Monolite modulare, opzione poco citata.** Confini interni netti, un solo rilascio, possibilità estrarre modulo il giorno che serve davvero.
+
+**8. Domanda decisiva, non tecnica:** cosa deve poter fare il team fra un anno che oggi non può. Risposta a questa guida scelta più di ogni altro fattore.

@@ -1,0 +1,17 @@
+Cause: connection pool exhaustion, not a slow query.
+
+Middleware at db/session.py:47 releases connection only on success path. Handler raises → release() never reached → connection held until timeout. Few hundred failed requests → pool empty → every later request waits. Hence rising latency, not immediate errors.
+
+Fix: try/finally around acquisition.
+
+```
+conn = pool.acquire()
+try:
+    return handler(conn, request)
+finally:
+    pool.release(conn)
+```
+
+Raising pool_size looks like a fix, isn't — delays the empty-pool moment, leak stays. Raise pool_size only after this fix, only if real load needs it.
+
+Reproduce before/after: `pytest tests/test_pool.py -k exhaustion -x`

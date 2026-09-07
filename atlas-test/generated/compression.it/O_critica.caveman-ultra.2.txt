@@ -1,0 +1,12 @@
+Vantaggio reale: niente aggira regola, nemmeno script a mano.
+
+Costo alto pero':
+
+- Trigger invisibile in codice app. Modifica sembra semplice, ne attiva altri, zero traccia.
+- Test impossibili con strumenti team gia' usa. Serve prova contro DB vero.
+- Debug peggio: errore arriva come fallimento scrittura, non dice quale regola causa.
+- Migrazioni fragili: ordine trigger conta, non dichiarato da nessuna parte.
+
+Alternativa: DB tiene solo integrita' — vincoli, chiavi esterne, unicita', controlli dominio. Logica business in applicazione, dietro punto di ingresso unico.
+
+Punto unico da' stessa garanzia del trigger, se accesso diretto al DB riservato a migrazioni.

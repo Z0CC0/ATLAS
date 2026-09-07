@@ -1,0 +1,2222 @@
+{
+  "A_ricerca.atlas-high.1.txt::same temperature": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.atlas-high.1.txt::first quarter": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.atlas-high.2.txt::same temperature": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.atlas-high.2.txt::first quarter": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.atlas-high.2.txt::multi-instrumentalist": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.atlas-low.1.txt::same temperature": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.atlas-low.2.txt::same temperature": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.atlasmin-high.1.txt::same temperature": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.atlasmin-high.2.txt::same temperature": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.atlasmin-high.2.txt::multi-instrumentalist": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.atlasmin-low.1.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.atlasmin-low.1.txt::9 hours and 40": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.atlasmin-low.2.txt::same temperature": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.atlasmin-low.2.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.atlasmin-low.2.txt::9 hours and 40": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.atlasmin-low.2.txt::first quarter": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.high-ask-check.1.txt::same temperature": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.high-ask-check.1.txt::first quarter": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.high-ask-check.1.txt::multi-instrumentalist": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.high-ask-check.2.txt::same temperature": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.high-ask-check.2.txt::first quarter": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.high-ask.1.txt::same temperature": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.high-ask.1.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.high-ask.1.txt::first quarter": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.high-ask.1.txt::Westwood": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.high-ask.1.txt::multi-instrumentalist": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.high-ask.1.txt::Griffith Park": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.high-ask.2.txt::same temperature": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.high-ask.2.txt::first quarter": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.high-check.1.txt::same temperature": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.high-check.2.txt::same temperature": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.high-check.2.txt::first quarter": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.low-ask-check.1.txt::same temperature": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.low-ask-check.2.txt::same temperature": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.low-ask.1.txt::same temperature": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.low-ask.2.txt::same temperature": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.low-check.1.txt::same temperature": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.low-check.1.txt::first quarter": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.low-check.2.txt::same temperature": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.low-check.2.txt::first quarter": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.none.1.txt::same temperature": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.none.1.txt::19:35": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.none.1.txt::20:00": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.none.1.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.none.1.txt::9 hours and 40": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.none.1.txt::first quarter": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.none.2.txt::same temperature": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.none.2.txt::19:35": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.none.2.txt::20:00": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.none.2.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.none.2.txt::9 hours and 40": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.none.2.txt::first quarter": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.none.2.txt::multi-instrumentalist": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.atlas-high.1.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.atlas-high.1.txt::immediate errors": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.atlas-high.1.txt::error path": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.atlas-high.1.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.atlas-high.2.txt::connection pool": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.atlas-high.2.txt::middleware": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.atlas-high.2.txt::immediate errors": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.atlas-high.2.txt::error path": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.atlas-high.2.txt::mask": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.atlas-high.2.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.atlas-low.1.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.atlas-low.1.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.atlas-low.2.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.atlasmin-high.1.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.atlasmin-high.1.txt::mask": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.atlasmin-high.1.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.atlasmin-high.2.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.atlasmin-high.2.txt::immediate errors": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.atlasmin-high.2.txt::mask": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.atlasmin-high.2.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.atlasmin-low.1.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.atlasmin-low.2.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.high-ask-check.1.txt::error path": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.high-ask-check.1.txt::mask": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.high-ask-check.1.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.high-ask-check.2.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.high-ask.1.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.high-ask.1.txt::immediate errors": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.high-ask.1.txt::error path": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.high-ask.1.txt::mask": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.high-ask.1.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.high-ask.2.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.high-ask.2.txt::immediate errors": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.high-ask.2.txt::error path": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.high-ask.2.txt::mask": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.high-ask.2.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.high-check.1.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.high-check.1.txt::error path": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.high-check.1.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.high-check.2.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.high-check.2.txt::immediate errors": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.high-check.2.txt::error path": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.high-check.2.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.low-ask-check.2.txt::connection pool": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.low-ask-check.2.txt::rising latency": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.low-ask-check.2.txt::immediate errors": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.low-ask-check.2.txt::error path": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.low-ask-check.2.txt::mask": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.low-ask-check.2.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.low-ask.1.txt::immediate errors": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.low-ask.1.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.low-ask.2.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.low-check.1.txt::rising latency": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.low-check.1.txt::immediate errors": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.low-check.1.txt::mask": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.low-check.1.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.low-check.2.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.none.1.txt::connection pool": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.none.1.txt::try/finally": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.none.1.txt::rising latency": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.none.1.txt::immediate errors": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.none.1.txt::error path": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.none.1.txt::mask": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.none.1.txt::real load": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.none.1.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.none.2.txt::connection pool": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.none.2.txt::rising latency": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.none.2.txt::immediate errors": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.none.2.txt::error path": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.none.2.txt::mask": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.none.2.txt::real load": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.none.2.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.atlas-high.1.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.atlas-low.1.txt::write": {
+    "present": false,
+    "answer": "NO"
+  },
+  "C_breve.atlas-low.1.txt::space": {
+    "present": false,
+    "answer": "NO"
+  },
+  "C_breve.atlas-low.1.txt::partial index": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.atlas-low.2.txt::sequential scan": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.atlas-low.2.txt::write": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.atlas-low.2.txt::space": {
+    "present": false,
+    "answer": "NO"
+  },
+  "C_breve.atlas-low.2.txt::partial index": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.atlasmin-high.1.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.high-ask-check.2.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.high-ask.1.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.high-ask.2.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.high-check.1.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.high-check.2.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.low-ask.1.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.low-ask.1.txt::write": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.low-ask.2.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.low-check.1.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.low-check.2.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.none.1.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.atlas-high.1.txt::thousand jobs": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.atlas-high.1.txt::millisecond": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.atlas-high.1.txt::one more service": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.atlas-high.2.txt::millisecond": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.atlas-low.2.txt::same transaction": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.atlas-low.2.txt::persistence": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.atlas-low.2.txt::one more service": {
+    "present": false,
+    "answer": "NO"
+  },
+  "E_confronto.atlasmin-high.1.txt::millisecond": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.atlasmin-high.1.txt::one more service": {
+    "present": false,
+    "answer": "NO"
+  },
+  "E_confronto.atlasmin-high.2.txt::persistence": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.atlasmin-high.2.txt::millisecond": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.atlasmin-high.2.txt::one more service": {
+    "present": false,
+    "answer": "NO"
+  },
+  "E_confronto.atlasmin-low.1.txt::one more service": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.high-ask-check.1.txt::millisecond": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.high-ask-check.2.txt::thousand jobs": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.high-ask.1.txt::millisecond": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.high-check.1.txt::persistence": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.high-check.1.txt::millisecond": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.high-check.2.txt::millisecond": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.low-ask-check.1.txt::latency": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.low-ask-check.2.txt::millisecond": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.none.2.txt::persistence": {
+    "present": true,
+    "answer": "YES"
+  },
+  "F_codice.none.2.txt::returns nothing": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.atlas-high.2.txt::ten thousand": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.atlas-low.1.txt::ten thousand": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.atlas-low.1.txt::irreversibl": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.atlas-low.1.txt::rewrite": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.atlasmin-high.1.txt::ten thousand": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.atlasmin-high.2.txt::ten thousand": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.atlasmin-high.2.txt::irreversibl": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.atlasmin-high.2.txt::rewrite": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.high-ask-check.1.txt::ten thousand": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.high-ask-check.2.txt::ten thousand": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.high-ask.1.txt::ten thousand": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.high-ask.2.txt::ten thousand": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.high-check.1.txt::ten thousand": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.high-check.2.txt::ten thousand": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.low-ask-check.2.txt::irreversibl": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.low-check.1.txt::irreversibl": {
+    "present": true,
+    "answer": "YES"
+  },
+  "H_lunga.atlas-high.1.txt::second request": {
+    "present": true,
+    "answer": "YES"
+  },
+  "H_lunga.atlas-high.2.txt::one character": {
+    "present": true,
+    "answer": "YES"
+  },
+  "H_lunga.atlas-high.2.txt::second request": {
+    "present": true,
+    "answer": "YES"
+  },
+  "H_lunga.atlasmin-high.1.txt::single request": {
+    "present": true,
+    "answer": "YES"
+  },
+  "H_lunga.high-ask-check.1.txt::second request": {
+    "present": true,
+    "answer": "YES"
+  },
+  "H_lunga.high-ask-check.2.txt::second request": {
+    "present": true,
+    "answer": "YES"
+  },
+  "H_lunga.high-ask.1.txt::one character": {
+    "present": true,
+    "answer": "YES"
+  },
+  "H_lunga.high-ask.1.txt::single request": {
+    "present": false,
+    "answer": "NO"
+  },
+  "H_lunga.high-check.2.txt::one character": {
+    "present": true,
+    "answer": "YES"
+  },
+  "H_lunga.low-ask-check.1.txt::single request": {
+    "present": false,
+    "answer": "NO"
+  },
+  "H_lunga.low-ask.1.txt::single request": {
+    "present": true,
+    "answer": "YES"
+  },
+  "H_lunga.low-ask.2.txt::single request": {
+    "present": false,
+    "answer": "NO"
+  },
+  "I_sicurezza.atlas-high.1.txt::developer tools": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.atlas-high.1.txt::rate limit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.atlas-high.1.txt::compromised": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.atlas-high.2.txt::developer tools": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.atlas-high.2.txt::rate limit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.high-ask-check.1.txt::developer tools": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.high-ask-check.1.txt::rate limit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.high-ask-check.2.txt::rate limit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.high-ask.2.txt::rate limit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.high-check.1.txt::readable": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.high-check.1.txt::rate limit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.high-check.2.txt::rate limit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.low-ask-check.1.txt::readable": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.low-ask-check.2.txt::rate limit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.low-ask.1.txt::readable": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.low-ask.1.txt::developer tools": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.low-check.1.txt::readable": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.low-check.1.txt::compromised": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.low-check.2.txt::readable": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.low-check.2.txt::developer tools": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.low-check.2.txt::rate limit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.none.1.txt::readable": {
+    "present": true,
+    "answer": "YES"
+  },
+  "L_unafrase.atlas-high.1.txt::empty": {
+    "present": false,
+    "answer": "NO"
+  },
+  "L_unafrase.atlasmin-low.1.txt::yes": {
+    "present": true,
+    "answer": "YES"
+  },
+  "L_unafrase.atlasmin-low.1.txt::empty": {
+    "present": true,
+    "answer": "YES"
+  },
+  "L_unafrase.high-ask-check.1.txt::empty": {
+    "present": false,
+    "answer": "NO"
+  },
+  "L_unafrase.high-check.2.txt::empty": {
+    "present": false,
+    "answer": "NO"
+  },
+  "M_aperta.atlas-high.1.txt::five developers": {
+    "present": true,
+    "answer": "YES"
+  },
+  "M_aperta.atlas-high.2.txt::full rewrite": {
+    "present": false,
+    "answer": "NO"
+  },
+  "M_aperta.atlas-low.2.txt::part that changes": {
+    "present": true,
+    "answer": "YES"
+  },
+  "M_aperta.atlas-low.2.txt::transaction": {
+    "present": true,
+    "answer": "YES"
+  },
+  "M_aperta.atlas-low.2.txt::five developers": {
+    "present": true,
+    "answer": "YES"
+  },
+  "M_aperta.atlas-low.2.txt::modular monolith": {
+    "present": true,
+    "answer": "YES"
+  },
+  "M_aperta.atlas-low.2.txt::extract": {
+    "present": false,
+    "answer": "NO"
+  },
+  "M_aperta.atlas-low.2.txt::a year": {
+    "present": true,
+    "answer": "YES"
+  },
+  "M_aperta.atlasmin-low.2.txt::part that changes": {
+    "present": true,
+    "answer": "YES"
+  },
+  "M_aperta.atlasmin-low.2.txt::transaction": {
+    "present": true,
+    "answer": "YES"
+  },
+  "M_aperta.atlasmin-low.2.txt::five developers": {
+    "present": true,
+    "answer": "YES"
+  },
+  "M_aperta.atlasmin-low.2.txt::modular monolith": {
+    "present": true,
+    "answer": "YES"
+  },
+  "M_aperta.atlasmin-low.2.txt::extract": {
+    "present": true,
+    "answer": "YES"
+  },
+  "M_aperta.atlasmin-low.2.txt::a year": {
+    "present": true,
+    "answer": "YES"
+  },
+  "M_aperta.high-ask-check.2.txt::five developers": {
+    "present": true,
+    "answer": "YES"
+  },
+  "M_aperta.high-ask.2.txt::five developers": {
+    "present": true,
+    "answer": "YES"
+  },
+  "M_aperta.high-check.1.txt::five developers": {
+    "present": true,
+    "answer": "YES"
+  },
+  "M_aperta.high-check.2.txt::full rewrite": {
+    "present": false,
+    "answer": "NO"
+  },
+  "M_aperta.low-ask.2.txt::five developers": {
+    "present": true,
+    "answer": "YES"
+  },
+  "M_aperta.low-ask.2.txt::a year": {
+    "present": true,
+    "answer": "YES"
+  },
+  "N_spiegazione.atlas-high.2.txt::right after": {
+    "present": false,
+    "answer": "NO"
+  },
+  "N_spiegazione.atlasmin-high.2.txt::right after": {
+    "present": false,
+    "answer": "NO"
+  },
+  "N_spiegazione.high-ask-check.1.txt::choice": {
+    "present": true,
+    "answer": "YES"
+  },
+  "N_spiegazione.high-ask-check.2.txt::under a second": {
+    "present": true,
+    "answer": "YES"
+  },
+  "N_spiegazione.high-check.2.txt::choice": {
+    "present": false,
+    "answer": "NO"
+  },
+  "N_spiegazione.low-ask-check.2.txt::right after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "N_spiegazione.none.1.txt::choice": {
+    "present": true,
+    "answer": "YES"
+  },
+  "N_spiegazione.none.2.txt::choice": {
+    "present": false,
+    "answer": "NO"
+  },
+  "O_critica.atlas-low.2.txt::debug": {
+    "present": false,
+    "answer": "NO"
+  },
+  "O_critica.atlasmin-high.1.txt::invisible": {
+    "present": true,
+    "answer": "YES"
+  },
+  "O_critica.atlasmin-high.1.txt::trigger order": {
+    "present": true,
+    "answer": "YES"
+  },
+  "O_critica.atlasmin-high.2.txt::no application path": {
+    "present": true,
+    "answer": "YES"
+  },
+  "O_critica.atlasmin-low.1.txt::invisible": {
+    "present": true,
+    "answer": "YES"
+  },
+  "O_critica.atlasmin-low.1.txt::migration": {
+    "present": true,
+    "answer": "YES"
+  },
+  "O_critica.atlasmin-low.1.txt::trigger order": {
+    "present": true,
+    "answer": "YES"
+  },
+  "O_critica.atlasmin-low.2.txt::no application path": {
+    "present": true,
+    "answer": "YES"
+  },
+  "O_critica.high-ask-check.2.txt::no application path": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.atlas-high.1.txt::several machines": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.atlas-high.1.txt::same database": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.atlas-high.2.txt::several machines": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.atlas-high.2.txt::same database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.atlas-low.2.txt::same database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.atlasmin-high.1.txt::same database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.atlasmin-high.2.txt::several machines": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.atlasmin-high.2.txt::same database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.atlasmin-low.1.txt::disk": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.atlasmin-low.1.txt::several machines": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.atlasmin-low.1.txt::same database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.atlasmin-low.2.txt::several machines": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.atlasmin-low.2.txt::same database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.high-ask-check.1.txt::several machines": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.high-ask-check.2.txt::several machines": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.high-ask-check.2.txt::same database": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.high-ask.1.txt::several machines": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.high-ask.1.txt::same database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.high-ask.2.txt::several machines": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.high-ask.2.txt::same database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.high-check.1.txt::several machines": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.high-check.1.txt::personal data": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.high-check.1.txt::same database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.high-check.2.txt::several machines": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.high-check.2.txt::same database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.low-ask-check.1.txt::same database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.low-ask-check.2.txt::several machines": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.low-ask.2.txt::several machines": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.low-check.1.txt::several machines": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.none.1.txt::several machines": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.none.1.txt::same database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.none.2.txt::several machines": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.none.2.txt::same database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S03_letconst.atlas-low.1.txt::block scope": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S03_letconst.high-ask-check.1.txt::block scope": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S03_letconst.high-ask.2.txt::block scope": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S03_letconst.low-check.2.txt::block scope": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.atlas-high.1.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.atlas-high.2.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.atlas-low.2.txt::cloudy": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S04_meteo_domani.atlasmin-high.1.txt::clear": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.atlasmin-high.1.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.atlasmin-high.1.txt::north-west": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.atlasmin-high.2.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.high-ask-check.1.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.high-ask-check.2.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.high-ask.1.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.high-ask.2.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.high-check.1.txt::cloudy": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S04_meteo_domani.high-check.2.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.low-ask.1.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.low-check.1.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.none.1.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.none.1.txt::18": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.none.2.txt::18": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.atlas-high.1.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.atlas-high.2.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.atlas-low.2.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.atlasmin-high.1.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.atlasmin-high.2.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.atlasmin-low.1.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.high-ask-check.1.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.high-ask-check.2.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.high-ask.1.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.high-ask.2.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.high-check.1.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.high-check.2.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.low-ask-check.1.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.low-ask-check.2.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.low-ask.1.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.low-ask.2.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.low-check.1.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.low-check.2.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.none.1.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.none.2.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.atlas-low.1.txt::weekend": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.high-ask-check.1.txt::weekend": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.high-ask-check.2.txt::Monday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.high-ask-check.2.txt::Tuesday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.high-ask-check.2.txt::Wednesday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.high-ask-check.2.txt::Thursday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.high-ask-check.2.txt::Friday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.high-ask-check.2.txt::Saturday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.high-ask-check.2.txt::Sunday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.high-ask.2.txt::Monday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.high-ask.2.txt::Tuesday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.high-ask.2.txt::Wednesday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.high-ask.2.txt::Thursday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.high-ask.2.txt::Friday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.high-ask.2.txt::Saturday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.high-ask.2.txt::Sunday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.high-check.2.txt::Monday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.high-check.2.txt::Tuesday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.high-check.2.txt::Wednesday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.high-check.2.txt::Thursday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.high-check.2.txt::Friday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.high-check.2.txt::Saturday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.high-check.2.txt::Sunday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.low-ask.1.txt::Monday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.low-ask.1.txt::Tuesday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.low-ask.1.txt::Wednesday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.low-ask.1.txt::Thursday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.low-ask.1.txt::Friday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.low-ask.1.txt::Saturday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.low-ask.1.txt::Sunday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.low-ask.2.txt::22": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S06_meteo_settimana.low-ask.2.txt::21": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S07_https.atlas-high.1.txt::in the middle": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S07_https.atlas-low.1.txt::in the middle": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S07_https.atlas-low.2.txt::in the middle": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S07_https.atlasmin-low.1.txt::in the middle": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S07_https.atlasmin-low.2.txt::in the middle": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S07_https.high-ask.1.txt::in the middle": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S07_https.high-check.1.txt::in the middle": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S07_https.low-ask-check.2.txt::in the middle": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S07_https.low-ask.1.txt::in the middle": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S07_https.low-ask.2.txt::in the middle": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S07_https.low-check.1.txt::in the middle": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S08_bitcoin.atlas-high.1.txt::four years": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S08_bitcoin.atlas-low.1.txt::double spend": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S08_bitcoin.atlas-low.1.txt::210,000": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S08_bitcoin.atlas-low.1.txt::four years": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S08_bitcoin.atlas-low.1.txt::21 million": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S08_bitcoin.atlas-low.1.txt::pizza": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S08_bitcoin.atlas-low.1.txt::10,000": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S08_bitcoin.high-check.1.txt::double spend": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S08_bitcoin.high-check.1.txt::four years": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S08_bitcoin.high-check.2.txt::four years": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S08_bitcoin.none.1.txt::double spend": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S08_bitcoin.none.2.txt::double spend": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.atlas-high.1.txt::text search": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.atlas-high.1.txt::MongoDB": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.atlas-high.1.txt::multi-document": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.atlas-high.1.txt::synchronis": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.atlas-high.2.txt::text search": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.atlas-high.2.txt::synchronis": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.atlas-low.1.txt::synchronis": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.atlasmin-high.1.txt::synchronis": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.atlasmin-high.2.txt::synchronis": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.atlasmin-low.1.txt::synchronis": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.atlasmin-low.2.txt::synchronis": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.high-ask-check.1.txt::MongoDB": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.high-ask-check.1.txt::synchronis": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.high-ask-check.2.txt::multi-document": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.high-ask-check.2.txt::synchronis": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.high-ask.1.txt::synchronis": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.high-ask.2.txt::transaction": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.high-ask.2.txt::text search": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.high-ask.2.txt::million": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.high-ask.2.txt::MySQL": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.high-ask.2.txt::MongoDB": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.high-ask.2.txt::variable schema": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.high-ask.2.txt::multi-document": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.high-ask.2.txt::relevance": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.high-ask.2.txt::synonym": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.high-ask.2.txt::authoritative": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.high-ask.2.txt::columnar": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.high-ask.2.txt::point update": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.high-ask.2.txt::synchronis": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.high-ask.2.txt::start with Postgres": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.high-ask.2.txt::people": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.high-check.1.txt::synchronis": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.high-check.2.txt::multi-document": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.high-check.2.txt::synchronis": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.low-ask-check.1.txt::synchronis": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.low-ask-check.2.txt::MongoDB": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.low-ask-check.2.txt::synchronis": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.low-ask.1.txt::synchronis": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.low-ask.2.txt::synchronis": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.low-check.1.txt::columnar": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.low-check.1.txt::synchronis": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.low-check.2.txt::synchronis": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.none.1.txt::synchronis": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.caveman-full.1.txt::same temperature": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.caveman-full.1.txt::first quarter": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.caveman-full.2.txt::same temperature": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.caveman-full.2.txt::first quarter": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.caveman-lite.1.txt::same temperature": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.caveman-lite.1.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.caveman-lite.1.txt::9 hours and 40": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.caveman-lite.2.txt::same temperature": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.caveman-lite.2.txt::19:35": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.caveman-lite.2.txt::20:00": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.caveman-lite.2.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.caveman-lite.2.txt::9 hours and 40": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.caveman-lite.2.txt::multi-instrumentalist": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.caveman-ultra.1.txt::same temperature": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.caveman-ultra.2.txt::same temperature": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.caveman-ultra.2.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.caveman-full.1.txt::rising latency": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.caveman-full.1.txt::immediate errors": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.caveman-full.1.txt::mask": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.caveman-full.1.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.caveman-full.2.txt::connection pool": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.caveman-full.2.txt::rising latency": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.caveman-full.2.txt::immediate errors": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.caveman-full.2.txt::error path": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.caveman-full.2.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.caveman-lite.1.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.caveman-lite.2.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.caveman-lite.2.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.caveman-ultra.1.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.caveman-ultra.1.txt::immediate errors": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.caveman-ultra.1.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.caveman-ultra.2.txt::rising latency": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.caveman-ultra.2.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.caveman-full.2.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.caveman-lite.2.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.caveman-ultra.2.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.caveman-full.1.txt::latency": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.caveman-ultra.1.txt::SKIP LOCKED": {
+    "present": false,
+    "answer": "NO"
+  },
+  "E_confronto.caveman-ultra.2.txt::same transaction": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.caveman-ultra.2.txt::latency": {
+    "present": true,
+    "answer": "YES"
+  },
+  "F_codice.caveman-full.1.txt::returns nothing": {
+    "present": true,
+    "answer": "YES"
+  },
+  "F_codice.caveman-full.2.txt::returns nothing": {
+    "present": true,
+    "answer": "YES"
+  },
+  "F_codice.caveman-ultra.1.txt::returns nothing": {
+    "present": true,
+    "answer": "YES"
+  },
+  "F_codice.caveman-ultra.2.txt::returns nothing": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.caveman-full.1.txt::ten thousand": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.caveman-full.1.txt::irreversibl": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.caveman-full.1.txt::rewrite": {
+    "present": true,
+    "answer": "YES"
+  },
+  "H_lunga.caveman-full.1.txt::one character": {
+    "present": true,
+    "answer": "YES"
+  },
+  "H_lunga.caveman-full.1.txt::more expensive": {
+    "present": true,
+    "answer": "YES"
+  },
+  "H_lunga.caveman-full.2.txt::one character": {
+    "present": true,
+    "answer": "YES"
+  },
+  "H_lunga.caveman-full.2.txt::more expensive": {
+    "present": true,
+    "answer": "YES"
+  },
+  "H_lunga.caveman-lite.1.txt::single request": {
+    "present": false,
+    "answer": "NO"
+  },
+  "H_lunga.caveman-ultra.1.txt::one character": {
+    "present": true,
+    "answer": "YES"
+  },
+  "H_lunga.caveman-ultra.1.txt::more expensive": {
+    "present": true,
+    "answer": "YES"
+  },
+  "H_lunga.caveman-ultra.1.txt::second request": {
+    "present": true,
+    "answer": "YES"
+  },
+  "H_lunga.caveman-ultra.1.txt::single request": {
+    "present": true,
+    "answer": "YES"
+  },
+  "H_lunga.caveman-ultra.2.txt::one character": {
+    "present": true,
+    "answer": "YES"
+  },
+  "H_lunga.caveman-ultra.2.txt::more expensive": {
+    "present": true,
+    "answer": "YES"
+  },
+  "H_lunga.caveman-ultra.2.txt::single request": {
+    "present": false,
+    "answer": "NO"
+  },
+  "M_aperta.caveman-full.1.txt::full rewrite": {
+    "present": false,
+    "answer": "NO"
+  },
+  "M_aperta.caveman-full.1.txt::a year": {
+    "present": true,
+    "answer": "YES"
+  },
+  "M_aperta.caveman-full.2.txt::full rewrite": {
+    "present": false,
+    "answer": "NO"
+  },
+  "M_aperta.caveman-full.2.txt::a year": {
+    "present": true,
+    "answer": "YES"
+  },
+  "M_aperta.caveman-lite.1.txt::full rewrite": {
+    "present": false,
+    "answer": "NO"
+  },
+  "M_aperta.caveman-lite.1.txt::a year": {
+    "present": true,
+    "answer": "YES"
+  },
+  "M_aperta.caveman-lite.2.txt::full rewrite": {
+    "present": false,
+    "answer": "NO"
+  },
+  "M_aperta.caveman-ultra.1.txt::full rewrite": {
+    "present": false,
+    "answer": "NO"
+  },
+  "N_spiegazione.caveman-full.2.txt::under a second": {
+    "present": true,
+    "answer": "YES"
+  },
+  "N_spiegazione.caveman-ultra.1.txt::right after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.caveman-full.1.txt::several machines": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.caveman-full.1.txt::same database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.caveman-full.2.txt::several machines": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.caveman-lite.1.txt::several machines": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.caveman-lite.1.txt::same database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.caveman-lite.2.txt::several machines": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.caveman-lite.2.txt::same database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.caveman-ultra.1.txt::several machines": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.caveman-ultra.1.txt::same database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.caveman-ultra.2.txt::same database": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S03_letconst.caveman-full.1.txt::reassign": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S03_letconst.caveman-ultra.1.txt::reassign": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S03_letconst.caveman-ultra.1.txt::block scope": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.caveman-full.1.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.caveman-full.2.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.caveman-lite.1.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.caveman-lite.2.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.caveman-ultra.1.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.caveman-ultra.2.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.caveman-full.1.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.caveman-full.2.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.caveman-lite.1.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.caveman-lite.2.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.caveman-ultra.1.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.caveman-ultra.2.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.caveman-full.2.txt::Monday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.caveman-full.2.txt::Tuesday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.caveman-full.2.txt::Wednesday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.caveman-full.2.txt::Thursday": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S06_meteo_settimana.caveman-full.2.txt::Friday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.caveman-full.2.txt::Saturday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.caveman-full.2.txt::Sunday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.caveman-ultra.1.txt::Monday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.caveman-ultra.1.txt::Tuesday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.caveman-ultra.1.txt::Wednesday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.caveman-ultra.1.txt::Thursday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.caveman-ultra.1.txt::Friday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.caveman-ultra.1.txt::Saturday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S06_meteo_settimana.caveman-ultra.1.txt::Sunday": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S07_https.caveman-full.1.txt::in the middle": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S07_https.caveman-full.2.txt::in the middle": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S07_https.caveman-lite.1.txt::in the middle": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S07_https.caveman-lite.2.txt::in the middle": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S07_https.caveman-ultra.1.txt::in the middle": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S07_https.caveman-ultra.2.txt::in the middle": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.caveman-full.1.txt::synchronis": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.caveman-full.2.txt::multi-document": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.caveman-full.2.txt::synchronis": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.caveman-lite.1.txt::synchronis": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.caveman-lite.2.txt::synchronis": {
+    "present": false,
+    "answer": "NO"
+  },
+  "S10_database.caveman-ultra.1.txt::multi-document": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.caveman-ultra.1.txt::synchronis": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.caveman-ultra.2.txt::synchronis": {
+    "present": false,
+    "answer": "NO"
+  }
+}

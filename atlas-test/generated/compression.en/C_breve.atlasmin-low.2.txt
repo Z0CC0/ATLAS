@@ -1,0 +1,3 @@
+No, not worth it — planner won't use B-tree on low-cardinality column anyway; it prefers seq scan whenever filter matches roughly 5-10%+ of rows, and three distinct values will usually clear that. Index still costs writes and disk space with no read benefit.
+
+Exception: partial index on the rare value works, if one of the three is rare.

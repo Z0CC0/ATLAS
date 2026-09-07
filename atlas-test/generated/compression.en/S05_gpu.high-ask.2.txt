@@ -1,0 +1,1 @@
+5080 runs Blackwell, 4080 runs Ada Lovelace. GDDR7 vs GDDR6X — bandwidth ~717 GB/s up to ~960 GB/s. Power draw 320W to 360W, same 16-pin connector. Biggest gap is frame generation, not rasterisation — raw rasterisation gain only ~10-15%.

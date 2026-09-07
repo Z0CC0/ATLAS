@@ -1,0 +1,9 @@
+Files: zero cost, no dependency. Search = grep, rotation manual — unconfigured, disk fills. Multi-machine search doesn't exist, connect to each separately.
+
+Managed service: instant search, alerts, auto retention. Pay by volume — at 1k req/min, volume grows fast. Logs leave your infra, strip personal data first.
+
+Database: search familiar, convenient. But log writes and app writes fight over the same caches, connections. Under load, logs starve the real requests.
+
+At 1k req/min: local files + collector shipping logs elsewhere. App never waits on a log write.
+
+Rule that always holds: writing the log must never sit in the request's critical path.

@@ -1,0 +1,9 @@
+Eventual consistency: write happens, replicas don't agree right away. Given no more writes, converge in finite time — same region under a second, cross-region few seconds.
+
+Trade: against availability. Strong consistency instead means system refuses requests when replicas can't talk to each other.
+
+Hits you here: user posts comment, reloads, comment gone. Read-after-write on stale replica.
+
+Fix: route that session's reads to primary replica (the one just written), not everyone's reads.
+
+Not bug, choice. Most systems accept it deliberately to scale. Reject it only where it's unacceptable: account balances, seat availability, unique identifiers — few, recognisable cases.

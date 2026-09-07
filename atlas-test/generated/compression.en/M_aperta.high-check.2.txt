@@ -1,0 +1,15 @@
+Before choosing architecture, work through in order:
+
+Which parts of the monolith actually change. Stable parts gain nothing from splitting.
+
+Where transaction boundaries sit. A transaction spanning two services becomes a distributed problem.
+
+Skip a full parallel rewrite — old system keeps changing, copy never catches up, almost always fails.
+
+Instead: strangle progressively. Router in front, move one piece at a time, old system stays authoritative until the new piece is verified.
+
+Microservices cost more in ops — each wants its own releases, monitoring, logs, alerts, and owner. Below five developers, that cost usually exceeds the benefit.
+
+Consider the modular monolith: sharp internal boundaries, one release, extract a module later if genuinely needed.
+
+Real question isn't technical: what must the team do in a year that it can't do today.

@@ -1,0 +1,11 @@
+Prompt caching works by keeping the already-processed prefix of a request in a cache, so that any later request starting the same way doesn't have to pay to reprocess that part again.
+
+The key limitation is that it only works on the prefix. If even one character near the start differs from what was cached, there's no reuse from that point onward — everything after the divergence has to be processed fresh. This has a direct consequence for how you structure your requests: put the stable parts first (system instructions, documentation, tool definitions) and the parts that change later. Do it the other way round and you get no benefit at all, since the changing part at the front breaks the match for everything that follows.
+
+There's also a cost asymmetry to keep in mind: writing to the cache costs more than a normal read. So the first request that populates the cache is actually more expensive than a normal request would be. The payoff only starts from the second request onward — you're recouping that initial write cost on subsequent turns — and the benefit compounds as the number of turns grows.
+
+So where does this actually pay off? Long conversations with a large, stable context — think a sizable system prompt, attached reference documentation, or a set of tool definitions that don't change turn to turn. In that setting, you pay the write cost once and then read cheaply many times.
+
+Conversely, it does *not* pay off for single, one-off requests that all differ from each other — you'd pay the more expensive write every time and never get to the cheap read that makes it worthwhile.
+
+One subtle trap: if you put something that changes every turn near the top of your stable content — say, a system line with a live clock or timestamp — it will break the prefix match for everything that comes after it, killing the caching benefit for the entire rest of the request even though the "real" stable content further down never actually changed.

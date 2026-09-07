@@ -1,0 +1,5 @@
+La differenza principale tra RTX 5080 e RTX 4080 sta nell'architettura: la 5080 usa Blackwell, mentre la 4080 è basata su Ada Lovelace. Questo si riflette anche sulla memoria, dove la 5080 passa a moduli GDDR7 (contro i GDDR6X della 4080), portando la banda passante da circa 717 a circa 960 GB/s.
+
+Se guardi le prestazioni pure di rasterizzazione, però, non aspettarti un balzo enorme: il guadagno reale è nell'ordine del 10-15%. Il salto più consistente lo trovi invece sulla generazione di fotogrammi, dove lo scarto tra le due schede è molto più marcato.
+
+C'è un costo da mettere in conto: il consumo dichiarato sale da 320 a 360 watt sulla 5080. Nonostante questo, il connettore di alimentazione resta invariato, ancora a 16 pin, quindi non serve cambiare alimentatore o cavi solo per questo aspetto.

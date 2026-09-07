@@ -1,0 +1,13 @@
+Consistenza eventuale: dopo una scrittura le repliche non concordano subito, convergono entro tempo finito se le scritture si fermano.
+
+Compromesso: disponibilità. Consistenza forte forza rifiuto richieste quando le repliche non comunicano tra loro.
+
+Ti riguarda qui: pubblichi un commento, ricarichi, non lo vedi — hai scritto e riletto da una replica diversa, non ancora aggiornata.
+
+Soluzione comune: la sessione che ha appena scritto legge dalla replica primaria, non da una qualsiasi.
+
+Tempi: sotto il secondo tra repliche stessa regione, secondi tra regioni diverse.
+
+Non è un difetto da correggere, è una scelta: i sistemi che scalano la accettano apposta.
+
+Dove non va bene, pochi casi riconoscibili: saldo conto, disponibilità posti, unicità di un identificativo.

@@ -1,0 +1,9 @@
+RTX 5080 architettura Blackwell, memoria GDDR7. RTX 4080 architettura Ada Lovelace, memoria GDDR6X.
+
+Banda memoria: 5080 ~960 GB/s, 4080 ~717 GB/s.
+
+Consumo: 5080 360W, 4080 320W.
+
+Connettore alimentazione: 16 pin su entrambe.
+
+Rasterizzazione pura: guadagno reale 10-15%. Salto grosso invece sulla generazione di fotogrammi.

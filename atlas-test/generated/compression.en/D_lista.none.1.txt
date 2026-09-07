@@ -1,0 +1,15 @@
+For a purely static site, here's what to set:
+
+**Strict-Transport-Security** — `max-age=31536000; includeSubDomains`. This forces browsers onto HTTPS for at least a year, so nobody accidentally lands on an unencrypted version of your pages.
+
+**Content-Security-Policy** — `default-src 'self'`. This is the header that actually blocks third-party script injection, so it's arguably the most important one on the list.
+
+**X-Content-Type-Options** — `nosniff`. Stops the browser from guessing content types on its own, which closes off a class of MIME-sniffing tricks.
+
+**Referrer-Policy** — `strict-origin-when-cross-origin`. Keeps the full path of your URLs from leaking to other sites when someone clicks off-site.
+
+**Clickjacking protection** — either `X-Frame-Options: DENY` or, better, `frame-ancestors 'none'` inside your CSP. Either one stops your pages from being framed by someone else's site.
+
+**Permissions-Policy** — turn off camera, microphone, and geolocation if your static pages don't use them. No reason to leave those APIs reachable.
+
+One thing to skip: **X-XSS-Protection**. It's deprecated — modern browsers ignore it entirely, and in older browsers it actually introduced vulnerabilities. Don't set it.

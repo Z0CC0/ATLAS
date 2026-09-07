@@ -1,0 +1,5 @@
+Prompt caching stores the already-processed prefix of your request, so a later request starting with same text skip reprocessing that part. Only works on prefix: change one character near start, no reuse past that point. So put stable content (system instructions, docs, tool definitions) first, changing content (user query) after — not other way round.
+
+First request costs more, since writing to cache costs more than normal read. Gain start from second request onward and grow with turn count. Pays off on long conversations with large stable context. Doesn't pay off on single, differing requests — you pay write cost, never read it back.
+
+Watch out: a system line that changes every turn (like a clock) kills reuse of everything after it, since even a small prefix diff breaks the match.

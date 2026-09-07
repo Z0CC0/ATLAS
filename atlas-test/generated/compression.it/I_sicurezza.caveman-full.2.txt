@@ -1,0 +1,9 @@
+No. Frontend browser code, anyone read it. Devtools or network tab kill offuscation instant.
+
+Chiave sta su server. Frontend chiama endpoint tuo backend, backend chiama servizio esterno.
+
+Endpoint backend serve rate limit — senza, chiunque usa chiave tua gratis.
+
+Chiave gia pubblicata = compromessa, non solo rimuovere: ruotarla subito.
+
+Rimuovere da commit non basta — resta cronologia repo, chi ha clone gia possiede.

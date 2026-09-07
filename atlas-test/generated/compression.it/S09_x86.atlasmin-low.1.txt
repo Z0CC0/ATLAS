@@ -1,0 +1,13 @@
+8086, 1978: 16 bit, evoluzione diretta di 8080, compatibilità a livello sorgente. Quattro anni dopo, 80286 introduce modalità protetta, ma con limite pesante — impossibile tornare a modalità reale senza riavviare macchina.
+
+Svolta arriva 1985 con 80386: 32 bit, memoria virtuale paginata, modalità virtuale 8086. 486 del 1989 integra cache primo livello e coprocessore matematico direttamente nel chip.
+
+1993, Pentium diventa superscalare: due pipeline intere, capaci ritirare due istruzioni per ciclo. Ma cambiamento decisivo arriva 1995 con Pentium Pro — introduce esecuzione fuori ordine e traduce istruzioni x86 in micro-operazioni interne. Da quel momento x86 non è più macchina reale sotto, solo interfaccia.
+
+Pentium 4, 2000, scommette tutto su frequenza — pipeline lunghissima — e sbatte contro muro consumo energetico.
+
+Svolta insolita arriva 2003: non Intel, ma AMD estende architettura a 64 bit con AMD64, e Intel stessa poi adotta stesso insieme istruzioni. Prima volta estensione dominante non nasce da Intel.
+
+Dal 2006, con Core 2, direzione cambia ancora: non più corsa a frequenza, ma aumento numero nuclei. Parallelamente, estensioni vettoriali crescono per generazioni — MMX, SSE, AVX, AVX-512.
+
+Oggi complessità reale sta negli strati sotto interfaccia visibile: predizione salti, gerarchia cache, esecuzione speculativa. E proprio lì, nel 2018, Spectre e Meltdown rivelano che esecuzione speculativa aveva costo sicurezza mai considerato prima.

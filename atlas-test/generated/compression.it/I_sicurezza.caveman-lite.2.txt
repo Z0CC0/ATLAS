@@ -1,0 +1,7 @@
+No. Cosa arriva al browser leggibile e', offuscamento si annulla con dev tools o guardando richieste di rete.
+
+Chiave sta su server. Frontend chiama endpoint del tuo backend, backend chiama servizio.
+
+Endpoint serve rate limit, altrimenti diventa uso gratis della chiave altrui.
+
+Se chiave gia' pubblicata: considerala compromessa, ruotala subito. Non basta rimuoverla dal codice — resta in cronologia repository, chiunque ha clone gia' ce l'ha.

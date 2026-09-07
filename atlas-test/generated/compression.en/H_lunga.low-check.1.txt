@@ -1,0 +1,9 @@
+Prompt caching keeps the already-processed prefix of a request stored, so any later request that starts the same way skips reprocessing that part and only pays for what's new.
+
+The catch is it only works on the prefix. If even one character near the start differs, everything after that point loses the cache and gets reprocessed from scratch. That's why the order of your prompt matters: put the stable material first — system instructions, attached documentation, tool definitions — and the parts that change turn to turn (user messages, dynamic values) after it. Do it the other way round and you get no reuse at all.
+
+Cost-wise, writing to the cache is more expensive than a normal read, so your first request in a sequence actually costs more than it would without caching. The payoff only shows up from the second request onward, and it compounds — the more turns you run against that same stable prefix, the more you save overall.
+
+That makes it a clear win for long conversations built on a large, unchanging context: think a big system prompt, reference docs, or a long list of tool definitions that stay constant across many turns. It's a clear loss for one-off requests that each differ from the last — you pay the expensive write and never get a matching read to recoup it.
+
+One trap to watch for: if you put something that changes every turn — like a timestamp — early in the prompt, it breaks the prefix match and kills the caching benefit for everything that comes after it, even if the rest of the prompt is otherwise identical each time.

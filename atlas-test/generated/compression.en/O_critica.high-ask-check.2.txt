@@ -1,0 +1,5 @@
+Real upside: no path around it, not even a manual script.
+
+Cost: triggers invisible in app code. Simple-looking change fires others, no trace. Not tested with your normal tools — needs tests against real DB. Debugging worse: error surfaces as failed write, no name for which rule broke. Migrations fragile — trigger order matters, declared nowhere.
+
+Better: DB holds only integrity — constraints, FKs, uniqueness, domain checks. Business logic in app, behind single entry point. Same guarantee as trigger, provided direct DB access stays reserved to migrations.

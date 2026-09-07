@@ -1,0 +1,20 @@
+Not slow query. Connection pool exhaustion.
+
+Root cause: db/session.py:47 — middleware release connection only on success path. Handler raise exception → release() never reached → connection stuck held til timeout. Few hundred failed requests later, pool empty, every new request wait for free connection. That why latency climb instead of instant error — you watch pool drain, not query slow down.
+
+Fix: wrap acquire in try/finally so release happen on error path too.
+
+```python
+conn = pool.acquire()
+try:
+    return handler(conn, request)
+finally:
+    pool.release(conn)
+```
+
+Raising pool_size not real fix — only delay when pool empty, leak still there. Raise pool_size only after fix in, and only if real load actually need it.
+
+Reproduce before/after:
+```
+pytest tests/test_pool.py -k exhaustion -x
+```

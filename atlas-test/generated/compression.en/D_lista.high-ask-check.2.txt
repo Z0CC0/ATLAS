@@ -1,0 +1,10 @@
+Set on a static site:
+
+Strict-Transport-Security: max-age=31536000; includeSubDomains — forces HTTPS.
+Content-Security-Policy: default-src 'self' — blocks third-party script injection.
+X-Content-Type-Options: nosniff — stops MIME-type guessing.
+Referrer-Policy: strict-origin-when-cross-origin — no full path leaked cross-site.
+X-Frame-Options: DENY (or frame-ancestors 'none' in the CSP) — anti-clickjacking.
+Permissions-Policy: disable camera, microphone, geolocation if unused.
+
+Skip X-XSS-Protection — deprecated, ignored by modern browsers, caused vulnerabilities in old ones.

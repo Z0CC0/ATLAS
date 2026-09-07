@@ -1,0 +1,19 @@
+```javascript
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+`t` in closure, not inside returned function — else each call gets own timer, no debounce.
+
+`clearTimeout` before every `setTimeout` — else timers pile up, fires multiple times.
+
+Spread forwards args — omit it, wrapped fn gets nothing.
+
+Returns nothing. Need return value → wrap in Promise.
+
+Opposite need (run immediately, ignore rest of period) → throttle, different function.

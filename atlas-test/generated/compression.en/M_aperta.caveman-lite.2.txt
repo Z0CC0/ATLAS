@@ -1,0 +1,17 @@
+Before rewriting, worth working through in order:
+
+**What actually changes.** Find which parts of the monolith see real change velocity. Stable parts gain nothing from being split out — splitting them is pure overhead with no payoff.
+
+**Where transactions sit.** Map your transaction boundaries first. A transaction spanning two services becomes a distributed transaction problem — much harder than in-process consistency.
+
+**Don't do a parallel rewrite.** Building a new system alongside the old one almost always fails: the old one keeps changing, and the rewrite never catches up.
+
+**Strangle it instead.** Put a router in front of the monolith, migrate one piece at a time, and keep the old system authoritative until each new piece is verified. Progressive, not parallel.
+
+**Mind the operational cost of microservices.** Every service wants its own releases, monitoring, logs, alerts, and an owner. That's real ongoing cost, not a one-time setup fee.
+
+**Team size matters.** Below five developers, the operational overhead of microservices almost always exceeds the benefit.
+
+**Consider the modular monolith.** Sharp internal module boundaries, one release, one deploy — but any module can be extracted later the day it's genuinely needed. Often the option nobody proposes.
+
+**The real deciding question isn't technical.** Ask: what does the team need to be able to do in a year that it can't do today? Let that answer drive the architecture, not the reverse.

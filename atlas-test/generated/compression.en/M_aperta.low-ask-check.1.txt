@@ -1,0 +1,11 @@
+Before architecture: figure out which part of the monolith actually changes. Stable parts gain nothing from being split out.
+
+Then look at where transaction boundaries sit — a transaction spanning two services turns into a distributed problem, so that's often the real constraint, not the tech stack.
+
+Skip the "rewrite in parallel, cut over later" plan — old system keeps changing while you rebuild, copy never catches up, almost always fails. Progressive strangling works better: router in front, move one piece at a time, old system stays authoritative until each new piece is verified.
+
+Weigh microservices against team size honestly: every service wants its own releases, monitoring, logs, alerts, someone responsible for it. Below five developers that operational cost almost always beats whatever benefit you get.
+
+Modular monolith is worth considering seriously — sharp internal boundaries, one release, and you keep the option to extract a module the day it's genuinely needed. Nobody brings it up, but it often fits better than either extreme.
+
+Underneath all of it, the real question isn't technical: what does the team need to be able to do a year from now that it can't do today? That answer should drive the architecture choice, not the reverse.

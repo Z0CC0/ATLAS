@@ -1,0 +1,9 @@
+File locali più raccoglitore che spedisce altrove. Applicazione non aspetta mai scrittura log.
+
+Perché non file puro: ricerca solo grep, rotazione manuale o disco si riempie. Multi-macchina peggio: nessuna ricerca centralizzata, connetti a ognuna a mano.
+
+Perché non servizio gestito diretto: a mille richieste/minuto volume cresce in fretta, costo sale. Log escono da tua infrastruttura: ripulire dati personali prima.
+
+Perché non database: log in competizione con carico applicazione stesso DB. Sotto carico log riempiono cache e connessioni che servivano richieste vere.
+
+Regola sempre valida: scrittura log mai nel percorso critico della richiesta.

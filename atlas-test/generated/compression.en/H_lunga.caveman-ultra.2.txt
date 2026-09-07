@@ -1,0 +1,11 @@
+Prompt cache keep already-processed prefix of request. Later request start same way, skip reprocess that part, pay less.
+
+Only work on prefix. One char differ at start, no reuse past that point. So put stable stuff first (system instructions, docs, tool definitions), changing stuff after — not reverse order.
+
+Write to cache cost more than normal read, so first request pricier. Gain start second request onward, grow with turn count.
+
+Pays off: long conversation, large stable context — system prompt, attached docs, tool defs, many turns.
+
+Not pay off: single unrelated requests. You pay write, never read back.
+
+Watch: a system line change every turn — clock, timestamp — kill reuse of everything after it. Put such thing last, not near top.

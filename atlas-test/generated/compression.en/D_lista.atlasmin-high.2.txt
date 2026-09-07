@@ -1,0 +1,13 @@
+Set these:
+
+Strict-Transport-Security: max-age=31536000; includeSubDomains — forces HTTPS.
+
+Content-Security-Policy: default-src 'self' — blocks third-party script injection. Add frame-ancestors 'none' here against clickjacking, or use X-Frame-Options: DENY instead.
+
+X-Content-Type-Options: nosniff — stops content-type guessing.
+
+Referrer-Policy: strict-origin-when-cross-origin — keeps full path from leaking cross-site.
+
+Permissions-Policy: disable camera, microphone, geolocation if unused.
+
+Skip X-XSS-Protection — deprecated, ignored by modern browsers, caused vulnerabilities in old ones.

@@ -1,0 +1,15 @@
+Prima di decidere, guarda cinque cose.
+
+Primo: quale parte del monolite cambia davvero. Le parti stabili non guadagnano niente da essere spezzate — non toccarle.
+
+Secondo: dove stanno i confini delle transazioni. Una transazione che attraversa due servizi diventa problema distribuito. Va mappato prima, non scoperto dopo.
+
+Terzo: evita riscrittura completa in parallelo al vecchio sistema. Fallisce quasi sempre: il vecchio continua a cambiare, la copia non lo raggiunge mai.
+
+Alternativa: strangolamento progressivo. Router davanti, sposti un pezzo alla volta, vecchio resta autorevole finché nuovo non è verificato.
+
+Sui microservizi: costano di più in operativo. Ogni servizio vuole rilascio, monitoraggio, log, allarmi, una persona che se ne occupa. Sotto cinque sviluppatori il costo operativo supera quasi sempre il beneficio.
+
+Opzione poco citata: monolite modulare. Confini interni netti, un solo rilascio, possibilità di estrarre un modulo il giorno che serve davvero. Spesso è la risposta giusta quando il team è piccolo.
+
+Domanda decisiva, non tecnica: cosa deve poter fare il team fra un anno che oggi non può. Rispondi a questa prima — determina tutto il resto.

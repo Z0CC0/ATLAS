@@ -1,0 +1,9 @@
+Per un migliaio di richieste al minuto: file locali più un raccoglitore che li spedisce altrove.
+
+**File soli** — costo zero, nessuna dipendenza, ma ricerca solo grep e rotazione da configurare a mano, altrimenti disco pieno. Su più macchine niente ricerca centralizzata: bisogna collegarsi a ognuna.
+
+**Servizio gestito** — ricerca immediata, allarmi, conservazione automatica, ma a questo volume il costo cresce in fretta. Log escono dalla tua infrastruttura: vanno ripuliti dai dati personali prima di uscire.
+
+**Database** — ricerca comoda e nota, ma log nello stesso database dell'applicazione mette in competizione due carichi molto diversi. Sotto carico riempiono cache e connessioni che servivano alle richieste vere.
+
+Regola che vale sempre: la scrittura del log non deve stare nel percorso critico della richiesta. Ecco perché file locali + raccoglitore: l'applicazione scrive su disco e non aspetta mai la spedizione altrove.

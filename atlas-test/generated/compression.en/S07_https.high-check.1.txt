@@ -1,0 +1,11 @@
+HTTPS: HTTP inside a TLS-encrypted channel.
+
+Handshake: client opens connection, lists supported TLS versions and ciphers. Server picks a version and cipher, sends its certificate. Certificate binds a domain to a public key, signed by a CA. Client verifies the signature, chain up to a root it already trusts.
+
+Client and server then agree a session key — today usually elliptic-curve Diffie-Hellman. That key is symmetric: asymmetric crypto costs too much for real traffic.
+
+From there, traffic is encrypted and authenticated — unreadable and unmodifiable in transit.
+
+TLS 1.3: one round trip. TLS 1.2: two.
+
+Note: the certificate proves only that the domain controls that key — nothing about who runs the site.

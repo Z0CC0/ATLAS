@@ -1,0 +1,13 @@
+Consistenza eventuale: dopo scrittura, repliche non concordano subito. Convergono entro tempo finito se scritture si fermano.
+
+Perché importa: compromesso con disponibilità. Sistema con consistenza forte deve rifiutare richieste quando repliche non si parlano tra loro.
+
+Caso che ti tocca: leggi subito dopo scrivere. Utente pubblica commento, ricarica, non lo vede.
+
+Fix comune: sessione che ha appena scritto legge dalla replica primaria, non tutte le sessioni.
+
+Tempi tipici: stessa regione sotto il secondo, fra regioni sale a secondi.
+
+Non è difetto da eliminare, è scelta. Maggior parte sistemi che scalano la accetta apposta.
+
+Dove NON va bene, pochi casi riconoscibili: saldi conto, disponibilità posti, unicità identificativo.

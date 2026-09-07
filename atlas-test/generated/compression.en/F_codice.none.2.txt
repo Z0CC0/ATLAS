@@ -1,0 +1,22 @@
+Here's a debounce implementation with no dependencies:
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Use it like `const debouncedSave = debounce(save, 300);` and call `debouncedSave(x)` as often as you want — only the last call within any 300ms window actually runs.
+
+A few things about this that matter:
+
+- `clearTimeout(t)` has to run before every new `setTimeout`. Skip it and you get a pile of pending timers instead of one, so the function ends up firing multiple times instead of just once at the end.
+- `t` is declared outside the returned arrow function, in the closure created by `debounce` itself. If you moved `let t` inside the inner function, each call would create its own fresh timer with nothing to clear, and you'd get no debouncing at all — every call would just schedule its own delayed run.
+- `...args` is used both when capturing the call and when invoking `fn`. Without the spread, whatever arguments the caller passed wouldn't reach `fn` — it would run with nothing.
+- This version doesn't return anything. If you need the debounced function's result (e.g. `await debouncedFn()`), you'd have to wrap the whole thing in a `Promise` and resolve it inside the `setTimeout` callback.
+
+One more thing worth flagging: if what you actually want is to run immediately on the first call and then ignore further calls for a while, that's not debounce — that's throttle, and it needs a different implementation.

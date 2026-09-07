@@ -1,0 +1,1 @@
+const locks the name, not the value: reassigning fails, but an object's properties still change. let allows reassignment. Both, unlike var, are block scoped.
