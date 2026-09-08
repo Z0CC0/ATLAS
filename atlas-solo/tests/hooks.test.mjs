@@ -365,7 +365,7 @@ check(
 );
 check('the status says it is on', tracker.statusLine({ level: 'off', rigour: 'off', check: 'off', silent: 'on' }) === 'atlas silent on');
 
-// The defect that shipped in 0.43.0: from a cold start, `atlas silent` produced a state the
+// A defect an earlier build shipped: from a cold start, `atlas silent` produced a state the
 // tracker read as "everything off" and answered with the off notice. One predicate now decides.
 check('silent alone is not "all off"', !cfg.isAllOff({ level: 'off', rigour: 'off', check: 'off', silent: 'on' }));
 check('all four off is "all off"', cfg.isAllOff({ level: 'off', rigour: 'off', check: 'off', silent: 'off' }));
@@ -397,7 +397,7 @@ check(
 // --- no frontmatter may contain an angle-bracket tag -------------------------
 //
 // The desktop app's upload validator rejects a description with anything that
-// looks like an XML tag, and it rejected 0.44.0 over `<task>`. Nothing in the
+// looks like an XML tag, and it rejected the first upload over `<task>`. Nothing in the
 // unit tests had looked. Now every frontmatter of every skill, agent and command
 // is checked for `<word>`.
 for (const dir of ['skills', 'agents', 'commands']) {

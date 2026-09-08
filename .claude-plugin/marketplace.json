@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "atlas",
-  "version": "0.44.0",
+  "version": "0.1.0",
   "description": "ATLAS: four dials for how a coding assistant talks to you, and ten subagents that keep the noisy work out of your conversation.",
   "owner": {
     "name": "ZoCCo"
@@ -9,21 +9,21 @@
   "plugins": [
     {
       "name": "atlas",
-      "version": "0.44.0",
+      "version": "0.1.0",
       "description": "Four independent dials — compression (low/high), rigour (ask), check and silent — plus ten subagents that keep searches, logs, pages and big files out of your conversation.",
       "source": "./atlas",
       "category": "productivity"
     },
     {
       "name": "atlas-solo",
-      "version": "0.44.0",
+      "version": "0.1.0",
       "description": "The same four dials and the same rules, without the ten subagents. About 1,350 fewer fixed tokens per session.",
       "source": "./atlas-solo",
       "category": "productivity"
     },
     {
       "name": "atlas-min",
-      "version": "0.44.0",
+      "version": "0.1.0",
       "description": "Compression only: two levels, one command, nothing else. For anyone who wants shorter answers and nothing more.",
       "source": "./atlas-min",
       "category": "productivity"

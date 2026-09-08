@@ -1,6 +1,6 @@
 {
   "name": "atlas-plugin",
-  "version": "0.44.0",
+  "version": "0.1.0",
   "private": true,
   "type": "commonjs",
   "description": "ATLAS plugin for Claude Code. Standalone: no dependencies, no build step.",

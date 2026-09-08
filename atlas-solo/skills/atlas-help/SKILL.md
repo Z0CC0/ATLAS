@@ -126,4 +126,4 @@ more than twice the entire fixed cost. It scales with turns; everything above sc
 ---
 
 Token figures are tiktoken approximations, not Claude's tokenizer — compare them to each other,
-not to a bill. The costs above are current. **How much each level compresses was measured on 0.44.0**: 24 English and 24 Italian questions with fixed fact sheets, 2 rounds each, through the real hooks. Output against no plugin, median: `low` -51% English and -47% Italian, `high` -54% and -47%; details lost, median: `low` 4 and 1 of 263, `high` 4 and 4. Run-to-run noise 4.1 points. The full tables are in the README.
+not to a bill. The costs above are current. **How much each level compresses was measured on 0.1.0**: 24 English and 24 Italian questions with fixed fact sheets, 2 rounds each, through the real hooks. Output against no plugin, median: `low` -51% English and -47% Italian, `high` -54% and -47%; details lost, median: `low` 4 and 1 of 263, `high` 4 and 4. Run-to-run noise 4.1 points. The full tables are in the README.

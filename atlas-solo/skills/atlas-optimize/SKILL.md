@@ -96,7 +96,7 @@ it, use these, and state the profile they assume:
 spreads; on a short session it dominates, on a long one it disappears. If someone's sessions are
 short, that is the finding, not which dial they picked.
 
-These rest on the bench of 0.44.0: 48 questions with fixed fact sheets, 2 rounds, both languages.
+These rest on the bench of 0.1.0: 48 questions with fixed fact sheets, 2 rounds, both languages.
 
 ## The memory language
 

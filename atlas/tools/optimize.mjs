@@ -34,7 +34,7 @@ const COST = {
 // session each time, answers written by the plugin and not by hand. Measured on the
 // version named below; run `tests` to see how.
 const SAVING = { off: 0, low: 0.493, high: 0.508 };
-const SAVING_VERSION = '0.44.0';
+const SAVING_VERSION = '0.1.0';
 
 function parseArgs(argv) {
   const o = { sessions: 10, dir: null, json: false };
