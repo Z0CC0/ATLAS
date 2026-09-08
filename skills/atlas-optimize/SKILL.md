@@ -5,7 +5,7 @@ description: >
   fits how they actually work, including what to turn off. With a task described: recommend the
   dials for that task. Everything local, nothing sent anywhere.
   Use when the user says "atlas optimize", "/atlas-optimize", "how do I use this best",
-  "how should I set it for a task" — or the same in any language — or describes something they
+  "how should I set it for <task>" — or the same in any language — or describes something they
   are about to start.
 ---
 

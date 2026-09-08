@@ -1,6 +1,6 @@
 ---
 description: Build a Claude Code skill
-argument-hint: "[what the skill should do]"
+argument-hint: "<what the skill should do>"
 ---
 
 Use the `atlas-skill` skill and follow it.

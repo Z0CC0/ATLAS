@@ -1,6 +1,6 @@
 ---
 description: Write the rule into other agents' config files
-argument-hint: "[--write] [--remove] [--only <agent>]"
+argument-hint: "[--write] [--remove] [--only agent]"
 ---
 
 Use the `atlas-init` skill and follow it.

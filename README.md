@@ -97,7 +97,7 @@ uninstalling, or delete that file — it is one line and nothing else depends on
 
 Every number below is measured, not estimated, and the unfavourable ones are printed with the rest. All of it comes from the bench in `atlas-test/`, described in the next section, so it can be rerun.
 
-**Compression.** 24 English and 24 Italian questions, each carrying its own sheet of facts so that every setup answers with the same information and only the form can change. Each question was answered 2 times per setup in a fresh session through the real hooks; tokens are the API's own count of the visible answer, thinking excluded. "Details lost" is how many of the sheet's facts a reader can no longer learn from the answer: first by string match, then every flagged one re-judged by a model that is told nothing about what is being measured — the median across rounds, minus what the no-plugin answer already lost. The caveman rows are caveman (commit 7bb71309e874, the build installed on this machine in September 2026), installed and measured the same way, on the same questions, in the same session.
+**Compression.** 24 English and 24 Italian questions, each carrying its own sheet of facts so that every setup answers with the same information and only the form can change. Each question was answered 2 times per setup in a fresh session through the real hooks; tokens are the API's own count of the visible answer, thinking excluded. "Details lost" is how many of the sheet's facts a reader can no longer learn from the answer: first by string match, then every flagged one re-judged by a model that is told nothing about what is being measured — the median across rounds, minus what the no-plugin answer already lost. The caveman rows are caveman, installed and measured the same way, on the same questions, in the same session.
 
 English:
 
@@ -172,7 +172,7 @@ Run-to-run noise with no plugin and the rules frozen: 0.4 points in English, 4.1
 | `low` | -32% | -41% |
 | `high` | -33% | -42% |
 
-**Fixed cost per session**, `atlas` build: 2,165 tokens of rules at `low`, 2,357 at `high`, plus 2,634 of skill, command and subagent descriptions that are loaded whether or not they are used. The per-turn reminder is 42–47 tokens; over a long session it is the largest number of all. `atlas-solo` carries 1,270 of descriptions, `atlas-min` 153 and 1,838 tokens of rules.
+**Fixed cost per session**, `atlas` build: 2,165 tokens of rules at `low`, 2,357 at `high`, plus 2,632 of skill, command and subagent descriptions that are loaded whether or not they are used. The per-turn reminder is 42–47 tokens; over a long session it is the largest number of all. `atlas-solo` carries 1,268 of descriptions, `atlas-min` 153 and 1,838 tokens of rules.
 
 Token counts for the fixed costs are tiktoken (`o200k_base`), an approximation of Claude's tokenizer; the compression figures come from the API's own counts. Compare them with each other, not with a bill.
 

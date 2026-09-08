@@ -1,6 +1,6 @@
 ---
 description: Shorten a markdown file
-argument-hint: "<path>"
+argument-hint: "[path]"
 ---
 
 Use the `atlas-compress` skill and follow it.

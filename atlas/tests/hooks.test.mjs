@@ -5,7 +5,7 @@
 
 import { createRequire } from 'node:module';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node:fs';
+import { mkdtempSync, writeFileSync, readFileSync, readdirSync, existsSync, rmSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
@@ -72,7 +72,7 @@ eq('English on phrase', tracker.parseCommand('activate atlas', S), cfg.defaultSt
 // answer from the model, which recognises the intent and hands back `atlas off` — that
 // one works in every language because it is a name, not a sentence.
 check('a phrase in another language moves no dial on its own', tracker.parseCommand('spegni atlas', S) === null);
-check('ma il comando funziona comunque', tracker.parseCommand('atlas off', S) !== null);
+check('but the command itself still works', tracker.parseCommand('atlas off', S) !== null);
 // "enable atlas high" named a level and got the default: the phrase matched, the
 // word after it was dropped, and the plugin came on one level below what was asked.
 const OFFSTATE = { level: 'off', rigour: 'off', check: 'off', silent: 'off' };
@@ -393,6 +393,23 @@ check(
   'the switch-on note allows the confirmation and names the way out',
   /Confirm in at most three words/.test(tracker.SILENT_NOTICE) && /atlas silent off/.test(tracker.SILENT_NOTICE)
 );
+
+// --- no frontmatter may contain an angle-bracket tag -------------------------
+//
+// The desktop app's upload validator rejects a description with anything that
+// looks like an XML tag, and it rejected 0.44.0 over `<task>`. Nothing in the
+// unit tests had looked. Now every frontmatter of every skill, agent and command
+// is checked for `<word>`.
+for (const dir of ['skills', 'agents', 'commands']) {
+  const files = dir === 'skills'
+    ? readdirSync(join(ROOT, dir)).map((d) => join(ROOT, dir, d, 'SKILL.md')).filter(existsSync)
+    : readdirSync(join(ROOT, dir)).map((f) => join(ROOT, dir, f));
+  for (const f of files) {
+    const fm = (readFileSync(f, 'utf8').match(/^---\r?\n([\s\S]*?)\r?\n---/) || [])[1] || '';
+    const short = f.replaceAll('\\', '/').split('/').slice(-2).join('/');
+    check(`no angle-bracket tag in the frontmatter of ${short}`, !/<[^>\n]+>/.test(fm));
+  }
+}
 
 // --- the rules themselves must not contain private data ---------------------
 
