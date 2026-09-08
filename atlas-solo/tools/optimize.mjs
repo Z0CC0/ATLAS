@@ -27,7 +27,7 @@ const COST = {
   reminder: { low: 42, high: 47 },
   checkExtra: 842, // injected rules only, not the lookups it causes
   askExtra: 263,
-  descriptions: 2634,
+  descriptions: 2632,
 };
 
 // How much each level compresses: output tokens against no plugin, same prompt, fresh

@@ -87,7 +87,7 @@ uninstalling, or delete that file — it is one line and nothing else depends on
 
 | build | what is in it | fixed cost per session at `low` |
 |---|---|---|
-| `atlas` | everything | 4,799 tokens |
+| `atlas` | everything | 4,797 tokens |
 | `atlas-solo` | same rules, no subagents | 3,435 tokens |
 | `atlas-min` | compression only: two levels, one command | 1,991 tokens |
 
@@ -97,7 +97,7 @@ uninstalling, or delete that file — it is one line and nothing else depends on
 
 Every number below is measured, not estimated, and the unfavourable ones are printed with the rest. All of it comes from the bench in `atlas-test/`, described in the next section, so it can be rerun.
 
-**Compression.** 24 English and 24 Italian questions, each carrying its own sheet of facts so that every setup answers with the same information and only the form can change. Each question was answered 2 times per setup in a fresh session through the real hooks; tokens are the API's own count of the visible answer, thinking excluded. "Details lost" is how many of the sheet's facts a reader can no longer learn from the answer: first by string match, then every flagged one re-judged by a model that is told nothing about what is being measured — the median across rounds, minus what the no-plugin answer already lost. The caveman rows are caveman, installed and measured the same way, on the same questions, in the same session.
+**Compression.** 24 English and 24 Italian questions, each carrying its own sheet of facts so that every setup answers with the same information and only the form can change. Each question was answered 2 times per setup in a fresh session through the real hooks; tokens are the API's own count of the visible answer, thinking excluded. "Details lost" is how many of the sheet's facts a reader can no longer learn from the answer: first by string match, then every flagged one re-judged by a model that is told nothing about what is being measured — the median across rounds, minus what the no-plugin answer already lost. The caveman rows are caveman (commit 7bb71309e874, the build installed on this machine in September 2026), installed and measured the same way, on the same questions, in the same session.
 
 English:
 
