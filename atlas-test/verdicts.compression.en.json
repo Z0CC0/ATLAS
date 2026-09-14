@@ -2218,5 +2218,189 @@
   "S10_database.caveman-ultra.2.txt::synchronis": {
     "present": false,
     "answer": "NO"
+  },
+  "A_ricerca.adhd.1.txt::same temperature": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.adhd.1.txt::19:35": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.adhd.1.txt::20:00": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.adhd.1.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.adhd.1.txt::9 hours and 40": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.adhd.1.txt::first quarter": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.adhd.2.txt::same temperature": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.adhd.2.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.adhd.2.txt::9 hours and 40": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.adhd.2.txt::first quarter": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.adhd.1.txt::rising latency": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.adhd.1.txt::immediate errors": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.adhd.1.txt::error path": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.adhd.1.txt::mask": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.adhd.1.txt::real load": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.adhd.1.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.adhd.2.txt::connection pool": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.adhd.2.txt::immediate errors": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.adhd.2.txt::error path": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.adhd.2.txt::mask": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.adhd.2.txt::real load": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.adhd.2.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.adhd.1.txt::one more service": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.adhd.2.txt::one more service": {
+    "present": false,
+    "answer": "NO"
+  },
+  "F_codice.adhd.1.txt::returns nothing": {
+    "present": false,
+    "answer": "NO"
+  },
+  "F_codice.adhd.2.txt::returns nothing": {
+    "present": false,
+    "answer": "NO"
+  },
+  "F_codice.adhd.2.txt::throttle": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.adhd.1.txt::irreversibl": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.adhd.1.txt::readable": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.adhd.1.txt::developer tools": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.adhd.1.txt::compromised": {
+    "present": true,
+    "answer": "YES"
+  },
+  "N_spiegazione.adhd.1.txt::choice": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.adhd.1.txt::rotation": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.adhd.1.txt::disk": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.adhd.1.txt::several machines": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.adhd.1.txt::same database": {
+    "present": false,
+    "answer": "NO"
+  },
+  "P_confronto_lungo.adhd.2.txt::several machines": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.adhd.1.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.adhd.1.txt::18": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.adhd.2.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.adhd.2.txt::18": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.adhd.1.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.adhd.2.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S08_bitcoin.adhd.1.txt::double spend": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.adhd.1.txt::synchronis": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.adhd.2.txt::people": {
+    "present": false,
+    "answer": "NO"
   }
 }

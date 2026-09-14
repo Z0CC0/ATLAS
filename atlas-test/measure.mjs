@@ -34,6 +34,7 @@ const ORDER = [
   'high-ask', 'high-check', 'high-ask-check',
   'atlasmin-low', 'atlasmin-high',
   'caveman-lite', 'caveman-full', 'caveman-ultra',
+  'adhd',
 ];
 
 function args(argv) {

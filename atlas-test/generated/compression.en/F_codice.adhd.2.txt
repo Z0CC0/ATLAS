@@ -1,0 +1,21 @@
+Here's a debounce implementation with no dependencies:
+
+```javascript
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+The key thing to understand is the `t` variable: it has to live outside the returned function, in the closure created by `debounce` itself. If you declared it inside the returned arrow function instead, every call would create its own private timer, and nothing would ever get cancelled — you'd just be delaying every call instead of debouncing them.
+
+That's also why `clearTimeout(t)` runs before every new `setTimeout`: each call cancels whatever timer the previous call scheduled, so only the last call in a burst actually survives long enough to fire.
+
+The `...args` spread is what carries your arguments through — without it, `fn` would get called with nothing, no matter what you passed to the debounced function.
+
+One limitation to keep in mind: this version doesn't return anything (the `setTimeout` callback's return value is discarded). If you need to get a result back out of `fn`, you'd have to wrap it in a `Promise` instead.
+
+And if what you actually want is "run immediately, then ignore further calls for a while" rather than "wait for the pause and then run once," that's a different pattern — throttling, not debouncing.

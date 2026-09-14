@@ -75,6 +75,14 @@ const CONFIGURATIONS = [
   { id: 'caveman-lite', atlas: 'off:off:off', caveman: 'lite' },
   { id: 'caveman-full', atlas: 'off:off:off', caveman: 'full' },
   { id: 'caveman-ultra', atlas: 'off:off:off', caveman: 'ultra' },
+
+  // i-have-adhd, a formatting skill rather than a compressor: it shapes answers for a
+  // reader with ADHD (lead with the action, numbered steps, restate the state, end
+  // with a next action). It ships as a skill with no hook and has to be invoked, so
+  // here its SKILL.md is appended to the system prompt, which is "always on" — the
+  // strongest version of it. A copy of the file and its MIT licence sit in
+  // third-party/i-have-adhd; COMMIT names the revision.
+  { id: 'adhd', atlas: 'off:off:off', caveman: 'off', systemPrompt: join(HERE, 'third-party', 'i-have-adhd', 'SKILL.md') },
 ];
 
 const rulesOf = (variant) => join(HERE, '..', variant || 'atlas', 'skills', 'atlas', 'SKILL.md');
@@ -227,7 +235,9 @@ function main() {
     writeFileSync(CAVEMAN_STATE, cfg.caveman);
     process.stdout.write(`[${String(n).padStart(4)}/${jobs.length}] round ${r} ${name} — ${cfg.id} ... `);
     try {
-      const out = execFileSync('claude', ['-p', prompt(cases[name], language), '--output-format', 'json', '--disallowed-tools', DISALLOWED], {
+      // The skill body without its frontmatter: the description is for a menu, not a system prompt.
+      const extra = cfg.systemPrompt ? ['--append-system-prompt', readFileSync(cfg.systemPrompt, 'utf8').split('\n---\n').slice(1).join('\n---\n')] : [];
+      const out = execFileSync('claude', ['-p', prompt(cases[name], language), '--output-format', 'json', '--disallowed-tools', DISALLOWED, ...extra], {
         encoding: 'utf8', maxBuffer: 16 * 1024 * 1024,
         env: { ...process.env, CAVEMAN_DEFAULT_MODE: cfg.caveman },
       });

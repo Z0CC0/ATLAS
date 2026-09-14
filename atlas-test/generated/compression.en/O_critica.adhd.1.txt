@@ -1,0 +1,9 @@
+Here's the honest tradeoff.
+
+Putting business logic in triggers does deliver what you're after: no application path can skip the rule, not even a script someone runs by hand against the database. That guarantee is real.
+
+But you'd be paying for it in ways that tend to surface later, when it's expensive to undo. Triggers are invisible to anyone reading the application code — a change that looks like a simple update ends up firing other logic with no trace in the codebase you're looking at. They also fall outside the testing tools your team already uses; testing them properly means standing up tests against a real database, not the fast unit tests you're used to. Debugging gets worse too: when a trigger fails, what you see is a failed write, with nothing telling you which rule inside the trigger caused it. And migrations become fragile, because trigger execution order matters and it's declared nowhere — so the order is whatever the database happens to do, not something you can read off and reason about.
+
+The alternative gets you the same enforcement without those costs: leave the database responsible only for what protects integrity — constraints, foreign keys, uniqueness, domain checks — and put the business logic in the application, behind a single entry point. That single entry point gives you the same "impossible to bypass" guarantee the trigger would, as long as you also lock down direct database access so only migrations get it. Everything else has to go through the entry point.
+
+So the goal — unbypassable rules — is achievable without triggers. I'd go with the single-entry-point approach.

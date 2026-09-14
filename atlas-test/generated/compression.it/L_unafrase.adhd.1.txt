@@ -1,0 +1,1 @@
+Sì: in Python una lista vuota è falsa in un contesto booleano, e questo vale per tutte le collezioni vuote — liste, tuple, dizionari, insiemi e stringhe.

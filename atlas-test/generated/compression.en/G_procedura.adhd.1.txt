@@ -1,0 +1,25 @@
+Here's how to do it safely, without downtime.
+
+Don't run `ALTER TABLE t ALTER COLUMN colonna TYPE integer` directly — on ten million rows that rewrites the entire table and holds an ACCESS EXCLUSIVE lock for the whole operation, so your service would be down the entire time it runs.
+
+Instead:
+
+1. **Verify the data is actually convertible first.** Count how many rows have a value in `colonna` that isn't all digits. If that count isn't zero, you need to deal with those rows before you touch anything else — the migration will fail (or silently corrupt data) otherwise.
+
+2. **Add the new column** alongside the old one:
+   ```sql
+   ALTER TABLE t ADD COLUMN colonna_int integer;
+   ```
+   This is a fast metadata-only change, no table rewrite.
+
+3. **Backfill in batches of ten thousand rows at a time**, rather than one big `UPDATE`. A single massive update would hold a long lock on the whole table; batching keeps each transaction short so you're not blocking normal traffic.
+
+4. **Add a trigger that keeps both columns in sync** while the backfill is running — any insert or update to `colonna` also writes the converted value into `colonna_int`. This way rows written during the migration don't get missed or left stale by the batch backfill.
+
+5. **Switch the application code to read from `colonna_int`**, and ship that. At this point the new column is fully populated and kept current, so the cutover is safe.
+
+6. **Only after that's deployed and confirmed working, drop the old column:**
+   ```sql
+   ALTER TABLE t DROP COLUMN colonna;
+   ```
+   Treat this step as the point of no return — once it's dropped, that data is gone unless you restore from backup. Don't rush into it; make sure the new column has been serving production traffic correctly for a while first.

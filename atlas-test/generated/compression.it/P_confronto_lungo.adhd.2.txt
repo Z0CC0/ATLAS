@@ -1,0 +1,9 @@
+File locali più un raccoglitore (log shipper/agent, es. Fluent Bit/Vector) che li spedisce altrove: a un migliaio di richieste al minuto è la scelta ragionevole, perché l'applicazione scrive su disco e non aspetta mai la consegna del log — la scrittura non deve stare nel percorso critico della richiesta, e questa è la regola che vale sempre, a prescindere da dove i log finiscano poi.
+
+Le tre opzioni pure, prese singolarmente, hanno problemi concreti al tuo volume:
+
+- **Solo file**: costo zero e nessuna dipendenza, ma la ricerca è grep e la rotazione va configurata a mano (altrimenti il disco si riempie). E se hai più macchine, non esiste ricerca unificata: devi collegarti a ognuna una per una.
+- **Solo servizio gestito**: ricerca immediata, allarmi, conservazione automatica — comodo — ma si paga per volume, e a mille richieste al minuto il volume cresce in fretta, quindi i costi salgono con lui. Inoltre i log escono dalla tua infrastruttura, quindi vanno ripuliti dai dati personali prima di uscire.
+- **Solo database**: la ricerca è comoda e ti è già nota, ma scrivere i log nello stesso database dell'applicazione mette in competizione due carichi molto diversi. Sotto carico, i log finiscono per riempire cache e connessioni che servivano alle richieste vere.
+
+Per questo la combinazione file locali + raccoglitore che spedisce altrove è quella che tiene insieme i vantaggi: scrittura locale economica e non bloccante, e poi il raccoglitore si occupa di portare i dati dove preferisci (servizio gestito, per dire) senza far dipendere la richiesta dell'utente da quel passaggio.

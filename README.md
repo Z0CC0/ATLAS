@@ -99,6 +99,8 @@ Every number below is measured, not estimated, and the unfavourable ones are pri
 
 **Compression.** 24 English and 24 Italian questions, each carrying its own sheet of facts so that every setup answers with the same information and only the form can change. Each question was answered 2 times per setup in a fresh session through the real hooks; tokens are the API's own count of the visible answer, thinking excluded. "Details lost" is how many of the sheet's facts a reader can no longer learn from the answer: first by string match, then every flagged one re-judged by a model that is told nothing about what is being measured — the median across rounds, minus what the no-plugin answer already lost. The caveman rows are caveman (commit 7bb71309e874, the build installed on this machine in September 2026), installed and measured the same way, on the same questions, in the same session.
 
+The `i-have-adhd` row is a different kind of thing and is here because it is the most-starred formatting skill for Claude Code: it shapes answers for a reader with ADHD — lead with the next action, numbered steps, restate the state, end with a next action — and does not try to save tokens. It ships as a skill with no hook, so its SKILL.md was appended to the system prompt for those calls, the "always on" version of it. The copy used, its MIT licence and the commit are in `atlas-test/third-party/i-have-adhd/`. Read its row as "what this form costs", not as a loss.
+
 English:
 
 | setup | output vs no plugin, median | worst … best round | details lost |
@@ -116,6 +118,7 @@ English:
 | caveman `lite` | -46% | -46% … -46% | 3 of 255 |
 | caveman `full` | -47% | -45% … -49% | 3 of 255 |
 | caveman `ultra` | -51% | -51% … -51% | 3 of 255 |
+| i-have-adhd | -5% | -2% … -7% | 4 of 263 |
 
 Italian:
 
@@ -134,6 +137,7 @@ Italian:
 | caveman `lite` | -41% | -41% … -42% | 3 of 256 |
 | caveman `full` | -41% | -41% … -41% | 4 of 256 |
 | caveman `ultra` | -47% | -45% … -48% | 4 of 256 |
+| i-have-adhd | +1% | +2% … -1% | 1 of 264 |
 
 Run-to-run noise with no plugin and the rules frozen: 0.4 points in English, 4.1 in Italian. A gap smaller than that between two setups is not an effect.
 
@@ -178,7 +182,7 @@ Token counts for the fixed costs are tiktoken (`o200k_base`), an approximation o
 
 ## Verify it yourself
 
-Every figure above was produced by three scripts in `atlas-test/`, and the folder ships with everything they produced: the questions, all 1344 generated answers with their token counts, and every judge verdict. Rerun them and you will either confirm the numbers or catch me out.
+Every figure above was produced by three scripts in `atlas-test/`, and the folder ships with everything they produced: the questions, all 1440 generated answers with their token counts, and every judge verdict. Rerun them and you will either confirm the numbers or catch me out.
 
 **What the bench does, and why this way.**
 

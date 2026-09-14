@@ -1,0 +1,10 @@
+Per un progetto piccolo, ti conviene partire con Postgres.
+
+Il motivo principale è che non aggiungi un servizio in più da far girare, monitorare e aggiornare: usi il database che probabilmente hai già. Con `SELECT FOR UPDATE SKIP LOCKED` regge tranquillamente fino a circa mille lavori al minuto, che per un progetto piccolo è più che sufficiente.
+
+In più hai due vantaggi che con Redis non vengono gratis:
+
+- **Nessuna transazione a metà**: se il lavoro in coda vive nella stessa transazione dei dati che lo generano, non puoi finire nel caso in cui il job parte ma la scrittura corrispondente viene annullata (o viceversa).
+- **Persistenza senza configurazione**: se il processo muore, la coda è ancora lì. Su Redis la persistenza va impostata esplicitamente (AOF), e se non lo fai un riavvio ti fa perdere i lavori in coda.
+
+Redis resta la scelta giusta se il volume sale davvero: regge molto più throughput e ha latenza sotto il millisecondo, mentre Postgres a un certo punto diventa il collo di bottiglia. Ma quel punto lo raggiungi solo se il progetto cresce parecchio — non è un problema da anticipare ora.

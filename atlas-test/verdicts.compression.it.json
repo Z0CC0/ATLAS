@@ -1338,5 +1338,73 @@
   "S10_database.none.2.txt::partire da Postgres": {
     "present": true,
     "answer": "SI"
+  },
+  "A_ricerca.adhd.1.txt::parita' di temperatura": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.adhd.1.txt::9 ore e 15": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.adhd.2.txt::9 ore e 15": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.adhd.2.txt::9 ore e 40": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.adhd.2.txt::calo di temperatura serale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.adhd.2.txt::latenze crescenti": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.adhd.2.txt::maschera": {
+    "present": false,
+    "answer": "NO"
+  },
+  "H_lunga.adhd.1.txt::un carattere": {
+    "present": true,
+    "answer": "SI"
+  },
+  "H_lunga.adhd.2.txt::un carattere": {
+    "present": true,
+    "answer": "SI"
+  },
+  "L_unafrase.adhd.1.txt::dizionario": {
+    "present": true,
+    "answer": "SI"
+  },
+  "L_unafrase.adhd.1.txt::stringa": {
+    "present": true,
+    "answer": "SI"
+  },
+  "M_aperta.adhd.1.txt::cinque sviluppatori": {
+    "present": false,
+    "answer": "NO"
+  },
+  "N_spiegazione.adhd.1.txt::sotto il secondo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S04_meteo_domani.adhd.1.txt::nuvoloso": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S04_meteo_domani.adhd.2.txt::nuvoloso": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S08_bitcoin.adhd.2.txt::doppia spesa": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.adhd.1.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
   }
 }

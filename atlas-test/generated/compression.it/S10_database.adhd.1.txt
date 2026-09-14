@@ -1,0 +1,17 @@
+## Database per ordini, catalogo, ricerca testuale e analisi
+
+**Punto di partenza: Postgres da solo.** Regge tutti e quattro i carichi in modo accettabile, nessuno in modo eccellente. Per gli ordini questo conta doppio: dà transazioni serie, che su quel carico non sono negoziabili — quindi qualunque impianto tu scelga, gli ordini restano su un database transazionale vero, e Postgres lo è. MySQL è equivalente su questo fronte ma più debole su tipi di dato e query complesse, quindi non c'è un vantaggio a spostarsi lì.
+
+**Sul catalogo**, MongoDB semplifica la vita con schemi variabili, comodo se i prodotti hanno attributi molto eterogenei. Il rovescio della medaglia: le transazioni multi-documento sono arrivate tardi nel prodotto e costano, quindi se il catalogo deve mai toccare consistenza forte (es. inventario legato agli ordini), è un compromesso da valutare con attenzione.
+
+**Sulla ricerca testuale**, Postgres ha ricerca integrata, sufficiente sotto il milione di documenti, debole sopra. Elasticsearch è molto superiore — rilevanza, sinonimi, tolleranza agli errori di battitura — ma non è un archivio autorevole: va sempre alimentato da un altro database, mai usato come fonte di verità. E aggiungerlo prima del milione di documenti è quasi sempre prematuro: sotto quella soglia Postgres basta.
+
+**Sull'analisi**, Postgres regge fino a decine di milioni di righe, poi le scansioni diventano lente. ClickHouse è molto superiore, con scansioni colonnari che stanno ordini di grandezza avanti — ma non serve per gli ordini: gli aggiornamenti puntuali sono il suo punto debole, quindi resta un sistema per l'analisi, non un sostituto del transazionale.
+
+### La configurazione tipica
+
+Postgres come archivio autorevole, con Elasticsearch e ClickHouse alimentati da lì per ricerca e analisi. Funziona, ma non è gratis: **ogni sistema che aggiungi porta con sé un problema di sincronizzazione e uno di allineamento dei dati**. E il vero costo dei sistemi specializzati non è la licenza, è il tempo delle persone che li tengono in piedi — pipeline di sync, monitoraggio, debug di disallineamenti.
+
+### La regola pratica
+
+Parti da Postgres da solo. Aggiungi un sistema specializzato solo quando un carico specifico lo impone con numeri alla mano — non "potrebbe servire", ma "abbiamo superato il milione di documenti" o "le query analitiche impiegano troppo su decine di milioni di righe". Ogni sistema in più è un costo operativo permanente, quindi lo giustifichi con un problema reale, non preventivamente.

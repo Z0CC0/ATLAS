@@ -1,0 +1,13 @@
+Before you pick an architecture, work through these in order:
+
+**Start with what actually changes.** Look at the monolith and identify which parts see real churn and which parts are stable. The stable parts gain nothing from being split out — splitting is only worth it where change is concentrated.
+
+**Then look at your transaction boundaries.** Wherever a single transaction currently spans what you're thinking of as two services, that's a red flag: once split, that transaction becomes a distributed one, with all the consistency headaches that brings. Draw your boundaries around transactions, not around the other way around.
+
+**Don't do a parallel full rewrite.** Building a new system alongside the old one while the old one keeps running almost always fails, because the old system keeps changing and the rewrite never catches up. If you rewrite, do it as progressive strangling instead: put a router in front of the monolith, move one piece at a time behind it, and keep the old system authoritative until each new piece is verified in production.
+
+**Weigh the operational cost of microservices honestly.** Every service you create wants its own releases, monitoring, logs, alerts, and someone responsible for it. Below five developers, that operational overhead almost always outweighs whatever benefit you were hoping to get from splitting.
+
+**Consider the modular monolith seriously** — it's the option that usually doesn't come up in these conversations. Sharp internal boundaries, a single release, and you keep the option to extract any module into its own service the day you actually need to.
+
+**And the real question underneath all of this isn't technical.** It's: what does the team need to be able to do a year from now that it can't do today? Let that answer drive the architecture decision, not the reverse.

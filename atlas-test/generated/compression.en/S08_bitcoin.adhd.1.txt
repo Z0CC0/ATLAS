@@ -1,0 +1,13 @@
+Bitcoin starts with a paper that appears in 2008, signed by someone using the name Satoshi Nakamoto — a pseudonym nobody has ever been able to attach to a real identity. The paper is called *Bitcoin: A Peer-to-Peer Electronic Cash System*, and it's aimed at one specific problem: how do you stop someone from spending the same digital money twice if there's no bank or central authority keeping the official ledger?
+
+The answer it proposes is a chain of blocks, each one linked to the last and ordered through proof of work. The point of the proof of work isn't just to order transactions — it's to make rewriting history expensive. If you wanted to alter something buried a few blocks back, you'd have to redo the costly work not just for that block but for every block that came after it, which quickly becomes impractical.
+
+The idea didn't come out of nowhere — it grew out of the cypherpunk scene, building on earlier proposals like b-money and bit gold, both of which ran into the same wall: nobody had figured out how to get independent participants to agree on the order of transactions without a central party. Nakamoto's proof-of-work chain was the piece that finally solved that.
+
+The system went from paper to reality on 3 January 2009, when the first block was mined. Embedded in it was the headline of a Times article about a bank bailout — a detail that does double duty: it proves the block wasn't created before that date, and it reads as a quiet comment on exactly the kind of financial system Bitcoin was built to route around.
+
+New bitcoin enter circulation as a reward for mining, starting at 50 bitcoin per block and cutting in half every 210,000 blocks — roughly every four years. Because that reward keeps halving, the total supply converges on 21 million and will never exceed it.
+
+The first real-world glimpse of bitcoin being used as money came in 2010, when someone paid 10,000 bitcoin for two pizzas — now remembered as the first documented commercial transaction.
+
+As for Nakamoto, the involvement ends in 2011, when they stop posting or participating publicly. The bitcoin associated with them from that early period have sat untouched ever since — never moved, never spent.

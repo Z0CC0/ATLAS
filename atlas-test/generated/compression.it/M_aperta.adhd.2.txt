@@ -1,0 +1,15 @@
+Prima di scegliere l'architettura, partirei da una domanda che non è tecnica: cosa deve poter fare il tuo team fra un anno che oggi non può fare? È questa la domanda decisiva, e la risposta condiziona tutto il resto — non il contrario.
+
+Fatta questa, ecco cosa guarderei in ordine:
+
+**1. Cosa cambia davvero nel monolite.** Prima di disegnare qualsiasi cosa, mappa quali parti del sistema vengono toccate spesso e quali sono ferme da tempo. Le parti stabili non guadagnano nulla dall'essere spezzate in servizi separati: separarle è solo costo operativo aggiuntivo senza beneficio.
+
+**2. Dove stanno i confini delle transazioni.** Guarda con attenzione dove oggi una singola transazione database attraversa più aree logiche del monolite. Se decidi di spezzare lungo quella linea, quella transazione diventa un problema distribuito — che è una categoria di problema molto più difficile da risolvere bene.
+
+**3. Come farla, non se farla tutta insieme.** Evita la riscrittura completa in parallelo al sistema esistente: fallisce quasi sempre, perché il vecchio sistema continua a evolvere mentre lo scrivi e la copia nuova non lo raggiunge mai. L'alternativa che funziona è lo strangolamento progressivo: metti un router davanti al monolite, sposti un pezzo alla volta, e il vecchio sistema resta l'autorità finché il nuovo pezzo non è verificato in produzione.
+
+**4. Quanto vale davvero passare ai microservizi.** I microservizi non sono gratis: ogni servizio si porta dietro rilascio, monitoraggio, log, allarmi e qualcuno che se ne occupa. Sotto i cinque sviluppatori, questo costo operativo supera quasi sempre il beneficio che ottieni.
+
+**5. L'opzione che quasi nessuno menziona.** Il monolite modulare è spesso la scelta giusta e la meno citata: confini interni netti tra i moduli, un solo rilascio da gestire, e la possibilità concreta di estrarre un modulo come servizio a sé il giorno in cui ne avrai davvero bisogno — non prima.
+
+In sintesi: parti dal "cosa deve poter fare il team fra un anno", mappa cosa cambia e dove sono i confini delle transazioni, e valuta seriamente il monolite modulare con strangolamento progressivo prima di saltare ai microservizi — specialmente se il team è piccolo.
