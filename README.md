@@ -266,8 +266,7 @@ Everything below follows from the measurements above. None of it is required; ea
 - **The state is global.** One setting for every project and every chat, stored outside the plugin, so uninstalling does not reset it.
 - **`atlas-browser` needs the desktop app's Browser pane.** From the plain CLI it has nothing to drive and says so.
 - **The compression figure is 2 rounds on 48 questions with fixed fact sheets, one model.** It measures form with the information held constant; answers that have to find their own facts vary more.
-- It does not compress your input, your files, or tool output. It shortens **output**
-- Commands are English words. Requests in any language are recognised; the phrases the hook matches on its own ("stop atlas", "normal mode") are English only, and `atlas off` works everywhere
+- **It shortens output only.** Your input, your files and what tools return are not touched: a hook cannot rewrite a tool's result.
 - `ask` cannot know what you have not said. It reduces wrong assumptions; it does not remove them
 
 
