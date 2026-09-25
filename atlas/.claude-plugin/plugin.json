@@ -1,7 +1,7 @@
 {
   "name": "atlas",
-  "version": "0.1.0",
-  "description": "Four independent dials — compression (low/high), rigour (ask), check and silent — plus ten subagents that keep searches, logs, pages and big files out of your conversation. Compresses without losing a fact, and refuses to start building before the goal is clear.",
+  "version": "0.1.1",
+  "description": "Four independent dials — compression (low/high), rigour (ask), check and silent — plus seven subagents that keep searches, logs, pages and big files out of your conversation. Compresses without losing a fact, and refuses to start building before the goal is clear.",
   "author": {
     "name": "ZoCCo"
   },

@@ -25,18 +25,17 @@ grouped by kind, so the caller studies it themselves.
 
 How the shape is decided, in order:
 
-1. **The command names it.** `atlas-search` means answer, `atlas-sources` means sources. Nothing
-   to work out, and this is the normal case.
-2. **The request names it.** "What version is Vite" is an answer. "Give me sources on X", "I want
-   to read up on this", "find me some videos" are sources — in whatever language they arrive.
-3. **Neither** — ask, once, two named options, then go. Do not guess: guessing wrong here does
+1. **The request names it.** "What version is Vite" is an answer. "Give me sources on X", "I want
+   to read up on this", "find me some videos" are sources — in whatever language they arrive,
+   and whether or not they came through `atlas-search`.
+2. **Neither** — ask, once, two named options, then go. Do not guess: guessing wrong here does
    not make the answer imprecise, it makes the whole search useless, and the caller only finds
    out after paying for it.
 
 **That one question is not the `ask` dial and does not follow it.** `ask` governs clarifying the
 goal of a piece of work; this decides which product to hand over. Someone turning `ask` off is
 saying "no questions about method", not "hand me the wrong thing". It is asked at most once per
-request, and never when step 1 or step 2 already answered it.
+request, and never when step 1 already answered it.
 
 Once a shape is established in a conversation, keep it for the follow-up questions of the same
 kind until the caller asks for something else.

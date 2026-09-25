@@ -33,14 +33,9 @@ Funzionano entrambe le forme: `atlas high` scritto come intero messaggio, oppure
 | `/atlas:atlas` | imposta le manopole |
 | `/atlas:atlas-help` | la scheda di riferimento |
 | `/atlas:atlas-recap` | scrive un file di consegna della conversazione |
-| `/atlas:atlas-optimize` | legge le tue sessioni e dice quali manopole ti convengono |
-| `/atlas:atlas-search` | risponde solo da una ricerca web |
-| `/atlas:atlas-sources` | cerca sul web e consegna dove leggere, non la risposta |
+| `/atlas:atlas-search` | risponde solo da una ricerca web; con "dammi fonti", dove leggere invece della risposta |
 | `/atlas:atlas-review` | rivede il diff corrente |
 | `/atlas:atlas-commit` | messaggio di commit per quello che hai in stage |
-| `/atlas:atlas-compress` | accorcia un file markdown |
-| `/atlas:atlas-skill` | costruisce una skill per Claude Code |
-| `/atlas:atlas-init` | scrive la regola nei file di configurazione degli altri agenti |
 | `/atlas:atlas-organize` | riordina una cartella locale, con annullamento |
 | `/atlas:atlas-silent` | fa il lavoro e consegna il risultato, nient'altro |
 
@@ -115,14 +110,14 @@ pubblici, `atlas-browser` guida una pagina che gli hai indicato. Mandano la tua 
 |---|---|
 | regole iniettate a `low` (predefinito) | 2.165 |
 | regole iniettate a `high` | 2.357 |
-| descrizioni di skill, comandi e subagenti, sempre presenti | 2.632 |
+| descrizioni di skill, comandi e subagenti, sempre presenti | 1.840 |
 | promemoria per turno | 42-47 |
-| **totale al livello predefinito** | **4.797** |
+| **totale al livello predefinito** | **4.005** |
 
 La build `atlas-min` porta le descrizioni a 153 e le regole a 1.838, perche' contiene solo le
-sezioni sulla compressione. `atlas-solo` tiene tutte le regole e toglie i dieci subagenti: 1.270 di
-descrizioni invece di 2.632. Toglie anche `atlas-search` e `atlas-sources`, che sono la maniglia
-di un subagente che li non c'e' — la disciplina di ricerca sta comunque nella manopola `check`,
+sezioni sulla compressione. `atlas-solo` tiene tutte le regole e toglie i sette subagenti: 829 di
+descrizioni invece di 1.840. Toglie anche `atlas-search`, che e' la maniglia di un subagente
+che li non c'e' — la disciplina di ricerca sta comunque nella manopola `check`,
 dove vale per ogni risposta invece che per un comando solo.
 
 **Il promemoria per turno conta piu' del costo iniziale su una sessione lunga.** A 42 token per

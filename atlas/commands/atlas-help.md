@@ -7,4 +7,4 @@ Print that and nothing else. Change no state, start no work.
 
 The card lives in the skill and only there. It used to be duplicated here, and the copy went
 three versions stale without anyone noticing: it still named dials that had been renamed and
-listed five commands out of eleven.
+listed under half the commands.

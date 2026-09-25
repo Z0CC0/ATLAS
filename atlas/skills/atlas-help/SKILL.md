@@ -18,7 +18,7 @@ nothing surprising to say, leave it empty rather than filling it.
 
 # ATLAS
 
-Four dials, thirteen commands, ten subagents.
+Four dials, eight commands, seven subagents.
 
 **It ships off.** A fresh install changes nothing until you type `atlas low` or `atlas high`.
 After that the setting persists — across turns, across restarts, in every project — until you
@@ -42,8 +42,7 @@ change it or type `atlas off`, which persists too. It is one global setting, not
 
 **Every combination costs less than no plugin, at both session lengths.** The two figures are a short session — 40
 turns, 500-token answers — and a long one at 295 turns: the fixed cost is paid once and then
-spreads, so session length moves the number more than the dials do. `atlas-optimize` computes it
-from your own sessions instead of these two profiles.
+spreads, so session length moves the number more than the dials do.
 
 Never compressed at any level: code blocks, error strings, function and command names, file paths,
 numbers and units, negations, proper names, qualifiers that change what is true. Security warnings
@@ -57,16 +56,11 @@ call it.
 | command | what it does | body | worth knowing |
 |---|---|---|---|
 | `atlas <dial>` | sets the dials | 40 | `/atlas:atlas high` or `atlas high` alone as the whole message. The plain form works before the command menu has loaded |
-| `atlas-help` | this card | 2.5k | |
-| `atlas-optimize` | reads your own sessions, prints the whole setup table, and says what each setup costs as a percentage | 1.9k | also reports what your memory files would cost in English, measured. It advises, it never translates them |
-| `atlas-search` | answers only from a live web search | 277 | **`atlas` build only.** It is the handle on the `atlas-research` subagent, so the pages it reads never land in your session — and without that subagent there is nothing behind it |
-| `atlas-sources` | searches the web and hands back where to read, not the answer: videos, discussions, articles, grouped, one line each | 93 | **`atlas` build only**, same reason. Same subagent, other shape: typing one of the two is what picks it, so neither guesses and neither asks |
+| `atlas-help` | this card | 2.2k | |
+| `atlas-search` | answers only from a live web search | 303 | **`atlas` build only.** It is the handle on the `atlas-research` subagent, so the pages it reads never land in your session. Add "give me sources" to the request, in any language, and it hands back where to read instead of the answer: videos, discussions, articles, grouped, one line each |
 | `atlas-review` | what is wrong with the current diff, one problem per line: where, what breaks, the fix | 223 | four tiers, `breaks` first. `nothing found` is the whole answer when there is nothing |
 | `atlas-commit` | commit message for what is staged | 109 | written in normal prose whatever the level: it leaves the conversation |
-| `atlas-compress <file>` | shortens a markdown file, every fact kept | 142 | writes a backup first |
 | `atlas-recap` | handover file for the conversation: decided, done, not done, tried and rejected | 855 | for starting a fresh chat without losing where you were |
-| `atlas-skill` | builds a Claude Code skill from an idea | 969 | asks for everything it needs before writing |
-| `atlas-init` | writes the terse-answer rule into other agents' config files | 205 | Cursor, Windsurf, Cline, Copilot |
 | `atlas-organize` | tidies a local folder: selects files by content or criterion, copies, moves, groups, sets aside | 2.0k | four levels, from a plan that touches nothing upward. Nothing is ever deleted and every run has an undo |
 | `atlas-silent` | does the work and hands over the result: no opinions, no narration, no report | 807 | questions only up front, only about the task. Three things still get said: destructive, blocked, done-but-wrong. Per request; `atlas silent` is the same mode as a dial, and that one stays on |
 
@@ -86,23 +80,20 @@ nothing.
 | `atlas-browser` | drives a page, reports in words | one screenshot costs about 9,800 tokens; this pays for itself immediately |
 | `atlas-research` | searches the web: the answer with its sources, or a reading list grouped by kind | says "I did not find it" rather than "it does not exist", and never forces a weak link to fill a group |
 | `atlas-catalog` | searches the public catalogues: free APIs, free-tier services, MCP servers, Claude Code skills | those lists are 550,000 tokens; it reads them live and hands back three candidates |
-| `atlas-data` | answers a question about a file too big to read | says how the number was obtained, and when the file was malformed |
-| `atlas-history` | answers from git history, cites the commits | read-only: never checks out, never moves the working tree |
-| `atlas-scribe` | writes a long file, returns a receipt instead of the text | refuses when you need to read the file back — there it saves nothing |
 
 ## Builds
 
 | build | contains | fixed cost at `low` |
 |---|---|---|
-| `atlas` | everything on this card | 4,797 |
-| `atlas-solo` | same rules, no subagents, and eleven commands rather than thirteen | 3,433 |
+| `atlas` | everything on this card | 4,005 |
+| `atlas-solo` | same rules, no subagents, and seven commands rather than eight | 2,994 |
 | `atlas-min` | compression only: one command, no `ask`, no `check`, no provenance marker | 1,991 |
 
 `atlas` and `atlas-solo` have byte-identical rules, verified with `diff`: they write the same
 answers. The difference is the subagents, and whether you want the work kept out of context.
 
-`atlas-search` and `atlas-sources` go with them, because they are handles on `atlas-research` and
-have nothing behind them without it. Nothing is lost: **the search discipline lives in `check`** —
+`atlas-search` goes with them, because it is a handle on `atlas-research` and has nothing behind
+it without that subagent. Nothing is lost: **the search discipline lives in `check`** —
 nothing from memory, "I did not find it" never written as "it does not exist" — where it applies
 to every answer instead of one command.
 

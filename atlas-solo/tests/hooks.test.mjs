@@ -294,14 +294,14 @@ for (const lv of ['low', 'high']) {
 
 // --- commands that are only a handle do not ship without their subagent ---------
 //
-// `atlas-search` and `atlas-sources` do not use `atlas-research`: they are its handle,
-// and their body is a pointer. On a build without subagents they were half commands,
+// `atlas-search` does not use `atlas-research`: it is its handle, and its body is a
+// pointer. On a build without subagents it was half a command,
 // and keeping them alive meant duplicating the rules in a skill — a second copy to
 // align by hand, the thing that has already gone wrong twice in this project. The
 // build now removes them, and this test checks that a handle and its subagent are
 // always in the same build.
 
-const HANDLES = { 'atlas-search': 'atlas-research', 'atlas-sources': 'atlas-research' };
+const HANDLES = { 'atlas-search': 'atlas-research' };
 for (const [command, agent] of Object.entries(HANDLES)) {
   const cmd = existsSync(join(ROOT, 'commands', `${command}.md`));
   const ag = existsSync(join(ROOT, 'agents', `${agent}.md`));

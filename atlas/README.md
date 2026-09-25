@@ -1,6 +1,6 @@
 # ATLAS
 
-**Four dials for how a coding assistant talks to you, and ten subagents that keep the noisy work out of your conversation. A Claude Code plugin.**
+**Four dials for how a coding assistant talks to you, and seven subagents that keep the noisy work out of your conversation. A Claude Code plugin.**
 
 Most of what an assistant writes is packaging: greetings, restatements, hedges, a summary of what it just said, an offer of what to do next. ATLAS removes the packaging and keeps every fact, and it does so on turn fifty as reliably as on turn one, because the rules are re-stated to the model on every message instead of once at the start.
 
@@ -18,9 +18,9 @@ It ships off. Nothing changes until you type `atlas low` or `atlas high`.
 
 All four persist across turns, restarts and projects until changed, and move independently: `atlas ask off` leaves the other three where they were.
 
-**Ten subagents** do the expensive reading somewhere else and hand back only the answer: `atlas-finder` (where is X), `atlas-editor` (a bounded edit), `atlas-diff` (what is wrong with this diff), `atlas-runner` (run the tests, return the verdict), `atlas-browser` (does the page work, without a screenshot in your context), `atlas-research` (an answer with sources, or a reading list), `atlas-catalog` (is there a free API for this), `atlas-data` (a question about a file too big to read), `atlas-history` (why is this line here), `atlas-scribe` (write a long file, return a receipt).
+**Seven subagents** do the expensive reading somewhere else and hand back only the answer: `atlas-finder` (where is X), `atlas-editor` (a bounded edit), `atlas-diff` (what is wrong with this diff), `atlas-runner` (run the tests, return the verdict), `atlas-browser` (does the page work, without a screenshot in your context), `atlas-research` (an answer with sources, or a reading list), `atlas-catalog` (is there a free API for this).
 
-**Thirteen commands**, among them `atlas-recap` (a handover file so a new chat can continue where this one stopped), `atlas-optimize` (reads your own transcripts and says which dials pay for themselves), `atlas-organize` (tidies a folder with a plan first and an undo after; nothing is ever deleted), `atlas-init` (writes the same answering rule into Cursor, Windsurf, Cline and Copilot config files).
+**Eight commands**: the dials, the reference card, `atlas-search` (an answer from a live search, or with "give me sources" a reading list), `atlas-review` and `atlas-commit`, `atlas-recap` (a handover file so a new chat can continue where this one stopped), `atlas-organize` (tidies a folder with a plan first and an undo after; nothing is ever deleted), `atlas-silent`.
 
 ## Commands
 
@@ -29,14 +29,9 @@ All four persist across turns, restarts and projects until changed, and move ind
 | `/atlas:atlas` | set the dials |
 | `/atlas:atlas-help` | the reference card |
 | `/atlas:atlas-recap` | write a handover file for the conversation |
-| `/atlas:atlas-optimize` | read your own sessions and say which dials suit you |
-| `/atlas:atlas-search` | answer only from a web search |
-| `/atlas:atlas-sources` | searches the web and hands back where to read, not the answer |
+| `/atlas:atlas-search` | answer only from a web search; with "give me sources", where to read instead |
 | `/atlas:atlas-review` | review the current diff |
 | `/atlas:atlas-commit` | commit message for the staged changes |
-| `/atlas:atlas-compress` | shorten a markdown file |
-| `/atlas:atlas-skill` | build a Claude Code skill |
-| `/atlas:atlas-init` | write the rule into other agents' config files |
 | `/atlas:atlas-organize` | tidy a local folder, with an undo |
 | `/atlas:atlas-silent` | do it and hand over the result, nothing else |
 
@@ -158,21 +153,51 @@ Run-to-run noise with no plugin and the rules frozen: 0.4 points in English, 4.1
 |---|---|
 | rules injected at `low` (default) | 2,165 |
 | rules injected at `high` | 2,357 |
-| skill, command and subagent descriptions, always present | 2,632 |
+| skill, command and subagent descriptions, always present | 1,840 |
 | per-turn reminder | 42-47 |
-| **total at the default** | **4,797** |
+| **total at the default** | **4,005** |
 
 The `atlas-min` build cuts the descriptions to 153 and the rules to 1,838 by shipping only
-the compression sections. `atlas-solo` keeps every rule and drops the ten subagents: 1,270 in
-descriptions instead of 2,632. It also drops `atlas-search` and `atlas-sources`, which are
-handles on a subagent it does not carry — the search discipline itself lives in the `check`
-dial, where it covers every answer rather than one command.
+the compression sections. `atlas-solo` keeps every rule and drops the seven subagents: 829 in
+descriptions instead of 1,840. It also drops `atlas-search`, which is a handle on a
+subagent it does not carry — the search discipline itself lives in the `check` dial, where it
+covers every answer rather than one command.
 
 **On a long session the per-turn reminder outweighs everything above it.** At 42 tokens a
 turn, over a 295-turn session — the average measured on real transcripts — that is 12,390
 tokens, more than twice the rest put together.
 
 Token counts for the fixed costs are tiktoken (`o200k_base`), an approximation of Claude's tokenizer; the compression figures come from the API's own counts. Compare them with each other, not with a bill.
+
+## Getting the most out of it
+
+Everything below follows from the measurements above. None of it is required; each line says what it buys.
+
+**Pick the level by the reader, not by the task.** `high` when you read the answer once and act on it. `low` when you re-read, paste it somewhere, or someone else reads it: the token gap between the two is a few points, the readability gap is not.
+
+**Long sessions are where it pays.** The fixed cost is paid once per chat. Ten chats of five turns pay it ten times; one chat of fifty turns pays it once. Keep working in the same chat and use `atlas-recap` when it has to end, so the next one starts with the state instead of the story.
+
+**Turn on `ask` for open-ended work, off for bounded work.** It earns its cost when the goal can move: a new feature, a refactor, a design. On a typo or a rename it is a question you did not need.
+
+**Turn on `check` for facts, off for code you can run.** Versions, prices, APIs, how someone else's software behaves: on. A function you will test in the next minute: off, the test is the check.
+
+**`silent` for batches.** A list of mechanical changes, a migration, anything where you will read the diff and not the prose.
+
+**Delegate what is bigger than its answer.** A test log, a screenshot, a catalogue, a hundred-file search: send it to the subagent and pay for the verdict. Read directly what you will need to see anyway.
+
+**Write the request with the constraint in it.** "In under 50 lines", "only the failing test", "one option, not a comparison": the model follows a stated bound better than any rule about brevity, and the bound costs you a few words.
+
+**Every plugin you install costs its descriptions in every chat, on or off.** Count them once: this one is 1,840 tokens on the full build, 829 without the subagents, caveman about 700, a large toolkit can be 30,000. Remove what you have not used in a month.
+
+**`atlas-min` when tokens are the only thing you want.** Same compression rules, one command, no subagents: it lands where caveman does on cost and compresses the same.
+
+**Memory files in English.** They load at every start; the tokenizer reads English about a third cheaper than Italian and cheaper still than most other languages. Write `MEMORY.md` in English even if you talk to the model in your own.
+
+**Put project names in `atlas-terms.txt`.** One per line: never compressed, never translated, never abbreviated.
+
+**Pin a project's dials in `.atlas.json`** when the same repository always wants the same setup, and leave the global state for everything else.
+
+**Connect Context7 if you ask about libraries.** One call for the right version's docs, where a search takes four; `check` and `atlas-research` use it first when it is there.
 
 ## Advantages
 
@@ -188,7 +213,7 @@ Token counts for the fixed costs are tiktoken (`o200k_base`), an approximation o
 
 - **It is a style constraint on a language model, not a filter.** The model follows it most of the time, not all of the time. On long sessions it occasionally slips — an article here, a list marker there — and the per-turn reminder exists because of that, not instead of it.
 - **`low` and `high` are closer than their names suggest.** Measured: `low` 51% and `high` 54% less output in English, 47% and 47% in Italian. `high` is the harder rule set and reads more telegraphically; the token gap is a few points.
-- **Short sessions pay less.** The fixed cost is paid before the first answer, so on the `atlas` build a 40-turn session saves 1–17% where a 295-turn one saves 27–38%. A session of a handful of turns with short answers may not pay at all; `atlas-optimize` computes this from your own transcripts.
+- **Short sessions pay less.** The fixed cost is paid before the first answer, so on the `atlas` build a 40-turn session saves 1–17% where a 295-turn one saves 27–38%. A session of a handful of turns with short answers may not pay at all.
 - **The per-turn reminder scales with turns.** Over 295 turns it costs more than the whole session-start injection. It is as short as it can be while still naming rules.
 - **`check` adds tokens by design.** Verifying means looking things up. It is the one dial that costs more than it saves in tokens; it is paid for by the compression running underneath it.
 - **`ask` cannot know what you have not said.** It reduces wrong assumptions; it does not remove them.
