@@ -76,7 +76,7 @@ uninstalling, or delete that file — it is one line and nothing else depends on
 
 ## Measured
 
-Every number below is measured, not estimated, and the unfavourable ones are printed with the rest.
+Every number below is measured, not estimated, and the unfavourable ones are printed with the rest. The compression tables were measured on 2026-09-08 with `claude-sonnet-5`, the CLI's default model at the time. The default has since moved to `claude-opus-5-5`, which compresses less under every plugin: on a same-day rerun of 24 English and 24 Italian questions, `atlas-min` at `high` went from −54% to −50% (English) and from −52% to −44% (Italian), caveman `ultra` from −51% to −27% and from −47% to −22%. The full tables will be re-measured; until then read them as Sonnet figures.
 
 **Compression.** 24 English and 24 Italian questions, each carrying its own sheet of facts so that every setup answers with the same information and only the form can change. Each question was answered 2 times per setup in a fresh session through the real hooks; tokens are the API's own count of the visible answer, thinking excluded. "Details lost" is how many of the sheet's facts a reader can no longer learn from the answer, first by string match, then re-judged one by one by a model that is told nothing about what is being measured — the median across rounds, minus what the no-plugin answer already lost.
 
@@ -154,7 +154,7 @@ Run-to-run noise with no plugin and the rules frozen: 0.4 points in English, 4.1
 | rules injected at `low` (default) | 2,165 |
 | rules injected at `high` | 2,357 |
 | skill, command and subagent descriptions, always present | 1,840 |
-| per-turn reminder | 42-47 |
+| per-turn reminder | 27-32 |
 | **total at the default** | **4,005** |
 
 The `atlas-min` build cuts the descriptions to 153 and the rules to 1,838 by shipping only
@@ -163,9 +163,10 @@ descriptions instead of 1,840. It also drops `atlas-search`, which is a handle o
 subagent it does not carry — the search discipline itself lives in the `check` dial, where it
 covers every answer rather than one command.
 
-**On a long session the per-turn reminder outweighs everything above it.** At 42 tokens a
-turn, over a 295-turn session — the average measured on real transcripts — that is 12,390
-tokens, more than twice the rest put together.
+**On a long session the per-turn reminder outweighs everything above it.** At 27 tokens a
+turn, over a 295-turn session — the average measured on real transcripts — that is 7,965
+tokens, about twice the rest put together. It was 42 until 0.1.2: the shorter wording was
+measured against the longer one on the same day and compressed identically.
 
 Token counts for the fixed costs are tiktoken (`o200k_base`), an approximation of Claude's tokenizer; the compression figures come from the API's own counts. Compare them with each other, not with a bill.
 
@@ -220,7 +221,7 @@ Everything below follows from the measurements above. None of it is required; ea
 - **English commands, English hook phrases.** Requests in any language are recognised by the model, but the phrases the hook matches by itself ("stop atlas", "normal mode") are English. `atlas off` is a name and works everywhere.
 - **The state is global.** One setting for every project and every chat, stored outside the plugin, so uninstalling does not reset it.
 - **`atlas-browser` needs the desktop app's Browser pane.** From the plain CLI it has nothing to drive and says so.
-- **The compression figure is 2 rounds on 48 questions with fixed fact sheets, one model.** It measures form with the information held constant; answers that have to find their own facts vary more.
+- **The compression figure is 2 rounds on 48 questions with fixed fact sheets, one model (`claude-sonnet-5`).** It measures form with the information held constant; answers that have to find their own facts vary more.
 - **It shortens output only.** Your input, your files and what tools return are not touched: a hook cannot rewrite a tool's result.
 - `ask` cannot know what you have not said. It reduces wrong assumptions; it does not remove them
 

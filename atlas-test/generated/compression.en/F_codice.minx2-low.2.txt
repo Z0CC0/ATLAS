@@ -1,0 +1,23 @@
+Keep timer in closure, clear it on every call, and schedule new one:
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Each part has a job:
+
+`clearTimeout` has to run before every new `setTimeout`. Without it, timers pile up and function fires more than once.
+
+`t` must live in closure, not inside returned function. Otherwise every call gets its own timer and no debouncing happens.
+
+Arguments get forwarded with spread (`...args`). Without it, called function receives nothing.
+
+This version returns nothing. If return value matters, you need a Promise.
+
+For opposite case, where function runs immediately and then ignores calls for a period, you want throttle. That's a different function.

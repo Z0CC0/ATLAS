@@ -1,0 +1,19 @@
+Con mille richieste al minuto conviene scrivere i log su **file locali e affiancare un raccoglitore che li spedisce altrove**. In questo modo l'applicazione non aspetta mai che il log venga scritto.
+
+C'è una regola che vale qualunque cosa tu scelga: **la scrittura del log non deve stare nel percorso critico della richiesta.** Scrivere su file e poi spedire in un secondo momento rispetta questa regola per costruzione.
+
+Ecco perché non conviene usare una sola delle tre opzioni:
+
+**Solo file**
+- Pro: costano zero e non aggiungono dipendenze.
+- Contro: per cercare hai solo grep. La rotazione va configurata a mano, altrimenti il disco si riempie. Se hai più macchine non puoi cercare su tutte insieme e devi collegarti a ognuna.
+
+**Servizio gestito**
+- Pro: la ricerca è immediata, hai gli allarmi e la conservazione è automatica.
+- Contro: paghi in base al volume, e a mille richieste al minuto il volume cresce in fretta. In più i log escono dalla tua infrastruttura, quindi devi ripulirli dai dati personali prima che partano.
+
+**Database**
+- Pro: la ricerca è comoda e la conosci già.
+- Contro: se scrivi i log nello stesso database dell'applicazione, metti in competizione due carichi molto diversi. Sotto carico i log occupano cache e connessioni che servivano alle richieste vere.
+
+Con file locali e raccoglitore tieni i vantaggi dei file: costo zero e nessuna attesa per l'applicazione. Per la ricerca e la conservazione ti appoggi alla destinazione, che può essere anche un servizio gestito. Se scegli un servizio gestito, ricordati di togliere i dati personali prima dell'invio e di tenere d'occhio il volume, perché è su quello che paghi.

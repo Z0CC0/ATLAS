@@ -1,0 +1,19 @@
+HTTPS è HTTP dentro un canale cifrato da TLS.
+
+Client apre connessione, dichiara versioni TLS e cifrari supportati.
+
+Server sceglie cifrario e versione, manda proprio certificato.
+
+Certificato lega nome di dominio a chiave pubblica, firmato da autorità di certificazione.
+
+Client verifica firma risalendo catena fino a radice che ha già in memoria.
+
+Client e server concordano chiave di sessione, oggi tipicamente con scambio Diffie-Hellman su curve ellittiche.
+
+Chiave di sessione simmetrica: cifratura asimmetrica costa troppo per traffico vero.
+
+Da lì traffico cifrato e autenticato: né leggibile né modificabile da chi sta in mezzo.
+
+TLS 1.3: un solo giro di andata e ritorno, contro due di TLS 1.2.
+
+Certificato non dice nulla su chi gestisce sito, solo che quel dominio controlla quella chiave.

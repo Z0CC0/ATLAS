@@ -111,7 +111,7 @@ pubblici, `atlas-browser` guida una pagina che gli hai indicato. Mandano la tua 
 | regole iniettate a `low` (predefinito) | 2.165 |
 | regole iniettate a `high` | 2.357 |
 | descrizioni di skill, comandi e subagenti, sempre presenti | 1.840 |
-| promemoria per turno | 42-47 |
+| promemoria per turno | 27-32 |
 | **totale al livello predefinito** | **4.005** |
 
 La build `atlas-min` porta le descrizioni a 153 e le regole a 1.838, perche' contiene solo le
@@ -120,8 +120,8 @@ descrizioni invece di 1.840. Toglie anche `atlas-search`, che e' la maniglia di 
 che li non c'e' — la disciplina di ricerca sta comunque nella manopola `check`,
 dove vale per ogni risposta invece che per un comando solo.
 
-**Il promemoria per turno conta piu' del costo iniziale su una sessione lunga.** A 42 token per
-turno, su una sessione da 295 turni — la media misurata su sessioni vere — sono 12.390 token,
+**Il promemoria per turno conta piu' del costo iniziale su una sessione lunga.** A 27 token per
+turno, su una sessione da 295 turni — la media misurata su sessioni vere — sono 7.965 token,
 piu' del doppio di tutto il resto messo insieme.
 
 Ogni comando installato costa circa 100 token a sessione per sempre, che tu lo usi o no:
@@ -134,7 +134,7 @@ le regole dei livelli sono filtrate: si inietta solo il livello attivo, mai tutt
 - Misurata contro il plugin assente su 24 domande inglesi e 24 italiane, ognuna con la sua scheda di fatti cosi' che cambi solo la forma, 2 giri a testa in sessioni nuove, token contati dall'API sul testo visibile: **`low` -47% in italiano e -51% in inglese, `high` -47% e -54%**. Dettagli persi, mediana: `low` 1 e 4 su 264, `high` 4 e 4. Rumore fra giri 4.1 punti: una differenza piu' piccola non e' un effetto
 - **`low` e `high` escono vicini.** `high` e' il regolamento piu' duro e si legge piu' telegrafico; la differenza in token e' di pochi punti
 - `atlas-min` e' misurata a parte, con le sue regole ridotte; `atlas-solo` ha le stesse regole di `atlas` byte per byte e non e' stata rimisurata
-- Non conviene su tutti gli usi. Le regole costano 1.838-2.357 token a sessione e il promemoria 42-47 a turno. Se le tue risposte sono corte, misura prima di fidarti
+- Non conviene su tutti gli usi. Le regole costano 1.838-2.357 token a sessione e il promemoria 27-32 a turno. Se le tue risposte sono corte, misura prima di fidarti
 - I comandi sono parole inglesi. Le richieste in qualsiasi lingua vengono riconosciute; le frasi che l'hook intercetta da solo ("stop atlas", "normal mode") sono solo inglesi, e `atlas off` funziona ovunque
 - `ask` non può sapere quello che non hai detto. Riduce le assunzioni sbagliate, non le elimina
 

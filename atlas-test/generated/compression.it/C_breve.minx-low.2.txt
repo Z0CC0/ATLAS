@@ -1,0 +1,5 @@
+No, di norma no. Su colonna con tre soli valori distinti, indice B-tree di norma non viene usato: planner preferisce scansione sequenziale quando filtro seleziona più di circa 5-10% delle righe.
+
+Indice non usato costa comunque scrittura e spazio.
+
+Eccezione: se uno dei tre valori è raro e filtri proprio su quello, indice parziale su quel valore funziona.

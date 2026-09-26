@@ -33,6 +33,7 @@ const ORDER = [
   'low-ask', 'low-check', 'low-ask-check',
   'high-ask', 'high-check', 'high-ask-check',
   'atlasmin-low', 'atlasmin-high',
+  'minx-low', 'minx-high', 'minx2-low', 'minx2-high',
   'caveman-lite', 'caveman-full', 'caveman-ultra',
   'adhd',
 ];

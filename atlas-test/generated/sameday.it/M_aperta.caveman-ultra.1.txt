@@ -1,0 +1,22 @@
+Prima dell'architettura, raccogli tre dati.
+
+**1. Quali parti del monolite cambiano davvero.** Le parti stabili non guadagnano nulla dall'essere spezzate. Lasciale dove sono.
+
+**2. Dove stanno i confini delle transazioni.** Una transazione che attraversa due servizi diventa un problema distribuito. Taglia lungo quei confini, non attraverso.
+
+**3. Cosa deve poter fare il team fra un anno che oggi non può.** Questa è la domanda decisiva, e non è tecnica. L'architettura segue da questa risposta.
+
+**Come riscrivere**
+
+Evita la riscrittura completa in parallelo al vecchio sistema. Fallisce quasi sempre: il vecchio continua a cambiare e la copia non lo raggiunge mai.
+
+Usa lo strangolamento progressivo:
+- Metti un router davanti al monolite.
+- Sposta un pezzo per volta.
+- Il vecchio sistema resta autorevole finché il nuovo non è verificato.
+
+**Microservizi o no**
+
+I microservizi costano di più in operatività. Ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupa. Sotto i cinque sviluppatori quel costo supera quasi sempre il beneficio.
+
+Considera il monolite modulare. È l'opzione poco citata. Ha confini interni netti e un solo rilascio. Puoi estrarre un modulo il giorno che serve davvero.

@@ -1,0 +1,15 @@
+HTTPS è semplicemente HTTP, lo stesso protocollo con cui il browser chiede e riceve le pagine web, fatto passare dentro un canale cifrato creato da **TLS**. La parte interessante è come si crea quel canale. Succede in pochi passi, prima che venga scambiato qualsiasi dato della pagina.
+
+**1. Il client si presenta.** Il browser apre la connessione e dice al server quali versioni di TLS e quali cifrari (cioè gli algoritmi di cifratura) è in grado di usare.
+
+**2. Il server sceglie e si identifica.** Il server risponde indicando il cifrario e la versione scelti fra quelli proposti, e manda il proprio **certificato**.
+
+**3. Il client controlla il certificato.** Un certificato lega un nome di dominio a una chiave pubblica ed è firmato da un'autorità di certificazione. Il browser verifica quella firma risalendo la catena di certificati fino a una radice che ha già in memoria. Se la catena arriva a una radice di cui si fida, il certificato è accettato.
+
+**4. Si concorda una chiave di sessione.** Client e server si mettono d'accordo su una chiave comune, oggi di solito con uno scambio Diffie-Hellman su curve ellittiche. Questa chiave è **simmetrica**, cioè la stessa chiave serve per cifrare e per decifrare. Si fa così perché la cifratura asimmetrica, quella con chiave pubblica e privata, costerebbe troppo per cifrare tutto il traffico vero e proprio.
+
+**5. Da qui in poi il traffico è protetto.** Tutto ciò che passa è cifrato e autenticato. Chi sta in mezzo non può leggerlo e non può modificarlo senza che la modifica venga scoperta.
+
+**Sulla velocità:** con TLS 1.3 tutta questa trattativa richiede un solo giro di andata e ritorno fra client e server, mentre con TLS 1.2 ne servivano due.
+
+**Cosa il certificato *non* garantisce:** il lucchetto non dice nulla su chi gestisce il sito. Dice solo che quel dominio controlla quella chiave. Quindi la connessione verso quel dominio è sicura, ma il sito non è per questo affidabile. Un sito truffaldino con un certificato valido resta truffaldino, solo che ci si connette in modo cifrato.

@@ -1,0 +1,1265 @@
+{
+  "_language": "en",
+  "_nota": "Compression, English. The same cases as compressione.it.json, carrying the same information, written in English rather than translated word for word. Replaceable: node genera.mjs --casi <your-file>",
+  "A_ricerca": {
+    "question": "What is the weather in Los Angeles today, when does it get dark, and what can I do tonight?",
+    "notes": [
+      "local time 10:20 PDT",
+      "scattered clouds in the morning, clearing in the afternoon",
+      "high forecast between 86 and 93 degrees Fahrenheit (30-34 Celsius), varying by source and area",
+      "downtown is the hottest point, the coast stays cooler",
+      "overnight low around 69 degrees Fahrenheit (21 Celsius)",
+      "dry air compared to New York: the heat feels milder at the same temperature",
+      "sunset at 19:35, in about 9 hours and 15 minutes",
+      "full dark (end of civil twilight) at 20:00, in about 9 hours and 40 minutes",
+      "first quarter moon, 52 per cent lit, so the sky stays fairly dark early in the night",
+      "free jazz concert at the Hammer Museum, Westwood, in the open courtyard, with Machado Mijiga, a multi-instrumentalist; free, outdoors, and in the right slot to catch the evening cooling",
+      "Mt. Joy at the Greek Theatre at 20:00; an amphitheatre inside Griffith Park, one of the best places in the city for a summer concert, and a short distance from the Griffith Observatory if you arrive early for sunset"
+    ],
+    "source": "web",
+    "facts": [
+      [
+        "10:20"
+      ],
+      [
+        "86",
+        "30"
+      ],
+      [
+        "93",
+        "34"
+      ],
+      [
+        "69",
+        "21"
+      ],
+      [
+        "same temperature",
+        "at the same temp",
+        "equal temperature"
+      ],
+      [
+        "19:35"
+      ],
+      [
+        "20:00"
+      ],
+      [
+        "9 hours and 15",
+        "9h 15",
+        "9h15",
+        "9 hr 15"
+      ],
+      [
+        "9 hours and 40",
+        "9h 40",
+        "9h40",
+        "9 hr 40"
+      ],
+      [
+        "52"
+      ],
+      [
+        "first quarter"
+      ],
+      [
+        "Hammer Museum"
+      ],
+      [
+        "Westwood"
+      ],
+      [
+        "Machado Mijiga"
+      ],
+      [
+        "multi-instrumentalist",
+        "multi instrumentalist"
+      ],
+      [
+        "evening cooling",
+        "evening cool",
+        "temperature drop"
+      ],
+      [
+        "Mt. Joy"
+      ],
+      [
+        "Greek Theatre"
+      ],
+      [
+        "Griffith Park"
+      ],
+      [
+        "Griffith Observatory"
+      ],
+      [
+        "coast"
+      ],
+      [
+        "downtown"
+      ],
+      [
+        "free"
+      ]
+    ]
+  },
+  "B_tecnica": {
+    "question": "My API gets slower and slower under load until it locks up. What is happening and how do I fix it?",
+    "notes": [
+      "the cause is connection pool exhaustion, not a slow query",
+      "in the middleware at db/session.py:47 the connection is released only on the success path",
+      "when the handler raises an exception, release() is never reached and the connection stays held until timeout",
+      "after a few hundred failed requests the pool empties and every later request waits",
+      "that is why you see rising latency instead of immediate errors",
+      "the fix is to wrap the acquisition in try/finally so the release happens on the error path too, with this code: conn = pool.acquire() / try: return handler(conn, request) / finally: pool.release(conn)",
+      "raising pool_size looks like a fix but only masks it: it pushes back the moment the pool empties without removing the connection leak",
+      "pool_size should be raised only after the fix is in, and only if the real load calls for it",
+      "to reproduce the behaviour before and after the change, run: pytest tests/test_pool.py -k exhaustion -x"
+    ],
+    "source": "from your files",
+    "facts": [
+      [
+        "connection pool"
+      ],
+      [
+        "db/session.py:47"
+      ],
+      [
+        "middleware"
+      ],
+      [
+        "release"
+      ],
+      [
+        "try/finally",
+        "try / finally"
+      ],
+      [
+        "pool.acquire"
+      ],
+      [
+        "pool.release"
+      ],
+      [
+        "rising latency",
+        "increasing latency",
+        "latency rises"
+      ],
+      [
+        "immediate errors",
+        "immediate error"
+      ],
+      [
+        "error path",
+        "on error",
+        "exception path"
+      ],
+      [
+        "pool_size"
+      ],
+      [
+        "mask"
+      ],
+      [
+        "real load",
+        "if the load",
+        "only if needed"
+      ],
+      [
+        "pytest tests/test_pool.py -k exhaustion -x"
+      ],
+      [
+        "before and after"
+      ]
+    ]
+  },
+  "C_breve": {
+    "question": "Is it worth putting an index on a column that has only three distinct values?",
+    "notes": [
+      "no, on a low cardinality column the B-tree index is normally not used",
+      "the planner prefers a sequential scan when the filter selects more than roughly 5-10 per cent of the rows",
+      "the index still costs writes and disk space",
+      "the exception is a partial index on the rare value, which does work"
+    ],
+    "source": "internal knowledge",
+    "facts": [
+      [
+        "no"
+      ],
+      [
+        "cardinalit"
+      ],
+      [
+        "B-tree",
+        "btree"
+      ],
+      [
+        "sequential scan",
+        "seq scan"
+      ],
+      [
+        "5",
+        "10"
+      ],
+      [
+        "write"
+      ],
+      [
+        "space",
+        "disk"
+      ],
+      [
+        "partial index"
+      ]
+    ]
+  },
+  "D_lista": {
+    "question": "Which security headers should I set on a site that only serves static pages?",
+    "notes": [
+      "Strict-Transport-Security with a max-age of at least 31536000 seconds and includeSubDomains, forcing the browser onto HTTPS",
+      "Content-Security-Policy with default-src 'self', which is what blocks third-party script injection",
+      "X-Content-Type-Options set to nosniff, stopping the browser from guessing the content type",
+      "Referrer-Policy set to strict-origin-when-cross-origin, so the full path does not leak to other sites",
+      "X-Frame-Options set to DENY, or frame-ancestors 'none' inside the Content-Security-Policy, against clickjacking",
+      "Permissions-Policy to switch off camera, microphone and geolocation if the site does not use them",
+      "X-XSS-Protection is deprecated and should be omitted: modern browsers ignore it and older versions introduced vulnerabilities"
+    ],
+    "source": "internal knowledge",
+    "facts": [
+      [
+        "Strict-Transport-Security"
+      ],
+      [
+        "31536000"
+      ],
+      [
+        "includeSubDomains"
+      ],
+      [
+        "Content-Security-Policy"
+      ],
+      [
+        "default-src"
+      ],
+      [
+        "X-Content-Type-Options"
+      ],
+      [
+        "nosniff"
+      ],
+      [
+        "Referrer-Policy"
+      ],
+      [
+        "strict-origin-when-cross-origin"
+      ],
+      [
+        "X-Frame-Options"
+      ],
+      [
+        "DENY",
+        "frame-ancestors"
+      ],
+      [
+        "Permissions-Policy"
+      ],
+      [
+        "camera"
+      ],
+      [
+        "geolocation"
+      ],
+      [
+        "X-XSS-Protection"
+      ],
+      [
+        "deprecat"
+      ]
+    ]
+  },
+  "E_confronto": {
+    "question": "For a background job queue on a small project, is Redis or Postgres the better choice?",
+    "notes": [
+      "Postgres with SELECT FOR UPDATE SKIP LOCKED is enough up to roughly a thousand jobs per minute",
+      "with Postgres the job sits in the same transaction as the data, so a job can never start while the matching write is rolled back",
+      "Postgres gives persistence for free: if the process dies the queue is still there",
+      "Redis handles far more volume and has lower latency, under a millisecond",
+      "Redis means one more service to run, monitor and upgrade",
+      "with Redis persistence has to be configured: without AOF enabled a restart loses the queued jobs",
+      "for a small project the recommendation is Postgres, moving to Redis when the volume genuinely demands it"
+    ],
+    "source": "internal knowledge",
+    "facts": [
+      [
+        "SKIP LOCKED"
+      ],
+      [
+        "thousand jobs",
+        "1000 jobs",
+        "1,000 jobs"
+      ],
+      [
+        "same transaction"
+      ],
+      [
+        "persistence"
+      ],
+      [
+        "latency"
+      ],
+      [
+        "millisecond"
+      ],
+      [
+        "one more service",
+        "another service",
+        "extra service"
+      ],
+      [
+        "AOF"
+      ],
+      [
+        "restart"
+      ],
+      [
+        "Postgres"
+      ],
+      [
+        "Redis"
+      ]
+    ],
+    "giudizio": "Reaches a recommendation between the two, rather than staying a neutral list."
+  },
+  "F_codice": {
+    "question": "How do I debounce a function in JavaScript without any library?",
+    "notes": [
+      "the implementation is: function debounce(fn, ms) { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); }; }",
+      "clearTimeout has to be called before every new setTimeout, or timers pile up and the function fires more than once",
+      "the variable t must live in the closure, not inside the returned function, or every call would get its own timer and no debouncing would happen",
+      "the arguments have to be forwarded with the spread, or the called function receives nothing",
+      "this version returns nothing: if the return value matters you need a Promise",
+      "for the opposite case, running immediately and then ignoring for a period, you want a throttle, which is a different function"
+    ],
+    "source": "internal knowledge",
+    "facts": [
+      [
+        "clearTimeout"
+      ],
+      [
+        "setTimeout"
+      ],
+      [
+        "debounce"
+      ],
+      [
+        "closure"
+      ],
+      [
+        "spread",
+        "...args"
+      ],
+      [
+        "returns nothing",
+        "no return value"
+      ],
+      [
+        "Promise"
+      ],
+      [
+        "throttle"
+      ]
+    ]
+  },
+  "G_procedura": {
+    "question": "How do I change a column from varchar to integer on a table with ten million rows, in production?",
+    "notes": [
+      "first: check every existing value is convertible, by counting the rows that are not all digits",
+      "second: add a new column, ALTER TABLE t ADD COLUMN colonna_int integer",
+      "third: fill it in batches of ten thousand rows, so no long lock is held on the table",
+      "fourth: add a trigger keeping the two columns in step during the migration",
+      "fifth: change the code to read from the new column, and ship it",
+      "sixth and only then: drop the old column with ALTER TABLE t DROP COLUMN colonna",
+      "the sixth step is irreversible: once the column is dropped the data does not come back without a restore from backup",
+      "a direct ALTER TABLE ALTER COLUMN TYPE rewrites the whole table holding an ACCESS EXCLUSIVE lock, meaning the service is down for the entire duration"
+    ],
+    "source": "internal knowledge",
+    "facts": [
+      [
+        "ADD COLUMN"
+      ],
+      [
+        "ten thousand",
+        "10,000",
+        "10000"
+      ],
+      [
+        "lock"
+      ],
+      [
+        "trigger"
+      ],
+      [
+        "DROP COLUMN"
+      ],
+      [
+        "irreversibl"
+      ],
+      [
+        "backup"
+      ],
+      [
+        "ACCESS EXCLUSIVE"
+      ],
+      [
+        "rewrite"
+      ]
+    ]
+  },
+  "H_lunga": {
+    "question": "Can you explain how prompt caching works and when it pays off?",
+    "notes": [
+      "the cache keeps the already-processed prefix of a request, so later requests starting the same way do not pay for it again",
+      "it only works on the prefix: one different character at the start and there is no reuse from that point on",
+      "so the stable parts go first and the changing parts after, not the other way round",
+      "writing to the cache costs more than a normal read, so the first request is more expensive",
+      "the gain starts from the second request onward, and grows with the number of turns",
+      "it pays off on long conversations with a large stable context: system instructions, attached documentation, tool definitions",
+      "it does not pay off on single requests that differ from each other, where you pay the write and never read it back",
+      "a system line that changes every turn, such as a clock, kills the reuse of everything after it"
+    ],
+    "source": "internal knowledge",
+    "facts": [
+      [
+        "prefix"
+      ],
+      [
+        "one character",
+        "single character",
+        "different character"
+      ],
+      [
+        "stable"
+      ],
+      [
+        "first"
+      ],
+      [
+        "more expensive",
+        "costs more"
+      ],
+      [
+        "second request",
+        "from the second"
+      ],
+      [
+        "turns",
+        "long conversations"
+      ],
+      [
+        "tool"
+      ],
+      [
+        "single request",
+        "one-off",
+        "one off"
+      ],
+      [
+        "clock",
+        "timestamp"
+      ]
+    ]
+  },
+  "I_sicurezza": {
+    "question": "Can I put the API key in the frontend if I obfuscate it a bit?",
+    "notes": [
+      "no: anything that reaches the browser is readable, and obfuscation falls apart the moment someone opens the developer tools or looks at the network requests",
+      "the key belongs on the server, and the frontend calls an endpoint on its own backend which in turn calls the service",
+      "that backend endpoint needs a rate limit, or it becomes a free way to use your key",
+      "if the key has already been published it must be treated as compromised and rotated at once, not merely removed from the code",
+      "taking it out of a commit is not enough: it stays in the repository history and anyone with a clone already has it"
+    ],
+    "source": "internal knowledge",
+    "facts": [
+      [
+        "no"
+      ],
+      [
+        "readable",
+        "visible"
+      ],
+      [
+        "developer tools",
+        "devtools",
+        "network requests"
+      ],
+      [
+        "server",
+        "backend"
+      ],
+      [
+        "rate limit"
+      ],
+      [
+        "rotate",
+        "rotated"
+      ],
+      [
+        "compromised"
+      ],
+      [
+        "history"
+      ]
+    ]
+  },
+  "L_unafrase": {
+    "question": "In Python, is an empty list falsy in a boolean context?",
+    "notes": [
+      "yes",
+      "it holds for every empty collection: list, tuple, dict, set and string"
+    ],
+    "source": "internal knowledge",
+    "facts": [
+      [
+        "yes"
+      ],
+      [
+        "empty"
+      ],
+      [
+        "dict"
+      ],
+      [
+        "string"
+      ]
+    ]
+  },
+  "M_aperta": {
+    "question": "I am about to rewrite a service that is currently a PHP monolith. What should I consider before deciding the architecture?",
+    "notes": [
+      "the first thing to know is which part of the monolith actually changes: the stable parts gain nothing from being split",
+      "the second is where the transaction boundaries sit, because a transaction spanning two services becomes a distributed problem",
+      "a full rewrite running in parallel with the old system almost always fails: the old one keeps changing and the copy never catches up",
+      "the alternative is progressive strangling: put a router in front, move one piece at a time, and keep the old one authoritative until the new one is verified",
+      "microservices cost more in operations: every service wants releases, monitoring, logs, alerts and a person who looks after it",
+      "below five developers the operational cost of microservices almost always exceeds the benefit",
+      "the modular monolith is the option nobody mentions: sharp internal boundaries, one release, and the option to extract a module the day it is genuinely needed",
+      "the deciding question is not technical: what must the team be able to do a year from now that it cannot do today"
+    ],
+    "source": "internal knowledge",
+    "facts": [
+      [
+        "part that changes",
+        "actually changes",
+        "stable parts"
+      ],
+      [
+        "transaction"
+      ],
+      [
+        "full rewrite",
+        "in parallel"
+      ],
+      [
+        "strangl",
+        "router",
+        "one piece at a time"
+      ],
+      [
+        "operation",
+        "release"
+      ],
+      [
+        "monitoring"
+      ],
+      [
+        "five developers",
+        "5 developers"
+      ],
+      [
+        "modular monolith"
+      ],
+      [
+        "extract"
+      ],
+      [
+        "a year",
+        "year from now"
+      ]
+    ]
+  },
+  "N_spiegazione": {
+    "question": "Can you explain what eventual consistency is and why I should care?",
+    "notes": [
+      "eventual consistency means that after a write the replicas do not agree immediately, but converge within a finite time if the writes stop",
+      "the trade is against availability: a system demanding strong consistency has to refuse requests when the replicas cannot talk",
+      "it matters to whoever reads right after writing: the user posts a comment, reloads, and does not see it",
+      "the common fix is to read from the primary replica for the session that just wrote, not for everyone",
+      "typical convergence time across replicas in the same region is under a second, across regions it rises to seconds",
+      "it is not a defect to be eliminated but a choice: most systems that scale accept it deliberately",
+      "the cases where it is unacceptable are few and recognisable: account balances, seat availability, uniqueness of an identifier"
+    ],
+    "source": "internal knowledge",
+    "facts": [
+      [
+        "converge"
+      ],
+      [
+        "availability"
+      ],
+      [
+        "strong consistency"
+      ],
+      [
+        "right after",
+        "just wrote",
+        "immediately after"
+      ],
+      [
+        "primary"
+      ],
+      [
+        "under a second"
+      ],
+      [
+        "region"
+      ],
+      [
+        "choice"
+      ],
+      [
+        "balance"
+      ],
+      [
+        "seat"
+      ]
+    ]
+  },
+  "O_critica": {
+    "question": "I want to put all the business logic in database triggers so it is impossible to bypass. What do you think?",
+    "notes": [
+      "the upside is real: no application path can skip the rule, not even a script run by hand",
+      "but triggers are invisible to anyone reading the application code: a change that looks simple fires others with no trace",
+      "they are not tested with the tools the team already uses: you need tests running against a real database",
+      "debugging is worse: an error inside a trigger arrives as a failed write, without saying which rule caused it",
+      "migrations become fragile, because trigger order matters and is declared nowhere",
+      "the alternative is to keep in the database only what protects integrity — constraints, foreign keys, uniqueness, domain checks — and the business logic in the application, behind a single entry point",
+      "that single entry point gives the same guarantee as the trigger, as long as direct database access is reserved to migrations"
+    ],
+    "source": "internal knowledge",
+    "facts": [
+      [
+        "no application path",
+        "skip",
+        "bypass"
+      ],
+      [
+        "invisible"
+      ],
+      [
+        "test"
+      ],
+      [
+        "debug"
+      ],
+      [
+        "migration"
+      ],
+      [
+        "trigger order",
+        "order"
+      ],
+      [
+        "constraint",
+        "foreign key",
+        "uniqueness"
+      ],
+      [
+        "entry point"
+      ]
+    ]
+  },
+  "P_confronto_lungo": {
+    "question": "Should I keep logs in files, in a managed service, or in a database? The project is an API doing about a thousand requests a minute.",
+    "notes": [
+      "files: zero cost, no dependency, but searching means grep and rotation has to be configured by hand or the disk fills",
+      "files: searching across several machines does not exist, you have to connect to each one",
+      "managed service: instant search, alerts, automatic retention, but you pay by volume and at a thousand requests a minute the volume grows fast",
+      "managed service: the logs leave your own infrastructure, so personal data has to be stripped before they go",
+      "database: searching is familiar and convenient, but writing logs into the application's own database puts two very different workloads in competition",
+      "database: under load, the logs fill caches and connections that the real requests needed",
+      "at a thousand requests a minute the sensible choice is local files plus a collector that ships them elsewhere, so the application never waits on a log write",
+      "the rule that always holds: writing the log must not sit in the critical path of the request"
+    ],
+    "source": "internal knowledge",
+    "facts": [
+      [
+        "grep",
+        "search"
+      ],
+      [
+        "rotation"
+      ],
+      [
+        "disk"
+      ],
+      [
+        "several machines",
+        "each machine",
+        "every machine"
+      ],
+      [
+        "alert"
+      ],
+      [
+        "volume"
+      ],
+      [
+        "personal data"
+      ],
+      [
+        "same database",
+        "competition",
+        "two workloads"
+      ],
+      [
+        "connection"
+      ],
+      [
+        "collector",
+        "ship"
+      ],
+      [
+        "critical path"
+      ]
+    ]
+  },
+  "S01_ora": {
+    "question": "What time is it in London?",
+    "notes": [
+      "it is 14:20 local time in London"
+    ],
+    "source": "internal knowledge",
+    "facts": [
+      [
+        "14:20"
+      ]
+    ]
+  },
+  "S02_capitale": {
+    "question": "What is the capital of Australia?",
+    "notes": [
+      "the capital is Canberra",
+      "it is not Sydney, which is only the most populous city"
+    ],
+    "source": "internal knowledge",
+    "facts": [
+      [
+        "Canberra"
+      ],
+      [
+        "Sydney"
+      ]
+    ]
+  },
+  "S03_letconst": {
+    "question": "What is the difference between let and const in JavaScript?",
+    "notes": [
+      "const prevents reassigning the name, not modifying the value",
+      "an object declared with const can change internally",
+      "let allows reassignment",
+      "both are block scoped, unlike var"
+    ],
+    "source": "internal knowledge",
+    "facts": [
+      [
+        "reassign"
+      ],
+      [
+        "object"
+      ],
+      [
+        "block scope",
+        "block-scoped"
+      ],
+      [
+        "var"
+      ]
+    ]
+  },
+  "S04_meteo_domani": {
+    "question": "What will the weather be tomorrow in New York?",
+    "notes": [
+      "clear sky in the morning, cloudy from the afternoon",
+      "high 24 degrees Celsius, low 17",
+      "30 per cent chance of rain after 18:00",
+      "wind from the north-west at 15 kilometres per hour",
+      "humidity around 60 per cent"
+    ],
+    "source": "web",
+    "facts": [
+      [
+        "clear"
+      ],
+      [
+        "cloudy"
+      ],
+      [
+        "24"
+      ],
+      [
+        "17"
+      ],
+      [
+        "30"
+      ],
+      [
+        "18"
+      ],
+      [
+        "north-west",
+        "northwest",
+        "NW"
+      ],
+      [
+        "15"
+      ],
+      [
+        "60"
+      ]
+    ]
+  },
+  "S05_gpu": {
+    "question": "What is the difference between an RTX 5080 and an RTX 4080?",
+    "notes": [
+      "the 5080 uses the Blackwell architecture, the 4080 Ada Lovelace",
+      "the 5080 carries GDDR7 memory, the 4080 GDDR6X",
+      "memory bandwidth goes from about 717 to about 960 gigabytes per second",
+      "rated power draw rises from 320 to 360 watts",
+      "the biggest jump is in frame generation, not raw rasterisation",
+      "on rasterisation the real gain is in the order of 10-15 per cent",
+      "the power connector stays at 16 pins"
+    ],
+    "source": "internal knowledge",
+    "facts": [
+      [
+        "Blackwell"
+      ],
+      [
+        "Ada Lovelace",
+        "Ada"
+      ],
+      [
+        "GDDR7"
+      ],
+      [
+        "GDDR6X"
+      ],
+      [
+        "960",
+        "717"
+      ],
+      [
+        "320"
+      ],
+      [
+        "360"
+      ],
+      [
+        "frame generation",
+        "frame gen"
+      ],
+      [
+        "10-15",
+        "10",
+        "15"
+      ],
+      [
+        "16 pin"
+      ]
+    ]
+  },
+  "S06_meteo_settimana": {
+    "question": "Give me the weather for the week in New York.",
+    "notes": [
+      "Monday: clear, 24 degrees, low 17",
+      "Tuesday: cloudy, 22 degrees, low 16, light rain in the evening",
+      "Wednesday: rain for most of the day, 19 degrees, low 15",
+      "Thursday: brighter spells, 21 degrees, low 14",
+      "Friday: clear, 25 degrees, low 16",
+      "Saturday: clear and warm, 28 degrees, low 19",
+      "Sunday: thunderstorms in the afternoon, 26 degrees, low 18",
+      "the week has two days with significant rainfall, Wednesday and Sunday",
+      "the weekend is the warmest stretch"
+    ],
+    "source": "web",
+    "facts": [
+      [
+        "Monday"
+      ],
+      [
+        "Tuesday"
+      ],
+      [
+        "Wednesday"
+      ],
+      [
+        "Thursday"
+      ],
+      [
+        "Friday"
+      ],
+      [
+        "Saturday"
+      ],
+      [
+        "Sunday"
+      ],
+      [
+        "24"
+      ],
+      [
+        "22"
+      ],
+      [
+        "19"
+      ],
+      [
+        "21"
+      ],
+      [
+        "25"
+      ],
+      [
+        "28"
+      ],
+      [
+        "26"
+      ],
+      [
+        "thunderstorm"
+      ],
+      [
+        "weekend"
+      ]
+    ]
+  },
+  "S07_https": {
+    "question": "Can you explain how HTTPS works?",
+    "notes": [
+      "HTTPS is HTTP inside a channel encrypted by TLS",
+      "the client opens the connection and states which TLS versions and ciphers it supports",
+      "the server answers picking a cipher and a version, and sends its certificate",
+      "the certificate binds a domain name to a public key and is signed by a certificate authority",
+      "the client verifies the signature by walking the chain up to a root it already holds",
+      "client and server agree a session key, today typically with an elliptic curve Diffie-Hellman exchange",
+      "the session key is symmetric because asymmetric encryption costs too much for real traffic",
+      "from that point the traffic is encrypted and authenticated, so it is neither readable nor modifiable by anyone in the middle",
+      "TLS 1.3 cuts the handshake to a single round trip, against two in TLS 1.2",
+      "the certificate says nothing about who runs the site: it says only that the domain controls that key"
+    ],
+    "source": "internal knowledge",
+    "facts": [
+      [
+        "TLS"
+      ],
+      [
+        "cipher"
+      ],
+      [
+        "certificate"
+      ],
+      [
+        "public key"
+      ],
+      [
+        "authority",
+        "CA"
+      ],
+      [
+        "chain"
+      ],
+      [
+        "Diffie-Hellman",
+        "Diffie"
+      ],
+      [
+        "elliptic curve",
+        "elliptic"
+      ],
+      [
+        "symmetric"
+      ],
+      [
+        "1.3"
+      ],
+      [
+        "1.2"
+      ],
+      [
+        "round trip",
+        "round-trip"
+      ],
+      [
+        "in the middle",
+        "man in the middle",
+        "intercept"
+      ]
+    ]
+  },
+  "S08_bitcoin": {
+    "question": "Explain how Bitcoin came about.",
+    "notes": [
+      "in 2008 a paper appears signed Satoshi Nakamoto, a pseudonym never identified",
+      "the paper is titled Bitcoin: A Peer-to-Peer Electronic Cash System",
+      "the problem it tackles is double spending without a central body keeping the ledger",
+      "the solution is a chain of blocks ordered by a proof of work",
+      "the proof of work makes rewriting the past expensive, because it would have to be redone for every later block",
+      "the first block is generated on 3 January 2009 and contains the headline of a Times article about a bank bailout",
+      "that reference works both as a timestamp and as a statement of intent",
+      "the block reward starts at 50 bitcoin and halves every 210,000 blocks, roughly four years",
+      "the total issued tends to 21 million and no further",
+      "the first documented commercial transaction is from 2010, two pizzas paid with 10,000 bitcoin",
+      "Satoshi stops taking part publicly in 2011 and those bitcoin have never been moved",
+      "the project grows out of the cypherpunk scene, after earlier attempts such as b-money and bit gold that did not solve ordering"
+    ],
+    "source": "internal knowledge",
+    "facts": [
+      [
+        "2008"
+      ],
+      [
+        "Satoshi Nakamoto",
+        "Satoshi"
+      ],
+      [
+        "Peer-to-Peer",
+        "peer to peer"
+      ],
+      [
+        "double spend"
+      ],
+      [
+        "proof of work"
+      ],
+      [
+        "3 January 2009",
+        "2009"
+      ],
+      [
+        "Times"
+      ],
+      [
+        "50"
+      ],
+      [
+        "210,000",
+        "210000"
+      ],
+      [
+        "four years",
+        "4 years"
+      ],
+      [
+        "21 million"
+      ],
+      [
+        "2010"
+      ],
+      [
+        "pizza"
+      ],
+      [
+        "10,000",
+        "10000"
+      ],
+      [
+        "2011"
+      ],
+      [
+        "cypherpunk"
+      ],
+      [
+        "b-money",
+        "bit gold"
+      ]
+    ]
+  },
+  "S09_x86": {
+    "question": "Walk me through the evolution of the x86 architecture from the early eighties to today.",
+    "notes": [
+      "the 8086 of 1978 is 16 bit and grows out of the 8080, compatible at source level",
+      "the 80286 of 1982 introduces protected mode, but there is no way back to real mode without a reboot",
+      "the 80386 of 1985 brings 32 bit, paged virtual memory and virtual 8086 mode",
+      "the 486 of 1989 pulls the first level cache and the maths coprocessor onto the chip",
+      "the Pentium of 1993 is superscalar: two integer pipelines that can retire two instructions per cycle",
+      "the Pentium Pro of 1995 introduces out of order execution and translates x86 instructions into internal micro-operations",
+      "from that point x86 is an interface, no longer the real machine underneath",
+      "the Pentium 4 of 2000 chases frequency with a very long pipeline and hits the power wall",
+      "AMD extends the architecture to 64 bit in 2003 with AMD64, and Intel adopts the same instruction set",
+      "it is the first time the dominant extension does not come from Intel",
+      "from 2006 the direction shifts from frequency to core count, with the Core 2",
+      "the vector extensions grow across generations: MMX, SSE, AVX, AVX-512",
+      "today the complexity sits in the layers below: branch prediction, cache hierarchy, speculative execution",
+      "Spectre and Meltdown in 2018 show that speculative execution carried a security cost nobody had priced"
+    ],
+    "source": "internal knowledge",
+    "facts": [
+      [
+        "8086"
+      ],
+      [
+        "1978"
+      ],
+      [
+        "80286",
+        "286"
+      ],
+      [
+        "protected mode"
+      ],
+      [
+        "80386",
+        "386"
+      ],
+      [
+        "32 bit",
+        "32-bit"
+      ],
+      [
+        "486"
+      ],
+      [
+        "cache"
+      ],
+      [
+        "Pentium"
+      ],
+      [
+        "superscalar"
+      ],
+      [
+        "Pentium Pro"
+      ],
+      [
+        "out of order",
+        "out-of-order"
+      ],
+      [
+        "micro-operation",
+        "micro-op",
+        "uop"
+      ],
+      [
+        "Pentium 4"
+      ],
+      [
+        "frequency"
+      ],
+      [
+        "AMD64"
+      ],
+      [
+        "2003"
+      ],
+      [
+        "core"
+      ],
+      [
+        "MMX",
+        "SSE",
+        "AVX"
+      ],
+      [
+        "Spectre"
+      ],
+      [
+        "Meltdown"
+      ],
+      [
+        "speculative"
+      ]
+    ]
+  },
+  "S10_database": {
+    "question": "I have to pick the database for a platform handling orders, a catalogue, text search and analytics. Compare the options.",
+    "notes": [
+      "Postgres handles all four workloads acceptably and none of them outstandingly",
+      "Postgres gives real transactions, which on orders are not negotiable",
+      "Postgres has built-in text search, good enough below a million documents, weak above",
+      "Postgres carries analytics up to tens of millions of rows, after which the scans get slow",
+      "MySQL is equivalent on orders and weaker on data types and complex queries",
+      "MongoDB makes the catalogue easier with variable schemas, but multi-document transactions arrived late and cost",
+      "Elasticsearch is far better at text search: relevance, synonyms, tolerance of typos",
+      "Elasticsearch is not an authoritative store: it has to be fed from another database, not replace it",
+      "ClickHouse is far better at analytics, with columnar scans orders of magnitude ahead",
+      "ClickHouse is not for orders: point updates are its weak spot",
+      "the usual setup is Postgres as the authoritative store, plus Elasticsearch and ClickHouse fed from it",
+      "every system added brings a synchronisation problem and a data alignment problem",
+      "the practical rule is to start with Postgres alone, and add a system when a specific workload demands it with numbers in hand",
+      "adding Elasticsearch below a million documents is almost always premature",
+      "the real cost of specialised systems is not the licence but the time of the people keeping them up"
+    ],
+    "source": "internal knowledge",
+    "facts": [
+      [
+        "Postgres"
+      ],
+      [
+        "transaction"
+      ],
+      [
+        "text search"
+      ],
+      [
+        "million"
+      ],
+      [
+        "MySQL"
+      ],
+      [
+        "MongoDB"
+      ],
+      [
+        "variable schema",
+        "schema"
+      ],
+      [
+        "multi-document",
+        "multi document"
+      ],
+      [
+        "Elasticsearch"
+      ],
+      [
+        "relevance"
+      ],
+      [
+        "synonym"
+      ],
+      [
+        "authoritative"
+      ],
+      [
+        "ClickHouse"
+      ],
+      [
+        "columnar"
+      ],
+      [
+        "point update"
+      ],
+      [
+        "synchronis",
+        "synchroniz"
+      ],
+      [
+        "start with Postgres",
+        "Postgres alone"
+      ],
+      [
+        "people",
+        "time"
+      ]
+    ]
+  }
+}

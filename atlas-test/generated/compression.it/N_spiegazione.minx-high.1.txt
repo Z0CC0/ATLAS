@@ -1,0 +1,11 @@
+**Consistenza eventuale**: dopo una scrittura le repliche non concordano subito, ma convergono entro un tempo finito se le scritture si fermano.
+
+Ti interessa perché colpisce chi legge subito dopo aver scritto: l'utente pubblica un commento, ricarica la pagina e non lo vede.
+
+Soluzione comune: la sessione che ha appena scritto legge dalla replica primaria. Le altre sessioni no.
+
+Tempo di convergenza tipico: sotto il secondo tra repliche nella stessa regione, alcuni secondi tra regioni diverse.
+
+Non è un difetto da eliminare, è una scelta. Il prezzo della consistenza forte è la disponibilità: quando le repliche non si parlano, il sistema deve rifiutare le richieste. Per questo la maggior parte dei sistemi che scalano accetta di proposito la consistenza eventuale.
+
+Pochi casi, facili da riconoscere, dove non è accettabile: saldi di conto, disponibilità di posti, unicità di un identificativo.

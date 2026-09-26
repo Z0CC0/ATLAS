@@ -1,0 +1,11 @@
+Here's the weather in New York this week, based on web sources.
+
+**Monday to Tuesday:** Monday is clear, with a high of 24° and a low of 17°. Tuesday is cloudy, with a high of 22° and a low of 16°. Light rain arrives in the evening, so take an umbrella if you'll be out late.
+
+**Wednesday:** This is the wettest day of the week. Rain is expected for most of the day, with a high of only 19° and a low of 15°.
+
+**Thursday to Friday:** Thursday has some brighter spells, with a high of 21° and a low of 14°. Friday is clear, with a high of 25° and a low of 16°.
+
+**The weekend:** This is the warmest part of the week. Saturday is clear and warm, with a high of 28° and a low of 19°, so it's the best day for anything outdoors. Sunday stays warm, with a high of 26° and a low of 18°. Thunderstorms are expected in the afternoon, so plan outdoor activities for the morning.
+
+Wednesday and Sunday are the two days with significant rain.

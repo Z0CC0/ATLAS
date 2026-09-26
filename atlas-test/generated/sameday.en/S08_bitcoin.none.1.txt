@@ -1,0 +1,13 @@
+Bitcoin came out of the cypherpunk scene, a community that had been trying for years to build digital money that didn't depend on banks or governments. Earlier designs such as b-money and bit gold came close, but none of them solved the problem of ordering: how a network of strangers can agree on which transaction came first.
+
+That problem is what makes **double spending** possible. A digital coin is just data, so nothing stops someone from spending the same coin twice unless somebody keeps an authoritative ledger. Traditionally that somebody is a central body such as a bank. The open question was how to keep a trustworthy ledger with no one in charge of it.
+
+In 2008 a paper titled *Bitcoin: A Peer-to-Peer Electronic Cash System* appeared, signed **Satoshi Nakamoto**. That's a pseudonym, and the person or people behind it have never been identified. The paper's answer was a **chain of blocks ordered by proof of work**. Transactions are grouped into blocks, and each block needs a costly computational effort before it can be added to the chain. Because every block builds on the one before it, rewriting any past transaction means redoing the proof of work for that block and for every block that came after it. The further back the change, the more expensive it gets, and that cost is what keeps the history reliable without a central keeper.
+
+The network started on **3 January 2009** with the first block. Satoshi put in it the headline of a *Times* article about a bank bailout. The reference did two jobs. It proved the block couldn't have been made before that date, so it worked as a timestamp. It also stated what the project was reacting against.
+
+The monetary rules were built into the system from the start. Whoever adds a block receives a reward, which began at **50 bitcoin** and **halves every 210,000 blocks**, roughly every four years. Because of this schedule, the total supply approaches **21 million** bitcoin and never goes beyond it.
+
+The first documented commercial use came in **2010**, when someone paid **10,000 bitcoin for two pizzas**. At the time that was simply what the coins were worth to people.
+
+In **2011** Satoshi stopped taking part publicly. The bitcoin attributed to them have never been moved. That silence left the project in the hands of the community that had grown up around it.

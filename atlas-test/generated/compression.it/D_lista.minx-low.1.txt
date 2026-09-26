@@ -1,0 +1,24 @@
+Ti servono sei header, più uno da togliere se è presente.
+
+`Strict-Transport-Security` con `max-age` di almeno 31536000 secondi e `includeSubDomains`: obbliga il browser a usare sempre HTTPS.
+
+`Content-Security-Policy` con `default-src 'self'`: è l'header che blocca l'iniezione di script di terze parti.
+
+`X-Content-Type-Options: nosniff`: impedisce al browser di indovinare il tipo di contenuto dei file.
+
+`Referrer-Policy: strict-origin-when-cross-origin`: evita che il percorso completo delle tue pagine venga inviato ad altri siti.
+
+`X-Frame-Options: DENY`, oppure `frame-ancestors 'none'` dentro la `Content-Security-Policy`: protegge dal clickjacking.
+
+`Permissions-Policy`: disattiva camera, microfono e geolocalizzazione, se il sito non li usa.
+
+Non mettere `X-XSS-Protection` e toglilo se c'è già. È deprecato e i browser moderni lo ignorano. Nelle versioni vecchie dei browser, inoltre, introduceva delle vulnerabilità.
+
+```
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+Content-Security-Policy: default-src 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+X-Frame-Options: DENY
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+```

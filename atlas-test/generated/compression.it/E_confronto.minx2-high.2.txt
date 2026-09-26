@@ -1,0 +1,9 @@
+Postgres. Passa a Redis solo quando il volume lo impone davvero.
+
+Con `SELECT FOR UPDATE SKIP LOCKED` Postgres basta fino a circa mille lavori al minuto.
+
+Il lavoro sta nella stessa transazione dei dati, quindi non può mai partire un lavoro la cui scrittura viene poi annullata.
+
+La persistenza è gratis: se il processo muore, la coda è ancora lì.
+
+Redis regge molto più volume e ha latenza sotto il millisecondo, ma è un servizio in più da gestire, monitorare e aggiornare. La persistenza va configurata: senza AOF attivo, un riavvio perde i lavori in coda.

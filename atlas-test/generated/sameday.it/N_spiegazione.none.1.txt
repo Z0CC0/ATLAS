@@ -1,0 +1,22 @@
+**La consistenza eventuale** vuol dire che quando scrivi un dato, le varie copie (repliche) del database non si aggiornano tutte nello stesso istante. Per un po' possono darti risposte diverse. Se però le scritture si fermano, entro un tempo finito tutte le copie arrivano allo stesso valore.
+
+Di solito "un po'" è poco. Fra repliche nella stessa regione ci vuole meno di un secondo. Fra regioni diverse si sale a qualche secondo.
+
+### Perché dovrebbe interessarti
+
+Il problema lo vede chi legge subito dopo aver scritto. Un utente pubblica un commento, ricarica la pagina e il commento non c'è, perché la lettura è andata su una replica che non l'ha ancora ricevuto. Per l'utente sembra un bug, anche se il sistema funziona come previsto.
+
+La soluzione più comune è leggere dalla replica primaria solo per la sessione che ha appena scritto, non per tutti. Chi ha pubblicato il commento lo vede subito. Gli altri lo vedranno appena le repliche si allineano, e di solito nessuno se ne accorge.
+
+### Perché non si "ripara" e basta
+
+Non è un difetto da eliminare, è una scelta. Il compromesso è con la disponibilità. Un sistema che vuole consistenza forte, quando le repliche non riescono a comunicare, deve rifiutare le richieste piuttosto che rischiare di dare una risposta vecchia. Per questo la maggior parte dei sistemi che scalano accetta la consistenza eventuale di proposito: preferisce rispondere sempre, anche se ogni tanto con un piccolo ritardo.
+
+### Quando invece non va bene
+
+I casi in cui non è accettabile sono pochi e facili da riconoscere:
+- **Saldi di conto**: non puoi permettere due prelievi basati su un saldo vecchio.
+- **Disponibilità di posti**: non puoi vendere lo stesso posto a due persone.
+- **Unicità di un identificativo**: due utenti non possono ottenere lo stesso nome o lo stesso codice.
+
+Se il tuo caso non rientra in questi, quasi sempre la consistenza eventuale va bene. Ti basta gestire bene il "leggo subito dopo aver scritto".

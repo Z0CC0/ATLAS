@@ -1,0 +1,9 @@
+5080 gains mostly in frame generation, not raw rasterisation. Raster gain in the order of 10-15 per cent.
+
+Architecture: Blackwell on 5080, Ada Lovelace on 4080.
+
+Memory: GDDR7 instead of GDDR6X, bandwidth about 717 up to about 960 GB/s.
+
+Rated power: 320 up to 360 W.
+
+Power connector: still 16-pin.

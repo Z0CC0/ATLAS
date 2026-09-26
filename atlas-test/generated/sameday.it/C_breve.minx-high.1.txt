@@ -1,0 +1,7 @@
+No, di norma non conviene: su una colonna con pochi valori il B-tree di solito resta inutilizzato.
+
+Il planner sceglie la scansione sequenziale quando il filtro prende più del 5-10% circa delle righe. Con tre valori, questo succede quasi sempre.
+
+L'indice però costa comunque in scrittura e spazio.
+
+Eccezione: un indice parziale sul valore raro funziona.

@@ -1,0 +1,16 @@
+**Eventual consistency**: after a write, replicas do not agree right away. If writes stop, they converge within a finite time.
+
+**Why it exists**: the trade is against availability. A system that demands strong consistency must refuse requests when its replicas cannot talk to each other. Eventual consistency keeps answering.
+
+**Where you feel it**: when someone reads right after they write. A user posts a comment, reloads the page and does not see the comment. They hit a replica that has not caught up yet.
+
+**How long the gap lasts**: across replicas in the same region, usually under a second. Across regions, it grows to seconds.
+
+**Common fix**: send reads to the primary replica only for the session that just wrote. Everyone else keeps reading from replicas. The writer sees their own comment, and read load stays spread out.
+
+**Why you should care**: eventual consistency is not a defect to remove. It is a choice, and most systems that scale make it on purpose. What matters is knowing where it is not acceptable. Those cases are few and easy to spot:
+- account balances
+- seat availability
+- uniqueness of an identifier
+
+Use strong consistency for those. Accept eventual consistency everywhere else, and handle read-after-write in the writer's session.

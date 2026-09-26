@@ -1,0 +1,7 @@
+RTX 5080 belongs to newer generation: Blackwell architecture, where RTX 4080 uses Ada Lovelace. Biggest jump comes in frame generation, not raw rasterisation.
+
+On rasterisation, real gain only in the order of 10-15 per cent over 4080.
+
+Memory moves from GDDR6X to GDDR7, and bandwidth goes from about 717 to about 960 gigabytes per second.
+
+Rated power draw rises from 320 to 360 watts, while power connector stays at 16 pins.

@@ -1406,5 +1406,205 @@
   "S10_database.adhd.1.txt::partire da Postgres": {
     "present": true,
     "answer": "SI"
+  },
+  "A_ricerca.minx-high.1.txt::calo di temperatura serale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.minx-high.2.txt::calo di temperatura serale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.minx-low.2.txt::calo di temperatura serale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.minx-high.1.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.minx-high.1.txt::maschera": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.minx-high.2.txt::se il carico reale lo richiede": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.minx-low.1.txt::se il carico reale lo richiede": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.minx-low.2.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.minx-low.2.txt::maschera": {
+    "present": true,
+    "answer": "SI"
+  },
+  "C_breve.minx-high.1.txt::cardinalit": {
+    "present": true,
+    "answer": "SI"
+  },
+  "C_breve.minx-low.2.txt::cardinalit": {
+    "present": true,
+    "answer": "SI"
+  },
+  "E_confronto.minx-low.2.txt::servizio in piu'": {
+    "present": true,
+    "answer": "SI"
+  },
+  "G_procedura.minx-low.1.txt::irreversibil": {
+    "present": true,
+    "answer": "SI"
+  },
+  "H_lunga.minx-low.2.txt::un carattere": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.minx-high.1.txt::leggibile": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.minx-high.1.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.minx-high.2.txt::leggibile": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.minx-high.2.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.minx-low.1.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.minx-low.2.txt::leggibile": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.minx-low.2.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "M_aperta.minx-low.1.txt::parte che cambia": {
+    "present": true,
+    "answer": "SI"
+  },
+  "M_aperta.minx-low.2.txt::estrarre": {
+    "present": true,
+    "answer": "SI"
+  },
+  "O_critica.minx-high.2.txt::invisibil": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S04_meteo_domani.minx-high.2.txt::sereno": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.minx-high.1.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.minx-high.2.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.minx-low.1.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.minx-low.2.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.minx2-low.1.txt::calo di temperatura serale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.minx2-low.2.txt::calo di temperatura serale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.minx2-high.1.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.minx2-high.1.txt::maschera": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.minx2-high.2.txt::connection pool": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.minx2-high.2.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.minx2-low.1.txt::se il carico reale lo richiede": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.minx2-high.1.txt::leggibile": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.minx2-high.1.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.minx2-high.2.txt::leggibile": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.minx2-high.2.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.minx2-low.1.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.minx2-low.2.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "M_aperta.minx2-high.2.txt::estrarre": {
+    "present": true,
+    "answer": "SI"
+  },
+  "O_critica.minx2-high.2.txt::invisibil": {
+    "present": true,
+    "answer": "SI"
+  },
+  "O_critica.minx2-low.1.txt::invisibil": {
+    "present": true,
+    "answer": "SI"
+  },
+  "O_critica.minx2-low.2.txt::invisibil": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.minx2-high.1.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.minx2-high.2.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.minx2-low.1.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.minx2-low.2.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
   }
 }

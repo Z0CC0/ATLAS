@@ -99,11 +99,11 @@ to every answer instead of one command.
 
 ## The per-turn reminder
 
-A short line is injected every turn so the level does not drift back to verbose: 42 tokens at
-`low`, 47 at `high`, 49 with `ask`, 51 with `check`, 51 with `silent`. It names the seven rules that slip first — and
+A short line is injected every turn so the level does not drift back to verbose: 27 tokens at
+`low`, 32 at `high`, plus 9 for each of `ask`, `check` and `silent` when on. It names the rules that slip first — and
 "answer first, only what was asked", the one whose failure costs more than the reminder does.
 
-**On a long session this is the largest number on the card.** Over 295 turns it is 12,390 tokens,
+**On a long session this is the largest number on the card.** Over 295 turns it is 7,965 tokens,
 more than twice the entire fixed cost. It scales with turns; everything above scales with nothing.
 
 ## Configuration
@@ -117,4 +117,4 @@ more than twice the entire fixed cost. It scales with turns; everything above sc
 ---
 
 Token figures are tiktoken approximations, not Claude's tokenizer — compare them to each other,
-not to a bill. The costs above are current. **How much each level compresses was measured on 0.1.0**: 24 English and 24 Italian questions with fixed fact sheets, 2 rounds each, through the real hooks. Output against no plugin, median: `low` -51% English and -47% Italian, `high` -54% and -47%; details lost, median: `low` 4 and 1 of 263, `high` 4 and 4. Run-to-run noise 4.1 points. The full tables are in the README.
+not to a bill. The costs above are current. **How much each level compresses was measured on 0.1.0 with `claude-sonnet-5`**: 24 English and 24 Italian questions with fixed fact sheets, 2 rounds each, through the real hooks. Output against no plugin, median: `low` -51% English and -47% Italian, `high` -54% and -47%; details lost, median: `low` 4 and 1 of 263, `high` 4 and 4. Run-to-run noise 4.1 points. The full tables are in the README.

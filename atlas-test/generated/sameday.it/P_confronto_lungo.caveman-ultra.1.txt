@@ -1,0 +1,19 @@
+Per un'API da mille richieste al minuto: **file locali più un raccoglitore** che li spedisce altrove. L'applicazione non aspetta mai la scrittura del log.
+
+**File**
+- Costo zero, nessuna dipendenza.
+- Ricerca solo con grep.
+- Rotazione da configurare a mano, altrimenti il disco si riempie.
+- Su più macchine non esiste una ricerca unica: devi collegarti a ognuna.
+
+**Servizio gestito**
+- Ricerca immediata, allarmi, conservazione automatica.
+- Paghi per volume. A mille richieste al minuto il volume cresce in fretta.
+- I log escono dalla tua infrastruttura. Prima di spedirli, togli i dati personali.
+
+**Database**
+- Ricerca comoda e già nota.
+- Nello stesso database dell'applicazione, due carichi molto diversi entrano in competizione.
+- Sotto carico, i log occupano cache e connessioni che servivano alle richieste vere.
+
+**Regola sempre valida:** la scrittura del log non deve stare nel percorso critico della richiesta. Qualunque destinazione scegli, rispetta questa regola.

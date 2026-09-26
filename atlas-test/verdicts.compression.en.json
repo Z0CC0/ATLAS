@@ -2402,5 +2402,277 @@
   "S10_database.adhd.2.txt::people": {
     "present": false,
     "answer": "NO"
+  },
+  "A_ricerca.minx-high.1.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.minx-high.1.txt::9 hours and 40": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.minx-high.2.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.minx-high.2.txt::9 hours and 40": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.minx-low.1.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.minx-low.1.txt::9 hours and 40": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.minx-low.2.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.minx-low.2.txt::9 hours and 40": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.minx-high.1.txt::connection pool": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.minx-high.1.txt::rising latency": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.minx-high.1.txt::immediate errors": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.minx-high.1.txt::error path": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.minx-high.1.txt::mask": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.minx-high.1.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.minx-low.1.txt::rising latency": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.minx-low.1.txt::immediate errors": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.minx-low.1.txt::mask": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.minx-low.1.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.minx-low.2.txt::connection pool": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.minx-low.2.txt::rising latency": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.minx-low.2.txt::mask": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.minx-low.2.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.minx-high.2.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.minx-low.1.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.minx-high.2.txt::same transaction": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.minx-high.1.txt::irreversibl": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.minx-high.2.txt::irreversibl": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.minx-low.1.txt::irreversibl": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.minx-low.2.txt::irreversibl": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.minx-high.1.txt::readable": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.minx-high.2.txt::readable": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.minx-low.1.txt::readable": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.minx-low.2.txt::readable": {
+    "present": true,
+    "answer": "YES"
+  },
+  "O_critica.minx-low.1.txt::invisible": {
+    "present": true,
+    "answer": "YES"
+  },
+  "O_critica.minx-low.2.txt::invisible": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.minx-high.2.txt::same database": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.minx-low.1.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.minx-high.1.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.minx-high.2.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.minx-low.2.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.minx-low.2.txt::authoritative": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.minx2-high.1.txt::same temperature": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.minx2-high.1.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.minx2-high.1.txt::9 hours and 40": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.minx2-high.2.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.minx2-high.2.txt::9 hours and 40": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.minx2-low.1.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.minx2-low.1.txt::9 hours and 40": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.minx2-high.2.txt::immediate errors": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.minx2-low.2.txt::rising latency": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.minx2-high.1.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.minx2-high.1.txt::same transaction": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.minx2-high.1.txt::irreversibl": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.minx2-high.2.txt::irreversibl": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.minx2-low.1.txt::irreversibl": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.minx2-low.2.txt::irreversibl": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.minx2-high.1.txt::readable": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.minx2-high.2.txt::readable": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.minx2-low.1.txt::readable": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.minx2-low.2.txt::readable": {
+    "present": true,
+    "answer": "YES"
+  },
+  "O_critica.minx2-high.2.txt::invisible": {
+    "present": true,
+    "answer": "YES"
+  },
+  "O_critica.minx2-low.1.txt::invisible": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.minx2-high.2.txt::same database": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.minx2-high.1.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.minx2-high.1.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.minx2-high.2.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.minx2-low.1.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.minx2-low.2.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
   }
 }

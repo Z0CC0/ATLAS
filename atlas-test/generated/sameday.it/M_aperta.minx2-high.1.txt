@@ -1,0 +1,9 @@
+La prima domanda non è tecnica: cosa deve poter fare il tuo team fra un anno che oggi non può. L'architettura si decide a partire da questo.
+
+Dal monolite ti servono due dati. Il primo: quali parti cambiano davvero. Quelle stabili non guadagnano nulla dall'essere spezzate. Il secondo: dove stanno i confini delle transazioni. Una transazione che attraversa due servizi diventa un problema distribuito.
+
+Non riscrivere tutto in parallelo al vecchio sistema: fallisce quasi sempre. Il vecchio continua a cambiare e la copia non lo raggiunge mai. Meglio lo strangolamento progressivo: metti un router davanti e sposti un pezzo per volta. Il vecchio resta autorevole finché il nuovo non è verificato.
+
+I microservizi costano di più da gestire: ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupa. **Sotto i cinque sviluppatori quel costo supera quasi sempre il beneficio.**
+
+Poi c'è un'opzione di cui si parla poco, il **monolite modulare**. Ha confini interni netti e un solo rilascio. Il giorno che ti serve davvero, puoi estrarre un modulo.

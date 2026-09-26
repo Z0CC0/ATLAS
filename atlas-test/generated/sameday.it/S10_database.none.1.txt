@@ -1,0 +1,30 @@
+**Parti con Postgres da solo. Aggiungi altri sistemi solo quando un carico specifico lo richiede, con i numeri a dimostrarlo.**
+
+Postgres copre tutti e quattro i carichi in modo accettabile, anche se in nessuno è eccellente. Gli altri database sono molto migliori in un solo compito, ma non possono sostituirlo.
+
+## Come si comporta ogni opzione sui tuoi quattro carichi
+
+| | Ordini | Catalogo | Ricerca testuale | Analisi |
+|---|---|---|---|---|
+| **Postgres** | Transazioni serie | Accettabile | Integrata, basta fino a circa 1 milione di documenti | Regge fino a decine di milioni di righe |
+| **MySQL** | Equivalente a Postgres | Più debole su tipi di dato e query complesse | — | — |
+| **MongoDB** | Le transazioni multi-documento sono arrivate tardi e costano | Più semplice con schemi variabili | — | — |
+| **Elasticsearch** | Non è un archivio autorevole | — | Molto superiore: rilevanza, sinonimi, tolleranza ai refusi | — |
+| **ClickHouse** | Inadatto: gli aggiornamenti puntuali sono il suo punto debole | — | — | Molto superiore: le scansioni colonnari sono avanti di ordini di grandezza |
+
+## Cosa decide la scelta
+
+**Gli ordini decidono il database principale.** Sugli ordini le transazioni non sono negoziabili. Questo esclude ClickHouse e rende MongoDB una scommessa costosa. Tra Postgres e MySQL, sugli ordini non c'è differenza. Il catalogo e le query di analisi fanno pendere la bilancia verso Postgres, perché MySQL è più debole su tipi di dato e query complesse.
+
+**MongoDB è interessante solo per il catalogo.** Se i prodotti hanno attributi molto diversi tra loro, gli schemi variabili aiutano. Però rischi di mettere gli ordini su un sistema dove le transazioni sono l'aspetto più debole, e non conviene.
+
+**Elasticsearch e ClickHouse si aggiungono accanto a Postgres, non al suo posto.** La configurazione tipica, a regime, è questa: Postgres resta l'archivio autorevole, mentre Elasticsearch e ClickHouse ricevono i dati da lì. Elasticsearch non va mai usato come fonte di verità.
+
+## Quando aggiungere qualcosa
+
+- **Elasticsearch:** quando superi circa un milione di documenti, o quando la qualità della ricerca è misurabilmente insufficiente. Sotto quella soglia aggiungerlo è quasi sempre prematuro, perché la ricerca integrata di Postgres basta.
+- **ClickHouse:** quando le tabelle di analisi arrivano a decine di milioni di righe e le scansioni diventano lente per davvero.
+
+Il motivo per non anticipare è che ogni sistema aggiunto porta due problemi nuovi: tenerlo sincronizzato e verificare che i dati restino allineati. Il costo vero non è la licenza, ma il tempo delle persone che devono tenerlo in piedi. Un sistema aggiunto "per sicurezza" lo paghi tutti i giorni, anche quando non ti serve.
+
+In pratica: oggi usa Postgres e misura. Quando uno dei due limiti sopra diventa reale, sai già quale sistema aggiungere e come collegarlo.

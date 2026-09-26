@@ -142,34 +142,34 @@ Run-to-run noise with no plugin and the rules frozen: 0.4 points in English, 4.1
 
 | setup | 40 turns | 295 turns |
 |---|---|---|
-| `low` | -21% | -38% |
-| `high` | -20% | -39% |
-| `low` + `ask` | -16% | -34% |
-| `low` + `check` | -10% | -31% |
-| `low` + `ask` + `check` | -5% | -27% |
-| `high` + `ask` | -18% | -38% |
-| `high` + `check` | -15% | -37% |
-| `high` + `ask` + `check` | -10% | -34% |
+| `low` | -24% | -41% |
+| `high` | -23% | -42% |
+| `low` + `ask` | -18% | -37% |
+| `low` + `check` | -13% | -34% |
+| `low` + `ask` + `check` | -8% | -30% |
+| `high` + `ask` | -21% | -40% |
+| `high` + `check` | -18% | -40% |
+| `high` + `ask` + `check` | -12% | -36% |
 
 `atlas-solo`
 
 | setup | 40 turns | 295 turns |
 |---|---|---|
-| `low` | -26% | -39% |
-| `high` | -25% | -39% |
-| `low` + `ask` | -21% | -35% |
-| `low` + `check` | -15% | -31% |
-| `low` + `ask` + `check` | -10% | -28% |
-| `high` + `ask` | -23% | -38% |
-| `high` + `check` | -20% | -38% |
-| `high` + `ask` + `check` | -15% | -34% |
+| `low` | -29% | -42% |
+| `high` | -28% | -42% |
+| `low` + `ask` | -23% | -37% |
+| `low` + `check` | -18% | -34% |
+| `low` + `ask` + `check` | -13% | -30% |
+| `high` + `ask` | -26% | -41% |
+| `high` + `check` | -23% | -41% |
+| `high` + `ask` + `check` | -17% | -37% |
 
 `atlas-min`
 
 | setup | 40 turns | 295 turns |
 |---|---|---|
-| `low` | -32% | -41% |
-| `high` | -33% | -42% |
+| `low` | -35% | -44% |
+| `high` | -36% | -45% |
 
 caveman, for comparison
 
@@ -181,13 +181,13 @@ caveman, for comparison
 
 **Read the two measurements together.** Per answer, `atlas high` compresses a little more than caveman `ultra` (54% against 51% in English, level in Italian). Per session, caveman is cheaper than the full `atlas` build: its fixed cost is about 1,766 tokens against 4,197, and the difference is the descriptions of the ten subagents and thirteen commands, paid in every chat whether or not they are used. `atlas-min`, which carries the same compression rules and none of that, lands where caveman does. If tokens are the only thing you want, `atlas-min` or caveman; the full build buys the dials and the subagents, and this is what they cost.
 
-**Fixed cost per session**, `atlas` build: 2,165 tokens of rules at `low`, 2,357 at `high`, plus 1,840 of skill, command and subagent descriptions that are loaded whether or not they are used. The per-turn reminder is 42–47 tokens; over a long session it is the largest number of all. `atlas-solo` carries 829 of descriptions, `atlas-min` 153 and 1,838 tokens of rules.
+**Fixed cost per session**, `atlas` build: 2,165 tokens of rules at `low`, 2,357 at `high`, plus 1,840 of skill, command and subagent descriptions that are loaded whether or not they are used. The per-turn reminder is 27–32 tokens; over a long session it is the largest number of all. `atlas-solo` carries 829 of descriptions, `atlas-min` 153 and 1,838 tokens of rules.
 
 Token counts for the fixed costs are tiktoken (`o200k_base`), an approximation of Claude's tokenizer; the compression figures come from the API's own counts. Compare them with each other, not with a bill.
 
 ## Verify it yourself
 
-Every figure above was produced by three scripts in `atlas-test/`, and the folder ships with everything they produced: the questions, all 1440 generated answers with their token counts, and every judge verdict. Rerun them and you will either confirm the numbers or catch me out.
+Every figure above was produced by three scripts in `atlas-test/`, and the folder ships with everything they produced: the questions, all 1824 generated answers with their token counts, and every judge verdict. Rerun them and you will either confirm the numbers or catch me out.
 
 **What the bench does, and why this way.**
 
@@ -265,7 +265,7 @@ Everything below follows from the measurements above. None of it is required; ea
 - **English commands, English hook phrases.** Requests in any language are recognised by the model, but the phrases the hook matches by itself ("stop atlas", "normal mode") are English. `atlas off` is a name and works everywhere.
 - **The state is global.** One setting for every project and every chat, stored outside the plugin, so uninstalling does not reset it.
 - **`atlas-browser` needs the desktop app's Browser pane.** From the plain CLI it has nothing to drive and says so.
-- **The compression figure is 2 rounds on 48 questions with fixed fact sheets, one model.** It measures form with the information held constant; answers that have to find their own facts vary more.
+- **The compression figure is 2 rounds on 48 questions with fixed fact sheets, one model (`claude-sonnet-5`).** It measures form with the information held constant; answers that have to find their own facts vary more.
 - **It shortens output only.** Your input, your files and what tools return are not touched: a hook cannot rewrite a tool's result.
 - `ask` cannot know what you have not said. It reduces wrong assumptions; it does not remove them
 

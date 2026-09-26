@@ -1,0 +1,1 @@
+Sì: in un contesto booleano una lista vuota vale `False`. Lo stesso succede con tutte le collezioni vuote: lista, tupla, dizionario, insieme e stringa.

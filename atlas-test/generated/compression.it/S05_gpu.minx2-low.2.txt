@@ -1,0 +1,9 @@
+La differenza principale della RTX 5080 è nella generazione di fotogrammi, non nel rasterizzatore puro. Lì il guadagno reale è nell'ordine del 10-15 per cento.
+
+Architettura: Blackwell sulla 5080, Ada Lovelace sulla 4080.
+
+Memoria: GDDR7 contro GDDR6X, con banda che sale da circa 717 a circa 960 gigabyte al secondo.
+
+Consumo dichiarato: da 320 a 360 watt.
+
+Connettore di alimentazione: invariato, 16 pin.

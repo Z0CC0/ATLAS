@@ -1,0 +1,13 @@
+Bitcoin nasce nell'ambiente cypherpunk. Tentativi precedenti, b-money e bit gold, non risolvevano l'ordinamento delle transazioni.
+
+2008: esce "Bitcoin: A Peer-to-Peer Electronic Cash System", firmato Satoshi Nakamoto, pseudonimo mai identificato. Problema affrontato: doppia spesa senza ente centrale che tenga il registro.
+
+Soluzione: catena di blocchi ordinata da prova di lavoro. Riscrivere il passato costa troppo, perché la prova andrebbe rifatta per ogni blocco successivo.
+
+3 gennaio 2009: primo blocco. Contiene il titolo di un articolo del Times su un salvataggio bancario, insieme marca temporale e dichiarazione di intenti.
+
+Ricompensa per blocco: 50 bitcoin all'inizio, dimezzata ogni 210.000 blocchi, circa quattro anni. Totale emesso tende a 21 milioni, non oltre.
+
+2010: prima transazione commerciale documentata, due pizze pagate 10.000 bitcoin.
+
+2011: Satoshi smette di partecipare pubblicamente. I suoi bitcoin non sono mai stati spostati.

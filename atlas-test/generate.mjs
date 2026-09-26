@@ -69,6 +69,14 @@ const CONFIGURATIONS = [
   { id: 'atlasmin-low', atlas: 'low:off:off', caveman: 'off', variant: 'atlas-min' },
   { id: 'atlasmin-high', atlas: 'high:off:off', caveman: 'off', variant: 'atlas-min' },
 
+  // experiments/atlas-min-x: the minimal build with a compacted ruleset and a shorter
+  // per-turn reminder, measured to see whether the words cut were doing anything.
+  { id: 'minx-low', atlas: 'low:off:off', caveman: 'off', variant: join('experiments', 'atlas-min-x') },
+  { id: 'minx-high', atlas: 'high:off:off', caveman: 'off', variant: join('experiments', 'atlas-min-x') },
+  // experiments/atlas-min-x2: atlas-min's rules untouched, only the shorter reminder.
+  { id: 'minx2-low', atlas: 'low:off:off', caveman: 'off', variant: join('experiments', 'atlas-min-x2') },
+  { id: 'minx2-high', atlas: 'high:off:off', caveman: 'off', variant: join('experiments', 'atlas-min-x2') },
+
   // caveman, the plugin ATLAS is most often compared with. Needs it installed; the
   // rows are skipped otherwise. Its level is passed through its own state file and
   // CAVEMAN_DEFAULT_MODE, and ATLAS is off for these.
@@ -86,6 +94,11 @@ const CONFIGURATIONS = [
 ];
 
 const rulesOf = (variant) => join(HERE, '..', variant || 'atlas', 'skills', 'atlas', 'SKILL.md');
+// A variant may also carry its own per-turn reminder (hooks/atlas-tracker.js). When it
+// does, that file is swapped into the install for the duration too, so the measured
+// answers saw the variant's reminder and not the full build's.
+const trackerOf = (variant) => join(HERE, '..', variant || 'atlas', 'hooks', 'atlas-tracker.js');
+const INSTALLED_TRACKER = join(dirname(dirname(dirname(INSTALLED))), 'hooks', 'atlas-tracker.js');
 let activeVariant = null;
 function activateVariant(name) {
   const wanted = name || 'atlas';
@@ -93,6 +106,8 @@ function activateVariant(name) {
   const source = rulesOf(wanted);
   if (!existsSync(source)) throw new Error(`Rules not found: ${source}`);
   writeFileSync(INSTALLED, readFileSync(source, 'utf8'));
+  const tracker = trackerOf(wanted);
+  if (existsSync(tracker) && existsSync(INSTALLED_TRACKER)) writeFileSync(INSTALLED_TRACKER, readFileSync(tracker, 'utf8'));
   activeVariant = wanted;
 }
 

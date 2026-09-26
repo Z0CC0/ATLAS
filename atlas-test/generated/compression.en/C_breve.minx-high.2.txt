@@ -1,0 +1,7 @@
+Usually not. The planner normally won't use a B-tree index on a column with so few distinct values. When a filter matches more than roughly 5–10% of the rows, it picks a sequential scan instead. The index still costs you extra writes and disk space.
+
+The exception is a partial index on the rare value. It does get used, for example:
+
+```sql
+CREATE INDEX ON t (col) WHERE col = 'rare';
+```

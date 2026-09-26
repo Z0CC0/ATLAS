@@ -1,0 +1,27 @@
+**Eventual consistency** means that after you write data, the copies of it (the replicas) don't all agree right away. If writes stop, they come into agreement within a finite time. For a short window, different replicas can give different answers to the same question.
+
+## Why you should care
+
+It shows up for anyone who reads data right after writing it. A user posts a comment and reloads the page, but the comment isn't there. Nothing was lost. The reload was served by a replica that hadn't received the write yet. To that user, though, it looks broken.
+
+The window is short, but it's real. Replicas in the same region usually agree in under a second. Across regions it can take several seconds.
+
+## Why systems accept it anyway
+
+The trade-off is with availability. A system that requires strong consistency has to refuse requests whenever its replicas can't talk to each other. Eventual consistency lets the system keep answering, at the cost of sometimes giving a slightly out-of-date answer.
+
+So it's not a defect to be eliminated. It's a design choice, and most systems that scale make it on purpose.
+
+## How to handle it
+
+The usual fix is narrow: **send reads to the primary replica only for the session that just wrote.** The user who posted the comment sees it immediately. Everyone else keeps reading from any replica and may see it a moment later, which nobody notices. You don't need to make the whole system strongly consistent to solve this.
+
+## When it's actually unacceptable
+
+There are only a few such cases, and they're easy to recognise:
+
+- **Account balances**: two replicas that disagree can let the same money be spent twice.
+- **Seat availability**: two people can book the same seat.
+- **Uniqueness of an identifier**: two records can end up with the same ID.
+
+For these, pay the cost of strong consistency. For almost everything else, accept eventual consistency and fix the read-after-write case for the session that wrote.

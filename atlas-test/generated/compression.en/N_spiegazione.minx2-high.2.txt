@@ -1,0 +1,13 @@
+Replicas don't agree right after a write. They converge within finite time once writes stop.
+
+Why care: user posts comment, reloads, doesn't see it. It hits whoever reads right after writing.
+
+Fix: read from primary replica for session that just wrote, not for everyone.
+
+Convergence typically under a second across replicas in same region; seconds across regions.
+
+Trade is against availability: system demanding strong consistency must refuse requests when replicas cannot talk.
+
+Not defect to eliminate but choice. Most systems that scale accept it deliberately.
+
+Unacceptable only in few recognisable cases: account balances, seat availability, uniqueness of an identifier.

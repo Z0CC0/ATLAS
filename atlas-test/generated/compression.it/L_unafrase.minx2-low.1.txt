@@ -1,0 +1,1 @@
+Sì. Vale per tutte le collezioni vuote: lista, tupla, dizionario, insieme e stringa.

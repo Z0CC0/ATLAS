@@ -1,0 +1,25 @@
+**Use Postgres, and only Postgres, for now.** It handles all four of your workloads well enough, though it isn't the best at any of them. Add a specialised system only when a specific workload outgrows it and you have the numbers to show it.
+
+## How each workload fits
+
+| Workload | Postgres alone | Better specialist | When to switch |
+|---|---|---|---|
+| **Orders** | Real transactions, which you can't do without on orders | None; Postgres is the right tool | Never |
+| **Catalogue** | Fine | MongoDB copes more easily with variable schemas | Probably not; see below |
+| **Text search** | Built-in and good enough below about a million documents | Elasticsearch: much better relevance, synonyms and typo tolerance | Above about a million documents, or when search quality becomes the problem |
+| **Analytics** | Handles up to tens of millions of rows | ClickHouse: columnar scans that are orders of magnitude faster | When scans slow down past that size |
+
+## The alternatives
+
+- **MySQL:** as good as Postgres on orders, but weaker on data types and complex queries. It has no advantage for your case.
+- **MongoDB:** its variable schemas would make the catalogue easier. But multi-document transactions came late and are costly, and orders need transactions. Using it for the catalogue alone would mean running two primary databases just for schema flexibility.
+- **Elasticsearch:** much better at search, but it can't be your authoritative store. Another database has to feed it, so it sits next to Postgres and never replaces it. Adding it below a million documents is almost always too early.
+- **ClickHouse:** much better at analytics, but not suitable for orders because point updates are its weak spot. Like Elasticsearch, it's something you add alongside Postgres.
+
+## Where this usually ends up
+
+The usual full setup is Postgres as the authoritative store, with Elasticsearch and ClickHouse fed from it. That's a possible destination, not where you should start. Every system you add brings two new problems: keeping it in sync with Postgres, and keeping its data consistent with the source. The biggest cost isn't licences. It's the time your team spends keeping these systems running.
+
+**In practice:** launch on Postgres. Track the document count for search and the table sizes and scan times for analytics. Add Elasticsearch or ClickHouse only when one of those numbers shows a real limit.
+
+This is general guidance from internal knowledge, not from measurements of your platform. If you want to share it with your team, I can turn it into a doc.

@@ -88,7 +88,8 @@ check('bare form only when it is the whole message', tracker.parseCommand('il pr
 check('bare form does not fire on project talk', tracker.parseCommand('atlas core has to read the graph', S) === null);
 
 eq('default is low, check off', cfg.DEFAULT_STATE, { level: 'low', rigour: 'off', check: 'off', silent: 'off' });
-check('reminder names both dials even when rigour is off', tracker.reminder({ level: 'low', rigour: 'off', check: 'off', silent: 'off' }).includes('ask=off'));
+check('reminder does not name dials that are off', !/ask|check|silent/.test(tracker.reminder({ level: 'low', rigour: 'off', check: 'off', silent: 'off' })));
+check('reminder carries the security carve-out', tracker.reminder({ level: 'low', rigour: 'off', check: 'off', silent: 'off' }).endsWith('security plain'));
 check('reminder states the rules, not just the state', tracker.reminder({ level: 'low', rigour: 'off', check: 'off', silent: 'off' }).includes('no filler'));
 check('ask scope covers open research', activate.build({ level: 'low', rigour: 'ask' }).includes('Open-ended research'));
 check('rules document the namespaced slash form', activate.build({ level: 'low', rigour: 'off', check: 'off', silent: 'off' }).includes('/atlas:atlas'));
@@ -229,7 +230,7 @@ const trackerOut = execFileSync(process.execPath, [join(ROOT, 'hooks', 'atlas-tr
 });
 const parsed = JSON.parse(trackerOut);
 check('tracker returns valid hook output', parsed.hookSpecificOutput.hookEventName === 'UserPromptSubmit');
-check('reminder is marked as internal', parsed.hookSpecificOutput.additionalContext.startsWith('[ATLAS]'));
+check('reminder names the plugin and the level first', /^atlas (low|high|off)/.test(parsed.hookSpecificOutput.additionalContext));
 
 const offOut = execFileSync(process.execPath, [join(ROOT, 'hooks', 'atlas-tracker.js')], {
   encoding: 'utf8',
@@ -287,9 +288,9 @@ check('asking for the state moves no dial', tracker.parseCommand('atlas status',
 for (const lv of ['low', 'high']) {
   const r = tracker.reminder({ level: lv, rigour: 'off', check: 'off', silent: 'off' });
   check(`the reminder at ${lv} names articles`, /articles/.test(r));
-  check(`the reminder at ${lv} names list markers`, /list markers/.test(r));
+  check(`the reminder at ${lv} names markers`, /markers/.test(r));
   // The two rules that decide length, not wording.
-  check(`the reminder at ${lv} carries the two structural rules`, /answer first, only what was asked/.test(r));
+  check(`the reminder at ${lv} carries the two structural rules`, /one word if it answers/.test(r) && /answer first, only what asked/.test(r));
 }
 
 // --- commands that are only a handle do not ship without their subagent ---------
