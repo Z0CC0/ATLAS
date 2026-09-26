@@ -85,9 +85,9 @@ nothing.
 
 | build | contains | fixed cost at `low` |
 |---|---|---|
-| `atlas` | everything on this card | 4,005 |
-| `atlas-solo` | same rules, no subagents, and seven commands rather than eight | 2,994 |
-| `atlas-min` | compression only: one command, no `ask`, no `check`, no provenance marker | 1,991 |
+| `atlas` | everything on this card | 3,249 |
+| `atlas-solo` | same rules, no subagents, and seven commands rather than eight | 2,238 |
+| `atlas-min` | compression only: one command, no `ask`, no `check`, no provenance marker | 1,235 |
 
 `atlas` and `atlas-solo` have byte-identical rules, verified with `diff`: they write the same
 answers. The difference is the subagents, and whether you want the work kept out of context.

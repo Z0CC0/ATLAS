@@ -214,5 +214,129 @@
   "I_sicurezza.caveman-ultra.1.txt::rate limit": {
     "present": true,
     "answer": "YES"
+  },
+  "A_ricerca.minx-high.2.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.minx-high.2.txt::9 hours and 40": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.none.2.txt::9 hours and 40": {
+    "present": false,
+    "answer": "NO"
+  },
+  "A_ricerca.none.2.txt::multi-instrumentalist": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.none.2.txt::rising latency": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.none.2.txt::immediate errors": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.none.2.txt::mask": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.none.2.txt::before and after": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.atlasmin-high.2.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.none.2.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.none.2.txt::write": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.atlasmin-high.2.txt::same transaction": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.minx-high.2.txt::same transaction": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.atlasmin-high.2.txt::irreversibl": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.minx-high.2.txt::irreversibl": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.none.2.txt::irreversibl": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.atlasmin-high.2.txt::readable": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.minx-high.2.txt::readable": {
+    "present": true,
+    "answer": "YES"
+  },
+  "I_sicurezza.none.2.txt::readable": {
+    "present": true,
+    "answer": "YES"
+  },
+  "M_aperta.none.2.txt::full rewrite": {
+    "present": true,
+    "answer": "YES"
+  },
+  "O_critica.none.2.txt::invisible": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.atlasmin-high.2.txt::several machines": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.minx-high.2.txt::several machines": {
+    "present": true,
+    "answer": "YES"
+  },
+  "P_confronto_lungo.none.2.txt::same database": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.atlasmin-high.2.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S04_meteo_domani.none.2.txt::cloudy": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.atlasmin-high.2.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S05_gpu.none.2.txt::16 pin": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S07_https.atlasmin-high.2.txt::in the middle": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S08_bitcoin.none.2.txt::double spend": {
+    "present": true,
+    "answer": "YES"
+  },
+  "S10_database.none.2.txt::synchronis": {
+    "present": true,
+    "answer": "YES"
   }
 }

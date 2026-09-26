@@ -1,0 +1,9 @@
+**Local files plus a collector** that ships them elsewhere, so the app never waits on a log write.
+
+Rule that always holds: log write stays out of request's critical path.
+
+Files alone: zero cost, no dependency. Search only by grep. Rotation configured by hand, or disk fills. No search across machines; connect to each one.
+
+Managed service: instant search, alerts, automatic retention. Paid by volume, and at 1,000 requests/minute volume grows fast. Logs leave your infrastructure, so strip personal data before shipping.
+
+Database: familiar, convenient search. App's own database, though, puts two very different workloads in competition. Under load, logs fill caches and connections real requests needed.

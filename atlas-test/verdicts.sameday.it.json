@@ -230,5 +230,113 @@
   "B_tecnica.caveman-ultra.1.txt::connection pool": {
     "present": true,
     "answer": "SI"
+  },
+  "A_ricerca.minx-high.2.txt::calo di temperatura serale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "A_ricerca.none.2.txt::calo di temperatura serale": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.atlasmin-high.2.txt::middleware": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.atlasmin-high.2.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.atlasmin-high.2.txt::maschera": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.minx-high.2.txt::latenze crescenti": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.minx-high.2.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.minx-high.2.txt::maschera": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.none.2.txt::latenze crescenti": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.none.2.txt::errori immediati": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.none.2.txt::percorso di errore": {
+    "present": true,
+    "answer": "SI"
+  },
+  "B_tecnica.none.2.txt::maschera": {
+    "present": true,
+    "answer": "SI"
+  },
+  "H_lunga.none.2.txt::un carattere": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.atlasmin-high.2.txt::leggibile": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.atlasmin-high.2.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.minx-high.2.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.none.2.txt::leggibile": {
+    "present": true,
+    "answer": "SI"
+  },
+  "I_sicurezza.none.2.txt::ruotat": {
+    "present": true,
+    "answer": "SI"
+  },
+  "M_aperta.none.2.txt::estrarre": {
+    "present": true,
+    "answer": "SI"
+  },
+  "N_spiegazione.none.2.txt::sotto il secondo": {
+    "present": true,
+    "answer": "SI"
+  },
+  "O_critica.none.2.txt::invisibil": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S04_meteo_domani.none.2.txt::sereno": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S04_meteo_domani.none.2.txt::nuvoloso": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.atlasmin-high.2.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.minx-high.2.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.none.2.txt::sincronizzazione": {
+    "present": true,
+    "answer": "SI"
+  },
+  "S10_database.none.2.txt::partire da Postgres": {
+    "present": true,
+    "answer": "SI"
   }
 }

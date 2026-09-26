@@ -1,0 +1,16 @@
+Prima di scegliere l'architettura, ti servono due dati sul monolite attuale.
+
+**1. Quale parte cambia davvero.** Guarda dove si concentrano le modifiche. Le parti stabili non guadagnano nulla dall'essere spezzate: se un modulo non lo tocca nessuno da mesi, separarlo ti porta solo lavoro.
+
+**2. Dove finiscono le transazioni.** Se spezzi il sistema in un punto attraversato da una transazione, quella transazione si divide fra due servizi e diventa un problema distribuito. È meglio scoprirlo sulla carta che in produzione.
+
+**Come fare la riscrittura.** Evita di riscrivere tutto in parallelo al vecchio sistema. Quasi sempre fallisce, perché il vecchio continua a cambiare e la copia non lo raggiunge mai. Funziona meglio lo strangolamento progressivo:
+- metti un router davanti al monolite;
+- sposti un pezzo alla volta;
+- il vecchio resta la fonte di verità finché il nuovo non è verificato.
+
+**Il costo dei microservizi.** Ogni servizio ha bisogno del suo rilascio, del monitoraggio, dei log, degli allarmi e di una persona che se ne occupi. Con meno di cinque sviluppatori, quasi sempre questo costo supera il beneficio.
+
+**L'opzione di cui si parla poco: il monolite modulare.** Hai confini interni netti fra i moduli ma un solo rilascio. Il giorno in cui un modulo deve davvero diventare un servizio, lo estrai. Spesso è il punto di partenza più sensato, perché ti dà gran parte dell'ordine dei microservizi senza il loro costo operativo.
+
+**La domanda che decide davvero** non è tecnica: cosa deve poter fare il tuo team fra un anno che oggi non può fare? Partendo dalla risposta, capisci quali parti vale la pena separare e quali basta riordinare.

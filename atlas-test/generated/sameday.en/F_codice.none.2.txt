@@ -1,0 +1,31 @@
+You can do it with a small closure around `setTimeout`:
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Usage:
+
+```js
+const onResize = debounce(() => console.log('resized'), 200);
+window.addEventListener('resize', onResize);
+```
+
+Each call cancels the pending timer and starts a new one, so `fn` only runs once the calls have stopped for `ms` milliseconds.
+
+**Details that are easy to get wrong:**
+
+- **Call `clearTimeout` before every new `setTimeout`.** If you skip it, the timers pile up and the function fires more than once.
+- **Declare `t` in the closure, outside the returned function.** If you put it inside, every call gets its own timer and nothing is debounced.
+- **Pass the arguments through with the spread (`...args`).** Without it, the function you debounced receives nothing.
+
+**Limitations:**
+
+- **It returns nothing.** The debounced wrapper doesn't give you `fn`'s return value. If you need that value, you'll have to change it to return a Promise.
+- **It isn't a throttle.** If you want the function to run right away and then ignore calls for a set period, you need a throttle. That's a different function.

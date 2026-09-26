@@ -1,0 +1,1 @@
+Yes. Every empty collection is falsy in Python: lists, tuples, dicts, sets and strings.

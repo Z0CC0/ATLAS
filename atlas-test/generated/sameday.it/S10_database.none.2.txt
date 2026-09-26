@@ -1,0 +1,29 @@
+**In breve: parti con Postgres da solo.** Aggiungi Elasticsearch o ClickHouse solo quando un carico preciso lo richiede e hai i numeri che lo dimostrano.
+
+## Come si comportano le opzioni sui tuoi quattro carichi
+
+| | Ordini | Catalogo | Ricerca testuale | Analisi |
+|---|---|---|---|---|
+| **Postgres** | Transazioni solide | Accettabile | Basta sotto il milione di documenti | Regge fino a decine di milioni di righe |
+| **MySQL** | Equivalente a Postgres | Più debole su tipi di dato e query complesse | — | — |
+| **MongoDB** | Transazioni multi-documento arrivate tardi e costose | Più semplice con schemi variabili | — | — |
+| **Elasticsearch** | Non può essere l'archivio principale | — | Molto superiore | — |
+| **ClickHouse** | Inadatto: gli aggiornamenti puntuali sono il suo punto debole | — | — | Molto superiore |
+
+**Ordini.** Qui servono transazioni affidabili, e su questo non si può scendere a compromessi. Postgres le offre. MySQL sugli ordini è equivalente, ma è più debole su tipi di dato e query complesse, quindi non ti dà nessun vantaggio. MongoDB renderebbe più comodo il catalogo, ma nel suo caso le transazioni multi-documento sono arrivate tardi e costano. È proprio il punto su cui non puoi permetterti compromessi.
+
+**Ricerca testuale.** Elasticsearch è nettamente migliore: gestisce meglio la rilevanza e i sinonimi, e tollera gli errori di battitura. Però non è un archivio autorevole: va alimentato da un altro database e non può sostituirlo. La ricerca integrata di Postgres basta finché resti sotto il milione di documenti. Prima di quella soglia, aggiungere Elasticsearch è quasi sempre prematuro.
+
+**Analisi.** Grazie alle scansioni colonnari, ClickHouse è avanti di ordini di grandezza. Però sugli aggiornamenti puntuali è debole, quindi non può gestire gli ordini. Postgres regge l'analisi fino a decine di milioni di righe. Oltre quella soglia le scansioni diventano lente.
+
+## Dove si arriva di solito
+
+Quando i volumi crescono, la configurazione tipica è Postgres come archivio autorevole, con Elasticsearch e ClickHouse alimentati da lì. Postgres regge in modo accettabile tutti e quattro i carichi, ma non eccelle in nessuno. Per questo, quando i volumi lo richiedono, si affiancano i sistemi specializzati.
+
+Non conviene però partire direttamente da quella configurazione. Ogni sistema in più crea due problemi: tenere sincronizzati i dati e verificare che restino allineati. Il costo vero dei sistemi specializzati non è la licenza, ma il tempo delle persone che devono tenerli in piedi.
+
+## Cosa fare in pratica
+
+1. Parti con Postgres per tutto.
+2. Tieni d'occhio due soglie: **un milione di documenti** da cercare e **decine di milioni di righe** da analizzare.
+3. Quando una delle due diventa un problema misurabile, aggiungi il sistema giusto per quel carico: Elasticsearch per la ricerca, ClickHouse per l'analisi. Alimentalo da Postgres, che resta l'archivio principale.

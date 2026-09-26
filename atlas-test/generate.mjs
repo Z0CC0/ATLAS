@@ -69,13 +69,9 @@ const CONFIGURATIONS = [
   { id: 'atlasmin-low', atlas: 'low:off:off', caveman: 'off', variant: 'atlas-min' },
   { id: 'atlasmin-high', atlas: 'high:off:off', caveman: 'off', variant: 'atlas-min' },
 
-  // experiments/atlas-min-x: the minimal build with a compacted ruleset and a shorter
-  // per-turn reminder, measured to see whether the words cut were doing anything.
-  { id: 'minx-low', atlas: 'low:off:off', caveman: 'off', variant: join('experiments', 'atlas-min-x') },
-  { id: 'minx-high', atlas: 'high:off:off', caveman: 'off', variant: join('experiments', 'atlas-min-x') },
-  // experiments/atlas-min-x2: atlas-min's rules untouched, only the shorter reminder.
-  { id: 'minx2-low', atlas: 'low:off:off', caveman: 'off', variant: join('experiments', 'atlas-min-x2') },
-  { id: 'minx2-high', atlas: 'high:off:off', caveman: 'off', variant: join('experiments', 'atlas-min-x2') },
+  // The `minx-*` and `minx2-*` rows in generated/sameday.* were two experiments on
+  // 2026-09-26: the compact ruleset and the shorter reminder that became 0.1.2 and
+  // 0.1.3. Both are now the plugin itself, so the configurations are gone.
 
   // caveman, the plugin ATLAS is most often compared with. Needs it installed; the
   // rows are skipped otherwise. Its level is passed through its own state file and

@@ -1,0 +1,11 @@
+Usually not. A normal B-tree index on a column with only three distinct values will almost never be used. Each value matches a large share of the table. Once a filter selects more than roughly 5–10% of the rows, the planner decides a sequential scan is cheaper than jumping back and forth through the index, so it ignores the index.
+
+The index still costs you, though. Every insert and update has to maintain it, and it takes up disk space. You pay for it and get nothing back.
+
+There's one exception: when one of the three values is rare and you query for it often. In that case, a partial index on just that value works well:
+
+```sql
+CREATE INDEX orders_failed_idx ON orders (status) WHERE status = 'failed';
+```
+
+The index stays small, it's cheap to maintain, and the planner will use it because the filter selects only a few rows. For the common values, skip the index.

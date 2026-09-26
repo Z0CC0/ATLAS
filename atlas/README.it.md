@@ -108,13 +108,13 @@ pubblici, `atlas-browser` guida una pagina che gli hai indicato. Mandano la tua 
 
 | | token a sessione |
 |---|---|
-| regole iniettate a `low` (predefinito) | 2.165 |
-| regole iniettate a `high` | 2.357 |
+| regole iniettate a `low` (predefinito) | 1.409 |
+| regole iniettate a `high` | 1.531 |
 | descrizioni di skill, comandi e subagenti, sempre presenti | 1.840 |
 | promemoria per turno | 27-32 |
-| **totale al livello predefinito** | **4.005** |
+| **totale al livello predefinito** | **3.249** |
 
-La build `atlas-min` porta le descrizioni a 153 e le regole a 1.838, perche' contiene solo le
+La build `atlas-min` porta le descrizioni a 153 e le regole a 1.082, perche' contiene solo le
 sezioni sulla compressione. `atlas-solo` tiene tutte le regole e toglie i sette subagenti: 829 di
 descrizioni invece di 1.840. Toglie anche `atlas-search`, che e' la maniglia di un subagente
 che li non c'e' — la disciplina di ricerca sta comunque nella manopola `check`,
@@ -134,7 +134,7 @@ le regole dei livelli sono filtrate: si inietta solo il livello attivo, mai tutt
 - Misurata contro il plugin assente su 24 domande inglesi e 24 italiane, ognuna con la sua scheda di fatti cosi' che cambi solo la forma, 2 giri a testa in sessioni nuove, token contati dall'API sul testo visibile: **`low` -47% in italiano e -51% in inglese, `high` -47% e -54%**. Dettagli persi, mediana: `low` 1 e 4 su 264, `high` 4 e 4. Rumore fra giri 4.1 punti: una differenza piu' piccola non e' un effetto
 - **`low` e `high` escono vicini.** `high` e' il regolamento piu' duro e si legge piu' telegrafico; la differenza in token e' di pochi punti
 - `atlas-min` e' misurata a parte, con le sue regole ridotte; `atlas-solo` ha le stesse regole di `atlas` byte per byte e non e' stata rimisurata
-- Non conviene su tutti gli usi. Le regole costano 1.838-2.357 token a sessione e il promemoria 27-32 a turno. Se le tue risposte sono corte, misura prima di fidarti
+- Non conviene su tutti gli usi. Le regole costano 1.082-1.531 token a sessione e il promemoria 27-32 a turno. Se le tue risposte sono corte, misura prima di fidarti
 - I comandi sono parole inglesi. Le richieste in qualsiasi lingua vengono riconosciute; le frasi che l'hook intercetta da solo ("stop atlas", "normal mode") sono solo inglesi, e `atlas off` funziona ovunque
 - `ask` non può sapere quello che non hai detto. Riduce le assunzioni sbagliate, non le elimina
 

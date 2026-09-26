@@ -1,0 +1,7 @@
+Usually no. With a low-cardinality column, a B-tree index is normally not used.
+
+The planner picks a sequential scan when the filter selects more than roughly 5–10% of rows.
+
+The index still costs you on every write and takes up disk space.
+
+The exception is when one of the three values is rare. A partial index on that value does work, for example `CREATE INDEX ... WHERE status = 'rare_value'`.

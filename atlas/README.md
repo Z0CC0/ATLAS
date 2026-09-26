@@ -68,9 +68,9 @@ uninstalling, or delete that file — it is one line and nothing else depends on
 
 | build | what is in it | fixed cost per session at `low` |
 |---|---|---|
-| `atlas` | everything | 4,797 tokens |
-| `atlas-solo` | same rules, no subagents | 3,435 tokens |
-| `atlas-min` | compression only: two levels, one command | 1,991 tokens |
+| `atlas` | everything | 3,249 tokens |
+| `atlas-solo` | same rules, no subagents | 2,238 tokens |
+| `atlas-min` | compression only: two levels, one command | 1,235 tokens |
 
 `atlas` and `atlas-solo` carry byte-identical rules. The difference is whether the subagents exist, and whether their work stays out of your context.
 
@@ -147,17 +147,17 @@ Run-to-run noise with no plugin and the rules frozen: 0.4 points in English, 4.1
 | `low` | -32% | -41% |
 | `high` | -33% | -42% |
 
-**Fixed cost per session**, `atlas` build: 2,165 tokens of rules at `low`, 2,357 at `high`, plus 2,632 of skill, command and subagent descriptions that are loaded whether or not they are used. The per-turn reminder is 42–47 tokens; over a long session it is the largest number of all.
+**Fixed cost per session**, `atlas` build: 1,409 tokens of rules at `low`, 1,531 at `high`, plus 1,840 of skill, command and subagent descriptions that are loaded whether or not they are used. The per-turn reminder is 42–47 tokens; over a long session it is the largest number of all.
 
 | | tokens per session |
 |---|---|
-| rules injected at `low` (default) | 2,165 |
-| rules injected at `high` | 2,357 |
+| rules injected at `low` (default) | 1,409 |
+| rules injected at `high` | 1,531 |
 | skill, command and subagent descriptions, always present | 1,840 |
 | per-turn reminder | 27-32 |
-| **total at the default** | **4,005** |
+| **total at the default** | **3,249** |
 
-The `atlas-min` build cuts the descriptions to 153 and the rules to 1,838 by shipping only
+The `atlas-min` build cuts the descriptions to 153 and the rules to 1,082 by shipping only
 the compression sections. `atlas-solo` keeps every rule and drops the seven subagents: 829 in
 descriptions instead of 1,840. It also drops `atlas-search`, which is a handle on a
 subagent it does not carry — the search discipline itself lives in the `check` dial, where it
@@ -166,7 +166,10 @@ covers every answer rather than one command.
 **On a long session the per-turn reminder outweighs everything above it.** At 27 tokens a
 turn, over a 295-turn session — the average measured on real transcripts — that is 7,965
 tokens, about twice the rest put together. It was 42 until 0.1.2: the shorter wording was
-measured against the longer one on the same day and compressed identically.
+measured against the longer one on the same day and compressed identically. The rules were cut
+from 2,165 to 1,409 tokens in 0.1.3 the same way: examples and reasons out, every rule kept; measured
+on the same day, two rounds, the compact rules compress 1.6 points less in English and 1.7 in
+Italian, within two points of the run-to-run noise, for a thousand tokens less in every chat.
 
 Token counts for the fixed costs are tiktoken (`o200k_base`), an approximation of Claude's tokenizer; the compression figures come from the API's own counts. Compare them with each other, not with a bill.
 
