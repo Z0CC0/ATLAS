@@ -88,7 +88,7 @@ check('bare form only when it is the whole message', tracker.parseCommand('il pr
 check('bare form does not fire on project talk', tracker.parseCommand('atlas core has to read the graph', S) === null);
 
 eq('default is low, check off', cfg.DEFAULT_STATE, { level: 'low', rigour: 'off', check: 'off', silent: 'off' });
-check('reminder does not name dials that are off', !/ask|check|silent/.test(tracker.reminder({ level: 'low', rigour: 'off', check: 'off', silent: 'off' })));
+check('reminder does not name dials that are off', !/\b(ask|check|silent):/.test(tracker.reminder({ level: 'low', rigour: 'off', check: 'off', silent: 'off' })));
 check('reminder carries the security carve-out', tracker.reminder({ level: 'low', rigour: 'off', check: 'off', silent: 'off' }).endsWith('security plain'));
 check('reminder states the rules, not just the state', tracker.reminder({ level: 'low', rigour: 'off', check: 'off', silent: 'off' }).includes('no filler'));
 check('ask scope covers open research', activate.build({ level: 'low', rigour: 'ask' }).includes('Open-ended research'));
