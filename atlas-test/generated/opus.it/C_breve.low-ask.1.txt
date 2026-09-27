@@ -1,0 +1,7 @@
+No, di norma no. Su una colonna a bassa cardinalità il planner di solito non usa l'indice B-tree.
+
+Il motivo è che, quando il filtro seleziona più del 5-10% circa delle righe, il planner preferisce una scansione sequenziale. Con tre valori, ciascuno copre in genere una parte ben più grande della tabella.
+
+L'indice però costa comunque in scrittura e in spazio, anche se non viene usato.
+
+C'è un'eccezione: se uno dei tre valori è raro e filtri spesso su quello, un indice parziale su quel valore funziona.

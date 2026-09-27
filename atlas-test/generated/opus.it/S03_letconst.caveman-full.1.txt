@@ -1,0 +1,15 @@
+Differenza principale: con `let` puoi riassegnare il nome, con `const` no.
+
+- **`let`** permette la riassegnazione.
+- **`const`** impedisce di riassegnare il nome. Non impedisce di modificare il valore. Quindi un oggetto dichiarato con `const` può cambiare al suo interno.
+
+```js
+let n = 1;
+n = 2;              // ok
+
+const obj = { a: 1 };
+obj.a = 2;          // ok: cambia l'interno dell'oggetto
+obj = {};           // errore: riassegnazione del nome
+```
+
+**In comune:** `let` e `const` hanno entrambi ambito di blocco, a differenza di `var`.

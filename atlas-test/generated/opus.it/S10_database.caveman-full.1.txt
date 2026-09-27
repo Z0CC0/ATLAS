@@ -1,0 +1,32 @@
+Parti da Postgres solo. Aggiungi altri sistemi solo quando un carico specifico lo impone, con numeri alla mano.
+
+**Postgres**
+Regge tutti e quattro i tuoi carichi in modo accettabile, nessuno in modo eccellente.
+- Ordini: offre transazioni serie. Sugli ordini le transazioni non sono negoziabili.
+- Ricerca testuale: è integrata. Basta sotto il milione di documenti, sopra diventa debole.
+- Analisi: regge fino a decine di milioni di righe. Oltre, le scansioni diventano lente.
+
+**MySQL**
+Sugli ordini equivale a Postgres. È più debole su tipi di dato e query complesse. Per te non porta nessun vantaggio rispetto a Postgres.
+
+**MongoDB**
+Semplifica il catalogo con schemi variabili. Però le transazioni multi-documento sono arrivate tardi e costano. È una scelta rischiosa se deve reggere anche gli ordini.
+
+**Elasticsearch**
+Sulla ricerca testuale è molto superiore: rilevanza, sinonimi, tolleranza agli errori di battitura. Però non è un archivio autorevole. Va alimentato da un altro database, non lo sostituisce. Aggiungerlo prima del milione di documenti è quasi sempre prematuro.
+
+**ClickHouse**
+Sull'analisi è molto superiore. Le scansioni colonnari sono avanti di ordini di grandezza. Non va usato per gli ordini, perché gli aggiornamenti puntuali sono il suo punto debole.
+
+**Configurazione tipica a regime**
+Postgres fa da archivio autorevole. Elasticsearch e ClickHouse ricevono i dati da Postgres.
+
+**Costo di ogni sistema aggiunto**
+- Ogni sistema porta un problema di sincronizzazione e uno di allineamento dei dati.
+- Il costo vero non è la licenza. È il tempo delle persone che tengono in piedi il sistema.
+
+**Percorso pratico**
+1. Oggi: Postgres per ordini, catalogo, ricerca e analisi.
+2. La ricerca supera il milione di documenti e la qualità dei risultati non basta più: aggiungi Elasticsearch, alimentato da Postgres.
+3. L'analisi supera le decine di milioni di righe e le scansioni rallentano: aggiungi ClickHouse, alimentato da Postgres.
+4. Gli ordini restano sempre su Postgres.

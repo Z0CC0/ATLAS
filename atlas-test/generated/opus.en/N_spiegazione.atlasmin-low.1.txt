@@ -1,0 +1,11 @@
+Eventual consistency: after write, replicas don't agree immediately, but converge within finite time if writes stop.
+
+Why care: it hits whoever reads right after writing. User posts comment, reloads, doesn't see it.
+
+Why systems accept it: trade against availability. System demanding strong consistency has to refuse requests when replicas cannot talk. So it's not defect to eliminate but choice, and most systems that scale make it deliberately.
+
+How long gap lasts: typically under a second across replicas in same region, seconds across regions.
+
+Common fix: read from primary replica for session that just wrote, not for everyone. Writer sees own comment; other readers catch up moments later without noticing.
+
+Where it's unacceptable: few cases, easy to recognise. Account balances, seat availability, uniqueness of identifier. There, pay for strong consistency; elsewhere, accept it.

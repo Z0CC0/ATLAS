@@ -102,7 +102,55 @@ const FIRST_RUN =
   'ATLAS is installed and doing nothing yet. It stays off until you switch it on:\n' +
   '`atlas low` shorter answers · `atlas high` half the words · `atlas help` the full card.';
 
+// Claude Code keeps the output of one hook only up to about 10 KB. Above that it
+// writes the whole text to a file and hands the model a 2 KB preview, silently
+// (measured 2026-09-26 on 2.1.283 with a numbered-line hook: 15.6 KB in, 76 lines
+// out). With `check` on the rules are 10-13 KB, so until 0.1.4 every session with
+// that dial on ran on the first two kilobytes of them. The manifest therefore
+// registers this script three times, `--part 1` to `--part 3`, and each call
+// prints one slice of the same text, cut at section boundaries, each slice under
+// the limit with room to spare. The limit is per hook: two 7.8 KB hooks arrive
+// whole. Without `--part` the whole text is printed, which is what the tests and
+// the bench read.
+const PART_LIMIT = 7500; // bytes, UTF-8
+const PARTS = 3;
+
+function splitForHooks(text, limit) {
+  limit = limit || PART_LIMIT;
+  const size = (s) => Buffer.byteLength(s, 'utf8');
+  // Sections first; a section that is itself too long is cut at paragraphs. Every
+  // unit keeps its own trailing blank line, CRLF or LF as the file has it, so the
+  // units concatenated are the text unchanged.
+  const units = [];
+  for (const sec of text.split(/(?<=\r?\n\r?\n)(?=## )/)) {
+    if (size(sec) <= limit) units.push(sec);
+    else units.push(...sec.split(/(?<=\r?\n\r?\n)(?=\S)/));
+  }
+  const chunks = [];
+  let cur = '';
+  for (const u of units) {
+    if (cur && size(cur + u) > limit) {
+      chunks.push(cur);
+      cur = u;
+    } else {
+      cur += u;
+    }
+  }
+  if (cur) chunks.push(cur);
+  return chunks.map((c, i) =>
+    (i === 0 ? c : `ATLAS rules, part ${i + 1} of ${chunks.length}, continued from the block above.\n\n${c}`).replace(/\s+$/, '')
+  );
+}
+
+function partArg(argv) {
+  const i = argv.indexOf('--part');
+  if (i === -1) return null;
+  const n = parseInt(argv[i + 1], 10);
+  return n >= 1 ? n : null;
+}
+
 function main() {
+  const part = partArg(process.argv);
   const state = cfg.readState();
 
   // No state file means OFF, not "on at the default".
@@ -115,7 +163,9 @@ function main() {
   // back on by itself.
   if (!state) {
     cfg.writeState({ level: 'off', rigour: 'off', check: 'off', silent: 'off' });
-    process.stdout.write(FIRST_RUN);
+    // Parts two and three run after part one has written the state file and so
+    // never get here; guarded anyway, so a reordering cannot print the notice twice.
+    if (!part || part === 1) process.stdout.write(FIRST_RUN);
     return;
   }
 
@@ -124,9 +174,15 @@ function main() {
     return;
   }
 
-  process.stdout.write(build(state));
+  const text = build(state);
+  if (!part) {
+    process.stdout.write(text);
+    return;
+  }
+  const chunks = splitForHooks(text);
+  process.stdout.write(chunks[part - 1] || '');
 }
 
 if (require.main === module) main();
 
-module.exports = { filterBlocks, filterByLevelFloor, stripFrontmatter, build };
+module.exports = { filterBlocks, filterByLevelFloor, stripFrontmatter, build, splitForHooks, PART_LIMIT, PARTS };

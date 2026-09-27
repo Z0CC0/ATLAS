@@ -1,0 +1,23 @@
+Dai tuoi file.
+
+Connection pool esaurito, non query lenta.
+
+In `db/session.py:47` il middleware rilascia la connessione solo nel percorso di successo. Quando l'handler solleva un'eccezione, `release()` non viene mai raggiunto e la connessione resta occupata fino al timeout. Dopo qualche centinaio di richieste fallite il pool si svuota e ogni richiesta successiva resta in attesa. Per questo vedi latenze crescenti invece di errori immediati.
+
+Correzione: avvolgi l'acquisizione in un `try/finally`, così il rilascio avviene anche sul percorso di errore:
+
+```python
+conn = pool.acquire()
+try:
+    return handler(conn, request)
+finally:
+    pool.release(conn)
+```
+
+**Non aumentare `pool_size` come soluzione.** Sembra risolvere, ma maschera soltanto il problema: il pool si esaurisce più tardi e la perdita di connessioni resta. Aumentalo solo dopo aver applicato la correzione, e solo se il carico reale lo richiede.
+
+Per riprodurre il comportamento prima e dopo la modifica:
+
+```
+pytest tests/test_pool.py -k exhaustion -x
+```

@@ -1,0 +1,19 @@
+`let` lets you reassign a variable. `const` doesn't.
+
+```js
+let count = 1;
+count = 2;        // fine
+
+const limit = 1;
+limit = 2;        // TypeError: Assignment to constant variable.
+```
+
+`const` only stops you from pointing the name at a new value. It doesn't stop the value itself from changing, so an object declared with `const` can still change inside:
+
+```js
+const user = { name: "Ada" };
+user.name = "Grace";   // fine, the object changed
+user = {};             // TypeError, you can't reassign the name
+```
+
+Both are block scoped, which `var` isn't. A `let` or `const` declared inside `{ }` doesn't exist outside it.

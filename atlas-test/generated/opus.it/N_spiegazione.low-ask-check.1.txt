@@ -1,0 +1,21 @@
+Conoscenza interna.
+
+Consistenza eventuale: dopo una scrittura, le repliche non concordano subito, ma convergono entro un tempo finito se le scritture si fermano.
+
+Ti interessa perché la noti proprio dove fa più male, cioè quando qualcuno legge subito dopo aver scritto. Utente pubblica un commento, ricarica la pagina e non lo vede.
+
+Soluzione comune: per la sessione che ha appena scritto, leggere dalla replica primaria. Solo per quella sessione, non per tutte.
+
+La finestra in cui le repliche non concordano è breve. Con repliche nella stessa regione, di solito sotto il secondo. Fra regioni diverse sale a qualche secondo.
+
+Non va trattata come un difetto da eliminare. È una scelta, e il prezzo da pagare riguarda la disponibilità: un sistema che pretende **consistenza forte** deve rifiutare richieste quando le repliche non si parlano. La maggior parte dei sistemi che scalano la accetta di proposito.
+
+Casi in cui non è accettabile sono pochi e facili da riconoscere:
+
+saldi di conto
+
+disponibilità di posti
+
+unicità di un identificativo
+
+Lì serve consistenza forte. Altrove, di solito, basta quella eventuale, con la lettura dalla primaria per chi ha appena scritto.

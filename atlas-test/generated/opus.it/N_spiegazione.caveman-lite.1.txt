@@ -1,0 +1,16 @@
+La consistenza eventuale descrive cosa succede quando un sistema tiene più copie dei dati, cioè repliche. Dopo una scrittura, le repliche non concordano subito. Se le scritture si fermano, però, convergono sullo stesso valore entro un tempo finito.
+
+**Perché esiste.** Il compromesso è con la disponibilità. Un sistema che pretende consistenza forte deve rifiutare richieste quando le repliche non si parlano. Un sistema a consistenza eventuale invece continua a rispondere e le repliche si allineano dopo. Per questo non va trattata come un difetto da eliminare. È una scelta, e la maggior parte dei sistemi che scalano la accetta di proposito.
+
+**Dove la noti.** Il problema riguarda chi legge subito dopo aver scritto. Esempio tipico: l'utente pubblica un commento, ricarica la pagina e il commento non c'è. La lettura è arrivata a una replica che non ha ancora ricevuto la scrittura.
+
+**Quanto dura.** Su repliche nella stessa regione la convergenza richiede di solito meno di un secondo. Fra regioni diverse sale a qualche secondo.
+
+**Come si risolve di solito.** La sessione che ha appena scritto legge dalla replica primaria. Tutte le altre sessioni continuano a leggere dalle repliche. Così l'utente vede subito il proprio commento e il resto del traffico mantiene i vantaggi delle repliche.
+
+**Perché ti interessa.** Quando progetti un sistema devi decidere dove la consistenza eventuale va bene e dove no. I casi in cui non è accettabile sono pochi e facili da riconoscere:
+- saldi di conto
+- disponibilità di posti
+- unicità di un identificativo
+
+In questi casi due letture che non concordano producono un errore reale, come un saldo sbagliato, un posto venduto due volte o un identificativo duplicato. Quasi ovunque altrove, un ritardo inferiore al secondo è un prezzo ragionevole in cambio di un sistema che continua a rispondere.

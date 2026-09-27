@@ -1,0 +1,19 @@
+internal knowledge
+
+Start with Postgres alone. Add Elasticsearch or ClickHouse only when one specific workload needs it and you have numbers to show it.
+
+**Why Postgres:** it handles all four workloads acceptably, though none outstandingly. It gives real transactions, and on orders those are not negotiable. That alone decides where authoritative data lives.
+
+Its limits tell you when to look again. Built-in text search works well enough below a million documents and weak above. Analytics hold up to tens of millions of rows, then scans get slow.
+
+**Alternatives:**
+
+MySQL: equivalent on orders, weaker on data types and complex queries. Nothing gained over Postgres.
+
+MongoDB: catalogue gets easier with variable schemas. Multi-document transactions arrived late and cost, so poor fit for orders.
+
+Elasticsearch: far better at text search, with relevance, synonyms and tolerance of typos. Not an authoritative store: it has to be fed from another database, never replace it. Below a million documents, adding it almost always premature.
+
+ClickHouse: far better at analytics, with columnar scans orders of magnitude ahead. Not for orders, because point updates are its weak spot.
+
+If you grow past Postgres's limits, the usual setup is Postgres as authoritative store, with Elasticsearch and ClickHouse fed from it. Every system you add brings a synchronisation problem and a data alignment problem. Real cost of specialised systems isn't licence but time of people keeping them up. Add them one at a time, only when numbers demand it.

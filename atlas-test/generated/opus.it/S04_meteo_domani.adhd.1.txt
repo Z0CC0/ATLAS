@@ -1,0 +1,8 @@
+Domani a New York serve un ombrello solo se esci dopo le 18: la probabilità di pioggia in quella fascia è del 30%.
+
+- **Cielo:** sereno al mattino, nuvoloso dal pomeriggio.
+- **Temperature:** massima 24 °C, minima 17 °C. Una maglia leggera basta per il giorno. Per la sera porta uno strato in più.
+- **Vento:** da nord-ovest a 15 km/h.
+- **Umidità:** intorno al 60%.
+
+Fonte: dati meteo trovati sul web.

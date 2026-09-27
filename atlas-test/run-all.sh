@@ -5,7 +5,7 @@
 # it picks up where it stopped.
 cd "$(dirname "$0")"
 for lang in en it; do
-  node generate.mjs --cases "cases/compression.$lang.json" --rounds 2 --missing
-  node judge.mjs --cases "cases/compression.$lang.json"
-  node measure.mjs --cases "cases/compression.$lang.json"
+  node generate.mjs --cases "cases/opus.$lang.json" --rounds 2 --missing
+  node judge.mjs --cases "cases/opus.$lang.json"
+  node measure.mjs --cases "cases/opus.$lang.json"
 done

@@ -1,0 +1,17 @@
+Il vantaggio che cerchi c'è davvero: se la regola sta in un trigger, nessun percorso applicativo può saltarla, nemmeno uno script lanciato a mano. Però lo paghi caro, e secondo me la stessa garanzia si ottiene in un altro modo.
+
+**Cosa ti costa mettere tutto nei trigger**
+
+- **Non si vedono.** Chi legge il codice applicativo non sa che esistono. Una modifica che sembra semplice ne fa scattare altre, e nel codice non ne resta traccia.
+- **Non si testano con gli strumenti che il team usa già.** Per verificarli servono test che girano su un database vero.
+- **Il debug peggiora.** Se un trigger va in errore, vedi solo che la scrittura è fallita. Non ti dice quale regola l'ha bloccata.
+- **Le migrazioni diventano fragili.** L'ordine in cui scattano i trigger conta, ma non è scritto da nessuna parte.
+
+**Cosa farei al posto tuo**
+
+Dividerei le responsabilità in due:
+
+- **Nel database** metterei solo ciò che protegge l'integrità dei dati: vincoli, chiavi esterne, unicità, controlli di dominio.
+- **Nell'applicazione** metterei la logica di business, con un solo punto di ingresso da cui passano tutte le scritture.
+
+Quel punto di ingresso ti dà la stessa garanzia del trigger, a una condizione: l'accesso diretto al database deve essere riservato alle migrazioni. Se nessuno può scrivere sulle tabelle senza passare dall'applicazione, nessuno può aggirare la regola. In più la logica resta leggibile, si testa con gli strumenti che usate già e, quando fallisce, sai quale regola l'ha fatta fallire.

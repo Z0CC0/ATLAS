@@ -1,0 +1,13 @@
+internal knowledge
+
+5080 is next generation after 4080, but on plain rasterisation it's only about 10–15 per cent faster. Biggest jump comes from frame generation.
+
+Architecture moves from Ada Lovelace on 4080 to Blackwell on 5080.
+
+Memory changes from GDDR6X to GDDR7, so bandwidth rises from about 717 to about 960 gigabytes per second.
+
+Rated power draw goes from 320 to 360 watts, so check your power supply has headroom.
+
+Power connector doesn't change. Both cards use 16 pins, so the same cable fits.
+
+For games without frame generation, 5080 gives a modest step over 4080. It pulls further ahead in games that support frame generation.

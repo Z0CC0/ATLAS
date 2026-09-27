@@ -1,0 +1,23 @@
+Conoscenza interna.
+
+Tutto parte dall'8086 del 1978: processore a 16 bit, nato come evoluzione dell'8080 e compatibile con lui a livello di sorgente.
+
+Nel 1982 l'80286 introduce la modalità protetta. Però una volta entrati in modalità protetta non si torna a quella reale senza riavviare.
+
+Nel 1985 l'80386 porta i 32 bit, la memoria virtuale paginata e la modalità virtuale 8086.
+
+Nel 1989 il 486 porta dentro il chip la cache di primo livello e il coprocessore matematico.
+
+Nel 1993 il Pentium diventa superscalare: due pipeline intere, fino a due istruzioni ritirate per ciclo.
+
+La svolta vera arriva nel 1995 con il Pentium Pro. Introduce l'esecuzione fuori ordine e traduce le istruzioni x86 in micro-operazioni interne. Da lì x86 diventa un'interfaccia, non più la macchina reale che sta sotto.
+
+Nel 2000 il Pentium 4 punta tutto sulla frequenza, con una pipeline lunghissima, e finisce contro il muro del consumo.
+
+Nel 2003 AMD estende l'architettura a 64 bit con AMD64, e Intel adotta lo stesso insieme di istruzioni. È la prima volta che l'estensione dominante non viene da Intel.
+
+Dal 2006, con il Core 2, la direzione cambia: non più frequenza, ma numero di nuclei.
+
+Intanto le estensioni vettoriali crescono per generazioni: MMX, SSE, AVX, AVX-512.
+
+Oggi la complessità sta negli strati sotto: predizione dei salti, gerarchia di cache, esecuzione speculativa. Nel 2018 Spectre e Meltdown mostrano che l'esecuzione speculativa aveva un costo di sicurezza che nessuno aveva mai considerato.

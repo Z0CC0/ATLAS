@@ -1,0 +1,13 @@
+**Usually not.** Skip the plain index, unless you mostly query one rare value. In that case, add a partial index on that value.
+
+With only three distinct values, a normal B-tree index is normally not used. Each value matches a large share of the table. When a filter selects more than roughly 5–10% of the rows, the planner prefers a sequential scan. The index would sit unused, and you would still pay for it on every write and in disk space.
+
+**The exception** is when one of the three values is rare and you filter on it often. A partial index that covers only the rare value does work:
+
+```sql
+CREATE INDEX idx_orders_failed ON orders (id) WHERE status = 'failed';
+```
+
+This index is small and cheap to maintain. The planner uses it because the filter selects only a few rows.
+
+If you want to check your own case, run `SELECT status, count(*) FROM your_table GROUP BY status;`. If one value is well under 5% of the rows and you filter on it, build the partial index. If not, don't add an index.

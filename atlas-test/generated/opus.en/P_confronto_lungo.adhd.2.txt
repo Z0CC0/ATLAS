@@ -1,0 +1,35 @@
+**Use local files plus a collector that ships them to central storage.** At 1,000 requests a minute that's the sensible setup, because the app writes to local disk and never waits on a log write.
+
+## Next steps
+1. Write logs to a local file on each machine.
+2. Set up rotation now so the disk never fills.
+3. Install a collector on each machine to ship the files to one central place.
+4. Before the logs leave your infrastructure, strip personal data from them.
+
+## Why not the other two on their own
+
+**Files alone**
+- Good: no cost, no dependency.
+- Problems:
+  - Searching means grep.
+  - Rotation is a manual setup, and without it the disk fills.
+  - You can't search across machines. You have to connect to each one.
+- The collector fixes the search problem and keeps the good parts.
+
+**Managed service**
+- Good: instant search, alerts and automatic retention.
+- Problems:
+  - You pay by volume, and at 1,000 requests a minute the volume grows fast.
+  - Logs leave your infrastructure, so you have to strip personal data before sending them.
+- It can still be where the collector sends the logs. Just watch the bill.
+
+**Your app's own database**
+- Good: searching is familiar and easy.
+- Problems:
+  - Logging and real requests are two very different workloads, and they compete for the same database.
+  - Under load, log writes fill the caches and connections your real requests need.
+
+## The rule that always applies
+Writing a log must never sit in the request's critical path. Whatever you choose, a slow log destination should never slow down a request.
+
+Next: check whether your app writes logs synchronously inside the request handler. If it does, fix that first.

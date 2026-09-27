@@ -1,0 +1,14 @@
+**Cos'è.** Dopo una scrittura le repliche non concordano subito. Se le scritture si fermano, convergono entro un tempo finito. Nella stessa regione di solito serve meno di un secondo, fra regioni diverse qualche secondo.
+
+**Perché esiste.** Il compromesso è con la disponibilità. Un sistema che pretende consistenza forte deve rifiutare richieste quando le repliche non si parlano. La consistenza eventuale non è un difetto da eliminare, è una scelta. La maggior parte dei sistemi che scalano la accetta di proposito.
+
+**Perché ti interessa.** Colpisce chi legge subito dopo aver scritto. Esempio tipico: l'utente pubblica un commento, ricarica la pagina e non lo vede. Per lui sembra un bug.
+
+**Come si risolve.** Per la sessione che ha appena scritto, leggi dalla replica primaria. Gli altri utenti continuano a leggere dalle repliche normali.
+
+**Quando non va bene.** I casi sono pochi e facili da riconoscere:
+- saldi di un conto
+- disponibilità di posti
+- unicità di un identificativo
+
+In questi casi serve la consistenza forte. Per il resto, di solito la consistenza eventuale va bene.

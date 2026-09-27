@@ -1,0 +1,32 @@
+Parti da **Postgres da solo**. Aggiungi un sistema specializzato solo quando un carico specifico lo richiede e hai i numeri che lo dimostrano.
+
+## Perché Postgres come base
+
+Postgres gestisce tutti e quattro i tuoi carichi in modo accettabile, anche se in nessuno è eccellente. Su ordini, catalogo, ricerca e analisi, un solo sistema basta per iniziare.
+
+- **Ordini:** Postgres ha transazioni affidabili. Sugli ordini le transazioni sono un requisito, non un'opzione.
+- **Catalogo:** Postgres lo regge senza problemi.
+- **Ricerca testuale:** la ricerca integrata basta sotto il milione di documenti. Sopra quella soglia diventa debole.
+- **Analisi:** regge fino a decine di milioni di righe. Oltre, le scansioni diventano lente.
+
+## Le alternative, carico per carico
+
+**MySQL** è equivalente a Postgres sugli ordini. È più debole su tipi di dato e query complesse, quindi non ti dà vantaggi rispetto a Postgres.
+
+**MongoDB** semplifica il catalogo se i prodotti hanno schemi variabili. Però le transazioni multi-documento sono arrivate tardi e hanno un costo. Questo lo rende una scelta debole per gli ordini.
+
+**Elasticsearch** è molto superiore sulla ricerca testuale: rilevanza, sinonimi, tolleranza agli errori di battitura. Però non è un archivio autorevole. Deve ricevere i dati da un altro database, non sostituirlo. Aggiungerlo prima del milione di documenti è quasi sempre prematuro.
+
+**ClickHouse** è molto superiore sull'analisi. Le sue scansioni colonnari sono avanti di ordini di grandezza. Non va bene per gli ordini, perché gli aggiornamenti puntuali sono il suo punto debole.
+
+## Come cresce l'architettura
+
+La configurazione tipica ha Postgres come archivio autorevole. Elasticsearch e ClickHouse ricevono i dati da Postgres. Ci arrivi un pezzo alla volta:
+
+1. Ricerca oltre il milione di documenti, con problemi di rilevanza misurabili: aggiungi Elasticsearch.
+2. Analisi oltre decine di milioni di righe, con scansioni lente misurate: aggiungi ClickHouse.
+3. Gli ordini restano sempre su Postgres.
+
+## Il costo da mettere in conto
+
+Ogni sistema che aggiungi porta due problemi: tenere sincronizzati i dati e verificare che restino allineati. Il costo vero dei sistemi specializzati non è la licenza. È il tempo delle persone che li tengono in piedi. Per questo conviene aggiungerli solo quando i numeri li giustificano, non in anticipo.

@@ -1,0 +1,31 @@
+The story of x86 is a family of chips, but it is also a story about what "x86" means. It starts as a real processor design and ends up as a stable interface, with the actual engineering happening underneath.
+
+**The foundations (1978–1985)**
+
+It begins with the **8086** in 1978, a 16-bit processor. Intel built it as an outgrowth of the 8080 and kept it compatible at source level, so existing code could be carried forward. That early concern for compatibility shaped everything that came after.
+
+The **80286** of 1982 introduced protected mode, but only halfway. Once the chip entered protected mode, the only way back to real mode was a reboot. The **80386** of 1985 fixed the design properly. It moved the architecture to 32 bits, added paged virtual memory, and added virtual 8086 mode so old real-mode software could run inside the new protected environment. In many ways the 386 set the shape x86 kept for the next two decades.
+
+**Integration and parallelism (1989–1995)**
+
+Next, Intel pulled more onto the chip and did more work per clock. The **486** of 1989 brought both the first-level cache and the maths coprocessor on-die. The **Pentium** of 1993 was superscalar: it had two integer pipelines and could retire two instructions per cycle.
+
+The biggest change came with the **Pentium Pro** in 1995. It introduced out-of-order execution and translated x86 instructions into internal micro-operations. After that point, x86 is an interface rather than the real machine underneath. The instruction set the programmer sees is a contract, and the core that actually runs the code is something else, free to evolve on its own.
+
+**The frequency race and its end (2000–2006)**
+
+The **Pentium 4** of 2000 bet on clock speed, using a very long pipeline to push frequency as high as possible. That approach ran into the power wall.
+
+In the middle of that, in 2003, **AMD extended the architecture to 64 bits with AMD64**, and Intel adopted the same instruction set. For the first time, the dominant extension to x86 had not come from Intel.
+
+From 2006, with the **Core 2**, the direction changed. Progress stopped coming from higher frequency and started coming from more cores.
+
+**Wider, deeper, and the bill that came due (to today)**
+
+Across all these generations, the vector extensions kept growing: **MMX**, then **SSE**, then **AVX**, and finally **AVX-512**, each letting one instruction work on more data at once.
+
+Today most of the complexity sits in the layers below the instruction set: branch prediction, the cache hierarchy and speculative execution. These are the machinery that has been growing behind the x86 interface since the Pentium Pro.
+
+In 2018 that machinery showed its downside. **Spectre and Meltdown** revealed that speculative execution carried a security cost nobody had priced. The techniques that made x86 fast had also opened a way to leak data.
+
+**The thread through it all:** x86 kept its outward interface stable while everything behind it changed. It went from 16 to 32 to 64 bits, and from a single pipeline to out-of-order, multi-core designs. The chase for speed moved from clock frequency to parallelism and then to ever deeper speculation, until that last step turned out to have a price.

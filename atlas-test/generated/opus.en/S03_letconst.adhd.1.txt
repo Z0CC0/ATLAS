@@ -1,0 +1,15 @@
+Use `const` when the name should always point to the same value. Use `let` when you need to reassign it.
+
+- **`let`** lets you reassign the variable later.
+- **`const`** stops you from reassigning the name. It does not freeze the value itself. An object declared with `const` can still change inside.
+
+```js
+let count = 1;
+count = 2;            // fine
+
+const user = { name: "Ana" };
+user.name = "Bo";     // fine: the object changes internally
+user = {};            // TypeError: the name can't be reassigned
+```
+
+**What they share:** both are block scoped. A variable declared inside `{ }` exists only inside those braces. `var` does not work this way.

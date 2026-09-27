@@ -1,0 +1,7 @@
+Di norma no. Con tre valori distinti, ogni valore copre molte righe. Il planner preferisce una scansione sequenziale quando il filtro seleziona più del 5-10% circa delle righe, quindi l'indice B-tree di solito non viene usato. L'indice però costa comunque in scrittura e in spazio.
+
+Fa eccezione il caso in cui uno dei valori è raro: lì conviene un indice parziale su quel solo valore, che invece funziona.
+
+```sql
+CREATE INDEX ON ordini (stato) WHERE stato = 'errore';
+```

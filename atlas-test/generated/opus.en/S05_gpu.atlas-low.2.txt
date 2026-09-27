@@ -1,0 +1,9 @@
+The biggest change is frame generation, not raw rasterisation. In rasterisation the 5080 is only about 10–15 per cent faster.
+
+**Architecture:** the 5080 uses Blackwell, while the 4080 uses Ada Lovelace.
+
+**Memory:** the 5080 has GDDR7 instead of GDDR6X. Bandwidth rises from about 717 to about 960 GB/s.
+
+**Power:** rated draw goes from 320 W to 360 W. The connector is still 16-pin.
+
+If you play games that support frame generation, the 5080 is a bigger step up. If they don't, it's a modest upgrade that uses more power.

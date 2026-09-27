@@ -1,0 +1,13 @@
+Deciding question isn't technical: what must team be able to do a year from now that it cannot do today? Everything else serves that answer.
+
+First: which parts of monolith actually change. Stable parts gain nothing from being split.
+
+Second: where transaction boundaries sit. Transaction spanning two services becomes distributed problem.
+
+Don't run full rewrite in parallel with old system. Almost always fails: old one keeps changing, copy never catches up.
+
+Strangle progressively instead. Put router in front, move one piece at a time, keep old system authoritative until new piece verified.
+
+Microservices cost more to operate. Every service needs releases, monitoring, logs, alerts and person looking after it. Below five developers, that cost almost always exceeds benefit.
+
+Consider modular monolith, option nobody mentions. Sharp internal boundaries, one release, and you can extract module the day it's genuinely needed.

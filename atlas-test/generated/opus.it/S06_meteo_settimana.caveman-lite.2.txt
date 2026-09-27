@@ -1,0 +1,13 @@
+Settimana variabile a New York. Il fine settimana è il periodo più caldo. Le piogge significative cadono in due giorni, mercoledì e domenica.
+
+- **Lunedì:** sereno, massima 24°, minima 17°.
+- **Martedì:** nuvoloso, massima 22°, minima 16°. In serata arriva una pioggia debole.
+- **Mercoledì:** pioggia per gran parte del giorno, massima 19°, minima 15°. È il giorno più fresco della settimana.
+- **Giovedì:** schiarite, massima 21°, minima 14°.
+- **Venerdì:** sereno, massima 25°, minima 16°.
+- **Sabato:** sereno e caldo, massima 28°, minima 19°.
+- **Domenica:** temporali nel pomeriggio, massima 26°, minima 18°.
+
+Mercoledì serve l'ombrello per quasi tutta la giornata. Domenica conviene organizzare le attività all'aperto al mattino, prima dei temporali. Per stare fuori, il giorno migliore è sabato: è sereno e fa caldo.
+
+Dati raccolti dal web.

@@ -1,0 +1,27 @@
+Il punto di partenza è di poco prima degli anni Ottanta. L'8086 del 1978 è a 16 bit e nasce come evoluzione dell'8080. La compatibilità con l'8080 è a livello di sorgente, non di binario. Questa scelta segna tutta la storia di x86: ogni passo avanti si porta dietro il passato.
+
+**Anni Ottanta: protezione e 32 bit**
+
+L'80286 del 1982 introduce la modalità protetta. Ha però un limite pesante: per tornare alla modalità reale bisogna riavviare. L'80386 del 1985 corregge il tiro e aggiunge molto. Porta i 32 bit e la memoria virtuale paginata. Aggiunge anche la modalità virtuale 8086, che fa girare il vecchio codice dentro il nuovo modello. Con il 386 x86 diventa una base adatta ai sistemi operativi moderni.
+
+Il 486 del 1989 porta dentro il chip due componenti che prima erano esterni: la cache di primo livello e il coprocessore matematico.
+
+**Anni Novanta: il processore cambia sotto la superficie**
+
+Il Pentium del 1993 è superscalare. Ha due pipeline intere e può ritirare due istruzioni per ciclo.
+
+Il cambiamento più profondo arriva con il Pentium Pro del 1995. Introduce l'esecuzione fuori ordine e traduce le istruzioni x86 in micro-operazioni interne. Da quel momento x86 è un'interfaccia, non più la macchina reale che sta sotto. Il programma vede ancora x86, ma il chip esegue altro.
+
+**Anni Duemila: frequenza, 64 bit e più nuclei**
+
+Il Pentium 4 del 2000 punta tutto sulla frequenza, con una pipeline lunghissima. Si scontra con il muro del consumo.
+
+Nel 2003 AMD estende l'architettura a 64 bit con AMD64, e Intel adotta lo stesso insieme di istruzioni. È la prima volta che l'estensione dominante di x86 non viene da Intel.
+
+Dal 2006, con il Core 2, la direzione cambia: non si cerca più la frequenza ma il numero di nuclei.
+
+Nel frattempo le estensioni vettoriali crescono generazione dopo generazione: MMX, SSE, AVX, AVX-512.
+
+**Oggi**
+
+L'insieme di istruzioni resta riconoscibile. La complessità sta negli strati sotto: predizione dei salti, gerarchia di cache, esecuzione speculativa. Nel 2018 Spectre e Meltdown mostrano che l'esecuzione speculativa aveva un costo di sicurezza che nessuno aveva mai considerato. È lo stesso strato nascosto nato con il Pentium Pro.

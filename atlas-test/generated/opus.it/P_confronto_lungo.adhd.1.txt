@@ -1,0 +1,29 @@
+**Usa file locali più un raccoglitore che li spedisce altrove.** A mille richieste al minuto è la scelta ragionevole: l'applicazione scrive su disco e non aspetta mai che il log arrivi a destinazione.
+
+Qualunque opzione scegli, tieni la scrittura del log fuori dal percorso critico della richiesta.
+
+## Le tre opzioni a confronto
+
+**Solo file**
+- Pro: non costa nulla e non aggiunge dipendenze.
+- Contro: per cercare hai solo grep.
+- Contro: la rotazione va configurata a mano, altrimenti il disco si riempie.
+- Contro: se hai più macchine non puoi cercare su tutte insieme, devi collegarti a ognuna.
+
+**Servizio gestito**
+- Pro: la ricerca è immediata, hai gli allarmi e la conservazione è automatica.
+- Contro: si paga per volume, e a mille richieste al minuto il volume cresce in fretta.
+- Contro: i log escono dalla tua infrastruttura, quindi prima di mandarli devi ripulirli dai dati personali.
+
+**Database**
+- Pro: la ricerca è comoda e la conosci già.
+- Contro: se scrivi i log nello stesso database dell'applicazione, metti in competizione due carichi molto diversi.
+- Contro: sotto carico i log occupano cache e connessioni che servivano alle richieste vere.
+
+## Perché file + raccoglitore
+- I file danno all'applicazione una scrittura locale che non costa nulla e non la fa aspettare.
+- Il raccoglitore porta i log in un posto dove si possono cercare, così su più macchine non devi collegarti a ognuna.
+- Se la destinazione è un servizio gestito, ripulisci i dati personali prima che i log escano e controlla quanto paghi per il volume.
+- Configura comunque la rotazione dei file locali, altrimenti il disco si riempie.
+
+Prossimo passo: apri il codice di logging della tua API e controlla se la scrittura del log avviene dentro la gestione della richiesta.

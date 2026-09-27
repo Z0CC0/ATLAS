@@ -1,0 +1,5 @@
+`let` lets you reassign a variable. `const` does not.
+
+`const` only stops you from pointing the name at a new value. The value itself can still change, so an object declared with `const` can have its contents modified.
+
+Both are block scoped, unlike `var`.

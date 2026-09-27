@@ -76,41 +76,41 @@ uninstalling, or delete that file — it is one line and nothing else depends on
 
 ## Measured
 
-Every number below is measured, not estimated, and the unfavourable ones are printed with the rest. The compression tables were measured on 2026-09-08 with `claude-sonnet-5`, the CLI's default model at the time. The default has since moved to `claude-opus-5-5`, which compresses less under every plugin: on a same-day rerun of 24 English and 24 Italian questions, `atlas-min` at `high` went from −54% to −50% (English) and from −52% to −44% (Italian), caveman `ultra` from −51% to −27% and from −47% to −22%. The full tables will be re-measured; until then read them as Sonnet figures.
+Every number below is measured, not estimated, and the unfavourable ones are printed with the rest. The compression tables were measured on 2026-09-26 with `claude-opus-5-5`, the CLI's default model, on the 0.1.3 rules. An earlier run on 2026-09-08 with `claude-sonnet-5` and the 0.1.0 rules is kept in `atlas-test/` (`cases/compression.*`) as history: Sonnet compressed more under every plugin, `atlas high` about 54% in English where Opus gives 46%, so figures from the two days are not comparable with each other. That older run also has a flaw found on 2026-09-26: Claude Code keeps only about 10 KB of a hook's output and hands the model a 2 KB preview of anything longer, silently. The 0.1.0 rules were over that size in every state but `low`, so the Sonnet rows for `high`, `ask` and `check` measured the first two kilobytes of the rules, not the rules. Since 0.1.4 the rules are injected in parts under the limit; the `check` rows below were generated after that fix and the billed input of every row is in the data, which is how the flaw was caught.
 
 **Compression.** 24 English and 24 Italian questions, each carrying its own sheet of facts so that every setup answers with the same information and only the form can change. Each question was answered 2 times per setup in a fresh session through the real hooks; tokens are the API's own count of the visible answer, thinking excluded. "Details lost" is how many of the sheet's facts a reader can no longer learn from the answer, first by string match, then re-judged one by one by a model that is told nothing about what is being measured — the median across rounds, minus what the no-plugin answer already lost.
 
 English:
 
-| setup | output vs no plugin, median | worst … best | details lost |
+| setup | output vs no plugin, median | worst … best round | details lost |
 |---|---|---|---|
-| `low` | -51% | -51% … -51% | 4 of 263 |
-| `high` | -54% | -54% … -54% | 4 of 255 |
-| `low` + `ask` | -51% | -50% … -52% | 3 of 263 |
-| `low` + `check` | -47% | -44% … -50% | 1 of 263 |
-| `low` + `ask` + `check` | -43% | -40% … -46% | 2 of 263 |
-| `high` + `ask` | -55% | -54% … -56% | 3 of 263 |
-| `high` + `check` | -53% | -53% … -54% | 5 of 263 |
-| `high` + `ask` + `check` | -53% | -53% … -53% | 1 of 263 |
-| `atlas-min` at `low` | -51% | -50% … -52% | 1 of 263 |
-| `atlas-min` at `high` | -55% | -54% … -55% | 3 of 255 |
+| `low` | -37% | -37% … -37% | 1 of 263 |
+| `high` | -46% | -45% … -47% | 0 of 263 |
+| `low` + `ask` | -36% | -33% … -38% | 1 of 263 |
+| `low` + `check` | -38% | -38% … -38% | 0 of 263 |
+| `low` + `ask` + `check` | -39% | -38% … -40% | 0 of 263 |
+| `high` + `ask` | -46% | -46% … -46% | 0 of 263 |
+| `high` + `check` | -47% | -47% … -48% | 1 of 263 |
+| `high` + `ask` + `check` | -46% | -45% … -46% | 0 of 263 |
+| `atlas-min` at `low` | -40% | -39% … -41% | 0 of 263 |
+| `atlas-min` at `high` | -47% | -47% … -48% | 0 of 263 |
 
 Italian:
 
-| setup | output vs no plugin, median | worst … best | details lost |
+| setup | output vs no plugin, median | worst … best round | details lost |
 |---|---|---|---|
-| `low` | -47% | -46% … -48% | 1 of 264 |
-| `high` | -47% | -46% … -49% | 4 of 264 |
-| `low` + `ask` | -44% | -41% … -46% | 1 of 264 |
-| `low` + `check` | -41% | -41% … -41% | 1 of 264 |
-| `low` + `ask` + `check` | -42% | -40% … -44% | 2 of 264 |
-| `high` + `ask` | -48% | -48% … -49% | 5 of 264 |
-| `high` + `check` | -50% | -50% … -50% | 4 of 264 |
-| `high` + `ask` + `check` | -47% | -44% … -49% | 7 of 264 |
-| `atlas-min` at `low` | -49% | -49% … -50% | 1 of 264 |
-| `atlas-min` at `high` | -52% | -52% … -52% | 5 of 264 |
+| `low` | -37% | -35% … -38% | 0 of 264 |
+| `high` | -43% | -43% … -44% | 1 of 264 |
+| `low` + `ask` | -38% | -38% … -38% | 0 of 264 |
+| `low` + `check` | -34% | -34% … -34% | 0 of 264 |
+| `low` + `ask` + `check` | -35% | -35% … -36% | 0 of 264 |
+| `high` + `ask` | -43% | -43% … -44% | 1 of 264 |
+| `high` + `check` | -42% | -42% … -42% | 1 of 264 |
+| `high` + `ask` + `check` | -41% | -41% … -42% | 0 of 264 |
+| `atlas-min` at `low` | -39% | -38% … -39% | 1 of 264 |
+| `atlas-min` at `high` | -44% | -44% … -44% | 1 of 264 |
 
-Run-to-run noise with no plugin and the rules frozen: 0.4 points in English, 4.1 in Italian. A gap smaller than that between two setups is not an effect.
+Run-to-run noise with no plugin and the rules frozen: 0.4 points in English, 0.6 in Italian. A gap smaller than that between two setups is not an effect.
 
 **What a session costs against no plugin**, by build and setup: the fixed cost paid once, then per turn the reminder plus an answer shortened by that setup's own measured saving (mean of the two languages); a 500-token answer with no plugin; 40 turns and 295 turns, the average of the real transcripts this was tuned on. Negative is cheaper.
 
@@ -118,36 +118,36 @@ Run-to-run noise with no plugin and the rules frozen: 0.4 points in English, 4.1
 
 | setup | 40 turns | 295 turns |
 |---|---|---|
-| `low` | -17% | -38% |
-| `high` | -16% | -38% |
-| `low` + `ask` | -12% | -34% |
-| `low` + `check` | -6% | -30% |
-| `low` + `ask` + `check` | -1% | -27% |
-| `high` + `ask` | -14% | -37% |
-| `high` + `check` | -11% | -36% |
-| `high` + `ask` + `check` | -6% | -33% |
+| `low` | -11% | -29% |
+| `high` | -18% | -35% |
+| `low` + `ask` | -8% | -26% |
+| `low` + `check` | -3% | -25% |
+| `low` + `ask` + `check` | 0% | -24% |
+| `high` + `ask` | -13% | -33% |
+| `high` + `check` | -9% | -33% |
+| `high` + `ask` + `check` | -3% | -29% |
 
 `atlas-solo`
 
 | setup | 40 turns | 295 turns |
 |---|---|---|
-| `low` | -24% | -39% |
-| `high` | -23% | -39% |
-| `low` + `ask` | -19% | -35% |
-| `low` + `check` | -12% | -31% |
-| `low` + `ask` + `check` | -8% | -28% |
-| `high` + `ask` | -21% | -38% |
-| `high` + `check` | -17% | -37% |
-| `high` + `ask` + `check` | -13% | -34% |
+| `low` | -16% | -29% |
+| `high` | -23% | -36% |
+| `low` + `ask` | -13% | -27% |
+| `low` + `check` | -8% | -26% |
+| `low` + `ask` + `check` | -5% | -25% |
+| `high` + `ask` | -19% | -34% |
+| `high` + `check` | -14% | -33% |
+| `high` + `ask` + `check` | -8% | -30% |
 
 `atlas-min`
 
 | setup | 40 turns | 295 turns |
 |---|---|---|
-| `low` | -32% | -41% |
-| `high` | -33% | -42% |
+| `low` | -25% | -33% |
+| `high` | -29% | -38% |
 
-**Fixed cost per session**, `atlas` build: 1,409 tokens of rules at `low`, 1,531 at `high`, plus 1,840 of skill, command and subagent descriptions that are loaded whether or not they are used. The per-turn reminder is 42–47 tokens; over a long session it is the largest number of all.
+**Fixed cost per session**, `atlas` build: 1,409 tokens of rules at `low`, 1,531 at `high`, plus 1,840 of skill, command and subagent descriptions that are loaded whether or not they are used. The per-turn reminder is 27–32 tokens; over a long session it is the largest number of all.
 
 | | tokens per session |
 |---|---|
@@ -156,6 +156,8 @@ Run-to-run noise with no plugin and the rules frozen: 0.4 points in English, 4.1
 | skill, command and subagent descriptions, always present | 1,840 |
 | per-turn reminder | 27-32 |
 | **total at the default** | **3,249** |
+
+Those are tiktoken counts. **What the API actually bills** was measured on the bench too: the input of a one-turn call with each setup on, minus the same call with no plugin, median over the 48 questions. The rules and the reminder at `low` come to 2,207 tokens billed against 1,436 counted, a ratio of 1.54; the session tables above use the billed figure for the injected text and tiktoken for the descriptions, which the bench cannot separate from the rest of the prompt.
 
 The `atlas-min` build cuts the descriptions to 153 and the rules to 1,082 by shipping only
 the compression sections. `atlas-solo` keeps every rule and drops the seven subagents: 829 in
@@ -171,7 +173,9 @@ from 2,165 to 1,409 tokens in 0.1.3 the same way: examples and reasons out, ever
 on the same day, two rounds, the compact rules compress 1.6 points less in English and 1.7 in
 Italian, within two points of the run-to-run noise, for a thousand tokens less in every chat.
 
-Token counts for the fixed costs are tiktoken (`o200k_base`), an approximation of Claude's tokenizer; the compression figures come from the API's own counts. Compare them with each other, not with a bill.
+**The rules arrive in parts since 0.1.4.** Claude Code keeps about 10 KB of one hook's output; above that it saves the text to a file and gives the model a 2 KB preview, with no warning to anyone. With `check` on the rules are 10-13 KB, so until 0.1.4 a session with that dial on ran on the first two kilobytes of them — no provenance marker, no second pass, no verification — while the reminder kept naming rules the model had never seen. The session-start hook is now registered three times and each call prints one slice, cut at section boundaries, the largest 7,298 bytes. Nothing in the rules changed. It was caught by the billed input in the bench data: the `check` rows cost less than `low` alone.
+
+Token counts for the fixed costs are tiktoken (`o200k_base`), an approximation of Claude's tokenizer, except where a line says "billed"; the compression figures come from the API's own counts. Compare them with each other, not with a bill.
 
 ## Getting the most out of it
 
@@ -191,9 +195,9 @@ Everything below follows from the measurements above. None of it is required; ea
 
 **Write the request with the constraint in it.** "In under 50 lines", "only the failing test", "one option, not a comparison": the model follows a stated bound better than any rule about brevity, and the bound costs you a few words.
 
-**Every plugin you install costs its descriptions in every chat, on or off.** Count them once: this one is 1,840 tokens on the full build, 829 without the subagents, caveman about 700, a large toolkit can be 30,000. Remove what you have not used in a month.
+**Every plugin you install costs its descriptions in every chat, on or off.** Count them once: this one is 1,840 tokens on the full build, 829 without the subagents, caveman 2.7.0 1,281, a large toolkit can be 30,000. Remove what you have not used in a month.
 
-**`atlas-min` when tokens are the only thing you want.** Same compression rules, one command, no subagents: it lands where caveman does on cost and compresses the same.
+**`atlas-min` when tokens are the only thing you want.** Same compression rules, one command, no subagents, 153 tokens of descriptions: measured against caveman 2.7.0 on the same day, at `high` it compresses 19 points more per answer than caveman `ultra`, and over 295 turns its best setup is 26 points cheaper than caveman.
 
 **Memory files in English.** They load at every start; the tokenizer reads English about a third cheaper than Italian and cheaper still than most other languages. Write `MEMORY.md` in English even if you talk to the model in your own.
 
@@ -216,15 +220,15 @@ Everything below follows from the measurements above. None of it is required; ea
 ## Disadvantages
 
 - **It is a style constraint on a language model, not a filter.** The model follows it most of the time, not all of the time. On long sessions it occasionally slips — an article here, a list marker there — and the per-turn reminder exists because of that, not instead of it.
-- **`low` and `high` are closer than their names suggest.** Measured: `low` 51% and `high` 54% less output in English, 47% and 47% in Italian. `high` is the harder rule set and reads more telegraphically; the token gap is a few points.
-- **Short sessions pay less.** The fixed cost is paid before the first answer, so on the `atlas` build a 40-turn session saves 1–17% where a 295-turn one saves 27–38%. A session of a handful of turns with short answers may not pay at all.
+- **`low` and `high` are 9 and 7 points apart.** Measured: `low` 37% and `high` 46% less output in English, 37% and 43% in Italian. `high` is the harder rule set and reads more telegraphically: the saving is real, and so is the cost in readability.
+- **Short sessions pay less.** The fixed cost is paid before the first answer, so on the `atlas` build a 40-turn session saves 0–18% where a 295-turn one saves 24–35%. A session of a handful of turns with short answers may not pay at all.
 - **The per-turn reminder scales with turns.** Over 295 turns it costs more than the whole session-start injection. It is as short as it can be while still naming rules.
 - **`check` adds tokens by design.** Verifying means looking things up. It is the one dial that costs more than it saves in tokens; it is paid for by the compression running underneath it.
 - **`ask` cannot know what you have not said.** It reduces wrong assumptions; it does not remove them.
 - **English commands, English hook phrases.** Requests in any language are recognised by the model, but the phrases the hook matches by itself ("stop atlas", "normal mode") are English. `atlas off` is a name and works everywhere.
 - **The state is global.** One setting for every project and every chat, stored outside the plugin, so uninstalling does not reset it.
 - **`atlas-browser` needs the desktop app's Browser pane.** From the plain CLI it has nothing to drive and says so.
-- **The compression figure is 2 rounds on 48 questions with fixed fact sheets, one model (`claude-sonnet-5`).** It measures form with the information held constant; answers that have to find their own facts vary more.
+- **The compression figure is 2 rounds on 48 questions with fixed fact sheets, one model (`claude-opus-5-5`, 2026-09-26).** It measures form with the information held constant; answers that have to find their own facts vary more, and another model compresses by another amount: Sonnet 5 gave larger savings under every plugin.
 - **It shortens output only.** Your input, your files and what tools return are not touched: a hook cannot rewrite a tool's result.
 - `ask` cannot know what you have not said. It reduces wrong assumptions; it does not remove them
 

@@ -1,0 +1,19 @@
+**Pack an umbrella for Wednesday and Sunday afternoon. Saturday is the best day to be outside.**
+
+New York this week:
+
+| Day | Sky | High / Low |
+|---|---|---|
+| Monday | Clear | 24° / 17° |
+| Tuesday | Cloudy, light rain in the evening | 22° / 16° |
+| Wednesday | Rain for most of the day | 19° / 15° |
+| Thursday | Some sun | 21° / 14° |
+| Friday | Clear | 25° / 16° |
+| Saturday | Clear and warm | 28° / 19° |
+| Sunday | Thunderstorms in the afternoon | 26° / 18° |
+
+- **Wettest days:** Wednesday and Sunday are the only two days with a lot of rain. Tuesday evening has just a light shower.
+- **Warmest days:** the weekend. Saturday reaches 28° and stays dry. On Sunday, do outdoor things in the morning, before the storms.
+- **Coolest day:** Wednesday, with a high of 19°. Thursday night is the coldest at 14°.
+
+Source: web.

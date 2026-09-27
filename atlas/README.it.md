@@ -131,8 +131,8 @@ le regole dei livelli sono filtrate: si inietta solo il livello attivo, mai tutt
 ## Cosa NON fa
 
 - Non comprime l'input, i tuoi file, né l'output dei tool. Accorcia **l'output**
-- Misurata contro il plugin assente su 24 domande inglesi e 24 italiane, ognuna con la sua scheda di fatti cosi' che cambi solo la forma, 2 giri a testa in sessioni nuove, token contati dall'API sul testo visibile: **`low` -47% in italiano e -51% in inglese, `high` -47% e -54%**. Dettagli persi, mediana: `low` 1 e 4 su 264, `high` 4 e 4. Rumore fra giri 4.1 punti: una differenza piu' piccola non e' un effetto
-- **`low` e `high` escono vicini.** `high` e' il regolamento piu' duro e si legge piu' telegrafico; la differenza in token e' di pochi punti
+- Misurata il 26/09/2026 con `claude-opus-5-5` contro il plugin assente su 24 domande inglesi e 24 italiane, ognuna con la sua scheda di fatti cosi' che cambi solo la forma, 2 giri a testa in sessioni nuove, token contati dall'API sul testo visibile: **`low` -37% in italiano e -37% in inglese, `high` -43% e -46%**. Dettagli persi, mediana: `low` 0 e 1 su 264, `high` 1 e 0. Rumore fra giri 0.6 punti: una differenza piu' piccola non e' un effetto. Un altro modello comprime di un altro tanto: Sonnet 5, l'8 settembre, risparmiava di piu' con ogni plugin
+- **`low` e `high` distano 9 e 7 punti.** `high` e' il regolamento piu' duro e si legge piu' telegrafico: il risparmio e' vero, e lo e' anche il costo in leggibilita'
 - `atlas-min` e' misurata a parte, con le sue regole ridotte; `atlas-solo` ha le stesse regole di `atlas` byte per byte e non e' stata rimisurata
 - Non conviene su tutti gli usi. Le regole costano 1.082-1.531 token a sessione e il promemoria 27-32 a turno. Se le tue risposte sono corte, misura prima di fidarti
 - I comandi sono parole inglesi. Le richieste in qualsiasi lingua vengono riconosciute; le frasi che l'hook intercetta da solo ("stop atlas", "normal mode") sono solo inglesi, e `atlas off` funziona ovunque

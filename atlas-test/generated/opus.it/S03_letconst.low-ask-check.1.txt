@@ -1,0 +1,16 @@
+conoscenza interna
+
+Differenza sta nella riassegnazione: `let` la permette, `const` no.
+
+`const` blocca solo il nome, non il valore. Oggetto dichiarato con `const` può quindi cambiare al suo interno:
+
+```js
+const utente = { nome: "Anna" };
+utente.nome = "Luca";   // consentito: cambia il contenuto
+utente = {};            // errore: riassegnazione del nome
+
+let contatore = 0;
+contatore = 1;          // consentito
+```
+
+Entrambi hanno ambito di blocco, a differenza di `var`.

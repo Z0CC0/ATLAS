@@ -1,0 +1,11 @@
+Bitcoin nasce nell'ambiente cypherpunk, dove da anni si cercava di creare una moneta digitale che funzionasse senza banche né intermediari. C'erano già stati tentativi come b-money e bit gold, ma nessuno dei due aveva risolto il problema di fondo: come mettere tutti d'accordo sull'ordine in cui avvengono le transazioni.
+
+Quell'ordine conta per via della **doppia spesa**. Un file digitale si copia facilmente, quindi niente impedisce a qualcuno di spendere due volte la stessa moneta. Di solito ci pensa un ente centrale, come una banca, che tiene il registro e decide quale pagamento è valido. La domanda era come ottenere lo stesso risultato senza nessuno che faccia da garante.
+
+Nel 2008 esce la risposta: un documento intitolato *Bitcoin: A Peer-to-Peer Electronic Cash System*, firmato Satoshi Nakamoto. È uno pseudonimo e nessuno ha mai scoperto chi ci sia dietro. La soluzione proposta è una **catena di blocchi**, cioè un registro pubblico diviso in blocchi. L'ordine dei blocchi è fissato da una **prova di lavoro**, un calcolo costoso da eseguire. Il vantaggio è che riscrivere il passato diventa carissimo: chi volesse modificare un vecchio blocco dovrebbe rifare la prova di lavoro per quel blocco e per tutti quelli venuti dopo.
+
+Il 3 gennaio 2009 viene generato il primo blocco. Al suo interno c'è il titolo di un articolo del *Times* su un salvataggio bancario. Quel riferimento dimostra che il blocco non può essere stato creato prima di quella data, quindi fa da marca temporale. Ma è anche una dichiarazione di intenti: Bitcoin nasce come alternativa a un sistema finanziario che in quel momento aveva bisogno di essere salvato.
+
+Le regole di emissione sono fissate fin dall'inizio. Chi aggiunge un blocco riceve una ricompensa, all'inizio di 50 bitcoin. Questa ricompensa si dimezza ogni 210.000 blocchi, cioè circa ogni quattro anni. Per questo il totale dei bitcoin in circolazione si avvicina a 21 milioni senza mai superarli.
+
+Nel 2010 avviene la prima transazione commerciale documentata: due pizze pagate 10.000 bitcoin. Nel 2011 Satoshi smette di partecipare pubblicamente al progetto. I bitcoin che aveva accumulato non sono mai stati spostati.

@@ -1,0 +1,23 @@
+No library needed. Closure plus `setTimeout` does the job:
+
+```js
+function debounce(fn, ms) { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); }; }
+```
+
+Usage:
+
+```js
+const onResize = debounce(() => console.log('resized'), 200);
+window.addEventListener('resize', onResize);
+```
+
+What each part does:
+
+- **`clearTimeout(t)` before each new `setTimeout`.** Each call cancels the pending timer. Without this, timers pile up and `fn` fires more than once.
+- **`let t` in the outer closure.** All calls share one timer. If you move `t` inside the returned function, each call gets its own timer and nothing is debounced.
+- **`...args` spread.** The spread passes the arguments through to `fn`. Without it, `fn` receives nothing.
+
+Limits:
+
+- **No return value.** The debounced function returns `undefined`. If you need the result of `fn`, wrap the logic in a Promise.
+- **Wrong tool for "run now, then ignore calls for a while".** That pattern is throttle, a different function.

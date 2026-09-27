@@ -1,0 +1,17 @@
+Here's the New York forecast for this week:
+
+| Day | Conditions | High | Low |
+|---|---|---|---|
+| Monday | Clear | 24° | 17° |
+| Tuesday | Cloudy, light rain in the evening | 22° | 16° |
+| Wednesday | Rain for most of the day | 19° | 15° |
+| Thursday | Brighter spells | 21° | 14° |
+| Friday | Clear | 25° | 16° |
+| Saturday | Clear and warm | 28° | 19° |
+| Sunday | Thunderstorms in the afternoon | 26° | 18° |
+
+Two days will bring a lot of rain. On **Wednesday** it rains most of the day, and it's also the coolest day at 19°. On **Sunday** thunderstorms are expected in the afternoon. Tuesday evening will also see some light rain, so carry an umbrella if you're out late.
+
+The weekend is the warmest part of the week. Saturday is the best day, clear and warm with a high of 28°. Sunday is still warm, but plan outdoor activities for the morning, before the storms arrive. Friday is also clear, so it's a good day to be outside.
+
+*Source: web*

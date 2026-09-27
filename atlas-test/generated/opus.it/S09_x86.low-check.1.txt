@@ -1,0 +1,17 @@
+conoscenza interna
+
+Quella di x86 è la storia di un'interfaccia che resta uguale mentre la macchina sotto cambia del tutto.
+
+Si parte dall'8086 del 1978, a 16 bit. Nasce come evoluzione dell'8080 ed è compatibile con lui a livello di sorgente. Questo peso del passato accompagna tutta la famiglia.
+
+L'80286 del 1982 introduce la modalità protetta, ma a metà: una volta entrati, per tornare alla modalità reale bisogna riavviare. L'80386 del 1985 completa il lavoro. Porta i 32 bit e la memoria virtuale paginata, e con la modalità virtuale 8086 fa girare il vecchio software dentro il nuovo sistema.
+
+Il 486 del 1989 mette dentro il chip la cache di primo livello e il coprocessore matematico, che prima stavano fuori. Il Pentium del 1993 è superscalare: ha due pipeline intere e può ritirare due istruzioni per ciclo.
+
+Il Pentium Pro del 1995 è il vero punto di svolta. Esegue le istruzioni fuori ordine e traduce le istruzioni x86 in micro-operazioni interne. **Da lì x86 è un'interfaccia, non più la macchina reale che sta sotto.**
+
+Il Pentium 4 del 2000 scommette tutto sulla frequenza, con una pipeline lunghissima, e va a sbattere contro il muro del consumo. Nel 2003 AMD estende l'architettura a 64 bit con AMD64 e Intel adotta lo stesso insieme di istruzioni. È la prima volta che l'estensione dominante non arriva da Intel. Dal 2006, con il Core 2, la direzione cambia: si smette di inseguire la frequenza e si aumenta il numero di nuclei.
+
+Intanto le estensioni vettoriali crescono generazione dopo generazione: MMX, SSE, AVX, AVX-512.
+
+Oggi la complessità sta negli strati sotto l'interfaccia: predizione dei salti, gerarchia di cache, esecuzione speculativa. Nel 2018 Spectre e Meltdown hanno mostrato che **l'esecuzione speculativa aveva un costo di sicurezza a cui nessuno aveva pensato**.

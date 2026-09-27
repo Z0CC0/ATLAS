@@ -1,0 +1,11 @@
+internal knowledge
+
+5080 is the newer generation. Its lead over 4080 comes mostly from frame generation, not from raw rendering speed.
+
+Architecture moves from Ada Lovelace (4080) to Blackwell (5080).
+
+Memory moves from GDDR6X to GDDR7, and bandwidth rises from about 717 to about 960 gigabytes per second.
+
+Biggest jump in frame generation. On plain rasterisation, real gain is in the order of 10-15 per cent.
+
+Rated power draw rises from 320 to 360 watts. Power connector stays at 16 pins.

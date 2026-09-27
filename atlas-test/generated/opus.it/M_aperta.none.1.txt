@@ -1,0 +1,16 @@
+Prima di scegliere l'architettura, chiediti cosa deve riuscire a fare il tuo team fra un anno che oggi non riesce a fare. La domanda decisiva non è tecnica, e la risposta orienta tutte le altre scelte. Poi ti servono due informazioni sul monolite che hai adesso.
+
+**1. Quali parti cambiano davvero.** Guarda dove si concentrano modifiche, richieste e bug. Una parte stabile non guadagna nulla dall'essere separata: avresti solo più componenti da gestire senza alcun vantaggio.
+
+**2. Dove finiscono le transazioni.** Se un'operazione che oggi è una sola transazione finisce divisa tra due servizi, diventa un problema distribuito. I confini dei servizi vanno tracciati intorno alle transazioni, non attraverso di esse.
+
+**Come fare la migrazione.** Evita di riscrivere tutto da capo mentre il vecchio sistema resta in uso: quasi sempre fallisce. Il PHP continua a cambiare e la copia nuova non riesce mai a raggiungerlo. Funziona meglio lo strangolamento progressivo:
+- metti un router davanti al monolite;
+- sposti un pezzo alla volta;
+- il vecchio sistema resta quello che fa fede finché il nuovo pezzo non è verificato.
+
+**Quale architettura scegliere.** Considera anche il costo di gestione, non solo l'eleganza tecnica. Ogni microservizio richiede il suo rilascio, monitoraggio, log, allarmi e una persona che se ne occupi. Con meno di cinque sviluppatori questo costo supera quasi sempre il beneficio.
+
+Esiste anche un'opzione di cui si parla poco: il **monolite modulare**. Ha confini interni netti, un solo rilascio, e ti lascia estrarre un modulo come servizio separato il giorno in cui serve davvero. Se il team è piccolo e non sai ancora quali parti cambieranno di più, di solito è il punto di partenza più prudente.
+
+In pratica: parti dall'obiettivo del team fra un anno, individua le parti che cambiano e i confini delle transazioni, e migra un pezzo alla volta.

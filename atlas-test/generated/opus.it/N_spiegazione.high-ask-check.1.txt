@@ -1,0 +1,15 @@
+conoscenza interna
+
+Consistenza eventuale: dopo una scrittura le repliche non concordano subito, ma convergono entro un tempo finito se le scritture si fermano.
+
+Ti riguarda quando qualcuno legge subito dopo aver scritto. Utente pubblica commento, ricarica la pagina e non lo vede.
+
+Il ritardo di convergenza è in genere sotto il secondo fra repliche nella stessa regione. Fra regioni diverse sale a secondi.
+
+Soluzione comune: la sessione che ha appena scritto legge dalla replica primaria. Tutte le altre sessioni continuano a leggere dalle repliche.
+
+L'alternativa costa disponibilità. Un sistema che pretende consistenza forte deve rifiutare richieste quando le repliche non si parlano.
+
+Quindi **non è un difetto da eliminare, ma una scelta**. La maggior parte dei sistemi che scalano la accetta di proposito.
+
+Non va bene in pochi casi, facili da riconoscere: saldi di conto, disponibilità di posti, unicità di un identificativo.

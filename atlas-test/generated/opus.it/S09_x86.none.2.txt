@@ -1,0 +1,39 @@
+# L'evoluzione di x86, dagli anni Ottanta a oggi
+
+## Le origini: compatibilità prima di tutto
+
+Tutto comincia con l'**8086** del 1978, un processore a 16 bit. Non nasce da zero: è un'evoluzione dell'8080 e ne mantiene la compatibilità a livello di sorgente. Questo principio, cioè non abbandonare il software già scritto, accompagnerà l'architettura per tutta la sua storia.
+
+Nel 1982 arriva l'**80286**, che introduce la **modalità protetta**. Il limite è pesante: una volta entrati in modalità protetta non si può tornare a quella reale senza riavviare il processore.
+
+## Il salto ai 32 bit
+
+Il vero cambio di passo è l'**80386** del 1985. Porta i **32 bit**, la **memoria virtuale paginata** e la **modalità virtuale 8086**, con cui il vecchio software gira dentro il nuovo ambiente. È la base su cui poggiano i sistemi operativi moderni.
+
+Il **486** del 1989 non cambia il modello di programmazione, ma porta dentro il chip due componenti che prima stavano fuori: la **cache di primo livello** e il **coprocessore matematico**.
+
+## Più istruzioni per ciclo
+
+Con il **Pentium** del 1993 l'attenzione passa dal fare le cose al farne più di una alla volta. È un processore **superscalare**: ha due pipeline intere e può ritirare due istruzioni per ciclo.
+
+Il **Pentium Pro** del 1995 è forse la svolta più profonda di tutta la storia di x86. Introduce l'**esecuzione fuori ordine** e **traduce le istruzioni x86 in micro-operazioni interne**. Da qui in poi x86 diventa un'interfaccia: il linguaggio che il software vede, ma non più la macchina che esegue davvero il lavoro.
+
+## Il muro della frequenza
+
+Con il **Pentium 4** del 2000 Intel scommette sulla frequenza e costruisce una pipeline lunghissima per spingere il clock sempre più in alto. La strategia si ferma contro il **muro del consumo**.
+
+## AMD e i 64 bit
+
+Nel 2003 è **AMD** a estendere l'architettura a 64 bit con **AMD64**, e Intel finisce per adottare lo stesso insieme di istruzioni. È la prima volta che l'estensione dominante di x86 non arriva da Intel.
+
+## Più nuclei, più vettori
+
+Dal 2006, con il **Core 2**, la direzione cambia: la crescita delle prestazioni non viene più dall'aumento della frequenza ma dal **numero di nuclei**.
+
+Intanto le estensioni vettoriali crescono generazione dopo generazione: **MMX**, poi **SSE**, poi **AVX**, fino ad **AVX-512**.
+
+## Oggi: la complessità è sotto la superficie
+
+Oggi la complessità di un processore x86 sta negli strati che il programmatore non vede: la **predizione dei salti**, la **gerarchia di cache** e l'**esecuzione speculativa**. Proprio quest'ultima ha mostrato il suo lato nascosto nel 2018, quando **Spectre e Meltdown** hanno rivelato che aveva un costo di sicurezza che nessuno aveva mai considerato.
+
+Riassumendo, x86 è partito come un processore a 16 bit compatibile con il suo predecessore ed è diventato un'interfaccia stabile sopra una macchina interna sempre più sofisticata. Proprio quella sofisticazione ha finito per creare problemi nuovi.

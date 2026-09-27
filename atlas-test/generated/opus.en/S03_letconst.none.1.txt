@@ -1,0 +1,17 @@
+Both `let` and `const` are block scoped: they only exist inside the `{ }` block where you declare them. `var` doesn't work that way.
+
+The difference is whether you can reassign them:
+
+- **`let`** lets you reassign the variable later.
+- **`const`** stops you from reassigning the name. It doesn't stop you from changing the value itself. If you declare an object with `const`, you can still change what's inside it.
+
+```js
+let count = 1;
+count = 2;              // fine
+
+const user = { name: "Ana" };
+user.name = "Luca";     // fine: the object changes internally
+user = {};              // error: the name can't be reassigned
+```
+
+Use `const` when the name should always point to the same thing, and `let` when you'll need to reassign it.

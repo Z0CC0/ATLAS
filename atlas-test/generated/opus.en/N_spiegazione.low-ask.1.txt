@@ -1,0 +1,19 @@
+Eventual consistency: after write, replicas don't agree right away, but converge within finite time once writes stop. Matters because users notice the gap, and because you'll almost certainly choose it on purpose.
+
+Why systems choose it: trade against availability. System demanding strong consistency has to refuse requests when replicas can't talk to each other. Eventual consistency keeps answering. That's why most systems that scale accept it deliberately. Not defect to eliminate, but design choice.
+
+Where it hurts: whoever reads right after writing. User posts comment, reloads, doesn't see it, because reload hit replica that hasn't caught up yet.
+
+How long gap lasts: across replicas in same region, typically under a second. Across regions, rises to seconds.
+
+Common fix: for session that just wrote, read from primary replica. Only that session, not everyone, so rest of traffic still spreads across replicas.
+
+When it's unacceptable: few cases, easy to recognise.
+
+Account balances
+
+Seat availability
+
+Uniqueness of an identifier
+
+In those, stale read means double spend, double booking or duplicate ID, so they need strong consistency. Everywhere else, eventual consistency plus read-from-primary for writer usually enough.

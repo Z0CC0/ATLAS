@@ -1,0 +1,15 @@
+HTTPS è semplicemente HTTP che viaggia dentro un canale cifrato da TLS. Le richieste e le risposte sono le stesse di sempre. Cambia il fatto che, prima di scambiarsele, client e server costruiscono un tunnel protetto. La costruzione di questo tunnel si chiama *handshake* e avviene in quattro passi.
+
+**1. Il client si presenta.** Il tuo browser apre la connessione e dichiara quali versioni di TLS e quali cifrari supporta.
+
+**2. Il server sceglie e mostra il certificato.** Il server risponde scegliendo versione e cifrario tra quelli proposti e manda il proprio certificato. Il certificato lega un nome di dominio a una chiave pubblica ed è firmato da un'autorità di certificazione.
+
+**3. Il client verifica.** Il client controlla la firma del certificato risalendo la catena di autorità fino a una radice che ha già in memoria. Se la catena arriva a una radice che conosce, sa che quella chiave pubblica appartiene davvero a quel dominio.
+
+**4. Si concorda una chiave di sessione.** Client e server si accordano su una chiave di sessione, oggi tipicamente con uno scambio Diffie-Hellman su curve ellittiche. Questa chiave è simmetrica, cioè la stessa per cifrare e decifrare. Il motivo è che la cifratura asimmetrica costa troppo per reggere il traffico vero. Si usa quindi la crittografia a chiave pubblica per stabilire la fiducia, e poi si passa alla chiave simmetrica per i dati.
+
+Da quel momento il traffico è cifrato e autenticato. Chi sta in mezzo non può leggerlo e non può modificarlo senza che la cosa venga scoperta.
+
+**Sulla velocità:** con TLS 1.2 l'handshake richiede due giri di andata e ritorno tra client e server. TLS 1.3 lo riduce a uno solo, quindi la connessione sicura è pronta prima.
+
+**Un limite da tenere a mente:** il certificato non dice nulla su chi gestisce il sito. Garantisce solo che quel dominio controlla quella chiave. Sai di parlare davvero con quel dominio, ma HTTPS non ti dice se chi c'è dietro è affidabile.

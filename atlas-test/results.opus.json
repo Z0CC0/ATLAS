@@ -1,0 +1,297 @@
+{
+  "date": "2026-09-26",
+  "model": "claude-opus-5-5",
+  "rules": "0.1.3",
+  "caveman": "caveman 2.7.0 (commit 2fd153c, installed on this machine on 2026-09-26)",
+  "saving": {
+    "en": {
+      "atlas-low": 36.87135053682426,
+      "atlas-high": 45.978527029572426,
+      "low-ask": 35.59050668675833,
+      "low-check": 38.15219438689019,
+      "low-ask-check": 38.91504991523828,
+      "high-ask": 46.119796571859105,
+      "high-check": 47.26878884912413,
+      "high-ask-check": 45.51704652476926,
+      "atlasmin-low": 40.08287813147485,
+      "atlasmin-high": 47.20286306272368,
+      "caveman-lite": 11.367489169335093,
+      "caveman-full": 21.548314183462043,
+      "caveman-ultra": 28.423431908080616,
+      "adhd": -2.32623846298738
+    },
+    "it": {
+      "atlas-low": 36.54857142857143,
+      "atlas-high": 43.29904761904762,
+      "low-ask": 38.37714285714286,
+      "low-check": 34.17142857142857,
+      "low-ask-check": 35.47428571428571,
+      "high-ask": 43.116190476190475,
+      "high-check": 41.760000000000005,
+      "high-ask-check": 41.21904761904762,
+      "atlasmin-low": 38.50666666666667,
+      "atlasmin-high": 43.992380952380955,
+      "caveman-lite": 9.874285714285715,
+      "caveman-full": 21.462857142857143,
+      "caveman-ultra": 25.53142857142857,
+      "adhd": -1.7371428571428573
+    }
+  },
+  "lost": {
+    "en": {
+      "atlas-low": [
+        1,
+        263
+      ],
+      "atlas-high": [
+        0,
+        263
+      ],
+      "low-ask": [
+        1,
+        263
+      ],
+      "low-check": [
+        0,
+        263
+      ],
+      "low-ask-check": [
+        0,
+        263
+      ],
+      "high-ask": [
+        0,
+        263
+      ],
+      "high-check": [
+        1,
+        263
+      ],
+      "high-ask-check": [
+        0,
+        263
+      ],
+      "atlasmin-low": [
+        0,
+        263
+      ],
+      "atlasmin-high": [
+        0,
+        263
+      ],
+      "caveman-lite": [
+        0,
+        263
+      ],
+      "caveman-full": [
+        0,
+        263
+      ],
+      "caveman-ultra": [
+        0,
+        263
+      ],
+      "adhd": [
+        1,
+        263
+      ]
+    },
+    "it": {
+      "atlas-low": [
+        0,
+        264
+      ],
+      "atlas-high": [
+        1,
+        264
+      ],
+      "low-ask": [
+        0,
+        264
+      ],
+      "low-check": [
+        0,
+        264
+      ],
+      "low-ask-check": [
+        0,
+        264
+      ],
+      "high-ask": [
+        1,
+        264
+      ],
+      "high-check": [
+        1,
+        264
+      ],
+      "high-ask-check": [
+        0,
+        264
+      ],
+      "atlasmin-low": [
+        1,
+        264
+      ],
+      "atlasmin-high": [
+        1,
+        264
+      ],
+      "caveman-lite": [
+        1,
+        264
+      ],
+      "caveman-full": [
+        0,
+        264
+      ],
+      "caveman-ultra": [
+        0,
+        264
+      ],
+      "adhd": [
+        0,
+        264
+      ]
+    }
+  },
+  "noise": {
+    "en": 0.43322659634582783,
+    "it": 0.5561904761904761
+  },
+  "real_input_over_none": {
+    "atlas-low": 2207.25,
+    "atlas-high": 2303.75,
+    "low-ask": 2493.5,
+    "low-check": 3456.75,
+    "low-ask-check": 3831.0,
+    "high-ask": 2716.75,
+    "high-check": 3714.5,
+    "high-ask-check": 4177.75,
+    "atlasmin-low": 1650.25,
+    "atlasmin-high": 1832.5,
+    "caveman-lite": 2027.25,
+    "caveman-full": 2086.25,
+    "caveman-ultra": 2126.0,
+    "adhd": 2501.25
+  },
+  "desc": {
+    "atlas": 1840,
+    "atlas-solo": 829,
+    "atlas-min": 153,
+    "caveman": 1281
+  },
+  "inj": {
+    "atlas-low": 1409,
+    "atlas-high": 1531,
+    "low-ask": 1672,
+    "low-check": 2250,
+    "low-ask-check": 2513,
+    "high-ask": 1794,
+    "high-check": 2491,
+    "high-ask-check": 2754,
+    "atlasmin-low": 1082,
+    "atlasmin-high": 1204
+  },
+  "rem": {
+    "atlas-low": 27,
+    "atlas-high": 32,
+    "low-ask": 38,
+    "low-check": 36,
+    "low-ask-check": 47,
+    "high-ask": 43,
+    "high-check": 41,
+    "high-ask-check": 52,
+    "atlasmin-low": 27,
+    "atlasmin-high": 32,
+    "caveman-lite": 50,
+    "caveman-full": 60,
+    "caveman-ultra": 66
+  },
+  "session": {
+    "atlas:atlas-low": [
+      -11.208710982697848,
+      -28.58436776235886
+    ],
+    "atlas:atlas-high": [
+      -17.68003732431003,
+      -35.45116020566596
+    ],
+    "atlas:low-ask": [
+      -7.906324771950604,
+      -26.471621382120084
+    ],
+    "atlas:low-check": [
+      -2.658061479159369,
+      -25.39520130966785
+    ],
+    "atlas:low-ask-check": [
+      0.32533218523800317,
+      -23.981786458829795
+    ],
+    "atlas:high-ask": [
+      -13.449243524024787,
+      -32.95782403249937
+    ],
+    "atlas:high-check": [
+      -8.74689442456205,
+      -32.57642832286715
+    ],
+    "atlas:high-ask-check": [
+      -3.1392970719084405,
+      -28.923470800722004
+    ],
+    "atlas-solo:atlas-low": [
+      -16.263710982697848,
+      -29.26979149117242
+    ],
+    "atlas-solo:atlas-high": [
+      -22.735037324310024,
+      -36.13658393447952
+    ],
+    "atlas-solo:low-ask": [
+      -12.961324771950604,
+      -27.157045110933645
+    ],
+    "atlas-solo:low-check": [
+      -7.713061479159369,
+      -26.080625038481408
+    ],
+    "atlas-solo:low-ask-check": [
+      -4.729667814761997,
+      -24.667210187643352
+    ],
+    "atlas-solo:high-ask": [
+      -18.504243524024787,
+      -33.64324776131293
+    ],
+    "atlas-solo:high-check": [
+      -13.801894424562052,
+      -33.26185205168071
+    ],
+    "atlas-solo:high-ask-check": [
+      -8.19429707190844,
+      -29.608894529535565
+    ],
+    "atlas-min:atlasmin-low": [
+      -25.013522399070755,
+      -32.69053511093516
+    ],
+    "atlas-min:atlasmin-high": [
+      -29.43012200755232,
+      -37.8732152278913
+    ],
+    "caveman-lite": [
+      15.670362558189607,
+      1.5880956090370517
+    ],
+    "caveman-full": [
+      7.0306643368404185,
+      -7.26338227332909
+    ],
+    "caveman-ultra": [
+      2.927569760245424,
+      -11.512345493991871
+    ]
+  }
+}

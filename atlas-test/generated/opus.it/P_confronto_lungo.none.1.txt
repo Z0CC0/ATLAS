@@ -1,0 +1,23 @@
+Per un'API da mille richieste al minuto ti consiglio di **scrivere i log su file locali e usare un raccoglitore che li spedisce altrove**. L'applicazione scrive sul disco e continua a lavorare. Il raccoglitore porta i log dove vuoi tu, quindi l'applicazione non aspetta mai la scrittura del log.
+
+C'è una regola che vale qualunque cosa tu scelga: **la scrittura del log non deve stare nel percorso critico della richiesta.**
+
+Ecco perché nessuna delle tre opzioni basta da sola:
+
+**Solo file**
+- Non costano niente e non aggiungono dipendenze.
+- Per cercare hai solo grep.
+- Se hai più macchine non puoi cercare su tutte insieme: devi collegarti a ognuna.
+- La rotazione va configurata a mano, altrimenti il disco si riempie. Configurala anche con il raccoglitore.
+
+**Solo servizio gestito**
+- La ricerca è immediata, e hai allarmi e conservazione automatica.
+- Si paga per volume, e a mille richieste al minuto il volume cresce in fretta.
+- I log escono dalla tua infrastruttura, quindi devi ripulirli dai dati personali prima che partano.
+
+**Database**
+- La ricerca è comoda e la conosci già.
+- Se scrivi i log nello stesso database dell'applicazione, metti in competizione due carichi molto diversi.
+- Sotto carico, i log occupano cache e connessioni che servivano alle richieste vere. Rischi di rallentare l'API proprio quando è più occupata.
+
+In pratica: scrivi su file locali con la rotazione configurata, e fai spedire i log dal raccoglitore verso la destinazione che preferisci. Se la destinazione è un servizio gestito, avrai ricerca e allarmi senza bloccare le richieste. Tieni però d'occhio il costo, che cresce con il volume, e togli i dati personali prima che i log escano.

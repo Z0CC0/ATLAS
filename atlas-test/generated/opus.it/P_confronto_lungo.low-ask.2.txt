@@ -1,0 +1,11 @@
+**File locali più raccoglitore** che li spedisce altrove. Applicazione non aspetta mai scrittura del log.
+
+Regola che vale sempre: scrittura del log fuori dal percorso critico della richiesta. A mille richieste al minuto conta ancora di più.
+
+Perché non solo file: costo zero e nessuna dipendenza, ma ricerca si fa con grep, e su più macchine non esiste, bisogna collegarsi a ognuna. Rotazione va configurata a mano, altrimenti disco si riempie.
+
+Perché non direttamente servizio gestito: ricerca immediata, allarmi e conservazione automatica, ma si paga per volume, e a mille richieste al minuto volume cresce in fretta. Log escono inoltre dalla tua infrastruttura, quindi vanno ripuliti dai dati personali prima di uscire.
+
+Perché non database dell'applicazione: ricerca comoda e nota, ma log e richieste sono due carichi molto diversi in competizione. Sotto carico, log riempiono cache e connessioni che servivano alle richieste vere.
+
+Con raccoglitore tieni vantaggi di file, cioè scrittura locale e veloce, e ricerca arriva dove li spedisci. Se destinazione è servizio gestito, costo per volume e pulizia dei dati personali restano da gestire.

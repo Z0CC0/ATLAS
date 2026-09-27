@@ -1,0 +1,13 @@
+A New York la settimana si apre con tempo buono. A metà settimana arriva la pioggia, poi il tempo torna sereno e fa più caldo verso il weekend.
+
+- **Lunedì:** sereno, massima 24°, minima 17°.
+- **Martedì:** nuvoloso, massima 22°, minima 16°. In serata arriva una pioggia debole.
+- **Mercoledì:** piove per gran parte del giorno, massima 19°, minima 15°. È il giorno più fresco.
+- **Giovedì:** schiarite, massima 21°, minima 14°.
+- **Venerdì:** sereno, massima 25°, minima 16°.
+- **Sabato:** sereno e caldo, massima 28°, minima 19°. È il giorno più caldo della settimana.
+- **Domenica:** massima 26°, minima 18°. Nel pomeriggio sono previsti temporali.
+
+Piove in modo significativo solo mercoledì e domenica. In quei giorni porta l'ombrello. Se devi fare qualcosa all'aperto domenica, meglio farlo al mattino. Il weekend è il periodo più caldo della settimana.
+
+Dati presi dal web.

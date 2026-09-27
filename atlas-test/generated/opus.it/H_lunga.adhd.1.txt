@@ -1,0 +1,27 @@
+**In breve:** la cache fa risparmiare quando mandi molte richieste che iniziano tutte con lo stesso testo lungo. Metti le parti che non cambiano all'inizio e quelle che cambiano alla fine.
+
+## Come funziona
+
+- La cache salva l'inizio di una richiesta dopo che è già stato elaborato. Se la richiesta successiva comincia allo stesso modo, quella parte non la paghi di nuovo per intero.
+- Vale solo per l'inizio della richiesta. Se cambia anche un solo carattere, da quel punto in poi la cache non serve più.
+
+## Il costo
+
+1. **Prima richiesta:** costa di più. Salvare nella cache costa più di una lettura normale.
+2. **Dalla seconda richiesta in poi:** qui cominci a risparmiare.
+3. **Con tanti turni:** più la conversazione va avanti, più risparmi.
+
+## Quando conviene
+
+**Sì:** conversazioni lunghe con un contesto grande che non cambia, per esempio:
+- istruzioni di sistema
+- documentazione allegata
+- definizioni degli strumenti
+
+**No:** richieste singole e diverse tra loro. Paghi il salvataggio nella cache ma non lo riusi mai.
+
+## L'errore da evitare
+
+Non mettere all'inizio qualcosa che cambia a ogni turno, come un orario nelle istruzioni di sistema. Tutto quello che viene dopo non viene più riusato, e il risparmio sparisce.
+
+**Da fare subito:** apri il tuo prompt di sistema e controlla se all'inizio c'è un valore che cambia a ogni turno (orario, data, ID). Se c'è, spostalo in fondo.

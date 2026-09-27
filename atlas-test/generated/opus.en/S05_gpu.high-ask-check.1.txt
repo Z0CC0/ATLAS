@@ -1,0 +1,11 @@
+internal knowledge
+
+The RTX 5080 is a modest step up from the 4080. Its biggest gain is in frame generation, not raw rasterisation.
+
+Rasterisation: only about 10–15% faster.
+
+Architecture: Blackwell, up from Ada Lovelace.
+
+Memory: GDDR7 instead of GDDR6X. Bandwidth rises from about 717 to about 960 GB/s.
+
+Power: rated draw rises from 320 to 360 W. The power connector is still 16-pin.

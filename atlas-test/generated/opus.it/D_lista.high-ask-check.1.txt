@@ -1,0 +1,17 @@
+conoscenza interna
+
+Da mettere:
+
+`Strict-Transport-Security: max-age=31536000; includeSubDomains`: obbliga il browser a usare HTTPS. max-age di almeno 31536000 secondi.
+
+`Content-Security-Policy: default-src 'self'; frame-ancestors 'none'`: `default-src 'self'` blocca l'iniezione di script di terze parti, `frame-ancestors 'none'` protegge dal clickjacking.
+
+`X-Frame-Options: DENY`: in alternativa a `frame-ancestors 'none'`, sempre contro il clickjacking.
+
+`X-Content-Type-Options: nosniff`: impedisce al browser di indovinare il tipo di contenuto.
+
+`Referrer-Policy: strict-origin-when-cross-origin`: il percorso completo non viene inviato ad altri siti.
+
+`Permissions-Policy: camera=(), microphone=(), geolocation=()`: spegne camera, microfono e geolocalizzazione, se il sito non li usa.
+
+**Da non mettere:** `X-XSS-Protection`. È deprecato e i browser moderni lo ignorano. Nelle versioni vecchie introduceva vulnerabilità.

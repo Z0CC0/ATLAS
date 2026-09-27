@@ -247,7 +247,11 @@ function main() {
     process.stdout.write(`[${String(n).padStart(4)}/${jobs.length}] round ${r} ${name} — ${cfg.id} ... `);
     try {
       // The skill body without its frontmatter: the description is for a menu, not a system prompt.
-      const extra = cfg.systemPrompt ? ['--append-system-prompt', readFileSync(cfg.systemPrompt, 'utf8').split('\n---\n').slice(1).join('\n---\n')] : [];
+      // Split on either line ending: the file is CRLF, and until 2026-09-26 the LF-only
+      // split found no frontmatter and appended an empty string, so the `adhd` rows of
+      // the earlier benches measured no plugin at all. The billed input caught it.
+      const extra = cfg.systemPrompt ? ['--append-system-prompt', readFileSync(cfg.systemPrompt, 'utf8').split(/\r?\n---\r?\n/).slice(1).join('\n---\n')] : [];
+      if (cfg.systemPrompt && !extra[1].trim()) throw new Error(`empty system prompt from ${cfg.systemPrompt}`);
       const out = execFileSync('claude', ['-p', prompt(cases[name], language), '--output-format', 'json', '--disallowed-tools', DISALLOWED, ...extra], {
         encoding: 'utf8', maxBuffer: 16 * 1024 * 1024,
         env: { ...process.env, CAVEMAN_DEFAULT_MODE: cfg.caveman },

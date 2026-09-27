@@ -1,0 +1,23 @@
+Bitcoin came out of the cypherpunk scene, where people had been trying for years to build digital money that didn't depend on a bank or other central authority. Earlier designs such as b-money and bit gold came close, but none of them solved one key problem: agreeing on the order in which transactions happened.
+
+## The paper
+
+In 2008 a paper titled *Bitcoin: A Peer-to-Peer Electronic Cash System* appeared, signed by Satoshi Nakamoto. That name is a pseudonym, and the person or people behind it have never been identified.
+
+The paper tackles **double spending**. Digital money is just data, so what stops someone from spending the same coin twice? Normally a central body keeps the ledger and settles that question. Bitcoin's goal was to prevent double spending without one.
+
+## The solution
+
+Transactions are grouped into blocks, and the blocks are linked into a chain whose order is fixed by a **proof of work**. That settles the ordering problem the earlier attempts couldn't. It also protects the history. Changing an old block would mean redoing the proof of work for that block and for every block after it, so rewriting the past gets more expensive the further back you go.
+
+## The launch
+
+The first block was generated on 3 January 2009. It contains the headline of a Times article about a bank bailout. That headline works as a timestamp, because the block can't be older than the newspaper. It also reads as a statement of intent: a currency with no central body keeping the ledger, launched just as banks were being rescued.
+
+## The supply rules
+
+New bitcoin enter circulation as a reward for each block. The reward started at 50 bitcoin and halves every 210,000 blocks, which is roughly every four years. Because of this, the total amount ever issued approaches 21 million and never goes beyond it.
+
+## Early use and Satoshi's exit
+
+The first documented commercial transaction came in 2010, when someone paid 10,000 bitcoin for two pizzas. In 2011 Satoshi stopped taking part in public, and the bitcoin attributed to them have never been moved.

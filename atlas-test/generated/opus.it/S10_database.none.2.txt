@@ -1,0 +1,27 @@
+**Consiglio: parti con Postgres da solo.** Aggiungi un altro sistema solo quando un carico specifico lo richiede e hai i numeri che lo dimostrano.
+
+## Perché Postgres come base
+
+Postgres regge in modo accettabile tutti e quattro i tuoi carichi: ordini, catalogo, ricerca e analisi. Non eccelle in nessuno, ma copre tutto. Il punto decisivo sono gli ordini: lì servono transazioni serie, e su questo non puoi scendere a compromessi. Postgres le offre.
+
+## Le alternative, carico per carico
+
+| Carico | Postgres | Alternativa specializzata |
+|---|---|---|
+| **Ordini** | Transazioni serie, la scelta giusta | MySQL è equivalente, ma è più debole su tipi di dato e query complesse. ClickHouse è da escludere perché gli aggiornamenti puntuali sono il suo punto debole |
+| **Catalogo** | Va bene | MongoDB semplifica gli schemi variabili, ma le transazioni multi-documento sono arrivate tardi e costano |
+| **Ricerca testuale** | Integrata, sufficiente sotto il milione di documenti, debole sopra | Elasticsearch è molto superiore per rilevanza, sinonimi e tolleranza agli errori di battitura |
+| **Analisi** | Regge fino a decine di milioni di righe, poi le scansioni diventano lente | ClickHouse è molto superiore: le sue scansioni colonnari sono avanti di ordini di grandezza |
+
+MySQL non ti dà niente in più di Postgres e ti toglie qualcosa. MongoDB ti semplifica il catalogo, ma ti complica gli ordini, cioè proprio il carico dove non puoi rischiare.
+
+## Quando aggiungere qualcosa
+
+Se crescerai, la configurazione tipica è **Postgres come archivio autorevole**, con Elasticsearch e ClickHouse alimentati da lì:
+
+- **Elasticsearch** ha senso quando superi il milione di documenti e la ricerca integrata non basta più. Aggiungerlo prima è quasi sempre prematuro. Ricorda anche che non è un archivio autorevole: deve ricevere i dati da un altro database, non sostituirlo.
+- **ClickHouse** ha senso quando l'analisi supera le decine di milioni di righe e le scansioni su Postgres diventano lente.
+
+## Il costo da mettere in conto
+
+Ogni sistema che aggiungi ti porta due problemi in più: tenerlo sincronizzato e tenere allineati i dati. Il costo vero dei sistemi specializzati non è la licenza, ma il tempo delle persone che devono tenerli in piedi. Per questo conviene aspettare che siano i numeri a imporre ogni aggiunta, e non anticiparla.

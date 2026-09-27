@@ -1,0 +1,15 @@
+Per un sito statico metti questi sei header e togli X-XSS-Protection.
+
+Strict-Transport-Security con max-age di almeno 31536000 secondi e includeSubDomains, così il browser è obbligato a usare HTTPS.
+
+Content-Security-Policy con default-src 'self': è questo che blocca l'iniezione di script di terze parti.
+
+X-Content-Type-Options impostato a nosniff, così il browser non prova a indovinare il tipo di contenuto.
+
+Referrer-Policy impostato a strict-origin-when-cross-origin, così il percorso completo delle tue pagine non viene inviato ad altri siti.
+
+X-Frame-Options impostato a DENY, oppure frame-ancestors 'none' dentro la Content-Security-Policy, contro il clickjacking.
+
+Permissions-Policy per spegnere camera, microfono e geolocalizzazione, se il sito non li usa.
+
+X-XSS-Protection non va messo. È deprecato e i browser moderni lo ignorano. Nelle versioni vecchie dei browser introduceva vulnerabilità.

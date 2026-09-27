@@ -1,0 +1,18 @@
+Usa `const` quando il nome non deve mai puntare a un altro valore. Usa `let` quando devi riassegnarlo.
+
+**`let`** permette la riassegnazione:
+```js
+let n = 1;
+n = 2; // ok
+```
+
+**`const`** impedisce di riassegnare il nome, ma non impedisce di modificare il valore. Se dichiari un oggetto con `const`, il suo contenuto può cambiare:
+```js
+const utente = { nome: "Anna" };
+utente.nome = "Luca"; // ok: cambia il contenuto dell'oggetto
+utente = {};          // errore: riassegna il nome
+```
+
+**In comune:** `let` e `const` hanno entrambi ambito di blocco, a differenza di `var`. Esistono solo dentro le `{ }` in cui li dichiari.
+
+Prova subito: incolla il secondo esempio nella console del browser e guarda quale riga dà errore.

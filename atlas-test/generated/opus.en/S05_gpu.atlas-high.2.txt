@@ -1,0 +1,11 @@
+Main gain: frame generation, not raw rasterisation.
+
+Rasterisation: real gain about 10-15 per cent.
+
+Architecture: 5080 Blackwell, 4080 Ada Lovelace.
+
+Memory: 5080 GDDR7, 4080 GDDR6X; bandwidth about 717 to about 960 GB/s.
+
+Rated power: 320 to 360 W.
+
+Power connector: still 16 pins.

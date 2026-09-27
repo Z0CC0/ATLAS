@@ -1,0 +1,9 @@
+**5080 non è un salto enorme su 4080: il vantaggio principale è generazione di fotogrammi.**
+
+- **Architettura:** 5080 usa Blackwell, 4080 usa Ada Lovelace.
+- **Memoria:** 5080 monta GDDR7, 4080 GDDR6X. Banda sale da circa 717 a circa 960 GB/s.
+- **Prestazioni:** salto più grande è su generazione di fotogrammi. Su rasterizzatore puro guadagno reale è circa 10-15%.
+- **Consumo:** consumo dichiarato sale da 320 a 360 W.
+- **Alimentazione:** connettore resta 16 pin, quindi stesso cavo.
+
+In pratica: se usi generazione di fotogrammi, 5080 conviene. Se giochi senza, differenza è modesta e consumo è maggiore.

@@ -1,0 +1,9 @@
+Usually not. The planner normally won't use a B-tree index on a column with only three distinct values. When a filter matches more than roughly 5–10% of the rows, the planner picks a sequential scan instead. With three values, each one usually covers far more rows than that, so the index goes unused. You still pay for it, though: every write has to update it, and it takes up disk space.
+
+There's one exception. If one of the three values is rare, a partial index on just that value does work:
+
+```sql
+CREATE INDEX orders_failed_idx ON orders (status) WHERE status = 'failed';
+```
+
+The planner uses it for queries that filter on that rare value. The index also stays small, because it holds only the matching rows.

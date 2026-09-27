@@ -214,6 +214,34 @@ check('comments in the terms file are ignored', !withTerms.includes('# comment')
 rmSync(cfg.termsPath());
 check('no terms section when the file is absent', !activate.build({ level: 'low', rigour: 'off', check: 'off', silent: 'off' }).includes('Untouchable terms'));
 
+// --- the 10 KB hook cap: every state arrives whole, in parts ------------------
+
+{
+  const manifest = JSON.parse(readFileSync(join(ROOT, '.claude-plugin', 'plugin.json'), 'utf8'));
+  const starts = manifest.hooks.SessionStart.flatMap((g) => g.hooks.map((h) => h.command));
+  check('the manifest registers one session-start command per part', starts.length === activate.PARTS
+    && starts.every((c, i) => c.includes(`--part ${i + 1}`)));
+  check('the part limit leaves room under the 10 KB cap', activate.PART_LIMIT <= 8000);
+  let worst = 0; let whole = true; let nparts = 0;
+  for (const level of ['off', 'low', 'high']) for (const rigour of ['off', 'ask']) for (const chk of ['off', 'on']) for (const silent of ['off', 'on']) {
+    const state = { level, rigour, check: chk, silent };
+    if (cfg.isAllOff(state)) continue;
+    const text = activate.build(state);
+    const chunks = activate.splitForHooks(text);
+    nparts = Math.max(nparts, chunks.length);
+    for (const c of chunks) worst = Math.max(worst, Buffer.byteLength(c, 'utf8'));
+    // The file is CRLF and build() collapses LF runs only, so the whole text carries
+    // runs of blank lines that a part boundary trims: compare the words, not the gaps.
+    const norm = (s) => s.replace(/\r\n/g, '\n').replace(/\n{3,}/g, '\n\n').replace(/\s+$/, '');
+    const glued = chunks.map((c, i) => norm(i === 0 ? c : c.replace(/^ATLAS rules, part \d+ of \d+, continued from the block above\.\n\n/, ''))).join('\n\n');
+    if (glued !== norm(text)) whole = false;
+  }
+  check(`no part of any state exceeds the limit (worst ${worst} bytes)`, worst <= activate.PART_LIMIT);
+  check(`every state fits in the registered parts (needs ${nparts})`, nparts <= activate.PARTS);
+  check('the parts glued back together are the whole ruleset, for every state', whole);
+  check('a part after the last is empty, not an error', activate.splitForHooks('## A\n\nx')[1] === undefined);
+}
+
 // --- end to end through the real hook process -------------------------------
 
 cfg.writeState({ level: 'low', rigour: 'ask', check: 'off', silent: 'off' });

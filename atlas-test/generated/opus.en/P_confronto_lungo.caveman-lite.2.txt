@@ -1,0 +1,21 @@
+Use local files with a collector that ships them elsewhere. At a thousand requests a minute, this setup gives you search without making the application wait on logs.
+
+The rule behind it: writing a log must never sit in the critical path of a request. If a log write is slow or fails, the user's request must not feel it.
+
+**Why not files alone.** Files cost nothing and add no dependency. They have two problems:
+- Searching means `grep`. With more than one machine, there is no cross-machine search. You have to connect to each machine.
+- You have to configure rotation by hand. If you don't, the disk fills.
+
+**Why not a managed service alone.** A managed service gives you instant search, alerts and automatic retention. It has two costs:
+- You pay by volume. At a thousand requests a minute, volume grows fast.
+- The logs leave your infrastructure. You must strip personal data before sending them.
+
+**Why not the application's database.** Searching logs in a database is familiar and convenient. But logs and real requests are two very different workloads. In the same database, they compete. Under load, logs fill the caches and use the connections that real requests need. That is the worst option for you.
+
+**What to do:**
+1. The application writes logs to local files. This is fast, costs nothing and has no dependency.
+2. Configure rotation on those files so the disk never fills.
+3. Run a collector that reads the files and ships them to one central place. That place can be a managed service or a separate log store. The collector works in the background, so the application never waits on it.
+4. If the central place is outside your infrastructure, the collector strips personal data before shipping.
+
+This gives you cross-machine search and alerts, and the request path stays clean. If you pick a managed service as the destination, watch the volume bill.

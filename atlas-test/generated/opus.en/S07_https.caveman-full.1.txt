@@ -1,0 +1,16 @@
+HTTPS is HTTP running inside a channel that TLS encrypts. HTTP requests and responses stay the same. TLS wraps them.
+
+**Handshake, step by step:**
+
+1. Client opens the connection. It lists the TLS versions and ciphers it supports.
+2. Server picks one cipher and one version. It sends its certificate back.
+3. Client checks the certificate. A certificate binds a domain name to a public key. A certificate authority (CA) signs it. Client follows the chain of signatures up to a root CA it already holds. If the chain does not reach a trusted root, verification fails.
+4. Client and server agree on a session key. Today this is usually an elliptic curve Diffie-Hellman (ECDHE) exchange.
+
+**Why a symmetric session key:** asymmetric encryption costs too much for real traffic. The handshake uses public keys only to set things up. After that, both sides use one fast shared key.
+
+**After the handshake:** all traffic is encrypted and authenticated. Anyone in the middle cannot read it or change it without detection.
+
+**TLS 1.3 vs 1.2:** TLS 1.3 finishes the handshake in one round trip. TLS 1.2 needs two. The connection is ready sooner.
+
+**Common misunderstanding:** the certificate does not say who runs the site. It says only that whoever controls the domain holds that key. The padlock means the connection is private and goes to that domain. It does not mean the site is honest.

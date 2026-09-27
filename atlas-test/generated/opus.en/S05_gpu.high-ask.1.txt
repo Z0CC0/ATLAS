@@ -1,0 +1,11 @@
+Biggest gain is frame generation, not raw rasterisation; rasterisation only about 10-15 per cent faster.
+
+Architecture: 5080 Blackwell, 4080 Ada Lovelace.
+
+Memory: GDDR7 instead of GDDR6X, bandwidth from about 717 to about 960 GB/s.
+
+Power: rated draw up from 320 to 360 W.
+
+Power connector: still 16-pin.
+
+These figures are from internal knowledge and have not been checked against a source.

@@ -1,0 +1,25 @@
+internal knowledge
+
+x86 has kept one instruction set alive since 1978, while the machine underneath it was rebuilt several times.
+
+**1978, 8086**: 16 bit. It grew out of the 8080 and stayed compatible with it at source level.
+
+**1982, 80286**: brought in protected mode, but there was no way back to real mode without a reboot.
+
+**1985, 80386**: 32 bit, paged virtual memory and virtual 8086 mode.
+
+**1989, 486**: the first level cache and the maths coprocessor moved onto the chip.
+
+**1993, Pentium**: superscalar, with two integer pipelines that could retire two instructions per cycle.
+
+**1995, Pentium Pro**: the turning point. It added out of order execution and translated x86 instructions into internal micro-operations. From then on x86 was an interface, no longer the real machine underneath.
+
+**2000, Pentium 4**: chased clock frequency with a very long pipeline and hit the power wall.
+
+**2003, AMD64**: AMD extended the architecture to 64 bit, and Intel adopted the same instruction set. It was the first time the dominant extension did not come from Intel.
+
+**2006, Core 2**: the focus moved from frequency to core count.
+
+**Across generations**, the vector extensions kept growing: MMX, then SSE, then AVX, then AVX-512.
+
+**Today** the complexity sits in the layers below the instruction set: branch prediction, the cache hierarchy and speculative execution. In 2018 Spectre and Meltdown showed that speculative execution had a security cost nobody had accounted for.

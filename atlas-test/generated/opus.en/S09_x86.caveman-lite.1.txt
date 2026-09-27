@@ -1,0 +1,25 @@
+Over four decades, x86 has kept its instruction set compatible while the hardware underneath has changed completely.
+
+**The 16-bit start.** The 8086 of 1978 is a 16-bit processor. It grows out of the 8080 and is compatible with it at source level. Compatibility with earlier chips shapes every step that follows.
+
+**Protected mode, with a catch.** The 80286 of 1982 introduces protected mode. It has a flaw: once the chip is in protected mode, it cannot return to real mode without a reboot.
+
+**The 32-bit foundation.** The 80386 of 1985 fixes that and sets the model for the next two decades. It brings 32-bit computing, paged virtual memory, and virtual 8086 mode, which runs old real-mode code inside the protected environment.
+
+**Integration.** The 486 of 1989 moves the first-level cache and the maths coprocessor onto the chip. Both parts were separate components before.
+
+**Parallelism inside the core.** The Pentium of 1993 is superscalar. It has two integer pipelines, so it can retire two instructions per cycle.
+
+**The real turning point.** The Pentium Pro of 1995 introduces out-of-order execution. It also translates x86 instructions into internal micro-operations. From this point on, x86 is an interface and no longer the real machine underneath. The chip only presents the old instruction set on the outside.
+
+**The frequency dead end.** The Pentium 4 of 2000 chases clock frequency with a very long pipeline. It hits the power wall: higher clocks cost more power than the chip can sustain.
+
+**64 bit comes from outside Intel.** In 2003 AMD extends the architecture to 64 bit with AMD64, and Intel adopts the same instruction set. For the first time, the dominant extension to x86 does not come from Intel.
+
+**From faster cores to more cores.** From 2006, starting with the Core 2, the focus moves from frequency to core count.
+
+**Vectors throughout.** Across all these generations the vector extensions keep growing: MMX, then SSE, then AVX, then AVX-512.
+
+**Today.** Most of the complexity now sits in the layers below the instruction set: branch prediction, the cache hierarchy and speculative execution. In 2018, Spectre and Meltdown showed that speculative execution had a security cost nobody had priced in. The same technique that made the hidden machine fast also made it exploitable.
+
+In short, x86 went from a 16-bit chip that was its own instruction set to a stable interface on top of a very different machine. Performance gains came first from integration, then parallelism, then frequency, and then more cores.

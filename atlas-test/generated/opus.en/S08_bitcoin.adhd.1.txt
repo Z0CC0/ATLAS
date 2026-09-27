@@ -1,0 +1,40 @@
+## Where it came from
+
+Bitcoin came out of the cypherpunk scene. People there had already tried to build digital money, with designs like b-money and bit gold. Those attempts never solved one core problem: **ordering**, meaning how everyone agrees which transaction came first.
+
+## The paper (2008)
+
+In 2008 a paper appeared titled **"Bitcoin: A Peer-to-Peer Electronic Cash System."** It was signed Satoshi Nakamoto, a pseudonym whose owner has never been identified.
+
+The paper took on **double spending**: how to stop someone spending the same digital coin twice when no central body keeps the ledger.
+
+## The fix: a chain of blocks plus proof of work
+
+- Transactions go into **blocks**, and the blocks are linked in a **chain**.
+- The order of the chain is set by **proof of work**, a computational effort each block needs.
+- Changing an old block means redoing the proof of work for that block **and for every block after it**. That makes rewriting the past expensive, so the ordering holds.
+
+This is the piece that b-money and bit gold were missing.
+
+## The first block (3 January 2009)
+
+The first block was generated on 3 January 2009. It contains the headline of a Times article about a bank bailout. That headline does two jobs:
+
+1. **Timestamp:** it proves the block could not have been made before that day.
+2. **Statement of intent:** it points at the kind of centralised financial system Bitcoin was meant to be an alternative to.
+
+## How new bitcoin are issued
+
+- Each block starts out paying a **reward of 50 bitcoin**.
+- The reward **halves every 210,000 blocks**, which is about every four years.
+- Because of the halvings, the total supply approaches **21 million** and never goes past it.
+
+## First real use (2010)
+
+The first documented commercial transaction happened in 2010: **two pizzas bought for 10,000 bitcoin**.
+
+## Satoshi steps away (2011)
+
+In 2011 Satoshi stopped taking part publicly. The bitcoin tied to Satoshi have **never been moved**.
+
+**In short:** earlier cypherpunk designs couldn't agree on transaction order. Satoshi's 2008 paper solved that with proof of work on a chain of blocks. The network started in January 2009 with a capped supply, saw its first real purchase in 2010, and was running without its creator by 2011.

@@ -1,0 +1,32 @@
+**HTTPS è semplicemente HTTP che viaggia dentro un canale cifrato da TLS.** Le richieste e le risposte sono le stesse di HTTP. Cambia il fatto che, prima di scambiarle, client e server creano un tunnel protetto.
+
+## 1. L'apertura: ci si accorda sulle regole
+
+1. Il client apre la connessione e dice quali versioni di TLS e quali cifrari sa usare.
+2. Il server sceglie la versione e il cifrario tra quelli proposti e manda il proprio **certificato**.
+
+## 2. Il certificato: con chi sto parlando?
+
+Il certificato lega un **nome di dominio** a una **chiave pubblica** ed è firmato da un'**autorità di certificazione**.
+
+Il client non si fida sulla parola. Controlla la firma risalendo la catena di certificati fino a una **radice che ha già in memoria**. Se la catena arriva a una di quelle radici, il certificato è valido.
+
+**Cosa il certificato NON garantisce:** non dice nulla su chi gestisce il sito. Dice solo che quel dominio controlla quella chiave. Un sito con il lucchetto può comunque essere di chiunque.
+
+## 3. La chiave di sessione: il segreto condiviso
+
+Client e server concordano una **chiave di sessione**. Oggi di solito lo fanno con uno scambio **Diffie-Hellman su curve ellittiche**.
+
+La chiave di sessione è **simmetrica**, cioè la stessa chiave serve a cifrare e a decifrare. Il motivo: la cifratura asimmetrica (quella a chiave pubblica e chiave privata) costa troppo per cifrare tutto il traffico vero. Per questo la si usa solo nella fase di apertura.
+
+## 4. Da qui in poi: traffico protetto
+
+Da questo punto il traffico è:
+- **cifrato**: chi sta in mezzo non può leggerlo
+- **autenticato**: chi sta in mezzo non può modificarlo senza che la modifica venga scoperta
+
+Dentro questo canale passano le normali richieste e risposte HTTP.
+
+## TLS 1.3 contro TLS 1.2
+
+TLS 1.3 completa l'apertura in **un solo giro di andata e ritorno** tra client e server. TLS 1.2 ne richiede **due**. Di conseguenza con TLS 1.3 la connessione sicura è pronta prima.

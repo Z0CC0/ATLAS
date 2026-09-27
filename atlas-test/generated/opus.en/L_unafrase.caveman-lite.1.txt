@@ -1,0 +1,6 @@
+Yes, an empty list is falsy in a boolean context. The same holds for every empty collection: an empty list, tuple, dict, set, or string is falsy.
+
+```python
+if not []:
+    print("empty")  # this runs
+```

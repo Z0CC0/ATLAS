@@ -1,0 +1,42 @@
+HTTPS is ordinary HTTP sent through a channel encrypted by TLS. The web traffic is the same as with HTTP. The difference is that TLS first sets up a secure channel, and all the HTTP traffic then travels through it.
+
+## 1. The client says hello
+
+Your browser (the client) opens the connection. It lists which TLS versions and ciphers it supports.
+
+## 2. The server answers and shows its certificate
+
+The server picks one cipher and one version from that list. It also sends its **certificate**.
+
+A certificate binds a domain name to a public key, and a **certificate authority** signs it.
+
+## 3. The client checks the certificate
+
+The client verifies the signature by walking the chain of certificates up to a root certificate it already holds. If the chain ends at a root it trusts, it accepts the certificate.
+
+**What this proves:** the domain controls that key. It says nothing about who runs the site. A padlock means your connection really goes to that domain. It does not mean the people behind the domain are trustworthy.
+
+## 4. Both sides agree a session key
+
+Client and server now agree a **session key**. Today this is typically done with an elliptic curve Diffie-Hellman exchange.
+
+The session key is **symmetric**, meaning both sides use the same key. Asymmetric (public/private key) encryption costs too much to use for real traffic. So it is used only during setup, and the symmetric key does the ongoing work.
+
+## 5. Encrypted traffic
+
+From this point on, all traffic is encrypted and authenticated:
+
+- **Encrypted:** nobody in the middle can read it.
+- **Authenticated:** nobody in the middle can change it without being detected.
+
+## Speed: TLS 1.2 vs TLS 1.3
+
+The handshake (steps 1–4) costs round trips before any data moves. TLS 1.2 needs two round trips. TLS 1.3 needs only one, so secure connections start faster.
+
+## The short version
+
+- **Hello:** the client lists its TLS versions and ciphers.
+- **Answer:** the server picks one of each and sends its certificate.
+- **Check:** the client verifies the certificate chain up to a root it holds.
+- **Key:** both sides agree a symmetric session key with ECDHE.
+- **Traffic:** everything after that is encrypted and protected from tampering.

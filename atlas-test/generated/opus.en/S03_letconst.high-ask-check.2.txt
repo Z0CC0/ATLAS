@@ -1,0 +1,7 @@
+internal knowledge
+
+`let` allows reassignment. `const` doesn't let you reassign the name.
+
+`const` doesn't freeze the value, though. An object declared with `const` can still change internally.
+
+Both are block scoped, unlike `var`.

@@ -1,0 +1,10 @@
+Anche se il sito serve solo pagine statiche, vale la pena impostare questi header:
+
+- **Strict-Transport-Security** con `max-age` di almeno 31536000 secondi (un anno) e `includeSubDomains`. Obbliga il browser a usare sempre HTTPS, anche sui sottodomini.
+- **Content-Security-Policy** con `default-src 'self'`. È l'header che blocca l'iniezione di script di terze parti, quindi è il più importante della lista.
+- **X-Frame-Options: DENY** contro il clickjacking. In alternativa puoi aggiungere `frame-ancestors 'none'` dentro la Content-Security-Policy che hai già, così tieni tutto in un unico header.
+- **X-Content-Type-Options: nosniff**. Impedisce al browser di indovinare il tipo di contenuto, quindi ogni file viene trattato solo come il tipo che dichiari.
+- **Referrer-Policy: strict-origin-when-cross-origin**. Quando un visitatore passa dal tuo sito a un altro, quel sito non riceve il percorso completo della pagina da cui arriva.
+- **Permissions-Policy** per spegnere camera, microfono e geolocalizzazione. Un sito statico di solito non li usa, quindi non c'è motivo di lasciarli attivi.
+
+**X-XSS-Protection** invece non va messo. È deprecato e i browser moderni lo ignorano, mentre in alcune versioni vecchie introduceva delle vulnerabilità. Se la tua configurazione lo include già, puoi toglierlo.

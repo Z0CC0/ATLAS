@@ -1,0 +1,31 @@
+## Come funziona
+
+La cache conserva la parte iniziale di una richiesta (il prefisso) dopo che è già stata elaborata. Se la richiesta successiva comincia allo stesso modo, quel pezzo non lo paghi di nuovo per intero.
+
+Il riuso vale solo per il prefisso. Se all'inizio cambia anche un solo carattere, da quel punto in poi la cache non serve più.
+
+## Come ordinare il prompt
+
+1. **Prima le parti stabili:** istruzioni di sistema, documentazione allegata, definizioni degli strumenti.
+2. **Dopo le parti che cambiano:** il messaggio del turno, i dati nuovi.
+
+Se inverti l'ordine, la parte variabile in testa rende inutile tutto quello che viene dopo.
+
+Attenzione in particolare alle voci di sistema che cambiano a ogni turno, come un orario. Anche se sono piccole, se stanno in alto rendono inutile la cache per tutto il testo che le segue. Spostale in fondo.
+
+## Quanto costa
+
+- **Prima richiesta:** costa di più, perché scrivere nella cache costa più di una lettura normale.
+- **Dalla seconda in poi:** cominci a risparmiare, e più turni fai, più risparmi.
+
+## Quando conviene
+
+| Conviene | Non conviene |
+|---|---|
+| Conversazioni lunghe | Richieste singole |
+| Contesto grande e stabile (istruzioni di sistema, documentazione, strumenti) | Richieste tutte diverse fra loro |
+| Molti turni che riusano lo stesso inizio | Paghi la scrittura in cache e non rileggi mai quel contenuto |
+
+**In breve:** conviene quando lo stesso inizio lungo viene riletto molte volte. Se ogni richiesta è diversa, spendi di più e basta.
+
+Prossimo passo: apri il tuo prompt di sistema e controlla se in alto c'è qualcosa che cambia a ogni turno, come un orario o una data. Se c'è, spostalo in fondo.

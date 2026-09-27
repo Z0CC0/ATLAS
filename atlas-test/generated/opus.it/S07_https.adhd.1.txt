@@ -1,0 +1,25 @@
+HTTPS è HTTP normale che viaggia dentro un canale cifrato da TLS. Il sito e il browser si parlano come sempre. Prima però costruiscono insieme quel canale protetto.
+
+## Come si costruisce il canale (handshake)
+
+1. **Il client apre la connessione.** Dice quali versioni di TLS e quali cifrari supporta.
+2. **Il server sceglie.** Indica quale cifrario e quale versione usare e manda il suo certificato.
+3. **Il client controlla il certificato.** Il certificato lega un nome di dominio a una chiave pubblica ed è firmato da un'autorità di certificazione. Il client verifica la firma risalendo la catena fino a una radice che ha già in memoria. Se la catena non arriva a una radice che conosce, il certificato non è verificato.
+4. **Client e server concordano una chiave di sessione.** Oggi di solito lo fanno con uno scambio Diffie-Hellman su curve ellittiche.
+
+## Perché serve una chiave di sessione
+
+La chiave di sessione è **simmetrica**: la stessa chiave serve a cifrare e a decifrare. La cifratura asimmetrica (a chiave pubblica e privata) costa troppo per cifrare il traffico vero. Si usa quindi il meccanismo asimmetrico solo per stabilire di chi fidarsi, e quello simmetrico per trasportare i dati.
+
+## Cosa ottieni alla fine
+
+Da quel momento il traffico è **cifrato e autenticato**. Chi sta in mezzo tra te e il server non può leggerlo e non può modificarlo.
+
+## TLS 1.2 e TLS 1.3
+
+- **TLS 1.2:** l'handshake richiede due giri di andata e ritorno.
+- **TLS 1.3:** ne basta uno. La connessione sicura quindi è pronta prima.
+
+## Cosa il certificato NON garantisce
+
+Il certificato non dice nulla su chi gestisce il sito. Dice solo che **quel dominio controlla quella chiave**. Una connessione HTTPS valida significa che stai parlando in modo sicuro con quel dominio. Non significa che chi lo gestisce sia affidabile.

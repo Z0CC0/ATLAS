@@ -1,0 +1,18 @@
+Two technical questions and one non-technical one decide this.
+
+**1. Which parts actually change.** Map where changes land in the monolith. Stable parts gain nothing from being split, so leave them alone.
+
+**2. Where transactions sit.** Find the transaction boundaries before you draw any service line. A transaction that spans two services becomes a distributed problem. Put service boundaries only where no transaction crosses them.
+
+**3. How you migrate.** Don't do a full rewrite that runs in parallel with the old system. That approach almost always fails: the old system keeps changing and the copy never catches up. Use progressive strangling instead:
+- Put a router in front of the monolith.
+- Move one piece at a time.
+- Keep the old system authoritative until the new piece is verified.
+
+**4. What microservices cost.** Every service needs releases, monitoring, logs, alerts and a person who looks after it. With fewer than five developers, that operational cost almost always exceeds the benefit.
+
+**5. The modular monolith.** Few people suggest this option. You get sharp internal boundaries and one release. You can still extract a module the day you really need it. For a small team it's often the right starting point.
+
+**6. The deciding question isn't technical.** Ask what your team must be able to do a year from now that it can't do today. Pick the architecture that makes that possible, not the one that looks best on a diagram.
+
+**Suggested order:** find what changes, map the transactions, answer the one-year question, then choose. That's usually a modular monolith reached through strangling. Extract microservices only where change and team size justify the operational cost.

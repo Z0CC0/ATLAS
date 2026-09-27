@@ -1,0 +1,11 @@
+internal knowledge
+
+5080 is mostly a frame-generation upgrade. Raw rasterisation only about 10-15 per cent faster.
+
+Architecture: Blackwell, not Ada Lovelace.
+
+Memory: GDDR7, not GDDR6X. Bandwidth rises from about 717 to about 960 GB/s.
+
+Rated power: 360 W, up from 320 W.
+
+Power connector: still 16-pin.

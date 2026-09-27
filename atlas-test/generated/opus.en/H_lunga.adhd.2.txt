@@ -1,0 +1,32 @@
+**Rule of thumb:** put everything stable at the start of the request and everything that changes at the end. Caching only pays off when many requests start with the same text.
+
+## How it works
+
+The cache stores the start of a request (the prefix) after it has been processed. If a later request starts with exactly the same text, that part is not processed or paid for again.
+
+Reuse only works on the prefix. The match runs from the start of the request and stops at the first difference. If one character differs near the start, nothing after that point is reused, even if the rest is identical.
+
+## Ordering the request
+
+Because of that, the order of the parts decides whether the cache works:
+
+1. **First:** the stable parts, such as system instructions, attached documentation and tool definitions
+2. **After:** the parts that change, such as the latest user message
+
+If you reverse the order, the changing part breaks the match early and nothing after it is reused.
+
+A common mistake is a system line that changes every turn, like a clock or timestamp. Everything after that line is processed again on every request. If it sits near the top, you lose almost all of the reuse.
+
+## The cost
+
+- **First request:** costs more than usual, because writing to the cache is more expensive than a normal read.
+- **Second request onward:** the cached prefix is read back instead of processed again, so this is where you start saving.
+- **More turns:** the savings grow with each request that reuses the same prefix.
+
+## When it pays off
+
+**Worth it:** long conversations with a large stable context, such as long system instructions, attached documentation or many tool definitions. You pay for the write once and read it back many times.
+
+**Not worth it:** single requests that differ from each other. You pay the higher write cost and never read the cache back, so it only makes things more expensive.
+
+Next: open your system prompt and look for any line that changes each turn, like a timestamp. If you find one, move it to the end.

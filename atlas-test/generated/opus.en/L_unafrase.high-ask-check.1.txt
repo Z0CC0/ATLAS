@@ -1,0 +1,3 @@
+internal knowledge
+
+Yes. The same is true of every empty collection: an empty list, tuple, dict, set or string is falsy in a boolean context.

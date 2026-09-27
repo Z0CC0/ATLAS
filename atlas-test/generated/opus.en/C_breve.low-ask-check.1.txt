@@ -1,0 +1,9 @@
+internal knowledge
+
+No, usually not worth it.
+
+With only three values, each one normally matches a large share of rows, so planner won't use B-tree index. Once a filter selects more than roughly 5-10 per cent of rows, it prefers a sequential scan.
+
+Index still costs you on every write, plus disk space.
+
+Exception: if one value rare and you query for it, partial index on just that value does work.

@@ -1,0 +1,13 @@
+Start from a question that isn't technical: what must your team be able to do a year from now that it can't do today? Let that answer choose the architecture.
+
+Before picking a shape, map two things in the current PHP code:
+
+Which parts actually change. Stable parts gain nothing from being split out, so leave them alone.
+
+Where transaction boundaries sit. A transaction that spans two services becomes a distributed problem, so draw service lines along those boundaries, never across them.
+
+Don't rewrite the whole system in parallel with the old one. That almost always fails, because the old system keeps changing and the copy never catches up. Strangle it progressively instead. Put a router in front and move one piece at a time. Keep the old system authoritative until the new piece is verified.
+
+Be honest about team size. Microservices cost more to run: every service needs its own releases, monitoring, logs, alerts and a person who looks after it. Below five developers, that cost almost always exceeds the benefit.
+
+Also consider the option nobody mentions: **a modular monolith**. It has sharp internal boundaries and a single release, and you can still extract a module the day you genuinely need to.

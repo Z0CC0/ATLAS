@@ -1,0 +1,18 @@
+Prima di scegliere l'architettura, conviene raccogliere un paio di dati e rispondere a una domanda che non è tecnica.
+
+**Parti da cosa deve poter fare il team.** Chiediti cosa deve poter fare il team fra un anno che oggi non può fare. È questa la domanda che decide. Può essere rilasciare una parte senza toccare il resto, far lavorare più persone in parallelo o reggere un carico che oggi non regge. Ogni scelta successiva va misurata su quella risposta, non su quale architettura sembra più moderna.
+
+**Poi guarda il monolite con due domande.**
+- **Quali parti cambiano davvero?** Spezzare le parti stabili non porta nessun vantaggio. Se il 70% del codice non lo tocca nessuno da anni, può restare dov'è.
+- **Dove stanno i confini delle transazioni?** Se una transazione finisce divisa fra due servizi, diventa un problema distribuito. Dove oggi il database garantisce la coerenza, dopo dovrai garantirla tu. I confini giusti di solito seguono le transazioni, non la struttura delle cartelle.
+
+**Conta quanto costano i microservizi.** Ogni servizio ha bisogno di rilascio, monitoraggio, log, allarmi e di una persona che se ne occupi. Con meno di cinque sviluppatori questo costo operativo supera quasi sempre il beneficio. Se il team è piccolo, parti da qui.
+
+**Considera il monolite modulare.** Se ne parla poco, ma spesso è la scelta giusta. Hai confini interni netti e un solo rilascio. Il giorno in cui un modulo ha davvero bisogno di vivere da solo, puoi estrarlo. Hai quasi tutti i vantaggi dell'ordine senza il costo operativo della distribuzione.
+
+**Sul come, evita la riscrittura completa in parallelo.** Riscrivere tutto accanto al vecchio sistema fallisce quasi sempre. Il vecchio continua a cambiare e la copia non lo raggiunge mai. L'alternativa è lo strangolamento progressivo:
+1. metti un router davanti al monolite;
+2. sposti un pezzo alla volta, partendo dalle parti che cambiano di più;
+3. il vecchio sistema resta quello di riferimento finché il nuovo pezzo non è verificato.
+
+**Riassumendo:** prima chiarisci cosa deve cambiare fra un anno. Poi individua le parti che si muovono e dove passano le transazioni. Valuta onestamente la dimensione del team. Solo a quel punto scegli fra monolite modulare e servizi separati, e in entrambi i casi migra per pezzi, non con una riscrittura completa.

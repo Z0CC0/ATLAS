@@ -1,0 +1,13 @@
+**Start with Postgres alone.** Add Elasticsearch or ClickHouse only when a specific workload demands it and you have numbers to show it.
+
+Postgres handles all four workloads acceptably, but none of them outstandingly. On orders it gives you real transactions, which you can't do without. Built-in text search holds up below a million documents and gets weak above that. Analytics run fine up to tens of millions of rows, then scans get slow.
+
+MySQL matches Postgres on orders but is weaker on data types and complex queries. Nothing here favours it.
+
+MongoDB makes the catalogue easier because it allows variable schemas. Multi-document transactions arrived late and cost performance, which is a bad trade when orders are the part you can't get wrong.
+
+Elasticsearch is far better at text search: relevance, synonyms and tolerance of typos. It can't be your main database, though. It has to be fed from another database, not replace it. Below a million documents, adding it is almost always premature.
+
+ClickHouse is far better at analytics. Its columnar scans are orders of magnitude faster. It's not for orders, because updating single records is its weak spot.
+
+If you outgrow Postgres, the usual setup keeps Postgres as the main database (the source of truth) and feeds Elasticsearch and ClickHouse from it. Each added system brings two problems: keeping it in sync, and keeping its data consistent with Postgres. The real cost of these specialised systems isn't the licence. It's the time your people spend keeping them running.

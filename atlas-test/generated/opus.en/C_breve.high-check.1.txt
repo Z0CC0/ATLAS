@@ -1,0 +1,9 @@
+internal knowledge
+
+Usually no. On a column with only three values, the database normally won't use a B-tree index.
+
+The planner picks a sequential scan when a filter matches more than about 5-10% of rows. With three values, each one usually matches far more than that.
+
+The index still slows down writes and takes up disk space.
+
+The exception is when one value is rare. A partial index on just that value does work.

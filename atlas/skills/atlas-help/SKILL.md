@@ -31,10 +31,10 @@ change it or type `atlas off`, which persists too. It is one global setting, not
 
 | dial | what it does | vs no plugin | worth knowing |
 |---|---|---|---|
-| `atlas low` | drops filler, pleasantries, hedging, articles, the copula. Fragments allowed. No tables | **-17% ... -38%** | the default |
-| `atlas high` | half the words: facts stay, explanations go. Prepositions and connectives cut too | **-16% ... -38%** | a few points from `low`: 3 in English, none in Italian. It reads more telegraphically than it saves |
-| `atlas ask` | asks before starting, until it knows what you actually want. One question at a time, options named where they can be named | +4 to +5 points | not a quiz: it is there so the work matches what you had in mind, not what the request happened to say. Applies to every request, not only the first |
-| `atlas check` | works against invented facts: nothing from memory, its own work verified before it is called done, a second option looked for before recommending the first, a correction checked before it is accepted | +8 to +11 points, plus the lookups | the only dial that adds. Every setup with it on still lands under no plugin on a long session |
+| `atlas low` | drops filler, pleasantries, hedging, articles, the copula. Fragments allowed. No tables | **-11% ... -29%** | the default |
+| `atlas high` | half the words: facts stay, explanations go. Prepositions and connectives cut too | **-18% ... -35%** | 9 points more than `low` in English, 7 in Italian. It reads more telegraphically; pick it when the answer is read once and acted on |
+| `atlas ask` | asks before starting, until it knows what you actually want. One question at a time, options named where they can be named | +3 to +2 points | not a quiz: it is there so the work matches what you had in mind, not what the request happened to say. Applies to every request, not only the first |
+| `atlas check` | works against invented facts: nothing from memory, its own work verified before it is called done, a second option looked for before recommending the first, a correction checked before it is accepted | +3 to +9 points, plus the lookups | the only dial that adds. Every setup with it on still lands under no plugin on a long session |
 | `atlas silent` | hands over the work and stops: no preamble, no narration between steps, no summary at the end, no offer of what to do next. Questions only before starting; a failure is still reported, in one line | a few points less | the only dial that removes a whole turn's worth of text rather than words inside it. `/atlas-silent` does the same for one task; the dial holds until turned off |
 | `atlas status` | prints which dials are on, nothing else | — | changes nothing. Says `atlas off` when none are |
 | `atlas ask off` · `atlas check off` · `atlas silent off` | turns one dial off, leaves the rest | — | |
@@ -117,4 +117,4 @@ more than twice the entire fixed cost. It scales with turns; everything above sc
 ---
 
 Token figures are tiktoken approximations, not Claude's tokenizer — compare them to each other,
-not to a bill. The costs above are current. **How much each level compresses was measured on 0.1.0 with `claude-sonnet-5`**: 24 English and 24 Italian questions with fixed fact sheets, 2 rounds each, through the real hooks. Output against no plugin, median: `low` -51% English and -47% Italian, `high` -54% and -47%; details lost, median: `low` 4 and 1 of 263, `high` 4 and 4. Run-to-run noise 4.1 points. The full tables are in the README.
+not to a bill. The costs above are current. **How much each level compresses was measured on 0.1.3 with `claude-opus-5-5` on 2026-09-26**: 24 English and 24 Italian questions with fixed fact sheets, 2 rounds each, through the real hooks. Output against no plugin, median: `low` -37% English and -37% Italian, `high` -46% and -43%; details lost, median: `low` 1 and 0 of 263, `high` 0 and 1. Run-to-run noise 0.6 points. The API bills the injected rules at about 1.54 times the tiktoken count. The full tables are in the README.

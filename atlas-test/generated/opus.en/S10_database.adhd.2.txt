@@ -1,0 +1,25 @@
+**Start with Postgres alone.** It covers orders, catalogue, text search and analytics with a single database. It isn't outstanding at any of the four, but it is acceptable at all of them.
+
+## Why Postgres
+- **Orders:** it gives you real transactions, and on orders you can't do without them.
+- **Text search:** it has search built in. That is good enough below about a million documents and weak above that.
+- **Analytics:** it copes up to tens of millions of rows. Past that, the scans get slow.
+
+## The other options
+
+| Option | Where it wins | Where it loses |
+|---|---|---|
+| **MySQL** | Just as good as Postgres on orders | Weaker on data types and complex queries, so there's no reason to pick it over Postgres |
+| **MongoDB** | Variable schemas make the catalogue easier | Transactions across several documents arrived late and are costly, which is risky for orders |
+| **Elasticsearch** | Far better text search: relevance, synonyms, tolerance of typos | It can't be your main store. Another database has to feed it, so it sits alongside that database |
+| **ClickHouse** | Far better analytics: its column-based scans are many times faster | Not for orders, because updating single rows is its weak spot |
+
+## What the platform looks like as it grows
+The usual setup is Postgres as the main store, with Elasticsearch and ClickHouse fed from it. Add those two only when you have numbers that show you need them:
+
+1. **Add Elasticsearch** when search quality or catalogue size outgrows Postgres. Below a million documents it is almost always too early.
+2. **Add ClickHouse** when analytics goes past tens of millions of rows and the scans slow down.
+
+Each system you add brings two problems: keeping it in sync with Postgres, and keeping the data consistent between them. The licence isn't the real cost of a specialised system. The real cost is the time your people spend keeping it running.
+
+Next: count the documents in your catalogue and the rows your analytics will scan. If they're under a million and under tens of millions, Postgres alone is enough.

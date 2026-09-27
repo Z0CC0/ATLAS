@@ -1,0 +1,26 @@
+**Raccomandazione:** parti con Postgres da solo. Aggiungi un altro sistema solo quando un carico specifico lo richiede, e solo con i numeri alla mano.
+
+**Perché Postgres come base**
+- Gestisce tutti e quattro i carichi in modo accettabile, anche se nessuno in modo eccellente.
+- Sugli ordini le transazioni devono essere serie, e questo non si negozia. Postgres le garantisce.
+- La ricerca testuale integrata basta sotto il milione di documenti. Sopra diventa debole.
+- L'analisi regge fino a decine di milioni di righe. Oltre, le scansioni diventano lente.
+
+**Alternative come base**
+- **MySQL:** sugli ordini vale quanto Postgres. È più debole sui tipi di dato e sulle query complesse, quindi non ci guadagni.
+- **MongoDB:** semplifica il catalogo, perché accetta schemi variabili. Però le transazioni multi-documento sono arrivate tardi e costano. Sugli ordini è la scelta sbagliata.
+
+**Sistemi specializzati, da aggiungere dopo**
+- **Elasticsearch:** sulla ricerca testuale è molto superiore per rilevanza, sinonimi e tolleranza agli errori di battitura. Non è però un archivio autorevole: va alimentato da un altro database, non lo sostituisce. Aggiungerlo prima del milione di documenti è quasi sempre prematuro.
+- **ClickHouse:** sull'analisi è molto superiore. Le scansioni colonnari sono avanti di ordini di grandezza. Non va usato per gli ordini, perché gli aggiornamenti puntuali sono il suo punto debole.
+
+**Configurazione finale tipica**
+Postgres resta l'archivio autorevole. Elasticsearch e ClickHouse ricevono i dati da lì. Ci arrivi un passo alla volta, non il primo giorno.
+
+**Costo reale**
+Ogni sistema che aggiungi porta due problemi: la sincronizzazione e l'allineamento dei dati. Il costo vero non è la licenza. È il tempo delle persone che tengono in piedi il sistema.
+
+**Quando aggiungere cosa**
+- Ricerca sopra il milione di documenti, oppure servono rilevanza, sinonimi e tolleranza ai refusi: aggiungi Elasticsearch.
+- Analisi oltre decine di milioni di righe con scansioni lente: aggiungi ClickHouse.
+- Ordini: restano sempre su Postgres.

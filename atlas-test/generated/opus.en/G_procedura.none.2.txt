@@ -1,0 +1,38 @@
+Don't run `ALTER TABLE t ALTER COLUMN colonna TYPE integer` directly. It rewrites the whole table while holding an ACCESS EXCLUSIVE lock, so on ten million rows your service is down until the rewrite finishes. Do the change in stages so the table stays usable throughout.
+
+**1. Check that every value will convert.** Count the rows whose value isn't all digits:
+
+```sql
+SELECT count(*) FROM t WHERE colonna !~ '^[0-9]+$';
+```
+
+If the count isn't zero, fix those rows before you go on.
+
+**2. Add the new column:**
+
+```sql
+ALTER TABLE t ADD COLUMN colonna_int integer;
+```
+
+**3. Fill it in batches of 10,000 rows.** Small batches mean no long lock is ever held on the table. Repeat until no rows are left:
+
+```sql
+UPDATE t SET colonna_int = colonna::integer
+WHERE id IN (
+  SELECT id FROM t
+  WHERE colonna_int IS NULL AND colonna IS NOT NULL
+  LIMIT 10000
+);
+```
+
+**4. Add a trigger that keeps the two columns in step.** Rows written while the migration runs then get `colonna_int` too, so nothing is missed.
+
+**5. Change your code to read from `colonna_int` and ship it.** Confirm it's working in production before you go further.
+
+**6. Only then, drop the old column:**
+
+```sql
+ALTER TABLE t DROP COLUMN colonna;
+```
+
+This last step can't be undone. Once the column is dropped, the data only comes back by restoring from a backup. Up to step 5 you can still roll back, because the old column is still there. Don't run step 6 until you're sure the new column is correct and the code using it is stable.

@@ -1,0 +1,28 @@
+**Consistenza eventuale:** dopo una scrittura, le copie dei dati (le repliche) non sono d'accordo subito. Se le scritture si fermano, però, arrivano allo stesso valore entro un tempo finito.
+
+## Perché ti riguarda
+
+Lo noti soprattutto quando qualcuno legge subito dopo aver scritto. Esempio tipico: un utente pubblica un commento, ricarica la pagina e il commento non c'è. La scrittura è arrivata a una replica, ma la lettura è andata a un'altra che non l'ha ancora ricevuta.
+
+Quanto dura questo ritardo:
+- **repliche nella stessa regione:** sotto il secondo
+- **repliche in regioni diverse:** qualche secondo
+
+## Perché non la elimini e basta
+
+Non è un difetto da eliminare, è una scelta. Il prezzo della consistenza forte è la disponibilità. Se le repliche non riescono a comunicare, un sistema che vuole consistenza forte deve rifiutare le richieste. Un sistema con consistenza eventuale invece continua a rispondere. Per questo la maggior parte dei sistemi che scalano la accetta di proposito.
+
+## Come si gestisce il caso del commento sparito
+
+Chi ha appena scritto legge dalla replica primaria, per il resto della sua sessione. Tutti gli altri continuano a leggere dalle repliche normali. Così chi ha scritto vede subito la sua modifica e tu non perdi i vantaggi delle repliche per tutto il resto del traffico.
+
+## Quando non va bene
+
+I casi sono pochi e facili da riconoscere:
+1. saldi di un conto
+2. disponibilità di posti
+3. unicità di un identificativo
+
+In questi casi, due repliche in disaccordo anche per un secondo producono un errore reale, per esempio lo stesso posto venduto due volte.
+
+**Prossimo passo:** cerca nel tuo sistema le scritture che toccano uno di quei tre casi. Sono le uniche che richiedono consistenza forte.

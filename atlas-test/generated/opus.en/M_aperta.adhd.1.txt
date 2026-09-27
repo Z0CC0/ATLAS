@@ -1,0 +1,26 @@
+First, list which parts of the monolith actually change, and which parts share a transaction. Those two lists should drive the architecture more than any pattern will.
+
+## 1. Map what changes
+Parts of the monolith that stay stable gain nothing from being split out. Put your effort only where change actually happens.
+
+## 2. Map the transaction boundaries
+Find where your transactions start and end. A transaction that spans two services becomes a distributed problem. If two pieces must commit together, draw the boundary around both of them, not between them.
+
+## 3. Don't do a big-bang rewrite
+A full rewrite that runs in parallel with the old system almost always fails. The old system keeps changing and the copy never catches up.
+
+Strangle the monolith gradually instead:
+1. Put a router in front of the monolith.
+2. Move one piece at a time behind it.
+3. Keep the old system authoritative until you've verified the new piece.
+
+## 4. Price in the cost of running microservices
+Every service needs its own releases, monitoring, logs, alerts and a person who looks after it. With fewer than five developers, that cost almost always exceeds the benefit.
+
+## 5. Consider the modular monolith
+This is the option nobody mentions. You get sharp internal boundaries and a single release, and you can still extract a module the day you genuinely need to. It works well with steps 1 and 2: the modules follow the parts that change and the transaction boundaries.
+
+## The question that decides it
+The deciding question isn't technical: **what must your team be able to do a year from now that it can't do today?** Choose the architecture that makes that possible, and nothing more.
+
+**Next (about 10 minutes):** write one sentence answering that question, then list the 3 parts of the monolith that changed most in the last year.

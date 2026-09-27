@@ -1,0 +1,16 @@
+For a small project, go with **Postgres**. Switch to Redis only if your job volume actually requires it.
+
+**Why Postgres fits a small project:**
+
+- **It handles more load than you're likely to have.** A queue built on `SELECT ... FOR UPDATE SKIP LOCKED` copes with roughly a thousand jobs per minute.
+- **Jobs stay consistent with your data.** You insert the job in the same transaction as the data it belongs to. If that write rolls back, the job disappears with it, so no job ever starts for data that was never saved.
+- **Jobs survive crashes without extra setup.** The queue is an ordinary table, so if the process dies, the queued jobs are still there.
+
+**When Redis makes sense:**
+
+Redis handles far more volume and picks up jobs faster, in under a millisecond. The downsides:
+
+- It's one more service you have to run, monitor and upgrade.
+- You have to configure persistence yourself. If AOF isn't enabled, a restart loses every job still in the queue.
+
+**How to decide:** start on Postgres, which you're probably already running. Consider moving to Redis if your volume gets close to about a thousand jobs per minute, or if you need sub-millisecond pickup. Until then, Redis's speed doesn't make up for running an extra service and setting up persistence.

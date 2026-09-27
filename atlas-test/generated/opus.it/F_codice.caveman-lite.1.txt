@@ -1,0 +1,22 @@
+Ecco un'implementazione senza librerie:
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Tre dettagli la fanno funzionare:
+
+- **`clearTimeout` prima di ogni nuovo `setTimeout`.** Senza questa chiamata i timer si accumulano e la funzione parte più volte.
+- **`t` sta nella chiusura, fuori dalla funzione restituita.** Se la metti dentro, ogni chiamata ha il proprio timer e il debounce non avviene.
+- **Gli argomenti passano con lo spread (`...args`).** Senza lo spread la funzione chiamata riceve gli argomenti vuoti.
+
+Limiti di questa versione:
+
+- **Non restituisce niente.** Se ti serve il valore di ritorno di `fn`, devi usare una Promise.
+- **Copre solo il ritardo.** Per il caso opposto serve un throttle, che è un'altra funzione: esegue subito e poi ignora le chiamate per un periodo.

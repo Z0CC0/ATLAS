@@ -1,0 +1,27 @@
+**Parti con Postgres da solo.** Aggiungi Elasticsearch o ClickHouse solo quando un carico preciso lo impone, e hai i numeri per dimostrarlo.
+
+## Confronto per carico
+
+| | Ordini | Catalogo | Ricerca testuale | Analisi |
+|---|---|---|---|---|
+| **Postgres** | ✅ transazioni serie | ✅ accettabile | ⚠️ ok sotto 1M documenti, debole sopra | ⚠️ ok fino a decine di milioni di righe, poi scansioni lente |
+| **MySQL** | ✅ equivalente a Postgres | ⚠️ più debole su tipi di dato | — | ⚠️ più debole su query complesse |
+| **MongoDB** | ❌ transazioni multi-documento arrivate tardi e costose | ✅ semplifica gli schemi variabili | — | — |
+| **Elasticsearch** | ❌ non è un archivio autorevole | — | ✅✅ rilevanza, sinonimi, tolleranza ai refusi | — |
+| **ClickHouse** | ❌ debole sugli aggiornamenti puntuali | — | — | ✅✅ scansioni colonnari, avanti di ordini di grandezza |
+
+Postgres è l'unico che regge tutti e quattro i carichi in modo accettabile, anche se non eccelle in nessuno. Sugli ordini le transazioni non sono negoziabili, quindi MongoDB e ClickHouse sono esclusi come database principale. MySQL è un'alternativa possibile, ma non ha vantaggi rispetto a Postgres e ha qualche limite in più.
+
+## Quando aggiungere cosa
+
+1. **Adesso:** usa solo Postgres, per ordini, catalogo, ricerca e analisi.
+2. **Aggiungi Elasticsearch** quando superi il milione di documenti o quando la qualità della ricerca diventa un problema misurato. Prima del milione è quasi sempre prematuro. Va alimentato da Postgres, non lo sostituisce.
+3. **Aggiungi ClickHouse** quando le query di analisi, oltre le decine di milioni di righe, diventano troppo lente. Anche lui va alimentato da Postgres.
+
+Dove probabilmente arriverai: Postgres come archivio autorevole, con Elasticsearch e ClickHouse alimentati da lì.
+
+## Il costo nascosto
+
+Ogni sistema che aggiungi porta due problemi: tenerlo sincronizzato e verificare che i dati restino allineati. Il costo vero non è la licenza, ma il tempo delle persone che devono tenerlo in piedi. Per questo conviene aggiungere un sistema solo quando i numeri lo giustificano.
+
+**Prossimo passo (2 minuti):** scrivi due numeri, cioè quanti prodotti o documenti ti aspetti nel catalogo e quante righe di ordini all'anno. Se sono sotto 1 milione e sotto qualche decina di milioni, per ora basta Postgres.

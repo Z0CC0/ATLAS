@@ -1,0 +1,32 @@
+**Eventual consistency** describes what happens in a system that keeps several copies (replicas) of the same data. After a write, the replicas don't agree right away. If writes stop, they all reach the same state within a finite time.
+
+## How long "eventually" takes
+
+Not long. Replicas in the same region usually converge in under a second. Across regions it rises to a few seconds.
+
+## Why systems accept it
+
+You're trading consistency against availability. A system that demands strong consistency has to refuse requests whenever its replicas can't talk to each other. A system that accepts eventual consistency keeps answering. It just answers from a replica that may be slightly behind.
+
+So eventual consistency isn't a defect to get rid of. It's a choice, and most systems that scale make it on purpose.
+
+## Where you'll notice it
+
+It affects anyone who reads right after writing. For example, a user posts a comment, reloads the page, and the comment isn't there. The write worked, but the reload hit a replica that hasn't caught up yet. To the user it looks like the post failed.
+
+The usual fix is narrow. For the session that just wrote, send reads to the primary replica. Everyone else keeps reading from the other replicas. The person who posted sees their comment, and you haven't made the whole system strongly consistent to get there.
+
+## When it's unacceptable
+
+There are only a few cases, and they're easy to recognise:
+
+- **Account balances**: two reads that disagree can mean spending money that isn't there.
+- **Seat availability**: the same seat gets sold twice.
+- **Uniqueness of an identifier**: two records end up with the same ID.
+
+## Why you should care
+
+If you build or use anything that runs on more than one machine, you're probably already working with eventual consistency. In practice this means two things:
+
+- Design for the read-after-write case so users don't think their actions were lost.
+- Check whether any of your data is like balances, seats or unique IDs. That data needs strong consistency. Everything else can usually live with a second or two of disagreement.

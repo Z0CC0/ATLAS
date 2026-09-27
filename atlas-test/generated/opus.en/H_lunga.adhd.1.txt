@@ -1,0 +1,32 @@
+## What it does
+
+The cache stores the part of a request that has already been processed, meaning its beginning (the prefix). If a later request starts exactly the same way, you don't pay to process that part again.
+
+## The prefix rule
+
+Reuse only works from the start of the request, and only up to the first difference. If one character near the start changes, nothing after that point is reused.
+
+That makes the order of your prompt matter:
+
+1. **Stable parts first:** system instructions, attached documentation, tool definitions.
+2. **Changing parts after:** the user's message and anything else that varies per request.
+
+If you reverse the order, the changing content sits at the front and the cache never gets a match.
+
+## The cost pattern
+
+- **Request 1 costs more.** Writing to the cache is more expensive than a normal read.
+- **Request 2 onward costs less.** The stored prefix is read back instead of processed again.
+- **The saving grows with each turn.** The more turns reuse the same prefix, the more the first write pays for itself.
+
+## When it pays off
+
+**Worth it:** long conversations with a large stable context, like big system instructions, attached docs, or many tool definitions. You pay for the write once and read it back on every turn.
+
+**Not worth it:** single requests that each differ from the others. You pay the higher write cost and never read the cache back, so you end up paying more.
+
+## The common trap
+
+A line near the top that changes every turn, such as a clock or timestamp in the system prompt, breaks reuse for everything after it. The cache is written each turn and never read. Move that line after the stable content, or remove it.
+
+Next: open your system prompt and check whether anything in the first lines changes per request, such as a date, time or request ID.

@@ -1,0 +1,36 @@
+## Il contesto: i cypherpunk
+
+Bitcoin nasce nell'ambiente cypherpunk. Prima di lui c'erano già stati tentativi di moneta digitale, come **b-money** e **bit gold**. Nessuno però aveva risolto un punto: come mettere d'accordo tutti sull'**ordine** delle transazioni.
+
+## Il problema: la doppia spesa
+
+Un file digitale si copia facilmente. Serve quindi un modo per impedire che la stessa moneta venga spesa due volte. Di solito questo compito spetta a un ente centrale, come una banca, che tiene il registro. La sfida era riuscirci **senza nessun ente centrale**.
+
+## Il documento del 2008
+
+Nel 2008 esce un documento intitolato ***Bitcoin: A Peer-to-Peer Electronic Cash System***. È firmato **Satoshi Nakamoto**, uno pseudonimo che nessuno ha mai identificato.
+
+La soluzione proposta è una **catena di blocchi**, messa in ordine da una **prova di lavoro**:
+- Ogni blocco richiede una certa quantità di calcolo per essere aggiunto.
+- Per modificare un blocco vecchio bisognerebbe rifare il lavoro di quel blocco **e di tutti i blocchi venuti dopo**.
+- Per questo riscrivere il passato costa moltissimo. L'ordine delle transazioni diventa affidabile senza che serva un garante.
+
+## Il primo blocco: 3 gennaio 2009
+
+Il primo blocco viene generato il **3 gennaio 2009**. Dentro c'è il titolo di un articolo del *Times* su un salvataggio bancario. Quel riferimento ha due funzioni:
+1. **Marca temporale**: dimostra che il blocco non può essere stato creato prima di quella data.
+2. **Dichiarazione di intenti**: indica il sistema a cui Bitcoin vuole offrire un'alternativa.
+
+## Le regole di emissione
+
+- Chi genera un blocco riceve una ricompensa che all'inizio vale **50 bitcoin**.
+- La ricompensa si **dimezza ogni 210.000 blocchi**, cioè circa ogni quattro anni.
+- Per questo il totale dei bitcoin emessi si avvicina a **21 milioni** senza mai superarli.
+
+## Il primo acquisto: due pizze
+
+La prima transazione commerciale documentata risale al **2010**: due pizze pagate **10.000 bitcoin**.
+
+## La scomparsa del fondatore
+
+Nel **2011** Satoshi smette di partecipare pubblicamente al progetto. I suoi bitcoin **non sono mai stati spostati**.

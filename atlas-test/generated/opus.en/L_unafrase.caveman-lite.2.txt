@@ -1,0 +1,11 @@
+Yes. An empty list is falsy in a boolean context, so `if my_list:` runs its body only when the list has at least one item.
+
+This holds for every empty collection: list, tuple, dict, set and string.
+
+```python
+bool([])   # False
+bool(())   # False
+bool({})   # False
+bool(set()) # False
+bool("")   # False
+```

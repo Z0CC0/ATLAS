@@ -1,0 +1,13 @@
+internal knowledge
+
+Eventual consistency: after a write, replicas don't agree immediately, but converge within finite time once writes stop.
+
+Why care: it hits whoever reads right after writing. User posts comment, reloads, doesn't see it.
+
+How long the gap lasts: typically under a second across replicas in same region, seconds across regions.
+
+Why systems accept it: trade against availability. System demanding strong consistency has to refuse requests when replicas cannot talk. So eventual consistency not a defect to eliminate but a choice, and most systems that scale make it deliberately.
+
+Common fix for the vanishing comment: read from primary replica for the session that just wrote, not for everyone. Author sees own comment right away; other readers keep reading from replicas.
+
+Where it's unacceptable: few cases, easy to recognise. Account balances, seat availability, uniqueness of an identifier. Those need strong consistency; most of the rest can live with eventual.

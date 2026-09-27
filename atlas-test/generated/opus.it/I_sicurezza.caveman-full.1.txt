@@ -1,0 +1,9 @@
+No. Anche se la offuschi, la chiave API nel frontend è esposta. Tutto quello che arriva al browser si può leggere. Chiunque annulla l'offuscamento aprendo gli strumenti per sviluppatori o guardando le richieste di rete.
+
+**Come fare:**
+- Tieni la chiave sul server. Il frontend chiama un endpoint del tuo backend, e il backend chiama il servizio.
+- Metti un limite di frequenza su quell'endpoint. Senza limite, chiunque può usare la tua chiave gratis passando dal tuo backend.
+
+**Se la chiave è già stata pubblicata:**
+- Considerala compromessa e ruotala subito. Toglierla dal codice non basta.
+- Anche rimuoverla con un nuovo commit non basta. La chiave resta nella cronologia del repository, e chi ha già un clone ce l'ha.

@@ -1,0 +1,18 @@
+Before you choose an architecture, work out two things about the monolith you already have.
+
+**1. Which parts actually change.** Look at where the changes, bugs and feature requests land. Parts that are stable gain nothing from being split out, so they don't justify a new structure. The parts that keep changing are where boundaries might be worth drawing.
+
+**2. Where the transactions are.** Map which operations must succeed or fail together. If one transaction ends up spanning two services, it becomes a distributed problem. Draw your boundaries around the transactions, not through them.
+
+**How to migrate: don't run a full rewrite alongside the old system.** A full rewrite built in parallel with the old system almost always fails. The old system keeps changing to meet business needs, so the copy never catches up. Use progressive strangling instead:
+- Put a router in front of the monolith.
+- Move one piece at a time behind it.
+- Keep the old system authoritative for each piece until the new version is verified.
+
+This way you ship value as you go, and you can stop at any point without having wasted the effort.
+
+**Be honest about what microservices cost.** Every service needs its own releases, monitoring, logs, alerts, and a person who looks after it. With fewer than five developers, that operational cost almost always exceeds the benefit.
+
+**Consider the modular monolith.** People rarely mention it, but it's often the right answer. You get sharp internal boundaries and still have a single release. You also keep the option to extract a module into its own service the day you genuinely need to, and not before.
+
+**The deciding question isn't technical.** Ask: *what must the team be able to do a year from now that it can't do today?* It might be shipping one area independently, scaling one part, or letting separate groups own separate pieces. The answer tells you how much separation you really need. If you can't name something concrete, a well-structured modular monolith, reached by strangling the old code step by step, is probably where you should land.

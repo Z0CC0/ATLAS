@@ -1,0 +1,10 @@
+Di norma no: evita l'indice B-tree normale, e se ti serve cercare il valore raro crea un indice parziale solo su quel valore.
+
+1. **L'indice normale di solito non viene usato.** Con soli tre valori distinti, ogni filtro seleziona in genere una grossa parte della tabella. Il planner preferisce la scansione sequenziale quando il filtro prende più del 5-10% circa delle righe.
+2. **L'indice costa comunque.** Anche se il planner lo ignora, lo paghi in scritture più lente e in spazio occupato.
+3. **Fa eccezione il valore raro.** Se uno dei tre valori compare in poche righe e lo cerchi spesso, un indice parziale limitato a quel valore funziona. Esempio:
+   ```sql
+   CREATE INDEX idx_ordini_sospesi ON ordini (id) WHERE stato = 'sospeso';
+   ```
+
+Il prossimo passo è contare quante righe ha ciascuno dei tre valori con `SELECT stato, count(*) FROM tabella GROUP BY stato;`. Se uno è ben sotto il 5% ed è quello che filtri spesso, crea l'indice parziale su quel valore.

@@ -1,0 +1,9 @@
+File locali, più un raccoglitore che li spedisce altrove. Con mille richieste al minuto è la scelta ragionevole, perché l'applicazione non aspetta mai la scrittura del log.
+
+Qualunque cosa scegli, vale una regola: la scrittura del log non deve stare nel percorso critico della richiesta.
+
+**Solo file:** costano zero e non aggiungono dipendenze. Però cerchi con grep e devi configurare a mano la rotazione, altrimenti il disco si riempie. Se hai più macchine, non puoi cercare su tutte insieme: devi collegarti a ognuna. Il raccoglitore serve proprio a risolvere questo.
+
+**Servizio gestito:** hai subito ricerca, allarmi e conservazione automatica. Però paghi in base al volume, e a mille richieste al minuto il volume cresce in fretta. I log escono anche dalla tua infrastruttura, quindi prima di mandarli fuori devi togliere i dati personali. Questo vale anche se è il raccoglitore a spedirli lì.
+
+**Database:** la ricerca è comoda e la conosci già. Ma se scrivi i log nello stesso database dell'applicazione, metti in competizione due carichi molto diversi. Sotto carico, i log occupano cache e connessioni che servivano alle richieste vere.

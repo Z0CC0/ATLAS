@@ -1,0 +1,14 @@
+**Usually not.** A regular B-tree index on a column with only three values rarely helps.
+
+- **The planner skips it:** if the filter matches more than about 5–10% of the rows, PostgreSQL's planner picks a sequential scan over the index. With three values, most filters match far more than that.
+- **You still pay for it:** the index slows every write and uses disk space, even when no query uses it.
+
+**The exception:** if one value is rare and that's the one you query, a partial index on just that value works:
+
+```sql
+CREATE INDEX orders_failed_idx ON orders (status) WHERE status = 'failed';
+```
+
+The index is small and very selective, so the planner uses it.
+
+Next: count how many rows each value has with `SELECT status, count(*) FROM orders GROUP BY status;`. If one value is well under 5% of rows and you filter on it, add the partial index. If not, skip indexing this column.

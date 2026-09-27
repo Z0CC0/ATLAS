@@ -1,0 +1,17 @@
+Weather data comes from the web.
+
+**Weather in Los Angeles today** (it's 10:20 PDT now)
+- Scattered clouds this morning. Sky clears in the afternoon.
+- High between 86 and 93°F (30–34°C). The number depends on source and area.
+- Downtown is the hottest point. The coast stays cooler.
+- Air is dry compared to New York, so the heat feels milder at the same temperature.
+- Overnight low is around 69°F (21°C).
+
+**When it gets dark**
+- Sunset is at 19:35, about 9 hours 15 minutes from now.
+- Full dark (end of civil twilight) is at 20:00, about 9 hours 40 minutes from now.
+- The moon is at first quarter and 52% lit, so the sky stays fairly dark early in the night.
+
+**What to do tonight**
+- **Free jazz at the Hammer Museum, Westwood:** Machado Mijiga, a multi-instrumentalist, plays in the open courtyard. It's free and outdoors, and the timing lets you catch the evening cooling.
+- **Mt. Joy at the Greek Theatre, 20:00:** The Greek is an amphitheatre inside Griffith Park and one of the best places in the city for a summer concert. It's a short distance from Griffith Observatory. Arrive early to watch the 19:35 sunset there before the show.

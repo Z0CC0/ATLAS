@@ -1,0 +1,33 @@
+Parti con Postgres da solo. Aggiungi altri sistemi solo quando un carico preciso lo richiede e hai i numeri per dimostrarlo.
+
+**Postgres**
+- Gestisce tutti e quattro i carichi in modo accettabile, ma nessuno in modo eccellente.
+- **Ordini:** ha transazioni serie. Sugli ordini non puoi rinunciarci.
+- **Ricerca testuale:** è integrata. Basta sotto il milione di documenti, sopra diventa debole.
+- **Analisi:** regge fino a decine di milioni di righe. Oltre, le scansioni diventano lente.
+
+**MySQL**
+- Sugli ordini equivale a Postgres.
+- È più debole sui tipi di dato e sulle query complesse. Con il tuo carico misto non c'è motivo di preferirlo.
+
+**MongoDB**
+- Semplifica il catalogo quando i prodotti hanno schemi variabili.
+- Le transazioni multi-documento sono arrivate tardi e costano. Per gli ordini è quindi una scelta scomoda.
+
+**Elasticsearch**
+- Nella ricerca testuale è molto superiore: rilevanza, sinonimi, tolleranza agli errori di battitura.
+- Non è un archivio autorevole. Deve ricevere i dati da un altro database, non sostituirlo.
+- Aggiungerlo prima del milione di documenti è quasi sempre prematuro.
+
+**ClickHouse**
+- Nell'analisi è molto superiore: le scansioni colonnari sono avanti di ordini di grandezza.
+- Non va usato per gli ordini, perché gli aggiornamenti puntuali sono il suo punto debole.
+
+**Come si combinano**
+La configurazione tipica usa Postgres come archivio autorevole. Elasticsearch e ClickHouse ricevono i dati da Postgres. Ogni sistema che aggiungi porta però due problemi: la sincronizzazione e l'allineamento dei dati. Il costo vero dei sistemi specializzati non è la licenza. È il tempo delle persone che li tengono in funzione.
+
+**Cosa fare**
+1. Metti ordini, catalogo, ricerca e analisi su Postgres.
+2. Aggiungi Elasticsearch quando superi il milione di documenti e la qualità della ricerca diventa un problema misurato.
+3. Aggiungi ClickHouse quando le analisi superano le decine di milioni di righe e le scansioni diventano lente nei numeri, non solo come impressione.
+4. Prima di ogni aggiunta, verifica di avere le persone e il tempo per gestire la sincronizzazione.

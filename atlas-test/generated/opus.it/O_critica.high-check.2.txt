@@ -1,0 +1,19 @@
+Conoscenza interna.
+
+Non tutta: nel database metterei solo l'integrità, la logica di business nell'applicazione.
+
+Vantaggio reale: nessun percorso applicativo salta la regola, nemmeno uno script eseguito a mano.
+
+Costi:
+
+Trigger invisibili a chi legge il codice applicativo: una modifica che sembra semplice ne attiva altre, senza traccia.
+
+Non si testano con gli strumenti che il team usa già: servono prove contro un database vero.
+
+Debug peggiore: un errore dentro un trigger arriva come fallimento della scrittura, senza dire quale regola l'ha causato.
+
+Migrazioni fragili: l'ordine dei trigger conta, ma non è dichiarato da nessuna parte.
+
+Alternativa: nel database vincoli, chiavi esterne, unicità e controlli di dominio. La logica di business nell'applicazione, dietro **un solo punto di ingresso**.
+
+Quel punto di ingresso dà la stessa garanzia del trigger, **ma solo se l'accesso diretto al database è riservato alle migrazioni**.

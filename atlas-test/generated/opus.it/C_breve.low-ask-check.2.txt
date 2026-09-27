@@ -1,0 +1,7 @@
+*Conoscenza interna*
+
+No, di norma non conviene: su una colonna con tre soli valori distinti il planner di solito non usa un indice B-tree.
+
+Il motivo è che, quando il filtro seleziona più del 5-10 per cento circa delle righe, il planner preferisce una scansione sequenziale. Con tre valori, quasi ogni filtro supera quella soglia. L'indice però occupa comunque spazio e rallenta ogni scrittura, quindi paghi un costo senza averne un beneficio.
+
+C'è un'eccezione. Se uno dei tre valori è raro e le tue query cercano proprio quello, un indice parziale su quel valore funziona.

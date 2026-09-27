@@ -1,0 +1,28 @@
+**Start with Postgres alone.** Add another system only when a specific workload proves, with numbers, that Postgres can't keep up.
+
+## Why Postgres first
+
+- It handles all four of your workloads acceptably, though none of them outstandingly.
+- It gives you real transactions. For orders, you can't do without them.
+- Every extra system you add brings two problems: keeping the systems in sync and keeping the data aligned between them.
+- The real cost of specialised systems isn't the licence. It's the time of the people who keep them running.
+
+## Each workload
+
+| Workload | Postgres alone | When to add something | What to add |
+|---|---|---|---|
+| **Orders** | Real transactions, the right tool | Never | Nothing. ClickHouse is weak at point updates, and MongoDB's multi-document transactions arrived late and are costly |
+| **Catalogue** | Acceptable | Only if variable schemas become a real pain | MongoDB makes this easier, but you'd give up transactions on orders |
+| **Text search** | Built-in, fine below 1M documents | Above 1M documents, or when you need better relevance, synonyms and typo tolerance | Elasticsearch, fed from Postgres. It can't be your main store. Adding it below 1M documents is almost always premature |
+| **Analytics** | Fine up to tens of millions of rows | When scans get slow past that point | ClickHouse, fed from Postgres. Its columnar scans are orders of magnitude faster |
+
+## Options you can drop
+
+- **MySQL:** equal to Postgres on orders, but weaker on data types and complex queries. No reason to choose it.
+- **MongoDB as the main database:** it only wins on the catalogue, and it's weak where you can't afford to be, which is orders.
+
+## Where you'll probably end up
+
+The usual mature setup is **Postgres as the main store, with Elasticsearch and ClickHouse fed from it**. Get there one system at a time, only when a workload forces the move.
+
+**Next:** count your catalogue documents and your analytics rows. Below 1M documents and tens of millions of rows, Postgres alone is the answer for now.

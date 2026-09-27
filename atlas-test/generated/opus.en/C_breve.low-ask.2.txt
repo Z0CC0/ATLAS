@@ -1,0 +1,9 @@
+**No**, usually not. On low-cardinality column, B-tree index normally goes unused. Planner prefers sequential scan once filter selects more than roughly 5-10 per cent of rows, and with three values each one likely covers far more than that.
+
+Index still costs writes and disk space, so you pay for it without benefit.
+
+Exception: if one value is rare and you query for it, partial index on that value does work, for example:
+
+```sql
+CREATE INDEX orders_failed_idx ON orders (id) WHERE status = 'failed';
+```
