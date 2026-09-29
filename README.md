@@ -281,7 +281,6 @@ Everything below follows from the measurements above. None of it is required; ea
 - **`atlas-browser` needs the desktop app's Browser pane.** From the plain CLI it has nothing to drive and says so.
 - **The compression figure is 2 rounds on 48 questions with fixed fact sheets, one model (`claude-opus-5-5`, 2026-09-26).** It measures form with the information held constant; answers that have to find their own facts vary more, and another model compresses by another amount: Sonnet 5 gave larger savings under every plugin.
 - **It shortens output only.** Your input, your files and what tools return are not touched: a hook cannot rewrite a tool's result.
-- `ask` cannot know what you have not said. It reduces wrong assumptions; it does not remove them
 
 
 ## Recommended companions
