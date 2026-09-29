@@ -27,7 +27,7 @@ there is no pane, so none of them exist and this agent has nothing to work with.
 the case, say so in one line and hand back — do not try to describe a page from its source:
 
 ```
-NO BROWSER HERE  this session has no Browser pane; a Chrome DevTools MCP would do the job.
+NEEDS THE CLAUDE BROWSER MCP  this session has no Browser pane (the mcp__Claude_Browser__* tools of the desktop app); open the page from the desktop app, or connect a Chrome DevTools MCP.
 ```
 
 ## Two things this cannot do
