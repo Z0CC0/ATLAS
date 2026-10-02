@@ -60,13 +60,17 @@ atlas status   cosa e acceso
 atlas off      si torna a niente
 ```
 
-**L'impostazione e' globale e persiste** — fra i turni, fra i riavvii, in ogni progetto, finche'
-non la cambi. Non e' una modalita' per conversazione: lo accendi una volta e ogni chat nuova parte
-da li'. Anche `atlas off` persiste allo stesso modo.
+**L'impostazione e' per progetto e persiste** — fra i turni e fra i riavvii, finche' non la cambi.
+Non e' una modalita' per conversazione: lo accendi una volta in un repository e ogni chat nuova
+aperta li' parte cosi'. Un altro repository e' un'altra impostazione, spenta finche' non dici tu,
+quindi `atlas high` acceso per un lavoro non ti segue nel successivo. Anche `atlas off` persiste
+allo stesso modo. Il progetto e' la cartella in cui gira la sessione, risalita fino al primo
+`.git` o `.atlas.json`: una chat aperta in una sottocartella condivide le manopole del repository.
 
-**Disinstallarlo non lo azzera.** Lo stato delle manopole sta in `~/.claude/.atlas-state`, fuori
-dal plugin, quindi togliendolo e rimettendolo torna quello che avevi impostato prima. Scrivi
-`atlas off` prima di disinstallare, oppure cancella quel file — e' una riga e non dipende da lui
+**Disinstallarlo non lo azzera.** Gli stati delle manopole stanno in `~/.claude/atlas-state/`,
+un file piccolo per progetto, fuori dal plugin, quindi togliendolo e rimettendolo torna quello che
+avevi impostato prima. Scrivi `atlas off` nel progetto prima di disinstallare, oppure cancella
+quella cartella — non dipende da lei nient'altro. Dentro i tuoi repository non viene scritto nulla
 nient'altro.
 
 ## Compagni consigliati
@@ -100,7 +104,7 @@ pubblici, `atlas-browser` guida una pagina che gli hai indicato. Mandano la tua 
 
 | file | a cosa serve |
 |---|---|
-| `~/.claude/.atlas-state` | le quattro manopole, es. `high:ask:on:off` |
+| `~/.claude/atlas-state/<progetto>.state` | le quattro manopole di un progetto, es. `high:ask:on:off` |
 | `~/.claude/atlas-terms.txt` | i tuoi termini intoccabili, uno per riga. Arriva vuoto |
 | `<progetto>/.atlas.json` | impostazione predefinita per un singolo progetto |
 
@@ -152,8 +156,8 @@ retry_budget
 ## Spegnerlo
 
 `atlas off`, oppure "stop atlas". Il file di stato viene scritto come spento e resta cosi'
-anche dopo un riavvio. Disinstallare il plugin non lo tocca: cancella `~/.claude/.atlas-state`
-a mano se non vuoi lasciare traccia.
+anche dopo un riavvio, per il progetto in cui l'hai scritto. Disinstallare il plugin non lo tocca:
+cancella la cartella `~/.claude/atlas-state/` a mano se non vuoi lasciare traccia.
 
 ## Prove
 

@@ -194,6 +194,8 @@ async function main() {
     process.exit(0);
   }
 
+  // The state belongs to the project the session runs in (see atlas-config.js).
+  cfg.setProject(input.cwd);
   const current = cfg.readState() || { level: 'off', rigour: 'off', check: 'off' };
   const prompt = String(input.prompt || '');
 

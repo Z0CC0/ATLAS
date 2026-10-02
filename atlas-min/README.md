@@ -56,13 +56,17 @@ atlas status   what is on
 atlas off      back to nothing
 ```
 
-**The setting is global and it persists** — across turns, across restarts, in every project, until
-you change it. It is not a per-conversation mode: switch it on once and every new chat starts
-there. `atlas off` persists the same way.
+**The setting is per project and it persists** — across turns and restarts, until you change it.
+It is not a per-conversation mode: switch it on once in a repository and every new chat opened
+there starts that way. Another repository is another setting, off until you say otherwise, so
+`atlas high` set for one piece of work never follows you into the next. `atlas off` persists the
+same way. A project is the folder the session runs in, walked up to the nearest `.git` or
+`.atlas.json`, so a chat opened in a subfolder shares the repository's dials.
 
-**Uninstalling does not reset it.** The dial state lives in `~/.claude/.atlas-state`, outside the
-plugin, so removing and reinstalling brings back whatever was set before. Type `atlas off` before
-uninstalling, or delete that file — it is one line and nothing else depends on it.
+**Uninstalling does not reset it.** The dial states live in `~/.claude/atlas-state/`, one small
+file per project, outside the plugin, so removing and reinstalling brings back whatever was set
+before. Type `atlas off` in a project before uninstalling, or delete that folder — nothing else
+depends on it. Nothing is ever written inside your repositories.
 
 ## Three builds
 
@@ -203,7 +207,7 @@ Everything below follows from the measurements above. None of it is required; ea
 
 **Put project names in `atlas-terms.txt`.** One per line: never compressed, never translated, never abbreviated.
 
-**Pin a project's dials in `.atlas.json`** when the same repository always wants the same setup, and leave the global state for everything else.
+**Pin a project's dials in `.atlas.json`** when the same repository always wants the same setup, and leave the per-project state for everything else.
 
 **Connect Context7 if you ask about libraries.** One call for the right version's docs, where a search takes four; `check` and `atlas-research` use it first when it is there.
 
@@ -226,7 +230,7 @@ Everything below follows from the measurements above. None of it is required; ea
 - **`check` adds tokens by design.** Verifying means looking things up. It is the one dial that costs more than it saves in tokens; it is paid for by the compression running underneath it.
 - **`ask` cannot know what you have not said.** It reduces wrong assumptions; it does not remove them.
 - **English commands, English hook phrases.** Requests in any language are recognised by the model, but the phrases the hook matches by itself ("stop atlas", "normal mode") are English. `atlas off` is a name and works everywhere.
-- **The state is global.** One setting for every project and every chat, stored outside the plugin, so uninstalling does not reset it.
+- **The state is per project, keyed by the folder a session runs in** (walked up to the nearest `.git` or `.atlas.json`). Two checkouts of the same repository are two settings; a folder with no `.git` is its own project. It was one global setting until 0.1.4, and that setting followed you into every project. Stored outside the plugin, so uninstalling does not reset it.
 - **`atlas-browser` needs the desktop app's Browser pane.** From the plain CLI it has nothing to drive and says so.
 - **The compression figure is 2 rounds on 48 questions with fixed fact sheets, one model (`claude-opus-5-5`, 2026-09-26).** It measures form with the information held constant; answers that have to find their own facts vary more, and another model compresses by another amount: Sonnet 5 gave larger savings under every plugin.
 - **It shortens output only.** Your input, your files and what tools return are not touched: a hook cannot rewrite a tool's result.
@@ -263,7 +267,7 @@ them: `atlas-research` searches and opens pages, `atlas-catalog` fetches the pub
 
 | file | purpose |
 |---|---|
-| `~/.claude/.atlas-state` | the four dials, e.g. `high:ask:on:off` |
+| `~/.claude/atlas-state/<project>.state` | the four dials of one project, e.g. `high:ask:on:off` |
 | `~/.claude/atlas-terms.txt` | your untouchable terms, one per line. Ships empty |
 | `<project>/.atlas.json` | optional per-project default |
 
@@ -281,8 +285,8 @@ retry_budget
 ## Turning it off
 
 `atlas off`, or "stop atlas". The state file is written as off and stays that way across
-restarts. Removing the plugin does not touch it: delete `~/.claude/.atlas-state` by hand if you
-want no trace left.
+restarts, for the project you typed it in. Removing the plugin does not touch it: delete the
+`~/.claude/atlas-state/` folder by hand if you want no trace left.
 
 ## Tests
 

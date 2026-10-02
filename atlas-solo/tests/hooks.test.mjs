@@ -5,7 +5,7 @@
 
 import { createRequire } from 'node:module';
 import { execFileSync } from 'node:child_process';
-import { mkdtempSync, writeFileSync, readFileSync, readdirSync, existsSync, rmSync } from 'node:fs';
+import { mkdtempSync, mkdirSync, writeFileSync, readFileSync, readdirSync, existsSync, rmSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { tmpdir } from 'node:os';
 import { fileURLToPath } from 'node:url';
@@ -51,6 +51,44 @@ check('oversized flag is refused (exfiltration guard)', cfg.readState() === null
 
 cfg.clearState();
 check('clearState removes the file', !existsSync(cfg.flagPath()));
+
+// --- one state per project ----------------------------------------------------
+
+{
+  const a = mkdtempSync(join(tmpdir(), 'atlas-proj-a-'));
+  const b = mkdtempSync(join(tmpdir(), 'atlas-proj-b-'));
+  cfg.setProject(a);
+  cfg.writeState({ level: 'high', rigour: 'off', check: 'on', silent: 'off' });
+  cfg.setProject(b);
+  check('a second project starts with no state of its own', cfg.readState() === null);
+  cfg.writeState({ level: 'low', rigour: 'ask', check: 'off', silent: 'off' });
+  cfg.setProject(a);
+  eq('each project keeps its own dials', cfg.readState(), { level: 'high', rigour: 'off', check: 'on', silent: 'off' });
+  check('state files live under the config dir, never inside the project',
+    cfg.flagPath().startsWith(cfg.stateDir()) && !existsSync(join(a, '.atlas-state')) && readdirSync(a).length === 0);
+  mkdirSync(join(b, '.git'));
+  mkdirSync(join(b, 'sub', 'deeper'), { recursive: true });
+  cfg.setProject(join(b, 'sub', 'deeper'));
+  eq('a subfolder of a repository shares the repository state', cfg.readState(), { level: 'low', rigour: 'ask', check: 'off', silent: 'off' });
+  writeFileSync(cfg.legacyFlagPath(), 'high:ask:on:on');
+  const c = mkdtempSync(join(tmpdir(), 'atlas-proj-c-'));
+  cfg.setProject(c);
+  check('the single file of 0.1.4 and earlier is not read as any project\'s state', cfg.readState() === null);
+  check('and its presence means this is not a first run', !cfg.isFirstRun());
+  rmSync(cfg.legacyFlagPath(), { force: true });
+  cfg.setProject(null);
+  for (const d of [a, b, c]) rmSync(d, { recursive: true, force: true });
+}
+
+{
+  const fresh = mkdtempSync(join(tmpdir(), 'atlas-fresh-'));
+  const run = (cwd) => execFileSync(process.execPath, [join(ROOT, 'hooks', 'atlas-activate.js'), '--part', '1'], {
+    encoding: 'utf8', input: JSON.stringify({ cwd }), env: { ...process.env, CLAUDE_CONFIG_DIR: fresh },
+  });
+  check('the first session after installing gets the notice, once', run(fresh).includes('doing nothing yet'));
+  check('the next session, any project, gets nothing: off, silently', run(fresh) === '' && run(tmpdir()) === '');
+  rmSync(fresh, { recursive: true, force: true });
+}
 
 // --- command parsing --------------------------------------------------------
 

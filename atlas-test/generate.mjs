@@ -34,9 +34,25 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync, unlinkSync } from '
 import { join, dirname, basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
+import { createRequire } from 'node:module';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const ATLAS_STATE = join(homedir(), '.claude', '.atlas-state');
+// Since 0.1.5 the plugin keeps one state file per project under ~/.claude/atlas-state/,
+// named by the plugin's own module so the bench and the hooks cannot disagree on the
+// path. An older install still has the single file.
+const ATLAS_STATE = (() => {
+  const installed = process.env.ATLAS_INSTALLED
+    || join(homedir(), '.claude', 'plugins', 'marketplaces', 'local-desktop-app-uploads', 'atlas', 'skills', 'atlas', 'SKILL.md');
+  try {
+    const cfg = createRequire(import.meta.url)(join(dirname(dirname(dirname(installed))), 'hooks', 'atlas-config.js'));
+    if (cfg.setProject) {
+      cfg.setProject(process.cwd());
+      mkdirSync(dirname(cfg.flagPath()), { recursive: true });
+      return cfg.flagPath();
+    }
+  } catch (e) { /* plugin older than 0.1.5 */ }
+  return join(homedir(), '.claude', '.atlas-state');
+})();
 const CAVEMAN_STATE = join(homedir(), '.claude', '.caveman-active');
 const SAVED = join(HERE, '.user-state.json');
 

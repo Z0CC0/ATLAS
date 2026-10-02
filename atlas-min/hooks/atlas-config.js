@@ -43,8 +43,71 @@ function claudeDir() {
   return process.env.CLAUDE_CONFIG_DIR || path.join(os.homedir(), '.claude');
 }
 
+// ---------------------------------------------------------------------------
+// One state per project, not one for the machine.
+//
+// Until 0.1.4 the dials lived in a single file and `atlas high` set in one
+// repository followed the user into every other one, which is the opposite of
+// what a per-project tool should do. The state now lives under
+// ~/.claude/atlas-state/, one file per project, named after the project's root
+// the way Claude Code names its own project folders. Nothing is written inside
+// the project itself, so no repository ever picks up a stray file.
+//
+// The project is the directory the session runs in, walked up to the nearest
+// `.git` or `.atlas.json`, so a session opened in a subfolder shares the state
+// of its repository. Hooks learn the directory from the `cwd` field Claude Code
+// sends them; everything else (tests, tools) falls back to process.cwd().
+//
+// The old single file is left where it is and no longer read. Reading it as a
+// default would carry the old setting into every project on the day of the
+// upgrade, which is the behaviour this change removes.
+// ---------------------------------------------------------------------------
+
+let PROJECT = null;
+
+function setProject(cwd) {
+  PROJECT = cwd ? String(cwd) : null;
+}
+
+function projectRoot(start) {
+  let here;
+  try { here = path.resolve(start || PROJECT || process.cwd()); } catch (e) { return process.cwd(); }
+  let dir = here;
+  for (let i = 0; i < 64; i++) {
+    if (fs.existsSync(path.join(dir, '.git')) || isPlainFile(path.join(dir, '.atlas.json'))) return dir;
+    const up = path.dirname(dir);
+    if (up === dir) break;
+    dir = up;
+  }
+  return here;
+}
+
+function projectSlug(root) {
+  return String(root).replace(/[^A-Za-z0-9]/g, '-');
+}
+
+function stateDir() {
+  return path.join(claudeDir(), 'atlas-state');
+}
+
 function flagPath() {
+  return path.join(stateDir(), projectSlug(projectRoot()) + '.state');
+}
+
+// Where the single file lived before 0.1.5. Only consulted to decide whether
+// this is the first session after installing.
+function legacyFlagPath() {
   return path.join(claudeDir(), '.atlas-state');
+}
+
+// True on the first session after installing: no per-project state anywhere
+// and no file from the old layout. Creating the directory is what ends it.
+function isFirstRun() {
+  return !fs.existsSync(stateDir()) && !fs.existsSync(legacyFlagPath());
+}
+
+function markInstalled() {
+  try { fs.mkdirSync(stateDir(), { recursive: true }); } catch (e) { /* nothing to do */ }
 }
 
 function termsPath() {
@@ -181,7 +244,7 @@ function defaultState() {
   const env = parseState(process.env.ATLAS_MODE || '');
   if (env) return env;
 
-  const fromProject = readConfigFile(findProjectConfig(process.cwd()));
+  const fromProject = readConfigFile(findProjectConfig(PROJECT || process.cwd()));
   if (fromProject) return fromProject;
 
   const fromUser = readConfigFile(path.join(claudeDir(), 'atlas.json'));
@@ -244,7 +307,14 @@ module.exports = {
   SILENTS,
   DEFAULT_STATE,
   claudeDir,
+  setProject,
+  projectRoot,
+  projectSlug,
+  stateDir,
   flagPath,
+  legacyFlagPath,
+  isFirstRun,
+  markInstalled,
   termsPath,
   parseState,
   formatState,

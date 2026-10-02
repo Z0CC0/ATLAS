@@ -21,11 +21,13 @@ nothing surprising to say, leave it empty rather than filling it.
 Four dials, eight commands, seven subagents.
 
 **It ships off.** A fresh install changes nothing until you type `atlas low` or `atlas high`.
-After that the setting persists — across turns, across restarts, in every project — until you
-change it or type `atlas off`, which persists too. It is one global setting, not a per-chat one.
+After that the setting persists — across turns and restarts — until you change it or type
+`atlas off`, which persists too. It is one setting per project (the folder the session runs in,
+walked up to the nearest `.git` or `.atlas.json`), not a per-chat one and not a global one: a
+repository never switched on stays off whatever another one is set to.
 
-**Uninstalling does not reset it**: the state lives in `~/.claude/.atlas-state`, outside the plugin.
-`atlas off` before uninstalling, or delete that file.
+**Uninstalling does not reset it**: the states live in `~/.claude/atlas-state/`, one file per
+project, outside the plugin. `atlas off` in the project before uninstalling, or delete that folder.
 
 ## Dials
 
@@ -110,7 +112,7 @@ more than twice the entire fixed cost. It scales with turns; everything above sc
 
 | what | where |
 |---|---|
-| state | `~/.claude/.atlas-state`, one line, `level:rigour:check:silent` |
+| state | `~/.claude/atlas-state/<project>.state`, one line, `level:rigour:check:silent` |
 | untouchable terms, one per line | `~/.claude/atlas-terms.txt`, ships empty |
 | per-project default | `.atlas.json`, `{ "level": "low", "rigour": "ask", "check": "off", "silent": "off" }` |
 

@@ -149,27 +149,43 @@ function partArg(argv) {
   return n >= 1 ? n : null;
 }
 
+// Claude Code hands every hook a JSON object on stdin; `cwd` is the directory the
+// session runs in, which is what decides whose state this is. Read without
+// waiting: a hook started by hand, with no stdin, must not hang.
+function readInput() {
+  try {
+    if (process.stdin.isTTY) return {};
+    return JSON.parse(fs.readFileSync(0, 'utf8') || '{}');
+  } catch (e) {
+    return {};
+  }
+}
+
 function main() {
   const part = partArg(process.argv);
-  const state = cfg.readState();
+  const input = readInput();
+  cfg.setProject(input.cwd);
 
-  // No state file means OFF, not "on at the default".
+  // The first session after installing says that ATLAS is here and off, once.
+  // Creating the state directory is what marks it as said; the three parts run
+  // in order, so only the first one finds the directory missing.
+  if (cfg.isFirstRun()) {
+    cfg.markInstalled();
+    if (!part || part === 1) process.stdout.write(FIRST_RUN);
+    return;
+  }
+
+  // No state file for this project means OFF, not "on at the default".
   //
   // It used to mean the default, and that was wrong in both directions. A fresh
   // install started rewriting every answer before anyone asked it to — the one
   // thing a plugin that changes how you are spoken to must not do. And `atlas
   // off` cleared the file, so switching it off lasted exactly until the next
   // restart, when the absent file was read as the default again and it came
-  // back on by itself.
-  if (!state) {
-    cfg.writeState({ level: 'off', rigour: 'off', check: 'off', silent: 'off' });
-    // Parts two and three run after part one has written the state file and so
-    // never get here; guarded anyway, so a reordering cannot print the notice twice.
-    if (!part || part === 1) process.stdout.write(FIRST_RUN);
-    return;
-  }
-
-  if (cfg.isAllOff(state)) {
+  // back on by itself. Since 0.1.5 the file is per project, so a repository
+  // never opened with ATLAS on starts silent, whatever another one is set to.
+  const state = cfg.readState();
+  if (!state || cfg.isAllOff(state)) {
     process.stdout.write('');
     return;
   }
