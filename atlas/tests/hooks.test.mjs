@@ -370,7 +370,9 @@ for (const lv of ['low', 'high']) {
 
 const HANDLES = { 'atlas-search': 'atlas-research' };
 for (const [command, agent] of Object.entries(HANDLES)) {
-  const cmd = existsSync(join(ROOT, 'commands', `${command}.md`));
+  // The handle is the skill itself since 0.1.6: a command file of the same name would
+  // hide the skill's body.
+  const cmd = existsSync(join(ROOT, 'skills', command, 'SKILL.md'));
   const ag = existsSync(join(ROOT, 'agents', `${agent}.md`));
   check(`${command} exists only where ${agent} does`, !cmd || ag);
 }
@@ -468,6 +470,8 @@ check(
 // unit tests had looked. Now every frontmatter of every skill, agent and command
 // is checked for `<word>`.
 for (const dir of ['skills', 'agents', 'commands']) {
+  // A build may ship without one of these: `atlas-code` has no `commands` folder.
+  if (!existsSync(join(ROOT, dir))) continue;
   const files = dir === 'skills'
     ? readdirSync(join(ROOT, dir)).map((d) => join(ROOT, dir, d, 'SKILL.md')).filter(existsSync)
     : readdirSync(join(ROOT, dir)).map((f) => join(ROOT, dir, f));

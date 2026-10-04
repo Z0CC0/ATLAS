@@ -18,7 +18,7 @@ nothing surprising to say, leave it empty rather than filling it.
 
 # ATLAS
 
-Four dials, eight commands, seven subagents.
+Four dials, nine commands, seven subagents.
 
 **It ships off.** A fresh install changes nothing until you type `atlas low` or `atlas high`.
 After that the setting persists — across turns and restarts — until you change it or type
@@ -34,7 +34,7 @@ project, outside the plugin. `atlas off` in the project before uninstalling, or 
 | dial | what it does | vs no plugin | worth knowing |
 |---|---|---|---|
 | `atlas low` | drops filler, pleasantries, hedging, articles, the copula. Fragments allowed. No tables | **-11% ... -29%** | the default |
-| `atlas high` | half the words: facts stay, explanations go. Prepositions and connectives cut too | **-18% ... -35%** | 9 points more than `low` in English, 7 in Italian. It reads more telegraphically; pick it when the answer is read once and acted on |
+| `atlas high` | half the words: facts stay, explanations go. Prepositions and connectives cut too | **-17% ... -35%** | 9 points more than `low` in English, 7 in Italian. It reads more telegraphically; pick it when the answer is read once and acted on |
 | `atlas ask` | asks before starting, until it knows what you actually want. One question at a time, options named where they can be named | +3 to +2 points | not a quiz: it is there so the work matches what you had in mind, not what the request happened to say. Applies to every request, not only the first |
 | `atlas check` | works against invented facts: nothing from memory, its own work verified before it is called done, a second option looked for before recommending the first, a correction checked before it is accepted | +3 to +9 points, plus the lookups | the only dial that adds. Every setup with it on still lands under no plugin on a long session |
 | `atlas silent` | hands over the work and stops: no preamble, no narration between steps, no summary at the end, no offer of what to do next. Questions only before starting; a failure is still reported, in one line | a few points less | the only dial that removes a whole turn's worth of text rather than words inside it. `/atlas-silent` does the same for one task; the dial holds until turned off |
@@ -52,15 +52,17 @@ and irreversible-action confirmations are written in plain prose.
 
 ## Commands
 
-Typed. Only the description is always loaded; the body costs nothing on sessions where you never
-call it.
+Typed, by name: `atlas review`, or `/atlas:atlas-review`. Only the description is always loaded;
+the body costs nothing on sessions where you never call it. Asked in plain words without the
+name, the work is usually done without the command's rules.
 
 | command | what it does | body | worth knowing |
 |---|---|---|---|
 | `atlas <dial>` | sets the dials | 40 | `/atlas:atlas high` or `atlas high` alone as the whole message. The plain form works before the command menu has loaded |
 | `atlas-help` | this card | 2.2k | |
 | `atlas-search` | answers only from a live web search | 303 | **`atlas` build only.** It is the handle on the `atlas-research` subagent, so the pages it reads never land in your session. Add "give me sources" to the request, in any language, and it hands back where to read instead of the answer: videos, discussions, articles, grouped, one line each |
-| `atlas-review` | what is wrong with the current diff, one problem per line: where, what breaks, the fix | 223 | four tiers, `breaks` first. `nothing found` is the whole answer when there is nothing |
+| `atlas-review` | what is wrong with a diff, a branch, a file or a pull request, one problem per line: where, what breaks, the fix | 1.0k | four tiers, `breaks` first. `nothing found` is the whole answer when there is nothing. Behind it, 22 short checklists, read only as the diff calls for them: one per language, plus security, tests, types, errors, a pull request. "second opinion" runs a second reviewer that has not seen the first |
+| `atlas-fix` | a failing build, type check or linter back to green: one error, one smallest change, run again | 549 | stops and says why instead of silencing an error: same error twice, more errors than before, a change of design. Ends with `PASS`, `STOPPED` or `DID NOT RUN` and four counts. One file per toolchain behind it, 10 in all |
 | `atlas-commit` | commit message for what is staged | 109 | written in normal prose whatever the level: it leaves the conversation |
 | `atlas-recap` | handover file for the conversation: decided, done, not done, tried and rejected | 855 | for starting a fresh chat without losing where you were |
 | `atlas-organize` | tidies a local folder: selects files by content or criterion, copies, moves, groups, sets aside | 2.0k | four levels, from a plan that touches nothing upward. Nothing is ever deleted and every run has an undo |
@@ -87,8 +89,8 @@ nothing.
 
 | build | contains | fixed cost at `low` |
 |---|---|---|
-| `atlas` | everything on this card | 3,249 |
-| `atlas-solo` | same rules, no subagents, and seven commands rather than eight | 2,238 |
+| `atlas` | everything on this card | 3,370 |
+| `atlas-solo` | same rules, no subagents, and eight commands rather than nine | 2,331 |
 | `atlas-min` | compression only: one command, no `ask`, no `check`, no provenance marker | 1,235 |
 
 `atlas` and `atlas-solo` have byte-identical rules, verified with `diff`: they write the same

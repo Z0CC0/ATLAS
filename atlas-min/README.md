@@ -20,7 +20,7 @@ All four persist across turns, restarts and projects until changed, and move ind
 
 **Seven subagents** do the expensive reading somewhere else and hand back only the answer: `atlas-finder` (where is X), `atlas-editor` (a bounded edit), `atlas-diff` (what is wrong with this diff), `atlas-runner` (run the tests, return the verdict), `atlas-browser` (does the page work, without a screenshot in your context), `atlas-research` (an answer with sources, or a reading list), `atlas-catalog` (is there a free API for this).
 
-**Eight commands**: the dials, the reference card, `atlas-search` (an answer from a live search, or with "give me sources" a reading list), `atlas-review` and `atlas-commit`, `atlas-recap` (a handover file so a new chat can continue where this one stopped), `atlas-organize` (tidies a folder with a plan first and an undo after; nothing is ever deleted), `atlas-silent`.
+**Nine commands**: the dials, the reference card, `atlas-search` (an answer from a live search, or with "give me sources" a reading list), `atlas-review` (what is wrong with a diff, with a checklist for the languages in it), `atlas-fix` (a failing build, type check or linter back to green, one error at a time), `atlas-commit`, `atlas-recap` (a handover file so a new chat can continue where this one stopped), `atlas-organize` (tidies a folder with a plan first and an undo after; nothing is ever deleted), `atlas-silent`.
 
 ## Commands
 
@@ -30,7 +30,8 @@ All four persist across turns, restarts and projects until changed, and move ind
 | `/atlas:atlas-help` | the reference card |
 | `/atlas:atlas-recap` | write a handover file for the conversation |
 | `/atlas:atlas-search` | answer only from a web search; with "give me sources", where to read instead |
-| `/atlas:atlas-review` | review the current diff |
+| `/atlas:atlas-review` | review a diff, a branch, a file or a pull request, with a checklist for the languages in it |
+| `/atlas:atlas-fix` | get a failing build, type check or linter back to green |
 | `/atlas:atlas-commit` | commit message for the staged changes |
 | `/atlas:atlas-organize` | tidy a local folder, with an undo |
 | `/atlas:atlas-silent` | do it and hand over the result, nothing else |
@@ -72,11 +73,13 @@ depends on it. Nothing is ever written inside your repositories.
 
 | build | what is in it | fixed cost per session at `low` |
 |---|---|---|
-| `atlas` | everything | 3,249 tokens |
-| `atlas-solo` | same rules, no subagents | 2,238 tokens |
+| `atlas` | everything | 3,370 tokens |
+| `atlas-solo` | same rules, no subagents | 2,331 tokens |
 | `atlas-min` | compression only: two levels, one command | 1,235 tokens |
 
 `atlas` and `atlas-solo` carry byte-identical rules. The difference is whether the subagents exist, and whether their work stays out of your context.
+
+A fourth build, `atlas-code`, is `atlas` plus a coding section: tests, verification, planning, shipping and more, fourteen further commands and an optional guard hook. It loads about twice the descriptions, and most of it has not been run on real projects yet. Its own README says what it adds, what it costs and what was tried.
 
 ## Measured
 
@@ -123,12 +126,12 @@ Run-to-run noise with no plugin and the rules frozen: 0.4 points in English, 0.6
 | setup | 40 turns | 295 turns |
 |---|---|---|
 | `low` | -11% | -29% |
-| `high` | -18% | -35% |
-| `low` + `ask` | -8% | -26% |
-| `low` + `check` | -3% | -25% |
-| `low` + `ask` + `check` | 0% | -24% |
+| `high` | -17% | -35% |
+| `low` + `ask` | -7% | -26% |
+| `low` + `check` | -2% | -25% |
+| `low` + `ask` + `check` | +1% | -24% |
 | `high` + `ask` | -13% | -33% |
-| `high` + `check` | -9% | -33% |
+| `high` + `check` | -8% | -32% |
 | `high` + `ask` + `check` | -3% | -29% |
 
 `atlas-solo`
@@ -136,12 +139,12 @@ Run-to-run noise with no plugin and the rules frozen: 0.4 points in English, 0.6
 | setup | 40 turns | 295 turns |
 |---|---|---|
 | `low` | -16% | -29% |
-| `high` | -23% | -36% |
-| `low` + `ask` | -13% | -27% |
-| `low` + `check` | -8% | -26% |
-| `low` + `ask` + `check` | -5% | -25% |
-| `high` + `ask` | -19% | -34% |
-| `high` + `check` | -14% | -33% |
+| `high` | -22% | -36% |
+| `low` + `ask` | -12% | -27% |
+| `low` + `check` | -7% | -26% |
+| `low` + `ask` + `check` | -4% | -25% |
+| `high` + `ask` | -18% | -34% |
+| `high` + `check` | -13% | -33% |
 | `high` + `ask` + `check` | -8% | -30% |
 
 `atlas-min`
@@ -151,21 +154,21 @@ Run-to-run noise with no plugin and the rules frozen: 0.4 points in English, 0.6
 | `low` | -25% | -33% |
 | `high` | -29% | -38% |
 
-**Fixed cost per session**, `atlas` build: 1,409 tokens of rules at `low`, 1,531 at `high`, plus 1,840 of skill, command and subagent descriptions that are loaded whether or not they are used. The per-turn reminder is 27–32 tokens; over a long session it is the largest number of all.
+**Fixed cost per session**, `atlas` build: 1,409 tokens of rules at `low`, 1,531 at `high`, plus 1,961 of skill, command and subagent descriptions that are loaded whether or not they are used. The per-turn reminder is 27–32 tokens; over a long session it is the largest number of all.
 
 | | tokens per session |
 |---|---|
 | rules injected at `low` (default) | 1,409 |
 | rules injected at `high` | 1,531 |
-| skill, command and subagent descriptions, always present | 1,840 |
+| skill, command and subagent descriptions, always present | 1,961 |
 | per-turn reminder | 27-32 |
-| **total at the default** | **3,249** |
+| **total at the default** | **3,370** |
 
 Those are tiktoken counts. **What the API actually bills** was measured on the bench too: the input of a one-turn call with each setup on, minus the same call with no plugin, median over the 48 questions. The rules and the reminder at `low` come to 2,207 tokens billed against 1,436 counted, a ratio of 1.54; the session tables above use the billed figure for the injected text and tiktoken for the descriptions, which the bench cannot separate from the rest of the prompt.
 
 The `atlas-min` build cuts the descriptions to 153 and the rules to 1,082 by shipping only
-the compression sections. `atlas-solo` keeps every rule and drops the seven subagents: 829 in
-descriptions instead of 1,840. It also drops `atlas-search`, which is a handle on a
+the compression sections. `atlas-solo` keeps every rule and drops the seven subagents: 922 in
+descriptions instead of 1,961. It also drops `atlas-search`, which is a handle on a
 subagent it does not carry — the search discipline itself lives in the `check` dial, where it
 covers every answer rather than one command.
 
@@ -199,7 +202,7 @@ Everything below follows from the measurements above. None of it is required; ea
 
 **Write the request with the constraint in it.** "In under 50 lines", "only the failing test", "one option, not a comparison": the model follows a stated bound better than any rule about brevity, and the bound costs you a few words.
 
-**Every plugin you install costs its descriptions in every chat, on or off.** Count them once: this one is 1,840 tokens on the full build, 829 without the subagents, caveman 2.7.0 1,281, a large toolkit can be 30,000. Remove what you have not used in a month.
+**Every plugin you install costs its descriptions in every chat, on or off.** Count them once: this one is 1,961 tokens on the full build, 922 without the subagents, caveman 2.7.0 1,281, a large toolkit can be 30,000. Remove what you have not used in a month.
 
 **`atlas-min` when tokens are the only thing you want.** Same compression rules, one command, no subagents, 153 tokens of descriptions: measured against caveman 2.7.0 on the same day, at `high` it compresses 19 points more per answer than caveman `ultra`, and over 295 turns its best setup is 26 points cheaper than caveman.
 
@@ -225,7 +228,7 @@ Everything below follows from the measurements above. None of it is required; ea
 
 - **It is a style constraint on a language model, not a filter.** The model follows it most of the time, not all of the time. On long sessions it occasionally slips — an article here, a list marker there — and the per-turn reminder exists because of that, not instead of it.
 - **`low` and `high` are 9 and 7 points apart.** Measured: `low` 37% and `high` 46% less output in English, 37% and 43% in Italian. `high` is the harder rule set and reads more telegraphically: the saving is real, and so is the cost in readability.
-- **Short sessions pay less.** The fixed cost is paid before the first answer, so on the `atlas` build a 40-turn session saves 0–18% where a 295-turn one saves 24–35%. A session of a handful of turns with short answers may not pay at all.
+- **Short sessions pay less.** The fixed cost is paid before the first answer, so on the `atlas` build a 40-turn session saves 0–17% where a 295-turn one saves 24–35%. A session of a handful of turns with short answers may not pay at all.
 - **The per-turn reminder scales with turns.** Over 295 turns it costs more than the whole session-start injection. It is as short as it can be while still naming rules.
 - **`check` adds tokens by design.** Verifying means looking things up. It is the one dial that costs more than it saves in tokens; it is paid for by the compression running underneath it.
 - **`ask` cannot know what you have not said.** It reduces wrong assumptions; it does not remove them.
