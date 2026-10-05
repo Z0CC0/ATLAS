@@ -88,8 +88,8 @@ depends on it. Nothing is ever written inside your repositories.
 
 | build | what is in it | fixed cost per session at `low` |
 |---|---|---|
-| `atlas` | everything | 3,249 tokens |
-| `atlas-solo` | same rules, no subagents | 2,238 tokens |
+| `atlas` | everything | 3,370 tokens |
+| `atlas-solo` | same rules, no subagents | 2,331 tokens |
 | `atlas-min` | compression only: two levels, one command | 1,235 tokens |
 
 `atlas` and `atlas-solo` carry byte-identical rules. The difference is whether the subagents exist, and whether their work stays out of your context.

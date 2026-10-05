@@ -83,7 +83,7 @@ nothing.
 | `atlas-runner` | runs tests, build or linter, returns only the deciding lines | never repairs anything, never works around a failure |
 | `atlas-browser` | drives a page, reports in words | one screenshot costs about 9,800 tokens; this pays for itself immediately |
 | `atlas-research` | searches the web: the answer with its sources, or a reading list grouped by kind | says "I did not find it" rather than "it does not exist", and never forces a weak link to fill a group |
-| `atlas-catalog` | searches the public catalogues: free APIs, free-tier services, MCP servers, Claude Code skills | those lists are 550,000 tokens; it reads them live and hands back three candidates |
+| `atlas-catalog` | searches the public catalogues: free APIs, free-tier services, MCP servers, and Claude Code skills through the skills.sh index. Finds, never installs | those lists are 550,000 tokens; it reads them live and hands back three candidates |
 
 ## Builds
 
