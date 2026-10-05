@@ -1,6 +1,6 @@
 # atlas-code
 
-Everything in `atlas`, plus a coding section: fifteen more skills and an optional guard
+Everything in `atlas`, plus a coding section: sixteen more skills and an optional guard
 hook. This page covers what the build adds. Everything below the line
 is the README of `atlas` itself, and its measurements are about `atlas`, not about this
 build.
@@ -23,6 +23,7 @@ build.
 | `atlas build-ai` | code that calls a model: prompts, agent tools, evals, retrieval, cost, MCP servers, scheduled collectors |
 | `atlas media` | animated explainers, video written in React, HTML slides, recorded demos, with tools that run locally |
 | `atlas context` | what every session loads, when to compact, one answer at a chosen depth, a side question mid-task |
+| `atlas secure` | audits a whole project you own: dangerous code, vulnerable dependencies, secrets in files and git history, and what a local service exposes without login. Finds, never changes |
 
 One more skill is not typed: `atlas-stack`, eighteen short files on how code is written in
 a given language or framework. `atlas plan` reads the one for your project before writing
@@ -57,25 +58,25 @@ The hook runs on every shell command and file edit, whether or not a switch is o
 
 | | `atlas` | `atlas-code` |
 |---|---|---|
-| descriptions, loaded in every session | 1,973 | 4,069 |
+| descriptions, loaded in every session | 1,973 | 4,222 |
 | rules injected at `low` | 1,409 | 1,409 |
-| fixed cost at `low` | 3,382 | 5,478 |
-| first turn as billed, at `low` | 4,180 | 6,276 |
-| a 40-turn session at `low`, against no plugin | -10.5% | -0.1% |
-| a 295-turn session at `low` | -28.5% | -27.1% |
-| a 40-turn session at `high` | -17.0% | -6.5% |
-| a 295-turn session at `high` | -35.4% | -33.9% |
+| fixed cost at `low` | 3,382 | 5,631 |
+| first turn as billed, at `low` | 4,180 | 6,429 |
+| a 40-turn session at `low`, against no plugin | -10.5% | +0.7% |
+| a 295-turn session at `low` | -28.5% | -27.0% |
+| a 40-turn session at `high` | -17.0% | -5.8% |
+| a 295-turn session at `high` | -35.4% | -33.8% |
 
 The first three rows are tiktoken counts (`o200k_base`), made the same way as for the other
-builds. The 105 files behind these skills are about 81,000 tokens in all and are read a few
+builds. The 110 files behind these skills are about 86,000 tokens in all and are read a few
 at a time.
 
 **The session rows are a model, not a separate measurement.** The bench measured what the
 rules add to the first turn and how much each level shortens an answer; those are the same
 in this build, because the rules are the same. The rows above put this build's descriptions
 into the same formula the README below uses for the others (500-token answers). This build
-loads 2,096 more tokens of descriptions in every session: on a short session at `low` that
-is the whole saving. It pays for itself on long sessions, or when the coding commands are
+loads 2,249 more tokens of descriptions in every session: on a short session at `low` that
+turns the small saving into a small cost. It pays for itself on long sessions, or when the coding commands are
 actually used.
 
 `atlas review` and `atlas fix` ship in every build except `atlas-min`, so they are
@@ -109,8 +110,8 @@ Two things the trials showed that you should know:
 **Not run at all:** `atlas test`, `atlas plan` by name, `atlas refactor`, `atlas ship`,
 `atlas track` (no Jira or Linear account was available), `atlas publish`, `atlas ui`,
 `atlas build-ai`, `atlas media` (Manim, Remotion and Blender were not installed),
-`atlas multi` as a skill, `atlas context`, the Gemini command line, and every language file
-except Python. Treat those as written and reviewed, not as tested.
+`atlas multi` as a skill, `atlas context`, `atlas secure`, the Gemini command line, and
+every language file except Python. Treat those as written and reviewed, not as tested.
 
 ## Where it comes from
 
@@ -122,7 +123,7 @@ publishing a private project), are that project's. The text is ours: each file w
 written from scratch in the form the rest of ATLAS uses, and checked for runs of eight
 words shared with the original; what the check still finds are compiler error messages,
 two shell commands and a list of file extensions, which have one spelling. Of its 293 skills, 146 were merged into the seventeen
-coding skills (fifteen here, two in every build), 142 were left out, and 5 are kept aside for later work.
+coding skills (fifteen here, two in every build); one more, `atlas-secure`, was written fresh for this build. 142 of ECC's skills were left out, and 5 are kept aside for later work.
 
 ---
 
