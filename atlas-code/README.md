@@ -58,10 +58,10 @@ The hook runs on every shell command and file edit, whether or not a switch is o
 
 | | `atlas` | `atlas-code` |
 |---|---|---|
-| descriptions, loaded in every session | 1,973 | 4,190 |
+| descriptions, loaded in every session | 1,973 | 4,191 |
 | rules injected at `low` | 1,409 | 1,409 |
-| fixed cost at `low` | 3,382 | 5,599 |
-| first turn as billed, at `low` | 4,180 | 6,397 |
+| fixed cost at `low` | 3,382 | 5,600 |
+| first turn as billed, at `low` | 4,180 | 6,398 |
 | a 40-turn session at `low`, against no plugin | -10.5% | +0.5% |
 | a 295-turn session at `low` | -28.5% | -27.0% |
 | a 40-turn session at `high` | -17.0% | -5.9% |
@@ -75,7 +75,7 @@ at a time.
 rules add to the first turn and how much each level shortens an answer; those are the same
 in this build, because the rules are the same. The rows above put this build's descriptions
 into the same formula the README below uses for the others (500-token answers). This build
-loads 2,217 more tokens of descriptions in every session: on a short session at `low` that
+loads 2,218 more tokens of descriptions in every session: on a short session at `low` that
 turns the small saving into a small cost. It pays for itself on long sessions, or when the coding commands are
 actually used.
 

@@ -19,8 +19,8 @@ note at the end of `code.md`.
 
 ## Every finding carries its proof
 
-A security tool that lists possibilities drowns the real thing. A finding is reported only
-when it can be shown to be reachable, and the line says how:
+A security tool that lists possibilities drowns the real thing. A tier above `low` is given
+only when the finding can be shown to be reachable, and the line says how:
 
 ```
 <file>:<line>  <tier>  <what an attacker does, with what input> → <what they get>. <the fix>.
@@ -34,9 +34,8 @@ known id). `medium` — real, but limited to what the attacker already has, or h
 A weakness seen but not shown to be reachable is `unproven`, with what is missing to confirm
 it, not dropped and not dressed up as `critical`.
 
-The proof is concrete: the input, the path from the entry point to the sink, the result.
-Nothing destructive is run to prove a point: a read that demonstrates access is enough, a
-`DROP` or a mass delete never is.
+The proof is concrete and read from the code: the input, the path from the entry point to the
+sink, the result. Nothing is run against the program to prove a point.
 
 ## The report
 
@@ -60,13 +59,16 @@ before exposing further.
 `CANNOT TELL` — a pass could not run (a tool missing, the source not all present) and nothing
 above `medium` was found; names which pass, and what it leaves unknown.
 
+No findings at all, every pass run: `NOTHING FOUND`, never "safe"; the scope line says what
+that rests on.
+
 When holes are found and a pass also could not run, the verdict is `HOLES FOUND` and the scope
 line still names what could not be checked: a confirmed hole is the headline, the gap is not
 hidden under it.
 
 ## What this never does
 
-Changes code: findings go to `atlas-fix` or to the user, each approved. Runs a destructive
-action to prove a finding. Installs a scanner or a tool without a yes; a tool that is missing
+Changes code: findings go to `atlas-fix` or to the user, each approved. Runs the audited
+program, or anything against it, to prove a finding; the tools these passes use only read. Installs a scanner or a tool without a yes; a tool that is missing
 is named in the scope line and its pass is marked `not run`. Quotes a secret's value, in a
 finding or anywhere.

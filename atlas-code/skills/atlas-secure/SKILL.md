@@ -2,8 +2,8 @@
 name: atlas-secure
 description: >
   Audits a whole project you own for security weaknesses, not just the current diff: the
-  dangerous places in the source, dependencies with known vulnerabilities, secrets in the
-  files and in the git history. Reports each finding with where it is, how it is reached, and
+  dangerous places in the source, dependencies with known vulnerabilities, and secrets in
+  the files and in the git history. Reports each finding with where it is, how it is reached, and
   the fix. Only your own code; changes nothing without a yes. Use for
   "atlas secure", "is this safe", "security audit", "check for vulnerabilities",
   "harden this", "any secrets leaked" — in any language.

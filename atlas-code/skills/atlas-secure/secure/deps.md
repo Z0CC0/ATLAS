@@ -36,8 +36,9 @@ An advisory is not yet a finding. For each one that the tool reports:
   code for the package's used surface. Say which it is.
 - **Is it reachable from outside?** A parser vulnerability on data a user can send is
   `critical` or `high`; the same on a build-time dev tool is `low`.
-- **Is there a fixed version, and does it cross a major?** A patch within the same major is a
-  `high` worth taking now; a fix that needs a major upgrade is named with that cost.
+- **Is there a fixed version, and does it cross a major?** It changes the advice, not the
+  tier: a fix within the same major is cheap, take it now; one that needs a major upgrade is
+  named with that cost.
 
 Tiers follow `method.md`, set by reachability, not by the advisory's own label alone.
 
@@ -60,7 +61,7 @@ Findings in the line format of `method.md`, the package and version in place of 
 
 ```
 lodash@4.17.11  high  prototype pollution (CVE-…), reached via the merge in src/config.ts:40 on user-supplied JSON → arbitrary property set. Upgrade to 4.17.21, same major.
-node-tar@4.4.1  medium  path traversal on archive extract; the project only extracts its own release tarballs, not user input. Upgrade when convenient.
+tar@4.4.1  medium  path traversal on archive extract; the project only extracts its own release tarballs, not user input. Upgrade when convenient.
 left-pad@1.0.0  low  unmaintained since 2016, one maintainer; trivial to inline.
 ```
 

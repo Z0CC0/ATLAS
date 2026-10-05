@@ -74,7 +74,7 @@ part:
 
 ```
 src/api/export.ts:34   critical  no auth on GET /api/export; an anonymous request returns every user's records → full data disclosure. Add the session + role check the sibling /api/report has (src/api/report.ts:20).
-src/files.ts:88        high      filename from the query joined to the upload dir without resolving; `?name=../../.env` reads outside it → arbitrary file read. Resolve and check the prefix.
+src/files.ts:88        high      logged-in users only: filename from the query joined to the upload dir without resolving; `?name=../../.env` reads outside it → arbitrary file read. Resolve and check the prefix.
 config/prod.yaml:3     medium    DEBUG: true in the production config → stack traces and config leak to clients. Set false; drive from the environment.
 src/auth.ts:51         low       login has no rate limit → credential stuffing is cheap. Add a per-IP and per-account limit.
 ```

@@ -106,8 +106,8 @@ request that named the command loaded it every time; the same request in plain w
 | `"gate": true` | turns back the first edit of each file once per session, with what to look up first |
 | `"finish": true` | when the answer ends, warns if it said something was skipped, still failing or not run. English phrases only. Never blocks |
 
-**What this build costs.** Descriptions always loaded: 4,190 tokens, against 1,973 for
-`atlas`. Fixed cost at `low`: 5,599. The files behind these commands are about 86,000 tokens
+**What this build costs.** Descriptions always loaded: 4,191 tokens, against 1,973 for
+`atlas`. Fixed cost at `low`: 5,600. The files behind these commands are about 86,000 tokens
 in all, in 109 files, read one or a few at a time. Every session figure elsewhere on this
 card belongs to `atlas`; with the descriptions of this build the same model gives +0.5% at 40
 turns and -27.0% at 295 for `low` (against -10.5% and -28.5%), and -5.9% and -33.9% for

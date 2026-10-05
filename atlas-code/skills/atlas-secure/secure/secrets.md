@@ -6,8 +6,8 @@ which key, in which file, at which commit.
 
 ## The working tree
 
-A scanner when one is installed, output to a file: `gitleaks dir .`, or
-`trufflehog filesystem .`. Then, with or without it, by search, over every tracked text file
+A scanner when one is installed, output to a file: `gitleaks dir .` (older releases:
+`gitleaks detect --no-git`), or `trufflehog filesystem .`. Then, with or without it, by search, over every tracked text file
 (hidden ones included; `.git/`, dependency folders, minified bundles and binaries excluded):
 
 - provider key shapes: `AKIA`/`ASIA` + sixteen; `ghp_`, `gho_`, `ghs_`, `github_pat_`;
@@ -18,8 +18,12 @@ A scanner when one is installed, output to a file: `gitleaks dir .`, or
 - a webhook URL of a chat or automation service
 - an assignment to a name containing `secret`, `token`, `passw`, `apikey`, `auth`,
   `credential` whose value is a literal of eight characters or more and is not a placeholder
-- any thirty-two-plus-character base64 or hex string in a config or environment file: a
-  `note`, for a human to judge
+- any thirty-two-plus-character base64 or hex string in a config or environment file:
+  `unproven`, for a human to judge
+
+Also check that files meant to hold secrets (`.env` and its variants, key files) are covered
+by `.gitignore`: one that is present, untracked and not ignored is a `low`, a `git add .` away
+from being committed.
 
 Where it is read: a secret in source is worse when it also sits in a client bundle or a
 public-prefixed variable (`NEXT_PUBLIC_`, `VITE_`, `REACT_APP_`), in a log line, in an error
@@ -54,7 +58,7 @@ old copy — rotation is what actually closes it.
 A key that is plainly fake in a fixture or an example (`sk-xxxx`, `AKIAEXAMPLE`, `changeme`); a
 public identifier that only looks secret (a publishable client id documented as public); the
 project's own `.env.example` with empty or placeholder values. Each is passed over, and a
-borderline one is listed as `note` with its position for the user to settle, never guessed
+borderline one is listed as `unproven` with its position for the user to settle, never guessed
 either way.
 
 ## Report
@@ -63,5 +67,5 @@ either way.
 config/dev.ts:14         critical  Stripe live secret key, in source and tracked → full API access. Revoke now, move to the environment.
 docs/setup.md:22         high      a real database URL with the password in it. Revoke, rotate, replace with a placeholder.
 history a1b2c3d:.env     critical  .env with the SMTP password was committed in 2024 and removed later; still in the history. Rotate the password; rewriting history is secondary.
-seeds/users.json:3       note      a 40-character token-shaped value. Real, or a fixture?
+seeds/users.json:3       unproven  a 40-character token-shaped value. Real, or a fixture?
 ```
