@@ -13,9 +13,9 @@ vulnerability.
 
 | lock file | command | reads |
 |---|---|---|
-| `package-lock.json`, `pnpm-lock.yaml`, `yarn.lock` | `npm audit --omit=dev` (and once with dev), `pnpm audit`, `yarn npm audit` | the lock |
-| `requirements.txt`, `poetry.lock` | `pip-audit -r <file>` (or `pip-audit` in the environment) | the pins |
-| `uv.lock`, or any manifest the above do not read | `osv-scanner scan source -r .` (older releases: `osv-scanner -r .`) | the lock |
+| `package-lock.json`, `pnpm-lock.yaml`, `yarn.lock` | `npm audit --omit=dev` (and once with dev); `pnpm audit`; `yarn npm audit` on Yarn 2+, `yarn audit` on Yarn 1 | the lock |
+| `requirements.txt` | `pip-audit -r <file>` (or `pip-audit` in the active environment) | the pins |
+| `uv.lock`, `poetry.lock`, or any manifest the above do not read | `osv-scanner scan source -r .` (older releases: `osv-scanner -r .`) | the lock |
 | `Cargo.lock` | `cargo audit` | the lock |
 | `go.sum` | `govulncheck ./...` | the modules actually reached |
 | `composer.lock` | `composer audit` | the lock |

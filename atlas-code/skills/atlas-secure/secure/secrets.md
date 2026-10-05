@@ -31,10 +31,11 @@ The commit that removed a secret did not remove it from the history. Scan the wh
 not the tree alone:
 
 - `gitleaks git .` when it is installed (it walks every commit), to a file.
-- else `git log -p -G'<pattern>'` for each shape above (`-G` takes a regular expression; `-S`
-  takes a literal string and would miss them), or `git log -p` piped through the same
-  patterns, over the full history. On a large repository, limit the first pass to the
-  files that currently or ever held configuration.
+- else `git log --all -p -G'<pattern>'` for each shape above (`--all` covers every branch and
+  tag, not just the current one; `-G` takes a regular expression, where `-S` takes a literal
+  string and would miss them), or `git log --all -p` piped through the same patterns, over the
+  full history. On a large repository, limit the first pass to the files that currently or
+  ever held configuration.
 
 Author names and emails in the history are listed once each in the scope, so the user knows
 what is public about who committed; they are not a finding on their own.

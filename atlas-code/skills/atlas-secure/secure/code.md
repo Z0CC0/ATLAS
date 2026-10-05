@@ -50,6 +50,15 @@ These are where a whole-tree audit finds what a per-diff review cannot:
   native deserialisers on external bytes; user input in a path handed to the filesystem; SSRF
   where the server fetches a URL the user gave.
 
+## Run a static analyser when there is one
+
+A static-analysis tool with security rules catches what a read misses, and gives a line to
+start from: `semgrep --config auto` (or a security ruleset), `bandit -r` for Python, `gosec`
+for Go, `brakeman` for Rails. Through `atlas-runner` or to a file; read the findings back and
+triage each by reachability like the rest, since a scanner's own severity is not the tier
+here. None installed: say so in the scope line and fall back to the pattern greps above. Never
+install one without a yes.
+
 ## Scale
 
 A large tree is not read line by line. Work from the entry points outward, follow the paths
@@ -69,3 +78,10 @@ src/files.ts:88        high      filename from the query joined to the upload di
 config/prod.yaml:3     medium    DEBUG: true in the production config → stack traces and config leak to clients. Set false; drive from the environment.
 src/auth.ts:51         low       login has no rate limit → credential stuffing is cheap. Add a per-IP and per-account limit.
 ```
+
+## Testing a running service
+
+This skill audits what is in the repository; it does not send requests to a running service.
+When the question is what a live, deployed application of the user's actually exposes, that is
+a separate job for a dedicated tool, run through its own interface, against a target the user
+owns and has written permission to test. Name it as the next step; do not drive one from here.

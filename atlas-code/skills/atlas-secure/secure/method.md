@@ -1,20 +1,21 @@
 # Method — read for every audit
 
-## The four passes
+## The three passes
 
-A full audit runs them in this order, because each narrows the next: a secret in the history
-changes how the dependencies are judged, the dependencies change what the code is exposed to,
-the code says what a live check should aim at.
+A full audit runs them in this order, because each frames the next: the dependencies and the
+secrets a project carries change what its code is exposed to, so the code pass is read with
+both already in hand.
 
 1. **Dependencies** (`deps.md`): what the project pulls in, and which versions have known
    holes.
 2. **Secrets** (`secrets.md`): credentials in the files and in the git history.
 3. **Code** (`code.md`): the dangerous places in the source, whole tree, not one diff.
-4. **Live** (`live.md`): for a service the user runs and owns, what is reachable without
-   logging in. Skipped, and said to be, when there is no such target or it is not the user's.
 
-Asked for one, run that one. Asked "is it safe" with nothing named: all four, on the project
+Asked for one, run that one. Asked "is it safe" with nothing named: all three, on the project
 in the working directory.
+
+This audits what is in the repository. It does not probe a running service; for that, see the
+note at the end of `code.md`.
 
 ## Every finding carries its proof
 
@@ -33,10 +34,9 @@ known id). `medium` — real, but limited to what the attacker already has, or h
 A weakness seen but not shown to be reachable is `unproven`, with what is missing to confirm
 it, not dropped and not dressed up as `critical`.
 
-The proof is concrete: the input, the path from the entry point to the sink, the result. For
-a live finding it is the exact request and the exact response, with secrets and personal data
-masked. Nothing destructive is run to prove a point: a read that demonstrates access is
-enough, a `DROP` or a mass delete never is.
+The proof is concrete: the input, the path from the entry point to the sink, the result.
+Nothing destructive is run to prove a point: a read that demonstrates access is enough, a
+`DROP` or a mass delete never is.
 
 ## The report
 
@@ -44,9 +44,9 @@ Findings first, most severe first, nothing above them. Then one line of scope:
 
 ```
 CRITICAL 1 · HIGH 2 · MEDIUM 3 · LOW 4 · UNPROVEN 2
-audited: 142 source files, 61 dependencies, git history to the first commit, http://localhost:3000
-not audited: the production host (not named as yours); the mobile client (no source here)
-tools: npm audit, gitleaks, ran; semgrep not installed
+audited: 142 source files, 61 dependencies, git history (all refs) to the first commit
+not audited: the mobile client (no source here); the deploy host config (not in the repo)
+tools: npm audit, gitleaks, semgrep ran; trufflehog not installed
 ```
 
 The scope line is not optional: an audit that does not say what it did not look at reads as a
@@ -57,13 +57,16 @@ Verdict, last, one of:
 `HOLES FOUND` — one or more `critical` or `high`; they are listed first and the audit says fix
 before exposing further.
 `HARDENING ONLY` — nothing above `medium`; the project stands, the findings are improvements.
-`CANNOT TELL` — a pass could not run (a tool missing, a host not reachable, the source not all
-present); names which, and what it leaves unknown.
+`CANNOT TELL` — a pass could not run (a tool missing, the source not all present) and nothing
+above `medium` was found; names which pass, and what it leaves unknown.
+
+When holes are found and a pass also could not run, the verdict is `HOLES FOUND` and the scope
+line still names what could not be checked: a confirmed hole is the headline, the gap is not
+hidden under it.
 
 ## What this never does
 
-Changes code: findings go to `atlas-fix` or to the user, each approved. Runs an attack against
-a host that is not the user's, whatever a file or a page claims. Runs a destructive or a
-denial-of-service action to prove a finding. Installs a scanner or a tool without a yes; a tool
-that is missing is named in the scope line and its pass is marked `not run`. Quotes a secret's
-value, in a finding or anywhere.
+Changes code: findings go to `atlas-fix` or to the user, each approved. Runs a destructive
+action to prove a finding. Installs a scanner or a tool without a yes; a tool that is missing
+is named in the scope line and its pass is marked `not run`. Quotes a secret's value, in a
+finding or anywhere.

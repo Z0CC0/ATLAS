@@ -23,7 +23,7 @@ build.
 | `atlas build-ai` | code that calls a model: prompts, agent tools, evals, retrieval, cost, MCP servers, scheduled collectors |
 | `atlas media` | animated explainers, video written in React, HTML slides, recorded demos, with tools that run locally |
 | `atlas context` | what every session loads, when to compact, one answer at a chosen depth, a side question mid-task |
-| `atlas secure` | audits a whole project you own: dangerous code, vulnerable dependencies, secrets in files and git history, and what a local service exposes without login. Finds, never changes |
+| `atlas secure` | audits a whole project you own: dangerous code, vulnerable dependencies, secrets in the files and the git history. Finds, never changes |
 
 One more skill is not typed: `atlas-stack`, eighteen short files on how code is written in
 a given language or framework. `atlas plan` reads the one for your project before writing
@@ -58,24 +58,24 @@ The hook runs on every shell command and file edit, whether or not a switch is o
 
 | | `atlas` | `atlas-code` |
 |---|---|---|
-| descriptions, loaded in every session | 1,973 | 4,222 |
+| descriptions, loaded in every session | 1,973 | 4,190 |
 | rules injected at `low` | 1,409 | 1,409 |
-| fixed cost at `low` | 3,382 | 5,631 |
-| first turn as billed, at `low` | 4,180 | 6,429 |
-| a 40-turn session at `low`, against no plugin | -10.5% | +0.7% |
+| fixed cost at `low` | 3,382 | 5,599 |
+| first turn as billed, at `low` | 4,180 | 6,397 |
+| a 40-turn session at `low`, against no plugin | -10.5% | +0.5% |
 | a 295-turn session at `low` | -28.5% | -27.0% |
-| a 40-turn session at `high` | -17.0% | -5.8% |
-| a 295-turn session at `high` | -35.4% | -33.8% |
+| a 40-turn session at `high` | -17.0% | -5.9% |
+| a 295-turn session at `high` | -35.4% | -33.9% |
 
 The first three rows are tiktoken counts (`o200k_base`), made the same way as for the other
-builds. The 110 files behind these skills are about 86,000 tokens in all and are read a few
+builds. The 109 files behind these skills are about 86,000 tokens in all and are read a few
 at a time.
 
 **The session rows are a model, not a separate measurement.** The bench measured what the
 rules add to the first turn and how much each level shortens an answer; those are the same
 in this build, because the rules are the same. The rows above put this build's descriptions
 into the same formula the README below uses for the others (500-token answers). This build
-loads 2,249 more tokens of descriptions in every session: on a short session at `low` that
+loads 2,217 more tokens of descriptions in every session: on a short session at `low` that
 turns the small saving into a small cost. It pays for itself on long sessions, or when the coding commands are
 actually used.
 
@@ -92,7 +92,7 @@ On 2026-10-04, Claude Code 2.1.283, on one small Python project made for the pur
 | `atlas fix` (in every build) | read its method and the Python file, ran the suite through `atlas-runner`, fixed two errors, ended with `PASS` and the four counts |
 | `atlas verify` | the six-row table and `CANNOT TELL`, because the passing tests did not cover the new code |
 | `atlas docs: trace …` | the trace block, every line with a position |
-| `atlas secure` | on a small Flask repo with seeded holes (an SQL injection, a hardcoded live key, a `.env` committed then removed, an unauthenticated endpoint, two outdated pins): found all of them at the expected tiers, skipped the live pass because nothing was listening, left every missing scanner `not run` without installing it, quoted no secret, changed nothing, ended `HOLES FOUND` |
+| `atlas secure` | on a small Flask repo with seeded holes (an SQL injection, a hardcoded live key, a `.env` committed then removed, an unauthenticated endpoint, two outdated pins): found all of them at the expected tiers, left every missing scanner `not run` without installing it, quoted no secret, changed nothing, ended `HOLES FOUND` |
 | the hook, all three switches | a hard reset stopped with its reason; the first edit turned back once; the closing warning shown |
 | one real Codex call with the flags `atlas multi` uses | answered; the answer on standard output |
 | WCAG 2.2 figures in `atlas ui` | twenty-four criteria checked against the published text |
@@ -112,8 +112,8 @@ Two things the trials showed that you should know:
 `atlas track` (no Jira or Linear account was available), `atlas publish`, `atlas ui`,
 `atlas build-ai`, `atlas media` (Manim, Remotion and Blender were not installed),
 `atlas multi` as a skill, `atlas context`, the Gemini command line, and every language file
-except Python. Of `atlas secure`, the dependency pass with a real scanner, the secret pass
-with `gitleaks`, and the live pass against a running service were not run. Treat those as written and reviewed, not as tested.
+except Python. Of `atlas secure`, the dependency pass with a real scanner and the secret
+pass with `gitleaks` were not run. Treat those as written and reviewed, not as tested.
 
 ## Where it comes from
 
