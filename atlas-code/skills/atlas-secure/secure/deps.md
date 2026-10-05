@@ -14,7 +14,8 @@ vulnerability.
 | lock file | command | reads |
 |---|---|---|
 | `package-lock.json`, `pnpm-lock.yaml`, `yarn.lock` | `npm audit --omit=dev` (and once with dev), `pnpm audit`, `yarn npm audit` | the lock |
-| `requirements.txt`, `poetry.lock`, `uv.lock` | `pip-audit -r <file>`, or `osv-scanner .` | the pins |
+| `requirements.txt`, `poetry.lock` | `pip-audit -r <file>` (or `pip-audit` in the environment) | the pins |
+| `uv.lock`, or any manifest the above do not read | `osv-scanner scan source -r .` (older releases: `osv-scanner -r .`) | the lock |
 | `Cargo.lock` | `cargo audit` | the lock |
 | `go.sum` | `govulncheck ./...` | the modules actually reached |
 | `composer.lock` | `composer audit` | the lock |
@@ -22,7 +23,8 @@ vulnerability.
 | `*.csproj`, `packages.lock.json` | `dotnet list package --vulnerable --include-transitive` | the graph |
 
 No lock file, or the command not installed: say so in the scope line, and fall back to
-`osv-scanner`, which reads many manifest formats, when that is present. Nothing available: the
+`osv-scanner` (see the table for its syntax), which reads many lock and manifest formats, when
+that is present. Nothing available: the
 dependency pass is `not run`, not guessed. Never install a scanner without a yes.
 
 ## Read the result, do not just forward it

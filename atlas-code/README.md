@@ -92,6 +92,7 @@ On 2026-10-04, Claude Code 2.1.283, on one small Python project made for the pur
 | `atlas fix` (in every build) | read its method and the Python file, ran the suite through `atlas-runner`, fixed two errors, ended with `PASS` and the four counts |
 | `atlas verify` | the six-row table and `CANNOT TELL`, because the passing tests did not cover the new code |
 | `atlas docs: trace …` | the trace block, every line with a position |
+| `atlas secure` | on a small Flask repo with seeded holes (an SQL injection, a hardcoded live key, a `.env` committed then removed, an unauthenticated endpoint, two outdated pins): found all of them at the expected tiers, skipped the live pass because nothing was listening, left every missing scanner `not run` without installing it, quoted no secret, changed nothing, ended `HOLES FOUND` |
 | the hook, all three switches | a hard reset stopped with its reason; the first edit turned back once; the closing warning shown |
 | one real Codex call with the flags `atlas multi` uses | answered; the answer on standard output |
 | WCAG 2.2 figures in `atlas ui` | twenty-four criteria checked against the published text |
@@ -110,8 +111,9 @@ Two things the trials showed that you should know:
 **Not run at all:** `atlas test`, `atlas plan` by name, `atlas refactor`, `atlas ship`,
 `atlas track` (no Jira or Linear account was available), `atlas publish`, `atlas ui`,
 `atlas build-ai`, `atlas media` (Manim, Remotion and Blender were not installed),
-`atlas multi` as a skill, `atlas context`, `atlas secure`, the Gemini command line, and
-every language file except Python. Treat those as written and reviewed, not as tested.
+`atlas multi` as a skill, `atlas context`, the Gemini command line, and every language file
+except Python. Of `atlas secure`, the dependency pass with a real scanner, the secret pass
+with `gitleaks`, and the live pass against a running service were not run. Treat those as written and reviewed, not as tested.
 
 ## Where it comes from
 

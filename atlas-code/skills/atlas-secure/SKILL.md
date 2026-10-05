@@ -37,7 +37,8 @@ and for a full audit all four in this order:
 ## With the other skills
 
 The per-diff security review and its checklist is `atlas-review`'s `security.md`; this audits
-the whole tree instead, and uses the same tiers. A weakness found here is fixed through
+the whole tree instead, and ranks by impact (`critical` to `low`) rather than by the review's
+`breaks`/`fragile` tiers, because here the question is what an attacker gets. A weakness found here is fixed through
 `atlas-fix` or by hand, never silently. Before going public, the secret and personal-data
 scan of a copy is `atlas-publish`. Running a long tool so its log stays out of the
 conversation is `atlas-runner`.
