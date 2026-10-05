@@ -57,14 +57,14 @@ The hook runs on every shell command and file edit, whether or not a switch is o
 
 | | `atlas` | `atlas-code` |
 |---|---|---|
-| descriptions, loaded in every session | 1,961 | 4,057 |
+| descriptions, loaded in every session | 1,973 | 4,069 |
 | rules injected at `low` | 1,409 | 1,409 |
-| fixed cost at `low` | 3,370 | 5,466 |
-| first turn as billed, at `low` | 4,168 | 6,264 |
-| a 40-turn session at `low`, against no plugin | -11% | -0% |
-| a 295-turn session at `low` | -29% | -27% |
-| a 40-turn session at `high` | -17% | -7% |
-| a 295-turn session at `high` | -35% | -34% |
+| fixed cost at `low` | 3,382 | 5,478 |
+| first turn as billed, at `low` | 4,180 | 6,276 |
+| a 40-turn session at `low`, against no plugin | -10.5% | -0.1% |
+| a 295-turn session at `low` | -28.5% | -27.1% |
+| a 40-turn session at `high` | -17.0% | -6.5% |
+| a 295-turn session at `high` | -35.4% | -33.9% |
 
 The first three rows are tiktoken counts (`o200k_base`), made the same way as for the other
 builds. The 105 files behind these skills are about 81,000 tokens in all and are read a few
@@ -201,7 +201,7 @@ depends on it. Nothing is ever written inside your repositories.
 
 | build | what is in it | fixed cost per session at `low` |
 |---|---|---|
-| `atlas` | everything | 3,370 tokens |
+| `atlas` | everything | 3,382 tokens |
 | `atlas-solo` | same rules, no subagents | 2,331 tokens |
 | `atlas-min` | compression only: two levels, one command | 1,235 tokens |
 
@@ -253,14 +253,14 @@ Run-to-run noise with no plugin and the rules frozen: 0.4 points in English, 0.6
 
 | setup | 40 turns | 295 turns |
 |---|---|---|
-| `low` | -11% | -29% |
+| `low` | -11% | -28% |
 | `high` | -17% | -35% |
 | `low` + `ask` | -7% | -26% |
 | `low` + `check` | -2% | -25% |
 | `low` + `ask` + `check` | +1% | -24% |
 | `high` + `ask` | -13% | -33% |
 | `high` + `check` | -8% | -32% |
-| `high` + `ask` + `check` | -3% | -29% |
+| `high` + `ask` + `check` | -2% | -29% |
 
 `atlas-solo`
 
@@ -282,21 +282,21 @@ Run-to-run noise with no plugin and the rules frozen: 0.4 points in English, 0.6
 | `low` | -25% | -33% |
 | `high` | -29% | -38% |
 
-**Fixed cost per session**, `atlas` build: 1,409 tokens of rules at `low`, 1,531 at `high`, plus 1,961 of skill, command and subagent descriptions that are loaded whether or not they are used. The per-turn reminder is 27–32 tokens; over a long session it is the largest number of all.
+**Fixed cost per session**, `atlas` build: 1,409 tokens of rules at `low`, 1,531 at `high`, plus 1,973 of skill, command and subagent descriptions that are loaded whether or not they are used. The per-turn reminder is 27–32 tokens; over a long session it is the largest number of all.
 
 | | tokens per session |
 |---|---|
 | rules injected at `low` (default) | 1,409 |
 | rules injected at `high` | 1,531 |
-| skill, command and subagent descriptions, always present | 1,961 |
+| skill, command and subagent descriptions, always present | 1,973 |
 | per-turn reminder | 27-32 |
-| **total at the default** | **3,370** |
+| **total at the default** | **3,382** |
 
 Those are tiktoken counts. **What the API actually bills** was measured on the bench too: the input of a one-turn call with each setup on, minus the same call with no plugin, median over the 48 questions. The rules and the reminder at `low` come to 2,207 tokens billed against 1,436 counted, a ratio of 1.54; the session tables above use the billed figure for the injected text and tiktoken for the descriptions, which the bench cannot separate from the rest of the prompt.
 
 The `atlas-min` build cuts the descriptions to 153 and the rules to 1,082 by shipping only
 the compression sections. `atlas-solo` keeps every rule and drops the seven subagents: 922 in
-descriptions instead of 1,961. It also drops `atlas-search`, which is a handle on a
+descriptions instead of 1,973. It also drops `atlas-search`, which is a handle on a
 subagent it does not carry — the search discipline itself lives in the `check` dial, where it
 covers every answer rather than one command.
 
@@ -330,7 +330,7 @@ Everything below follows from the measurements above. None of it is required; ea
 
 **Write the request with the constraint in it.** "In under 50 lines", "only the failing test", "one option, not a comparison": the model follows a stated bound better than any rule about brevity, and the bound costs you a few words.
 
-**Every plugin you install costs its descriptions in every chat, on or off.** Count them once: this one is 1,961 tokens on the full build, 922 without the subagents, caveman 2.7.0 1,281, a large toolkit can be 30,000. Remove what you have not used in a month.
+**Every plugin you install costs its descriptions in every chat, on or off.** Count them once: this one is 1,973 tokens on the full build, 922 without the subagents, caveman 2.7.0 1,281, a large toolkit can be 30,000. Remove what you have not used in a month.
 
 **`atlas-min` when tokens are the only thing you want.** Same compression rules, one command, no subagents, 153 tokens of descriptions: measured against caveman 2.7.0 on the same day, at `high` it compresses 19 points more per answer than caveman `ultra`, and over 295 turns its best setup is 26 points cheaper than caveman.
 

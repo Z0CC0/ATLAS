@@ -148,8 +148,8 @@ Run-to-run noise with no plugin and the rules frozen: 0.4 points in English, 0.6
 
 | setup | descriptions, always loaded | injected on the first turn, as billed | first turn, total |
 |---|---|---|---|
-| `atlas` at `low` | 1,961 | 2,207 | 4,168 |
-| `atlas` at `high` | 1,961 | 2,304 | 4,265 |
+| `atlas` at `low` | 1,973 | 2,207 | 4,180 |
+| `atlas` at `high` | 1,973 | 2,304 | 4,277 |
 | `atlas-solo` at `low` | 922 | 2,207 | 3,129 |
 | `atlas-min` at `low` | 153 | 1,650 | 1,803 |
 | `atlas-min` at `high` | 153 | 1,832 | 1,986 |
@@ -164,14 +164,14 @@ Run-to-run noise with no plugin and the rules frozen: 0.4 points in English, 0.6
 
 | setup | 40 turns | 295 turns |
 |---|---|---|
-| `low` | -11% | -29% |
+| `low` | -11% | -28% |
 | `high` | -17% | -35% |
 | `low` + `ask` | -7% | -26% |
 | `low` + `check` | -2% | -25% |
 | `low` + `ask` + `check` | +1% | -24% |
 | `high` + `ask` | -13% | -33% |
 | `high` + `check` | -8% | -32% |
-| `high` + `ask` + `check` | -3% | -29% |
+| `high` + `ask` + `check` | -2% | -29% |
 
 `atlas-solo`
 
@@ -201,9 +201,9 @@ caveman, for comparison
 | caveman `full` | +7% | -7% |
 | caveman `ultra` | +3% | -12% |
 
-**Read the two measurements together.** Per answer, against caveman `ultra`, `atlas high` compresses 18 points more in English (46% against 28%) and 18 points more in Italian (43% against 26%). Per session, the first turn of the full `atlas` build costs 4,168 tokens at `low` against 3,367 for caveman `full`: 1,961 against 1,281 of descriptions, paid in every chat whether or not they are used, and 2,207 against 2,086 of injected rules. `atlas-min` carries the same compression rules and 153 tokens of descriptions: its best setup is 32 points cheaper than caveman at 40 turns and 26 points cheaper than caveman at 295 turns; the full build is 20 points cheaper than caveman at 40 turns and 24 points cheaper than caveman at 295 turns. If tokens are the only thing you want, `atlas-min`; the full build buys the dials and the subagents, and this is what they cost.
+**Read the two measurements together.** Per answer, against caveman `ultra`, `atlas high` compresses 18 points more in English (46% against 28%) and 18 points more in Italian (43% against 26%). Per session, the first turn of the full `atlas` build costs 4,180 tokens at `low` against 3,367 for caveman `full`: 1,973 against 1,281 of descriptions, paid in every chat whether or not they are used, and 2,207 against 2,086 of injected rules. `atlas-min` carries the same compression rules and 153 tokens of descriptions: its best setup is 32 points cheaper than caveman at 40 turns and 26 points cheaper than caveman at 295 turns; the full build is 20 points cheaper than caveman at 40 turns and 24 points cheaper than caveman at 295 turns. If tokens are the only thing you want, `atlas-min`; the full build buys the dials and the subagents, and this is what they cost.
 
-**Fixed cost per session**, `atlas` build, tiktoken: 1,409 tokens of rules at `low`, 1,531 at `high`, plus 1,961 of skill, command and subagent descriptions that are loaded whether or not they are used. The per-turn reminder is 27–32 tokens; over a long session it is the largest number of all. `atlas-solo` carries 922 of descriptions, `atlas-min` 153 and 1,082 tokens of rules. The API bills the injected rules and reminder at about 1.54 times the tiktoken count, which is why the table of billed costs runs higher.
+**Fixed cost per session**, `atlas` build, tiktoken: 1,409 tokens of rules at `low`, 1,531 at `high`, plus 1,973 of skill, command and subagent descriptions that are loaded whether or not they are used. The per-turn reminder is 27–32 tokens; over a long session it is the largest number of all. `atlas-solo` carries 922 of descriptions, `atlas-min` 153 and 1,082 tokens of rules. The API bills the injected rules and reminder at about 1.54 times the tiktoken count, which is why the table of billed costs runs higher.
 
 Token counts for the fixed costs are tiktoken (`o200k_base`), an approximation of Claude's tokenizer, except where a line says "billed"; the compression figures come from the API's own counts. Compare them with each other, not with a bill.
 
@@ -254,7 +254,7 @@ Everything below follows from the measurements above. None of it is required; ea
 
 **Write the request with the constraint in it.** "In under 50 lines", "only the failing test", "one option, not a comparison": the model follows a stated bound better than any rule about brevity, and the bound costs you a few words.
 
-**Every plugin you install costs its descriptions in every chat, on or off.** Count them once: this one is 1,961 tokens on the full build, 922 without the subagents, caveman 2.7.0 1,281, a large toolkit can be 30,000. Remove what you have not used in a month.
+**Every plugin you install costs its descriptions in every chat, on or off.** Count them once: this one is 1,973 tokens on the full build, 922 without the subagents, caveman 2.7.0 1,281, a large toolkit can be 30,000. Remove what you have not used in a month.
 
 **`atlas-min` when tokens are the only thing you want.** Same compression rules, one command, no subagents, 153 tokens of descriptions: measured against caveman 2.7.0 on the same day, at `high` it compresses 19 points more per answer than caveman `ultra`, and over 295 turns its best setup is 26 points cheaper than caveman.
 

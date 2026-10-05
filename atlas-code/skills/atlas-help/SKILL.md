@@ -33,7 +33,7 @@ project, outside the plugin. `atlas off` in the project before uninstalling, or 
 
 | dial | what it does | vs no plugin | worth knowing |
 |---|---|---|---|
-| `atlas low` | drops filler, pleasantries, hedging, articles, the copula. Fragments allowed. No tables | **-11% ... -29%** | the default |
+| `atlas low` | drops filler, pleasantries, hedging, articles, the copula. Fragments allowed. No tables | **-11% ... -28%** | the default |
 | `atlas high` | half the words: facts stay, explanations go. Prepositions and connectives cut too | **-17% ... -35%** | 9 points more than `low` in English, 7 in Italian. It reads more telegraphically; pick it when the answer is read once and acted on |
 | `atlas ask` | asks before starting, until it knows what you actually want. One question at a time, options named where they can be named | +3 to +2 points | not a quiz: it is there so the work matches what you had in mind, not what the request happened to say. Applies to every request, not only the first |
 | `atlas check` | works against invented facts: nothing from memory, its own work verified before it is called done, a second option looked for before recommending the first, a correction checked before it is accepted | +3 to +9 points, plus the lookups | the only dial that adds. Every setup with it on still lands under no plugin on a long session |
@@ -105,12 +105,12 @@ request that named the command loaded it every time; the same request in plain w
 | `"gate": true` | turns back the first edit of each file once per session, with what to look up first |
 | `"finish": true` | when the answer ends, warns if it said something was skipped, still failing or not run. English phrases only. Never blocks |
 
-**What this build costs.** Descriptions always loaded: 4,057 tokens, against 1,961 for
-`atlas`. Fixed cost at `low`: 5,466. The files behind these commands are about 81,000 tokens
+**What this build costs.** Descriptions always loaded: 4,069 tokens, against 1,973 for
+`atlas`. Fixed cost at `low`: 5,478. The files behind these commands are about 81,000 tokens
 in all, in 105 files, read one or a few at a time. Every session figure elsewhere on this
-card belongs to `atlas`; with the descriptions of this build the same model gives -0% at 40
-turns and -27% at 295 for `low` (against -11% and -29%), and -7% and -34% for `high`
-(against -17% and -35%). On a short session this build about breaks even.
+card belongs to `atlas`; with the descriptions of this build the same model gives -0.1% at 40
+turns and -27.1% at 295 for `low` (against -10.5% and -28.5%), and -6.5% and -33.9% for
+`high` (against -17.0% and -35.4%). On a short session this build about breaks even.
 
 **How far it has been tried.** Three of these commands and the hook were run on one small
 Python project; the rest, and every language but Python, have not been run. The README of
@@ -131,13 +131,13 @@ nothing.
 | `atlas-runner` | runs tests, build or linter, returns only the deciding lines | never repairs anything, never works around a failure |
 | `atlas-browser` | drives a page, reports in words | one screenshot costs about 9,800 tokens; this pays for itself immediately |
 | `atlas-research` | searches the web: the answer with its sources, or a reading list grouped by kind | says "I did not find it" rather than "it does not exist", and never forces a weak link to fill a group |
-| `atlas-catalog` | searches the public catalogues: free APIs, free-tier services, MCP servers, and Claude Code skills through the skills.sh index. Finds, never installs | those lists are 550,000 tokens; it reads them live and hands back three candidates |
+| `atlas-catalog` | searches the public catalogues: free APIs, free-tier services, MCP servers (the official registry and Smithery), Claude Code skills (skills.sh), plugins (Anthropic's two marketplaces), hooks and tooling. Finds, never installs | those lists are 550,000 tokens; it reads them live and hands back three candidates |
 
 ## Builds
 
 | build | contains | fixed cost at `low` |
 |---|---|---|
-| `atlas` | everything on this card | 3,370 |
+| `atlas` | everything on this card | 3,382 |
 | `atlas-solo` | same rules, no subagents, and eight commands rather than nine | 2,331 |
 | `atlas-min` | compression only: one command, no `ask`, no `check`, no provenance marker | 1,235 |
 
