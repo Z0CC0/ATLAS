@@ -32,6 +32,8 @@ const GRAMMAR_BY_EXT = {
 /** A node of one of these kinds, with a `name` field, defines that name. */
 const DEFINES = /(?:_definition|_declaration|_declarator|_item|_spec|_signature|_statement)$/;
 const DEFINES_EXACT = new Set([
+  'function_statement', 'class_statement', 'class_method_definition', 'enum_statement', // powershell
+
   'method', 'singleton_method', 'class', 'module',                       // ruby
   'struct_specifier', 'class_specifier', 'enum_specifier', 'union_specifier', // c, c++
 ]);
@@ -110,9 +112,23 @@ function declaredName(node) {
   return null;
 }
 
+/** PowerShell's grammar has no field names: the name is a child of a known kind. */
+const POWERSHELL = { function_statement: 'function_name', class_statement: 'simple_name', class_method_definition: 'simple_name', enum_statement: 'simple_name' };
+
 /** The node that names what `node` defines, or null when `node` defines nothing. */
 function nameOf(node) {
   const type = node.type;
+
+  if (POWERSHELL[type]) {
+    for (let i = 0; i < node.namedChildCount; i += 1) { const c = node.namedChild(i); if (c.type === POWERSHELL[type]) return c; }
+    return null;
+  }
+  // powershell `$Limit = 3`: the variable at the bottom of the left side
+  if (type === 'assignment_expression' && node.namedChild(0) && node.namedChild(0).type === 'left_assignment_expression') {
+    let n = node.namedChild(0);
+    while (n && n.namedChildCount === 1) n = n.namedChild(0);
+    return n && n.type === 'variable' ? n : null;
+  }
 
   if ((DEFINES.test(type) || DEFINES_EXACT.has(type)) && !NOT_DEFINES.has(type)) {
     const name = node.childForFieldName('name');

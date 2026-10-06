@@ -27,11 +27,12 @@ const SAMPLES = {
   'a.rb': ['def retry(n)', '  n + 1', 'end'],
   'a.php': ['<?php', 'function retry($n) {', '  return $n + 1;', '}'],
   'a.sh': ['retry() {', '  echo again', '}'],
+  'a.ps1': ['function Retry {', '  param($n)', '  return $n + 1', '}'],
 };
 const EXPECT = {
   'a.js': ['retry', 1, 3], 'a.ts': ['retry', 1, 3], 'a.tsx': ['Retry', 1, 3], 'a.py': ['retry', 1, 3],
   'a.go': ['retry', 1, 3], 'a.rs': ['retry', 1, 3], 'a.java': ['retry', 2, 4], 'a.cs': ['Retry', 2, 4],
-  'a.cpp': ['retry', 1, 3], 'a.rb': ['retry', 1, 3], 'a.php': ['retry', 2, 4], 'a.sh': ['retry', 1, 3],
+  'a.cpp': ['retry', 1, 3], 'a.rb': ['retry', 1, 3], 'a.php': ['retry', 2, 4], 'a.sh': ['retry', 1, 3], 'a.ps1': ['Retry', 1, 4],
 };
 
 await p.load([...Object.keys(SAMPLES), 'x.mjs']);
@@ -74,6 +75,13 @@ test('definitions spread over several lines get their whole extent', opts, () =>
 
   const py = ['def retry(', '    n,', '    wait=2,', '):', '    return n'];
   assert.deepEqual([defs('x.py', py, 'retry')[0].first, defs('x.py', py, 'retry')[0].last], [1, 5]);
+});
+
+test('powershell: a variable, a class and a method are definitions', opts, () => {
+  assert.equal(defs('x.ps1', ['$Limit = 3'], '$Limit').length, 1);
+  const cls = ['class Foo {', '  [int] Bar() { return 1 }', '}'];
+  assert.equal(defs('x.ps1', cls, 'Foo').length, 1);
+  assert.deepEqual([defs('x.ps1', cls, 'Bar')[0].first, defs('x.ps1', cls, 'Bar')[0].last], [2, 2]);
 });
 
 test('constants, methods and object members are definitions', opts, () => {

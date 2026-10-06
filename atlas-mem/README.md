@@ -58,7 +58,7 @@ a few lines. Loading all sixteen grammars takes about 90 ms.
 
 ## What was tried
 
-The tool has 73 tests (`node --test tests/memcheck.test.mjs tests/parse.test.mjs
+The tool has 75 tests (`node --test tests/memcheck.test.mjs tests/parse.test.mjs
 tests/relocate.test.mjs tests/deps.test.mjs`). The command was run as a skill in two real
 sessions on a copy of a vault: a check that found a stale note and put the question in one
 line, and a write that produced a correct note with two code links taken from the parse. Both
