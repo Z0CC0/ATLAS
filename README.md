@@ -14,6 +14,7 @@ It ships off. Nothing changes until you type `atlas low` or `atlas high`.
 | `atlas-solo/` | the same rules and commands without the subagents |
 | `atlas-min/` | compression only: two levels, one command |
 | `atlas-code/` | `atlas` plus a coding section: fourteen more commands and an optional guard hook. Its own README says what it adds, what it costs and how far it has been tried |
+| `atlas-mem/` | `atlas` plus a memory: notes written by hand, linked to code, flagged as suspect when that code changes. One more command and 22 MB of tree-sitter grammars, which is why it is its own build |
 | `atlas-test/` | the bench that produced every number below, with the questions, every answer it generated and every verdict — so you can rerun it |
 | `.claude-plugin/marketplace.json` | lets Claude Code install any of the four straight from this repository |
 
@@ -56,7 +57,7 @@ From Claude Code, as a marketplace:
 /plugin install atlas@atlas
 ```
 
-`atlas-solo@atlas`, `atlas-min@atlas` or `atlas-code@atlas` for the other builds. From the Claude desktop app: zip one of the four folders and upload it as a plugin. Either way `node` must be on the PATH — the hooks are JavaScript. No dependencies, no build step, no telemetry.
+`atlas-solo@atlas`, `atlas-min@atlas`, `atlas-code@atlas` or `atlas-mem@atlas` for the other builds. From the Claude desktop app: zip one of the five folders and upload it as a plugin. Either way `node` must be on the PATH — the hooks are JavaScript. No dependencies, no build step, no telemetry.
 
 Then, in any chat: `atlas low` or `atlas high`. `atlas help` prints the full reference card.
 
@@ -95,6 +96,8 @@ depends on it. Nothing is ever written inside your repositories.
 `atlas` and `atlas-solo` carry byte-identical rules. The difference is whether the subagents exist, and whether their work stays out of your context.
 
 A fourth build, `atlas-code`, is `atlas` plus a coding section: tests, verification, planning, shipping and more, fourteen further commands and an optional guard hook. It loads about twice the descriptions, and most of it has not been run on real projects yet. Its own README says what it adds, what it costs and what was tried.
+
+A fifth, `atlas-mem`, is `atlas` plus a memory: notes you write by hand, one fact per file, linked to the code they describe and flagged as suspect when that code changes. One more command (119 tokens of description) and a local tool with tree-sitter grammars for thirteen languages, 22 MB of WebAssembly, which is why it is its own build. Its README says how a note knows it is stale and what the check cannot see.
 
 ## Measured
 
