@@ -279,4 +279,129 @@ function references(source, file, first, last) {
   }
 }
 
-export { GRAMMAR_BY_EXT, grammarOf, load, ready, definitions, references };
+// ---------------------------------------------------------------------------------------
+// one parse, everything the code graph needs from a file
+
+const LITERALS = /string|number|integer|float|char|template|regex|boolean|true|false|null|none|nil/i;
+const IDENT = /identifier|^name$|^word$|^constant$|^variable$|property_identifier|field_identifier|type_identifier/;
+const NO_SHAPE = /comment/;
+
+/** A string literal's content without its quotes (`'./x'`, `"lib"`, `` `t` ``). */
+function literal(node) {
+  if (!node) return null;
+  return node.text.replace(/^[`'"]+|[`'"]+$/g, '');
+}
+
+/** The modules a file imports: `{ module, line }`; relative or bare, as written. */
+function importsOf(root, grammar) {
+  const out = [];
+  const stack = [root];
+  while (stack.length) {
+    const n = stack.pop();
+    if (grammar === 'javascript' || grammar === 'typescript' || grammar === 'tsx') {
+      if ((n.type === 'import_statement' || n.type === 'export_statement') && n.childForFieldName('source')) {
+        out.push({ module: literal(n.childForFieldName('source')), line: n.startPosition.row + 1 });
+      } else if (n.type === 'call_expression') {
+        const fn = n.childForFieldName('function');
+        const args = n.childForFieldName('arguments');
+        if (fn && (fn.text === 'require' || fn.text === 'import') && args && args.namedChildCount === 1 && /string/.test(args.namedChild(0).type)) {
+          out.push({ module: literal(args.namedChild(0)), line: n.startPosition.row + 1 });
+        }
+      }
+    } else if (grammar === 'python') {
+      if (n.type === 'import_statement') {
+        for (let i = 0; i < n.namedChildCount; i += 1) { const c = n.namedChild(i); const name = c.type === 'aliased_import' ? c.childForFieldName('name') : c; if (name) out.push({ module: name.text, line: n.startPosition.row + 1 }); }
+      } else if (n.type === 'import_from_statement') {
+        const m = n.childForFieldName('module_name');
+        if (m) out.push({ module: m.text, line: n.startPosition.row + 1 });
+      }
+    } else if (grammar === 'go' && n.type === 'import_spec') {
+      out.push({ module: literal(n.childForFieldName('path')), line: n.startPosition.row + 1 });
+    }
+    for (let i = n.namedChildCount - 1; i >= 0; i -= 1) stack.push(n.namedChild(i));
+  }
+  return out;
+}
+
+/**
+ * The shape of a piece of code: the tree in preorder with every name turned into ID and
+ * every literal into LIT, keywords and operators kept. Two functions with the same shape do
+ * the same thing with different names — the "masked duplicate" the text compare misses.
+ */
+function shapeOf(node) {
+  const out = [];
+  const stack = [node];
+  while (stack.length) {
+    const n = stack.pop();
+    if (NO_SHAPE.test(n.type)) continue;
+    if (n.childCount === 0) {
+      if (IDENT.test(n.type)) out.push('ID');
+      else if (LITERALS.test(n.type)) out.push('LIT');
+      else out.push(n.text);
+    } else if (LITERALS.test(n.type) && !/template/.test(n.type)) {
+      out.push('LIT');
+    } else {
+      out.push(n.type);
+      for (let i = n.childCount - 1; i >= 0; i -= 1) stack.push(n.child(i));
+    }
+  }
+  return out;
+}
+
+/** True when the file calls code in ways a static graph cannot see (the false-positive list). */
+const DYNAMIC = /ipcMain\.(?:handle|on)\s*\(|ipcRenderer\.|contextBridge|getattr\s*\(|globalThis\[|window\[|\bkoffi\b|importlib|__import__|\beval\s*\(|new Function\s*\(|\bdispatch\w*\s*\(|\[\s*['"`][\w-]+['"`]\s*\]\s*\(|addEventListener\s*\(|\.on\s*\(\s*['"`]/;
+
+/**
+ * Everything the code graph wants from one file, from one parse:
+ * `{ defs: [{ name, kind, line, first, last, top, exported, shape, tokens, refs }], imports, dynamic, broken }`.
+ * `refs` are the names each definition uses that it does not define itself (depth one, no
+ * property accesses). Null when the file cannot be parsed here.
+ */
+function analyze(source, file) {
+  if (!ready(file)) return null;
+  const grammar = grammarOf(file);
+  const parser = new runtime.Parser();
+  let tree = null;
+  try {
+    parser.setLanguage(languages.get(grammar));
+    tree = parser.parse(source);
+    if (!tree) return null;
+    const defs = [];
+    const stack = [[tree.rootNode, true]];
+    while (stack.length) {
+      const [node, top] = stack.pop();
+      const name = nameOf(node);
+      if (name) {
+        const extent = extentOf(node);
+        const first = extent.startPosition.row + 1;
+        const last = extent.endPosition.row + (extent.endPosition.column === 0 && extent.endPosition.row > extent.startPosition.row ? 0 : 1);
+        // names used inside, minus what the definition binds itself
+        const used = new Set(); const bound = new Set([name.text]);
+        const inner = [node];
+        while (inner.length) {
+          const m = inner.pop();
+          if (m !== node) { const nm = nameOf(m); if (nm) bound.add(nm.text); }
+          if (PARAMS.test(m.type)) for (const id of identifiersIn(m)) bound.add(id);
+          if (BINDERS[m.type]) for (const f of BINDERS[m.type]) { const b = m.childForFieldName(f); if (b) for (const id of identifiersIn(b)) bound.add(id); }
+          if (m.type === 'arrow_function' || m.type === 'catch_clause') { const one = m.childForFieldName('parameter'); if (one) for (const id of identifiersIn(one)) bound.add(id); }
+          if (REFERENCE_TYPES.has(m.type) && m.namedChildCount === 0) used.add(m.text);
+          for (let i = m.namedChildCount - 1; i >= 0; i -= 1) inner.push(m.namedChild(i));
+        }
+        const shape = shapeOf(node);
+        const exported = /^\s*(?:export\b|module\.exports|exports\.)/.test(source.split(/\r?\n/)[first - 1] || '') || (grammar === 'python' && top && !name.text.startsWith('_')) || (grammar === 'go' && /^[A-Z]/.test(name.text));
+        defs.push({ name: name.text, kind: node.type, line: name.startPosition.row + 1, first, last, top, exported, shape: shape.join(' '), tokens: shape.length, refs: [...used].filter((u) => !bound.has(u)).sort() });
+      }
+      const nextTop = top && !SCOPES.test(node.type);
+      for (let i = node.namedChildCount - 1; i >= 0; i -= 1) stack.push([node.namedChild(i), nextTop]);
+    }
+    defs.sort((a, b) => a.line - b.line || a.first - b.first);
+    return { defs, imports: importsOf(tree.rootNode, grammar), dynamic: DYNAMIC.test(source), broken: tree.rootNode.hasError };
+  } catch {
+    return null;
+  } finally {
+    if (tree) tree.delete();
+    parser.delete();
+  }
+}
+
+export { GRAMMAR_BY_EXT, grammarOf, load, ready, definitions, references, analyze };

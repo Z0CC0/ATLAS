@@ -46,6 +46,18 @@ MIT, from the `@vscode/tree-sitter-wasm` package): JavaScript, TypeScript, TSX, 
 Rust, Java, C#, C/C++, Ruby, PHP, Bash, PowerShell. Any other language falls back to a search
 for a definition-shaped line, with the limits stated in the skill.
 
+## The code graph
+
+`tools/codegraph.mjs` is the second tool: the graph of the code across every project under
+one folder. `node codegraph.mjs scan <root> --out graph.json` parses every source file once
+and records files and imports, top-level symbols and calls inside each project, duplicates
+(identical text, or the same shape with other names: a renamed copy) inside and across
+projects, and uncalled symbols graded certain / probable / uncertain from the list of what a
+static graph cannot see. `report`, `dups [--cross]`, `hubs [project]`, `dead [project]`
+read the JSON back. Projects declared as a porting of one another (`--porting "A|B"`) keep
+their duplicates marked and out of the counts. Measured on twelve projects: 665 files,
+208,000 lines, 12,500 symbols in 20 seconds. It never changes a source file.
+
 ## What it costs
 
 | | tokens |
@@ -58,7 +70,7 @@ a few lines. Loading all sixteen grammars takes about 90 ms.
 
 ## What was tried
 
-The tool has 75 tests (`node --test tests/memcheck.test.mjs tests/parse.test.mjs
+The two tools have 81 tests (`node --test tests/memcheck.test.mjs tests/parse.test.mjs
 tests/relocate.test.mjs tests/deps.test.mjs`). The command was run as a skill in two real
 sessions on a copy of a vault: a check that found a stale note and put the question in one
 line, and a write that produced a correct note with two code links taken from the parse. Both

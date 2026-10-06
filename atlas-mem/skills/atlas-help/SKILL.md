@@ -86,6 +86,15 @@ data lives in one sidecar file beside the notes, `<vault>/.atlas/links.json`; th
 themselves stay plain markdown in the format of whatever already manages them.
 `memcheck impact` says which notes a change to a file would touch, before the change.
 
+A second tool, `tools/codegraph.mjs`, draws the code graph across projects: one root folder,
+one project per sub-folder, every source file parsed once. It records files and imports,
+top-level symbols and who calls whom inside a project, code written twice (identical text,
+or the same shape under other names) inside and across projects, and the symbols nothing
+calls, graded against the list of what a static graph cannot see (dynamic dispatch, IPC by
+string, FFI, entry points). `scan`, `report`, `dups`, `hubs`, `dead`. Pairs of projects
+declared as a porting are marked and never counted. It writes one JSON and never touches a
+source file; "uncalled" is a label, never a removal.
+
 ## Subagents
 
 Delegated, never typed. **The work stays with them, only the answer comes back** — their reads,
