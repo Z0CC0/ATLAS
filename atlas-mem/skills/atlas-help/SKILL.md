@@ -95,6 +95,13 @@ string, FFI, entry points). `scan`, `report`, `dups`, `hubs`, `dead`. Pairs of p
 declared as a porting are marked and never counted. It writes one JSON and never touches a
 source file; "uncalled" is a label, never a removal.
 
+A third tool, `tools/harvest.mjs`, feeds the memory from what already exists without ever
+writing a note by itself: it pulls the decision-shaped lines out of past Claude Code sessions
+and project documents (`extract`, `docs`), takes the candidates a model proposed from them
+(`inbox write`) and keeps them in `<vault>/.atlas/inbox/` until a person accepts or rejects
+each one (`inbox accept`, `inbox reject`). A rejected candidate is never proposed again; a
+candidate that says what the vault already says is skipped and named.
+
 ## Subagents
 
 Delegated, never typed. **The work stays with them, only the answer comes back** — their reads,

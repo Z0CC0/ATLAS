@@ -58,6 +58,22 @@ read the JSON back. Projects declared as a porting of one another (`--porting "A
 their duplicates marked and out of the counts. Measured on twelve projects: 665 files,
 208,000 lines, 12,500 symbols in 20 seconds. It never changes a source file.
 
+## Harvest: filling the memory from what already exists
+
+`tools/harvest.mjs` is the third tool. `harvest extract <claude-projects> --out <dir>` reads
+every past Claude Code session (one JSONL each; benchmark and scratch folders skipped, tiny
+sessions skipped) and keeps, per session, the first request, the user's messages that read
+like a decision, a rule or a correction, and the assistant's paragraphs that state one: a
+few kilobytes per session instead of megabytes. `harvest docs <root> --out <dir>` collects
+the projects' markdown documents. A model turns each extract into candidates (the prompt is
+`tools/harvest-prompt.md`; the vault's existing notes are listed in it so they are not
+restated); `harvest inbox write <vault> <candidates.json>` files them in
+`<vault>/.atlas/inbox/`, skipping what the vault or the inbox already says in other words.
+`inbox list`, `inbox accept <slug>` (the file becomes a note, one line goes into the index)
+and `inbox reject <slug>` (removed, and its source hash remembered so it never comes back).
+Nothing enters the vault without that yes. Measured on this machine: 39 real sessions and 67
+documents extracted in under two seconds; the model pass at about 0.1 $ per source.
+
 ## What it costs
 
 | | tokens |
@@ -70,7 +86,7 @@ a few lines. Loading all sixteen grammars takes about 90 ms.
 
 ## What was tried
 
-The two tools have 81 tests (`node --test tests/memcheck.test.mjs tests/parse.test.mjs
+The three tools have 84 tests (`node --test tests/memcheck.test.mjs tests/parse.test.mjs
 tests/relocate.test.mjs tests/deps.test.mjs`). The command was run as a skill in two real
 sessions on a copy of a vault: a check that found a stale note and put the question in one
 line, and a write that produced a correct note with two code links taken from the parse. Both
