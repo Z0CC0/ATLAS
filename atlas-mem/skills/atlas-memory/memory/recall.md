@@ -30,6 +30,21 @@ More than one note matches: read the few that do, and answer from them together,
 they agree. Nothing matches: say so plainly — "nothing in memory on that" — and do not
 invent a fact to fill the gap.
 
+## By meaning, when the words fail
+
+When the index and the descriptions do not name it and the question is about a thing, not a
+word ("the database choice", "how the user wants to be told about blockers"), ask the local
+model:
+
+```
+node "${CLAUDE_PLUGIN_ROOT}/tools/embed.mjs" search "<vault>" "<the question>" --k 5
+```
+
+It returns the nearest notes with a score; above about 0.5 the match is usually right. Read
+the notes whole, as always. It needs the `@huggingface/transformers` package; when the tool
+says it is missing, say so and stay with the word search. Never write a note from a search
+result.
+
 ## Trust travels with the fact
 
 When the answer leans on a note that is about code, ask the tool before relying on it; it

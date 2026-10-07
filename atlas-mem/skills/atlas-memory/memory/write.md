@@ -31,6 +31,13 @@ enough to judge relevance without opening the file. The `type` is one of the fou
 is one fact; for `feedback` and `project` notes, the `**Why:**` and `**How to apply:**`
 lines; related notes linked with `[[slug]]`.
 
+A `feedback` note that comes out of something that went wrong is written as three parts,
+each one line, so it transfers: the **root cause** (what was actually wrong, not the symptom
+and not the fix), the **rule** that would have avoided it (general enough to apply the next
+time, in `How to apply`), and the **signal** by which the next time is recognised ("when a
+test is deleted instead of fixed", "when the same error appears twice"). A note that only
+narrates what happened is a diary entry, and a later session cannot act on it.
+
 Then one line in `MEMORY.md`: `- [Title](slug.md) — hook`, the hook being why a later session
 would open it.
 

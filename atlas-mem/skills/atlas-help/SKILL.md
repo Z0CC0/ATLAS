@@ -102,6 +102,13 @@ and project documents (`extract`, `docs`), takes the candidates a model proposed
 each one (`inbox accept`, `inbox reject`). A rejected candidate is never proposed again; a
 candidate that says what the vault already says is skipped and named.
 
+Two optional layers, each one file, each saying plainly when its dependency is missing:
+`tools/embed.mjs` finds a note by meaning (a small multilingual model that runs locally,
+about 130 MB downloaded once into `~/.atlas/models`; needs the `@huggingface/transformers`
+package) and `tools/lsp.mjs` asks a language server who really references a symbol now
+(TypeScript and Python; needs `typescript-language-server` or `pyright`). Both look for
+their packages beside the tools, in `ATLAS_NODE_MODULES`, or in the global npm folder.
+
 ## Subagents
 
 Delegated, never typed. **The work stays with them, only the answer comes back** — their reads,

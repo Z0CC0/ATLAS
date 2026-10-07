@@ -84,6 +84,28 @@ to be read side by side, and `harvest verdicts write|list` keeps what a model or
 decided about each pair (the same thing, a contradiction, neither). The prompt for that
 judgement is `tools/pairs-prompt.md`.
 
+## Two optional layers
+
+`tools/embed.mjs`: search by meaning. `embed index <vault>` turns every note (name,
+description, body, `<private>` spans removed) into a vector with a small multilingual model
+that runs on this machine, re-embedding only what changed; `embed search <vault> "<query>"`
+returns the nearest notes with a score; `embed status`. The model
+(`Xenova/paraphrase-multilingual-MiniLM-L12-v2`, about 130 MB) is downloaded once into
+`~/.atlas/models` (or `ATLAS_MODELS`); nothing leaves the machine. Measured: 70 notes
+indexed in 5 seconds; a query in well under a second. Needs `@huggingface/transformers`.
+
+`tools/lsp.mjs`: live references. `lsp refs <project-root> <file> <line> <symbol>` starts
+`typescript-language-server` or `pyright-langserver` through this same Node, opens the file
+and asks who references the definition: types and imports resolved, the code as it is now.
+Measured: a JavaScript symbol in 0.5 s; a Python symbol in a 200-file project in 20 s, with
+104 references where the static graph counted 53 callers. `lsp check` says which servers
+this machine has. Needs `typescript-language-server` (with `typescript`) and/or `pyright`.
+
+Both packages are looked for next to the tools, then in `ATLAS_NODE_MODULES`, then in the
+global npm folder; `npm install @huggingface/transformers typescript-language-server
+typescript pyright` in any of those places is enough. Without them, everything else works
+and the tools say what is missing.
+
 ## What it costs
 
 | | tokens |
@@ -96,7 +118,7 @@ a few lines. Loading all sixteen grammars takes about 90 ms.
 
 ## What was tried
 
-The three tools have 87 tests (`node --test tests/memcheck.test.mjs tests/parse.test.mjs
+The five tools have 91 tests (`node --test tests/memcheck.test.mjs tests/parse.test.mjs
 tests/relocate.test.mjs tests/deps.test.mjs`). The command was run as a skill in two real
 sessions on a copy of a vault: a check that found a stale note and put the question in one
 line, and a write that produced a correct note with two code links taken from the parse. Both

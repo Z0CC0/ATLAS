@@ -75,6 +75,19 @@ files over 1 MB and generated folders (`node_modules`, `dist`, `build`, `vendor`
 never searched. A `gone` on a symbol the user says still exists: search for where it went
 and link the note again there.
 
+## Who really uses it, now
+
+The code graph and the links are static: a name used twice cannot be told apart, a method
+reached through an object is not seen. When the question is "who calls this, really", ask the
+language server:
+
+```
+node "${CLAUDE_PLUGIN_ROOT}/tools/lsp.mjs" refs "<repository root>" <file> <line> <symbol>
+```
+
+TypeScript/JavaScript and Python. The static count and the live one can differ; the live one
+is right for the code as it is now. When no server is installed the tool says so.
+
 ## Before changing code: what the memory says about it
 
 ```
