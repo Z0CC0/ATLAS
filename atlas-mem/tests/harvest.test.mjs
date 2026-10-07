@@ -93,6 +93,18 @@ test('pairs and verdicts: notes that may say the same thing or contradict each o
   assert.equal(h.verdictsList(s.vault), 'no pair marked as the same thing or as a contradiction', 'a verdict on a note that is gone is not shown');
 });
 
+test('run and judge: --dry says what would be sent and calls nothing', async () => {
+  const s = setup();
+  const inDir = path.join(s.root, 'in'); fs.mkdirSync(inDir);
+  fs.writeFileSync(path.join(inDir, 'a.md'), 'U: ' + 'decidiamo di tenere i dati dal 2015 '.repeat(20));
+  fs.writeFileSync(path.join(inDir, 'tiny.md'), 'x');
+  const outDir = path.join(s.root, 'out');
+  assert.match(await h.run(inDir, outDir, s.vault, { dry: true }), /would call the model for 1 of 1 sources .* with claude-sonnet-5-5/);
+  assert.ok(!fs.existsSync(path.join(outDir, 'a.json')), 'dry: nothing written');
+  assert.match(await h.judge(s.vault, { dry: true }), /would judge 0 of 0 pairs/);
+  assert.match(await h.main(['run', inDir, outDir, s.vault, '--dry', '--model', 'x-y']), /with x-y/);
+});
+
 test('inbox: write, list, accept into the vault with an index line, reject and never propose again', () => {
   const s = setup();
   const cands = path.join(s.root, 'c.json');

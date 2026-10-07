@@ -65,9 +65,16 @@ every past Claude Code session (one JSONL each; benchmark and scratch folders sk
 sessions skipped) and keeps, per session, the first request, the user's messages that read
 like a decision, a rule or a correction, and the assistant's paragraphs that state one: a
 few kilobytes per session instead of megabytes. `harvest docs <root> --out <dir>` collects
-the projects' markdown documents. A model turns each extract into candidates (the prompt is
-`tools/harvest-prompt.md`; the vault's existing notes are listed in it so they are not
-restated); `harvest inbox write <vault> <candidates.json>` files them in
+the projects' markdown documents. `harvest run <extract-dir> <out-dir> <vault> [--write]` has a model turn each extract into
+candidates (the prompt is `tools/harvest-prompt.md`; the vault's existing notes are listed in
+it so they are not restated), and `harvest judge <vault>` has it say, for every pair of
+notes that share enough words, whether they are the same thing, a contradiction, or neither
+(`tools/pairs-prompt.md`). Both call Claude Code headless and lean: no MCP servers, no
+skills, no plugins, our own system prompt, so a call carries about 7,000 tokens instead of
+the 52,000 a bare `claude -p` loads from the session, and the prompt prefix is shared across
+the run and cached. `--dry` says what would be sent and sends nothing; `judge --redo` asks
+again about pairs already judged (after a change to the prompt). Measured: 9 pairs for $0.39,
+three of them the same rule written twice; `harvest inbox write <vault> <candidates.json>` files them in
 `<vault>/.atlas/inbox/`, skipping what the vault or the inbox already says in other words.
 `inbox list`, `inbox accept <slug>` (the file becomes a note, one line goes into the index)
 and `inbox reject <slug>` (removed, and its source hash remembered so it never comes back).
@@ -118,7 +125,7 @@ a few lines. Loading all sixteen grammars takes about 90 ms.
 
 ## What was tried
 
-The five tools have 91 tests (`node --test tests/memcheck.test.mjs tests/parse.test.mjs
+The five tools have 92 tests (`node --test tests/memcheck.test.mjs tests/parse.test.mjs
 tests/relocate.test.mjs tests/deps.test.mjs`). The command was run as a skill in two real
 sessions on a copy of a vault: a check that found a stale note and put the question in one
 line, and a write that produced a correct note with two code links taken from the parse. Both

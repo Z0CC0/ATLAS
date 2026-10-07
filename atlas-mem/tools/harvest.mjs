@@ -15,6 +15,8 @@
  *   node harvest.mjs inbox list   <vault> [--json]
  *   node harvest.mjs inbox accept <vault> <slug>
  *   node harvest.mjs inbox reject <vault> <slug>
+ *   node harvest.mjs run    <extract-dir> <out-dir> <vault> [--parallel 4] [--model <id>] [--write] [--dry]
+ *   node harvest.mjs judge  <vault> [--min 0.35] [--parallel 2] [--model <id>] [--dry] [--redo]
  *   node harvest.mjs pairs  <vault> [--min 0.35] [--json]
  *   node harvest.mjs verdicts write <vault> <verdicts.json>
  *   node harvest.mjs verdicts list  <vault> [--json]
@@ -27,9 +29,13 @@
  */
 
 import { createHash } from 'node:crypto';
+import { spawn } from 'node:child_process';
+import { tmpdir } from 'node:os';
 import { existsSync, mkdirSync, readdirSync, readFileSync, renameSync, statSync, writeFileSync, unlinkSync } from 'node:fs';
-import { basename, join, relative, resolve } from 'node:path';
+import { basename, dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+const HERE = dirname(fileURLToPath(import.meta.url));
 import { listFiles } from './repo.mjs';
 
 const sha = (s) => createHash('sha256').update(s, 'utf8').digest('hex').slice(0, 16);
@@ -240,6 +246,105 @@ function inboxReject(vault, slug) {
 }
 
 // ---------------------------------------------------------------------------------------
+// the model, called lean
+
+const DEFAULT_MODEL = 'claude-sonnet-5-5';
+
+/**
+ * One headless call to Claude Code with nothing of the session loaded: no MCP servers, no
+ * skills, no plugins, our own system prompt. A bare call otherwise carries ~52,000 tokens of
+ * tool definitions; lean it carries ~7,000, and the system prompt is shared by every call
+ * of a run, so after the first the prefix comes from the cache. Resolves to
+ * `{ text, cost }`; rejects on a broken answer.
+ */
+function callModel(system, user, { model = DEFAULT_MODEL } = {}) {
+  const dir = join(tmpdir(), 'atlas-harvest');
+  mkdirSync(dir, { recursive: true });
+  const settings = join(dir, 'settings.json');
+  const mcp = join(dir, 'mcp-none.json');
+  if (!existsSync(settings)) writeFileSync(settings, '{"enabledPlugins":{}}');
+  if (!existsSync(mcp)) writeFileSync(mcp, '{"mcpServers":{}}');
+  // the system prompt goes through a file: as a shell argument its quotes and newlines are mangled
+  const sysFile = join(dir, `system-${sha(system)}.md`);
+  if (!existsSync(sysFile)) writeFileSync(sysFile, system);
+  const args = ['-p', '--model', model, '--output-format', 'json', '--settings', settings, '--tools', '""', '--strict-mcp-config', '--mcp-config', mcp, '--disable-slash-commands', '--system-prompt-file', sysFile];
+  return new Promise((res, rej) => {
+    const child = spawn('claude', args, { shell: true, windowsHide: true });
+    let buf = '', err = '';
+    child.stdout.on('data', (d) => { buf += d; });
+    child.stderr.on('data', (d) => { err += d; });
+    child.on('error', rej);
+    child.on('close', () => {
+      try { const r = JSON.parse(buf); res({ text: String(r.result || ''), cost: r.total_cost_usd || 0 }); } catch (e) { rej(new Error(`model call failed: ${(err || buf).trim().slice(0, 300) || e.message}`)); }
+    });
+    child.stdin.end(user);
+  });
+}
+
+const stripFence = (s) => s.trim().replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '');
+const existingList = (vault) => readdirSync(vault).filter((f) => f.endsWith('.md') && f !== 'MEMORY.md').map((f) => { const c = parseCandidate(join(vault, f)); return `- ${c.slug}: ${c.description.slice(0, 160)}`; }).join('\n');
+
+async function pool(items, n, fn) { const q = [...items]; await Promise.all(Array.from({ length: Math.max(1, n) }, async () => { while (q.length) await fn(q.shift()); })); }
+
+/**
+ * Every extract/document in `inDir` → candidates JSON in `outDir` (skipping those already
+ * done), then, with --write, into the inbox. The prompt is the system prompt; the source is
+ * the message. Per source the result is a JSON array or the call is marked failed.
+ */
+async function run(inDir, outDir, vault, { parallel = 4, model = DEFAULT_MODEL, write = false, dry = false, log = () => {} } = {}) {
+  const tpl = readFileSync(join(HERE, 'harvest-prompt.md'), 'utf8');
+  const system = tpl.replace('{{EXISTING}}', existingList(vault)).replace(/Source id: \{\{SOURCE\}\}\s*Source text:\s*\{\{TEXT\}\}\s*$/, 'The message holds the source id on its first line and the source text after it.');
+  mkdirSync(outDir, { recursive: true });
+  const files = readdirSync(inDir).filter((f) => f.endsWith('.md') && statSync(join(inDir, f)).size >= 300);
+  const todo = files.filter((f) => !existsSync(join(outDir, f.replace(/\.md$/, '.json'))));
+  if (dry) return `would call the model for ${todo.length} of ${files.length} sources (${files.length - todo.length} already done) with ${model}`;
+  let done = 0, failed = 0, cands = 0, cost = 0;
+  await pool(todo, parallel, async (f) => {
+    const text = readFileSync(join(inDir, f), 'utf8').slice(0, 60000);
+    try {
+      const r = await callModel(system, `Source id: ${f.replace(/\.md$/, '')}\n\n${text}`, { model });
+      cost += r.cost;
+      const txt = stripFence(r.text);
+      if (txt.indexOf('[') < 0) throw new Error(`no JSON in the answer: ${txt.slice(0, 160)}`);
+      const arr = JSON.parse(txt.slice(txt.indexOf('['), txt.lastIndexOf(']') + 1));
+      if (!Array.isArray(arr)) throw new Error('not an array');
+      writeFileSync(join(outDir, f.replace(/\.md$/, '.json')), JSON.stringify(arr, null, 2));
+      done += 1; cands += arr.length; log(`ok   ${f}  ${arr.length} candidates  $${r.cost.toFixed(2)}`);
+    } catch (e) { failed += 1; writeFileSync(join(outDir, f.replace(/\.md$/, '.err.txt')), e.message); log(`FAIL ${f}  ${e.message}`); }
+  });
+  let filed = '';
+  if (write) for (const f of readdirSync(outDir).filter((x) => x.endsWith('.json'))) filed += inboxWrite(vault, join(outDir, f)).split('\n').filter((l) => l.startsWith('candidate')).length;
+  return `run       ${done} sources · ${failed} failed · ${cands} candidates · $${cost.toFixed(2)}${write ? ` · filed in the inbox` : ''}`;
+}
+
+/** The vault's candidate pairs judged by the model: same thing, contradiction, neither; verdicts recorded. */
+async function judge(vault, { min = 0.35, parallel = 2, model = DEFAULT_MODEL, dry = false, redo = false, log = () => {} } = {}) {
+  const tpl = readFileSync(join(HERE, 'pairs-prompt.md'), 'utf8');
+  const system = tpl.replace(/Note A \(\{\{A\}\}\):[\s\S]*$/, 'The message holds the two notes, each after a line "Note A (slug):" or "Note B (slug):".');
+  const list = pairs(vault, { min });
+  const known = existsSync(verdictsPath(vault)) ? new Set(JSON.parse(readFileSync(verdictsPath(vault), 'utf8')).map((v) => [v.a, v.b].sort().join('|'))) : new Set();
+  const todo = redo ? list : list.filter((p) => !known.has([p.a, p.b].sort().join('|')));
+  if (dry) return `would judge ${todo.length} of ${list.length} pairs (${list.length - todo.length} already judged) with ${model}`;
+  const out = [];
+  let cost = 0;
+  await pool(todo, parallel, async (p) => {
+    const read = (s) => readFileSync(join(vault, `${s}.md`), 'utf8').slice(0, 6000);
+    try {
+      const r = await callModel(system, `Note A (${p.a}):\n${read(p.a)}\n\nNote B (${p.b}):\n${read(p.b)}`, { model });
+      cost += r.cost;
+      const txt = stripFence(r.text);
+      if (txt.indexOf('{') < 0) throw new Error(`no JSON in the answer: ${txt.slice(0, 160)}`);
+      const v = JSON.parse(txt.slice(txt.indexOf('{'), txt.lastIndexOf('}') + 1));
+      out.push({ a: p.a, b: p.b, verdict: v.verdict, why: v.why });
+      log(`${String(v.verdict).padEnd(14)} ${p.a} ↔ ${p.b}`);
+    } catch (e) { log(`FAIL ${p.a} ↔ ${p.b}: ${e.message}`); }
+  });
+  let recorded = 'verdicts  0 recorded';
+  if (out.length) { const tmp = join(tmpdir(), 'atlas-harvest', 'verdicts.json'); writeFileSync(tmp, JSON.stringify(out)); recorded = verdictsWrite(vault, tmp); }
+  return `judge     ${todo.length} pairs · $${cost.toFixed(2)}\n${recorded}`;
+}
+
+// ---------------------------------------------------------------------------------------
 // pairs: what a model (or a person) should read side by side
 
 /** Notes of the vault, by what they share in words: the candidates for "same thing" or "contradiction". */
@@ -290,12 +395,21 @@ function verdictsList(vault, json = false) {
 // ---------------------------------------------------------------------------------------
 // entry
 
-function main(argv) {
+async function main(argv) {
   const [cmd, ...rest] = argv;
   const opt = (n) => { const i = rest.indexOf(n); return i >= 0 ? rest[i + 1] : null; };
   const flag = (n) => rest.includes(n);
-  const pos = rest.filter((a, i) => !a.startsWith('--') && !(i > 0 && ['--out', '--min-kb', '--max-kb', '--skip', '--min'].includes(rest[i - 1])));
+  const pos = rest.filter((a, i) => !a.startsWith('--') && !(i > 0 && ['--out', '--min-kb', '--max-kb', '--skip', '--min', '--parallel', '--model'].includes(rest[i - 1])));
+  const log = (l) => process.stderr.write(l + '\n');
   switch (cmd) {
+    case 'run': {
+      if (!pos[0] || !pos[1] || !pos[2]) throw Object.assign(new Error('usage: run <extract-dir> <out-dir> <vault> [--parallel 4] [--model <id>] [--write] [--dry]'), { usage: true });
+      return run(pos[0], pos[1], pos[2], { parallel: Number(opt('--parallel') || 4), model: opt('--model') || DEFAULT_MODEL, write: flag('--write'), dry: flag('--dry'), log });
+    }
+    case 'judge': {
+      if (!pos[0] || !existsSync(pos[0])) throw Object.assign(new Error('usage: judge <vault> [--min 0.35] [--parallel 2] [--model <id>] [--dry]'), { usage: true });
+      return judge(pos[0], { min: Number(opt('--min') || 0.35), parallel: Number(opt('--parallel') || 2), model: opt('--model') || DEFAULT_MODEL, dry: flag('--dry'), redo: flag('--redo'), log });
+    }
     case 'extract': {
       if (!pos[0]) throw Object.assign(new Error('usage: extract <claude-projects-dir> --out <dir> [--min-kb 50] [--skip a,b]'), { usage: true });
       const skip = opt('--skip') ? opt('--skip').split(',').map((s) => s.trim()).filter(Boolean) : undefined;
@@ -326,17 +440,17 @@ function main(argv) {
       throw Object.assign(new Error('usage: verdicts <write|list> <vault> …'), { usage: true });
     }
     default:
-      throw Object.assign(new Error('usage: node harvest.mjs <extract|docs|inbox|pairs|verdicts> …'), { usage: true });
+      throw Object.assign(new Error('usage: node harvest.mjs <extract|docs|run|inbox|pairs|judge|verdicts> …'), { usage: true });
   }
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   try {
-    process.stdout.write(main(process.argv.slice(2)) + '\n');
+    process.stdout.write((await main(process.argv.slice(2))) + '\n');
   } catch (err) {
     process.stderr.write(`harvest: ${err.message}\n`);
     process.exitCode = err.usage ? 2 : 1;
   }
 }
 
-export { extractSession, extract, docs, inboxWrite, inboxList, inboxAccept, inboxReject, parseCandidate, similarity, pairs, pairsReport, verdictsWrite, verdictsList, main };
+export { extractSession, extract, docs, run, judge, callModel, inboxWrite, inboxList, inboxAccept, inboxReject, parseCandidate, similarity, pairs, pairsReport, verdictsWrite, verdictsList, main, DEFAULT_MODEL };
