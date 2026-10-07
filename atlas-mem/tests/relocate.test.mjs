@@ -44,7 +44,7 @@ const first = (vault, write = false) => m.runCheck(vault, { write });
 test('a link records a body fingerprint beside the full one', opts, () => {
   const s = setup();
   const link = side(s.vault).notes['retry-limit'].links[0];
-  assert.match(link.body, /^sha256:[0-9a-f]{16}$/);
+  assert.match(link.body, /^sha256c:[0-9a-f]{16}$/);
   assert.notEqual(link.body, link.fingerprint);
 });
 

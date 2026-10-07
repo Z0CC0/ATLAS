@@ -52,12 +52,16 @@ test('importing the tool does nothing', () => {
   assert.equal(typeof m.main, 'function');
 });
 
-test('fingerprint ignores line endings and trailing spaces, and nothing else', () => {
+test('fingerprint ignores line endings, trailing spaces, blank and comment-only lines, and nothing else', () => {
   const a = m.fingerprint(['a', '  b']);
   assert.equal(m.fingerprint(['a  ', '  b\t']), a);
+  assert.equal(m.fingerprint(['a', '', '  // why b', '  # or so', '  b']), a, 'comments and blank lines do not count');
   assert.notEqual(m.fingerprint(['a', 'b']), a, 'indentation counts');
   assert.notEqual(m.fingerprint(['a', '  c']), a);
-  assert.match(a, /^sha256:[0-9a-f]{16}$/);
+  assert.match(a, /^sha256c:[0-9a-f]{16}$/);
+  const old = m.fingerprint(['a', '  b'], 'sha256:0000000000000000');
+  assert.match(old, /^sha256:[0-9a-f]{16}$/, 'a stored fingerprint is compared with its own recipe');
+  assert.notEqual(m.fingerprint(['a', '  // c', '  b'], old), old, 'under the old recipe a comment counted');
 });
 
 test('readLines: LF, CRLF and a BOM give the same lines', () => {
@@ -117,7 +121,7 @@ test('link records repo, file, lines, anchor, fingerprint and commit', () => {
   assert.equal(l.lines, '4-9');
   assert.equal(l.anchor, 1, 'the definition is one line below the start of the range');
   assert.equal(l.symbol, 'invoiceTotal');
-  assert.match(l.fingerprint, /^sha256:/);
+  assert.match(l.fingerprint, /^sha256c:/);
   assert.match(l.commit, /^[0-9a-f]{4,}$/);
   assert.ok(path.isAbsolute(l.repo) || /^[a-z]:\//.test(l.repo));
   assert.equal(entry.trust, 'firm');
@@ -166,6 +170,33 @@ test('check: the same code checked out with CRLF still holds', () => {
   linkIt(s);
   fs.writeFileSync(s.file, SRC.replace(/\n/g, '\r\n'));
   assert.equal(check(s.vault)[0].items[0].state, 'held');
+});
+
+test('check: a comment added inside the function is not a change', () => {
+  const s = setup();
+  linkIt(s);
+  fs.writeFileSync(s.file, SRC.replace('  let sum = 0;', '  // start from nothing\n  let sum = 0;\n'));
+  const r = check(s.vault)[0];
+  assert.equal(r.verdict, 'firm');
+  assert.equal(r.items[0].state, 'held');
+});
+
+test('check --write remakes a fingerprint of the old recipe while the code is intact', () => {
+  const s = setup();
+  linkIt(s);
+  const sd = side(s.vault);
+  const l = sd.notes['totals-rounding'].links[0];
+  const lines = fs.readFileSync(s.file, 'utf8').split('\n').slice(3, 9);
+  l.fingerprint = m.fingerprint(lines, 'sha256:');
+  l.body = m.fingerprint(lines.filter((_, i) => i !== 0), 'sha256:');
+  fs.writeFileSync(path.join(s.vault, '.atlas', 'links.json'), JSON.stringify(sd));
+  assert.equal(check(s.vault)[0].verdict, 'firm', 'the old recipe still compares');
+  check(s.vault, true);
+  const after = side(s.vault).notes['totals-rounding'].links[0];
+  assert.match(after.fingerprint, /^sha256c:/);
+  assert.match(after.body, /^sha256c:/);
+  fs.writeFileSync(s.file, SRC.replace('  let sum = 0;', '  // noted\n  let sum = 0;'));
+  assert.equal(check(s.vault)[0].verdict, 'firm', 'and from now on a comment does not count');
 });
 
 test('check: a changed body makes the note suspect and says why', () => {

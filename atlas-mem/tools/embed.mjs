@@ -69,14 +69,21 @@ function notesOf(vault) {
     const fm = m ? m[1] : '';
     const get = (k) => { const r = new RegExp(`^${k}:\\s*(.*)$`, 'm').exec(fm); return r ? r[1].trim().replace(/^"|"$/g, '') : ''; };
     const body = (m ? m[2] : text).trim();
-    const passage = `${get('name') || basename(f, '.md')}. ${get('description')}. ${body}`.slice(0, 2000);
-    return { slug: basename(f, '.md'), description: get('description'), passage, hash: sha(passage) };
+    const slug = basename(f, '.md');
+    const passage = `${get('name') || slug}. ${get('description')}. ${body}`.slice(0, 2000);
+    // a second, short text: the name and the description alone. A question is short and
+    // about one thing; against the whole body the signal drowns (measured on 30 questions:
+    // body alone found 11 at the first place, the best of the two 21)
+    const head = `${slug.replace(/-/g, ' ')}. ${get('description')}`;
+    return { slug, description: get('description'), passage, head, hash: sha(passage + '\n' + head) };
   });
 }
 
+const RECIPE = 2; // 1: one vector per note; 2: two (whole note, and name + description)
+const empty = () => ({ model: MODEL, recipe: RECIPE, notes: {} });
 function loadIndex(vault) {
-  if (!existsSync(indexPath(vault))) return { model: MODEL, notes: {} };
-  try { const i = JSON.parse(readFileSync(indexPath(vault), 'utf8')); return i && i.notes ? i : { model: MODEL, notes: {} }; } catch { return { model: MODEL, notes: {} }; }
+  if (!existsSync(indexPath(vault))) return empty();
+  try { const i = JSON.parse(readFileSync(indexPath(vault), 'utf8')); return i && i.notes && i.recipe === RECIPE ? i : empty(); } catch { return empty(); }
 }
 
 /** Embeds the notes whose text changed since the last run; drops the ones that are gone. */
@@ -88,7 +95,8 @@ async function index(vault) {
   const todo = notes.filter((n) => !idx.notes[n.slug] || idx.notes[n.slug].hash !== n.hash);
   if (todo.length) {
     const vecs = await embed(todo.map((n) => n.passage));
-    todo.forEach((n, i) => { idx.notes[n.slug] = { hash: n.hash, v: vecs[i] }; });
+    const heads = await embed(todo.map((n) => n.head));
+    todo.forEach((n, i) => { idx.notes[n.slug] = { hash: n.hash, v: vecs[i], h: heads[i] }; });
   }
   const live = new Set(notes.map((n) => n.slug));
   let dropped = 0;
@@ -108,7 +116,8 @@ async function search(vault, query, k = 8) {
   if (!slugs.length) throw new Error(`no index in ${vault}: run \`embed index\` first`);
   const [q] = await embed([query]);
   const descs = new Map(notesOf(vault).map((n) => [n.slug, n.description]));
-  return slugs.map((slug) => ({ slug, score: Number(dot(q, idx.notes[slug].v).toFixed(3)), description: descs.get(slug) || '' })).sort((a, b) => b.score - a.score).slice(0, k);
+  const scoreOf = (n) => Math.max(dot(q, n.v), n.h ? dot(q, n.h) : -1);
+  return slugs.map((slug) => ({ slug, score: Number(scoreOf(idx.notes[slug]).toFixed(3)), description: descs.get(slug) || '' })).sort((a, b) => b.score - a.score).slice(0, k);
 }
 
 function status(vault) {

@@ -26,7 +26,9 @@ already exists in most setups and is not replaced. The build adds a tool, `tools
 and a sidecar file beside the notes, `<vault>/.atlas/links.json`, that the tool alone reads and
 writes. For a note about code it records which repository, which file, which definition, a
 fingerprint of those lines, the commit, and what that code directly depends on in the same
-repository. At check time the tool parses the file again and decides:
+repository. The fingerprint ignores line endings, trailing spaces, blank lines and lines that
+hold only a comment: a comment added inside a function is not a change (measured: it made a
+note suspect for nothing). At check time the tool parses the file again and decides:
 
 | state | meaning | effect on the note |
 |---|---|---|
@@ -96,10 +98,13 @@ judgement is `tools/pairs-prompt.md`.
 `tools/embed.mjs`: search by meaning. `embed index <vault>` turns every note (name,
 description, body, `<private>` spans removed) into a vector with a small multilingual model
 that runs on this machine, re-embedding only what changed; `embed search <vault> "<query>"`
-returns the nearest notes with a score; `embed status`. The model
+returns the nearest notes with a score; `embed status`. Each note has two vectors, the whole
+note and its name with description alone, and the better of the two counts: a question is
+short and about one thing, and against a long body the signal drowned (on 30 questions the
+body alone put the right note first 11 times, the pair 21). The model
 (`Xenova/paraphrase-multilingual-MiniLM-L12-v2`, about 130 MB) is downloaded once into
-`~/.atlas/models` (or `ATLAS_MODELS`); nothing leaves the machine. Measured: 70 notes
-indexed in 5 seconds; a query in well under a second. Needs `@huggingface/transformers`.
+`~/.atlas/models` (or `ATLAS_MODELS`); nothing leaves the machine. Measured: 67 notes
+indexed in 8 seconds; a query in well under a second. Needs `@huggingface/transformers`.
 
 `tools/lsp.mjs`: live references. `lsp refs <project-root> <file> <line> <symbol>` starts
 `typescript-language-server` or `pyright-langserver` through this same Node, opens the file
@@ -125,8 +130,19 @@ a few lines. Loading all sixteen grammars takes about 90 ms.
 
 ## What was tried
 
-The five tools have 92 tests (`node --test tests/memcheck.test.mjs tests/parse.test.mjs
-tests/relocate.test.mjs tests/deps.test.mjs`). The command was run as a skill in two real
+The five tools have 94 tests (`node --test tests/memcheck.test.mjs tests/parse.test.mjs
+tests/relocate.test.mjs tests/deps.test.mjs`).
+
+Two benches on real material, after the 0.2.9 build. Freshness: ten notes linked to ten
+functions of a 57-file Python project (a copy); five bodies changed, one function renamed,
+one deleted, one given a comment, one pushed down by lines added above it, one untouched. The
+check said suspect for exactly the seven that deserved it and firm for the three that did not;
+before the comment rule, the comment alone made an eighth note suspect. Recall: thirty
+questions written in other words than the notes, each with the note that answers it. By words
+against the index, the right note came first 24 times and in the first three 27; by meaning,
+21 and 24; one of the two ways had it in the first three 27 times out of 30. The three misses
+are notes whose index line does not name the thing asked about (a 503 from the data provider,
+the size limit of the hooks, the command to run after a change). The command was run as a skill in two real
 sessions on a copy of a vault: a check that found a stale note and put the question in one
 line, and a write that produced a correct note with two code links taken from the parse. Both
 cost between one and two dollars at the CLI's default model, most of it reading notes.

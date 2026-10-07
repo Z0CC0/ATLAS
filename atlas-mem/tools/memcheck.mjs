@@ -50,14 +50,27 @@ const TRUST = ['firm', 'suspect', 'unverified'];
 /**
  * The text a fingerprint is taken over. Line endings and trailing spaces are normalised:
  * git on Windows checks files out with CRLF, and editors strip trailing spaces, and
- * neither is a change to what the code does. Everything else counts, indentation included.
+ * neither is a change to what the code does. Blank lines and lines that hold only a
+ * comment (`//`, `#`, `/*`, `*`, `--`) are left out too: a comment added inside a
+ * function does not change what the function does (measured: it made a note suspect for
+ * nothing). Everything else counts, indentation included.
+ *
+ * Fingerprints made before comments were ignored start with `sha256:`; the new ones with
+ * `sha256c:`. A stored fingerprint is always compared with its own recipe, and
+ * `check --write` rewrites the old ones while the code is intact, so nothing turns suspect
+ * because the recipe changed.
  */
-function normalise(lines) {
-  return lines.map((l) => l.replace(/[ \t]+$/, '')).join('\n');
+const COMMENT_ONLY = /^\s*(\/\/|#|\/\*|\*|--|<!--)/;
+function normalise(lines, version = 2) {
+  const kept = version === 1 ? lines : lines.filter((l) => l.trim() && !COMMENT_ONLY.test(l));
+  return kept.map((l) => l.replace(/[ \t]+$/, '')).join('\n');
 }
 
-function fingerprint(lines) {
-  return 'sha256:' + createHash('sha256').update(normalise(lines), 'utf8').digest('hex').slice(0, 16);
+const OLD_RECIPE = /^sha256:/;
+/** The fingerprint of some lines; with `like` (a stored fingerprint), made with its recipe. */
+function fingerprint(lines, like) {
+  const old = typeof like === 'string' && OLD_RECIPE.test(like);
+  return (old ? 'sha256:' : 'sha256c:') + createHash('sha256').update(normalise(lines, old ? 1 : 2), 'utf8').digest('hex').slice(0, 16);
 }
 
 function readLines(path) {
@@ -130,6 +143,21 @@ function parsedDefinitions(lines, symbol, file) {
   if (!parsed) return null;
   const defs = parsed.defs.filter((d) => d.name === symbol);
   return !defs.length && parsed.broken ? null : defs;
+}
+
+/**
+ * The lengths a definition starting at `at` may have now: the length the link recorded and,
+ * with a grammar, the length the parse sees. They differ when blank or comment lines were
+ * added or removed inside the definition, which the fingerprint ignores.
+ */
+function spansAt(lines, file, symbol, at, anchor, span) {
+  const parsed = parsedDefinitions(lines, symbol, file);
+  const d = parsed && parsed.find((x) => x.line === at);
+  if (d) { const other = d.last - (at - anchor); return other !== span && other >= 0 ? [span, other] : [span]; }
+  // no grammar: the recorded length, then one more for every blank or comment line the
+  // window holds (a comment added inside pushed one code line out of it); best effort
+  const skipped = lines.slice(at - anchor - 1, at - anchor + span + 8).filter((l) => !l.trim() || COMMENT_ONLY.test(l)).length;
+  return [span, ...Array.from({ length: Math.min(skipped, 8) }, (_, k) => span + k + 1)];
 }
 
 /**
@@ -226,7 +254,7 @@ function judge(link) {
   }
 
   const lines = readLines(path);
-  if (last <= lines.length && fingerprint(lines.slice(first - 1, last)) === link.fingerprint) return withDeps(link, { state: 'held', first, last });
+  if (last <= lines.length && fingerprint(lines.slice(first - 1, last), link.fingerprint) === link.fingerprint) return withDeps(link, { state: 'held', first, last });
 
   const defs = findDefinitions(lines, link.symbol, link.file);
   if (!defs.length) {
@@ -236,11 +264,16 @@ function judge(link) {
   }
 
   // Among several definitions of the name, one whose lines still hash the same is the one.
+  // Same start, other length (a comment or a blank line added inside): held, and --write
+  // records the length the code has now.
   for (const at of defs) {
     const nFirst = at - anchor;
-    const nLast = nFirst + span;
-    if (nFirst >= 1 && nLast <= lines.length && fingerprint(lines.slice(nFirst - 1, nLast)) === link.fingerprint) {
-      return withDeps(link, { state: 'moved', first: nFirst, last: nLast, reason: `${link.symbol} moved from ${link.lines} to ${fmtRange(nFirst, nLast)}` });
+    for (const sp of spansAt(lines, link.file, link.symbol, at, anchor, span)) {
+      const nLast = nFirst + sp;
+      if (nFirst >= 1 && nLast <= lines.length && fingerprint(lines.slice(nFirst - 1, nLast), link.fingerprint) === link.fingerprint) {
+        if (nFirst === first) return withDeps(link, { state: 'held', first, last: nLast });
+        return withDeps(link, { state: 'moved', first: nFirst, last: nLast, reason: `${link.symbol} moved from ${link.lines} to ${fmtRange(nFirst, nLast)}` });
+      }
     }
   }
   const was = first + anchor;
@@ -273,12 +306,12 @@ function withDeps(link, result) {
 function renamedIn(link, lines, file, span, anchor) {
   if (!link.body || span < 1) return null;
   const parsed = parse.ready(file) ? parse.definitions(lines.join('\n'), file) : null;
-  const starts = parsed ? [...new Set(parsed.defs.filter((d) => d.name !== link.symbol).map((d) => ({ name: d.name, at: d.line })))] : [];
-  for (const { name, at } of starts) {
+  const starts = parsed ? parsed.defs.filter((d) => d.name !== link.symbol).map((d) => ({ name: d.name, at: d.line, spans: [...new Set([span, d.last - (d.line - anchor)])] })) : [];
+  for (const { name, at, spans } of starts) for (const sp of spans) {
     const nFirst = at - anchor;
-    const nLast = nFirst + span;
-    if (nFirst < 1 || nLast > lines.length) continue;
-    if (bodyFingerprint(lines.slice(nFirst - 1, nLast), anchor) === link.body) {
+    const nLast = nFirst + sp;
+    if (nFirst < 1 || nLast > lines.length || sp < 0) continue;
+    if (bodyFingerprint(lines.slice(nFirst - 1, nLast), anchor, link.body) === link.body) {
       return { state: 'renamed', first: nFirst, last: nLast, to: name, file, reason: `${link.symbol} seems renamed to ${name} in ${file}:${fmtRange(nFirst, nLast)} (same body); link the note again under the new name if the fact holds` };
     }
   }
@@ -301,10 +334,10 @@ function elsewhere(link, span, anchor, skip) {
     if (file === skip) continue;
     let lines;
     try { lines = readLines(join(link.repo, file)); } catch { continue; }
-    for (const at of findDefinitions(lines, link.symbol, file)) {
+    for (const at of findDefinitions(lines, link.symbol, file)) for (const sp of spansAt(lines, file, link.symbol, at, anchor, span)) {
       const nFirst = at - anchor;
-      const nLast = nFirst + span;
-      if (nFirst >= 1 && nLast <= lines.length && fingerprint(lines.slice(nFirst - 1, nLast)) === link.fingerprint) {
+      const nLast = nFirst + sp;
+      if (nFirst >= 1 && nLast <= lines.length && fingerprint(lines.slice(nFirst - 1, nLast), link.fingerprint) === link.fingerprint) {
         return { state: 'moved', first: nFirst, last: nLast, file, reason: `${link.symbol} moved from ${link.file}:${link.lines} to ${file}:${fmtRange(nFirst, nLast)}` };
       }
     }
@@ -379,8 +412,8 @@ function depsOf(repo, file, lines, first, last, symbol) {
 }
 
 /** The fingerprint of a range without the line that names the symbol. */
-function bodyFingerprint(lines, anchor) {
-  return fingerprint(lines.filter((_, i) => i !== anchor));
+function bodyFingerprint(lines, anchor, like) {
+  return fingerprint(lines.filter((_, i) => i !== anchor), like);
 }
 
 const BAD = new Set(['changed', 'renamed', 'gone', 'missing', 'dep-changed']);
@@ -548,19 +581,29 @@ function runCheck(vault, { write = false, repo = null } = {}) {
     if (write) {
       entry.related = relatedTo(slug, entry, side);
       for (const i of items) {
-        if (i.state === 'moved') { i.link.lines = fmtRange(i.first, i.last); if (i.file) i.link.file = i.file; }
+        if ((i.state === 'moved' || i.state === 'held') && i.first && i.last) { i.link.lines = fmtRange(i.first, i.last); if (i.file) i.link.file = i.file; }
         // a link made before body fingerprints or dependencies existed gets them while its
-        // code is still intact
-        if ((i.state === 'held' || i.state === 'moved') && (!i.link.body || !('deps' in i.link))) {
+        // code is still intact; a fingerprint made with the old recipe is remade with the new
+        const oldRecipe = OLD_RECIPE.test(i.link.fingerprint) || OLD_RECIPE.test(i.link.body || 'sha256c:');
+        if ((i.state === 'held' || i.state === 'moved') && (!i.link.body || !('deps' in i.link) || oldRecipe)) {
           const lines = readLines(join(i.link.repo, i.link.file));
           const anchor = Number.isInteger(i.link.anchor) ? i.link.anchor : 0;
+          if (oldRecipe) {
+            i.link.fingerprint = fingerprint(lines.slice(i.first - 1, i.last));
+            if (i.last > i.first) i.link.body = bodyFingerprint(lines.slice(i.first - 1, i.last), anchor);
+          }
           if (!i.link.body && i.last > i.first) i.link.body = bodyFingerprint(lines.slice(i.first - 1, i.last), anchor);
           if (!('deps' in i.link)) {
             const deps = depsOf(i.link.repo, i.link.file, lines, i.first, i.last, i.link.symbol);
             if (deps) i.link.deps = deps;
           }
         }
-        if (i.deps) for (const j of i.deps) if (j.state === 'moved') { j.dep.lines = fmtRange(j.first, j.last); if (j.file) j.dep.file = j.file; }
+        if (i.deps) for (const j of i.deps) {
+          if (j.state === 'moved') { j.dep.lines = fmtRange(j.first, j.last); if (j.file) j.dep.file = j.file; }
+          if ((j.state === 'held' || j.state === 'moved') && OLD_RECIPE.test(j.dep.fingerprint)) {
+            try { j.dep.fingerprint = fingerprint(readLines(join(i.link.repo, j.dep.file)).slice(j.first - 1, j.last)); } catch { /* the file is gone: the next check says so */ }
+          }
+        }
       }
       const judged = items.some((i) => i.state !== 'unreachable');
       if (judged) {

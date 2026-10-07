@@ -53,7 +53,7 @@ test('a link records what the code depends on: names defined in the repository, 
   assert.deepEqual(deps.map((d) => d.symbol), ['LIMIT', 'wait']);
   assert.equal(deps[0].lines, '1');
   assert.equal(deps[1].lines, '2-4');
-  assert.match(deps[1].fingerprint, /^sha256:/);
+  assert.match(deps[1].fingerprint, /^sha256c:/);
   // n, fn, Error, Promise, setTimeout: locals or not defined in the repository
   assert.ok(!deps.some((d) => ['n', 'fn', 'Error', 'Promise', 'setTimeout'].includes(d.symbol)));
 });
