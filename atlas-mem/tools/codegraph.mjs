@@ -14,6 +14,7 @@
  *   node codegraph.mjs dups   <file.json> [--project <name>] [--cross]
  *   node codegraph.mjs hubs   <file.json> [<project>]
  *   node codegraph.mjs dead   <file.json> [<project>]
+ *   node codegraph.mjs impact <file.json> <project> <symbol> [--depth 2]
  *
  * Duplicates between two projects declared as a porting of one another are kept in the
  * data and marked, never counted: a port is the same code on purpose. Dead-code candidates
@@ -89,7 +90,7 @@ async function scan(root, { skip = [], porting = [], onProgress = null } = {}) {
   }
   const total = plan.reduce((a, p) => a + p.files.length, 0);
 
-  const out = { version: VERSION, root, scanned: new Date().toISOString(), skip: [...skipSet].sort(), porting, projects: [], files: [], symbols: [], imports: [], calls: [], dups: [], dead: [] };
+  const out = { version: VERSION, root, scanned: new Date().toISOString(), skip: [...skipSet].sort(), porting, projects: [], files: [], symbols: [], imports: [], calls: [], inherits: [], dups: [], dead: [] };
   const fileId = new Map();
   let done = 0;
   const sources = new Map(); // fileId → lines (kept for the "name appears in a string" test)
@@ -117,7 +118,7 @@ async function scan(root, { skip = [], porting = [], onProgress = null } = {}) {
         if (!d.top) continue;
         const sid = out.symbols.length;
         const text = normText(lines.slice(d.first - 1, d.last));
-        out.symbols.push({ id: sid, file: id, project: project.name, name: d.name, kind: d.kind, line: d.line, first: d.first, last: d.last, size: d.last - d.first + 1, exported: d.exported, hash: sha(text), shape: sha(d.shape), tokens: d.tokens, refs: d.refs, in: 0, out: 0 });
+        out.symbols.push({ id: sid, file: id, project: project.name, name: d.name, kind: d.kind, line: d.line, first: d.first, last: d.last, size: d.last - d.first + 1, exported: d.exported, hash: sha(text), shape: sha(d.shape), tokens: d.tokens, refs: d.refs, bases: d.bases || [], in: 0, out: 0 });
         if (!pIndex.has(d.name)) pIndex.set(d.name, []);
         pIndex.get(d.name).push(sid);
         pr.symbols += 1;
@@ -131,6 +132,16 @@ async function scan(root, { skip = [], porting = [], onProgress = null } = {}) {
         const to = resolveImport(im.module, rec.path, fileList, rec.lang);
         if (to != null && fileId.has(`${project.name}|${to}`)) { const toId = fileId.get(`${project.name}|${to}`); rec.imports.push(toId); out.imports.push({ from: rec.id, to: toId }); }
         else if (im.module && !im.module.startsWith('.')) { const lib = im.module.split('/')[0].replace(/^@([^/]+)\/.*/, '@$1'); if (!rec.external.includes(lib)) rec.external.push(lib); pr.external[lib] = (pr.external[lib] || 0) + 1; }
+      }
+    }
+    // inherits: a class whose parent one top-level symbol of the project defines
+    for (const s of out.symbols) {
+      if (s.project !== project.name) continue;
+      for (const b of s.bases || []) {
+        const targets = pIndex.get(b);
+        if (!targets || targets.length !== 1 || targets[0] === s.id) continue;
+        out.inherits.push({ from: s.id, to: targets[0] });
+        out.symbols[targets[0]].in += 1;
       }
     }
     // calls: a name used by a symbol that one top-level symbol of the project defines
@@ -235,6 +246,35 @@ function dupsReport(g, { project = null, cross = false } = {}) {
   }).join('\n');
 }
 
+/**
+ * The blast radius of a symbol: what calls it or inherits from it, then what calls those,
+ * up to `depth` steps. Rings of symbol ids, nearest first.
+ */
+function impact(g, symbolId, depth = 2) {
+  const back = new Map();
+  const add = (from, to) => { if (!back.has(to)) back.set(to, []); back.get(to).push(from); };
+  for (const e of g.calls) add(e.from, e.to);
+  for (const e of g.inherits || []) add(e.from, e.to);
+  const seen = new Set([symbolId]);
+  const rings = [];
+  let frontier = [symbolId];
+  for (let d = 0; d < depth && frontier.length; d += 1) {
+    const next = [];
+    for (const id of frontier) for (const f of back.get(id) || []) if (!seen.has(f)) { seen.add(f); next.push(f); }
+    if (next.length) rings.push(next);
+    frontier = next;
+  }
+  return rings;
+}
+
+function impactReport(g, project, symbol, depth = 2) {
+  const s = g.symbols.find((x) => x.project === project && x.name === symbol);
+  if (!s) return `${symbol} is not a top-level symbol of ${project}`;
+  const rings = impact(g, s.id, depth);
+  if (!rings.length) return `nothing in ${project} calls or inherits from ${symbol}`;
+  return rings.map((ring, i) => `${i + 1} step${i ? 's' : ''} away: ${ring.length}\n` + ring.map((id) => { const t = g.symbols[id]; return `  ${t.name}  ${g.files[t.file].path}:${t.first}-${t.last}`; }).join('\n')).join('\n');
+}
+
 function hubs(g, project = null) {
   const rows = g.symbols.filter((s) => !project || s.project === project).sort((a, b) => b.in - a.in || b.out - a.out).slice(0, 25);
   return rows.map((s) => `${String(s.in).padStart(4)} in ${String(s.out).padStart(3)} out  ${s.project}/${g.files[s.file].path}:${s.first}-${s.last} ${s.name}`).join('\n') || 'no symbols';
@@ -259,7 +299,7 @@ async function main(argv) {
   const [cmd, ...rest] = argv;
   const flag = (n) => rest.includes(n);
   const opt = (n) => { const i = rest.indexOf(n); return i >= 0 ? rest[i + 1] : null; };
-  const pos = rest.filter((a, i) => !a.startsWith('--') && !(i > 0 && rest[i - 1].startsWith('--') && ['--out', '--skip', '--porting', '--project'].includes(rest[i - 1])));
+  const pos = rest.filter((a, i) => !a.startsWith('--') && !(i > 0 && rest[i - 1].startsWith('--') && ['--out', '--skip', '--porting', '--project', '--depth'].includes(rest[i - 1])));
   switch (cmd) {
     case 'scan': {
       if (!pos[0]) throw Object.assign(new Error('usage: scan <root> [--out <file.json>] [--skip a,b] [--porting "A|B,C|D"] [--quiet]'), { usage: true });
@@ -274,8 +314,9 @@ async function main(argv) {
     case 'report': return report(loadGraph(pos[0]));
     case 'dups': return dupsReport(loadGraph(pos[0]), { project: opt('--project'), cross: flag('--cross') });
     case 'hubs': return hubs(loadGraph(pos[0]), pos[1] || null);
+    case 'impact': { if (!pos[1] || !pos[2]) throw Object.assign(new Error('usage: impact <file.json> <project> <symbol> [--depth 2]'), { usage: true }); return impactReport(loadGraph(pos[0]), pos[1], pos[2], Number(opt('--depth') || 2)); }
     case 'dead': return deadReport(loadGraph(pos[0]), pos[1] || null);
-    default: throw Object.assign(new Error('usage: node codegraph.mjs <scan|report|dups|hubs|dead> …'), { usage: true });
+    default: throw Object.assign(new Error('usage: node codegraph.mjs <scan|report|dups|hubs|dead|impact> …'), { usage: true });
   }
 }
 
@@ -288,4 +329,4 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   }
 }
 
-export { scan, report, dupsReport, hubs, deadReport, loadGraph, resolveImport, main, VERSION, DEFAULT_SKIP };
+export { scan, report, dupsReport, hubs, deadReport, impact, impactReport, loadGraph, resolveImport, main, VERSION, DEFAULT_SKIP };

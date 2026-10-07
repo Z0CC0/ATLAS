@@ -15,6 +15,10 @@
  *   node memcheck.mjs rekey   <vault> <old-slug> <new-slug>
  *   node memcheck.mjs status  <vault> [--json]
  *
+ * `check --write` also records, for every linked note, which other notes touch the same
+ * code (`related`): the same symbol, a dependency in common, or the same file. The notes
+ * themselves are never edited: a wikilink is the user's; this is the link the code implies.
+ *
  * There is no "confirm" command on purpose. A note whose code changed and whose fact still
  * holds is linked again with the range the code has now: that retakes the fingerprint over
  * the right lines. Keeping the old range length would fingerprint half a function.
@@ -489,6 +493,33 @@ function cmdImpact(vault, repo, file, symbol, json) {
     : `${h.slug}  ${h.symbol} depends on ${h.via} (${h.file}:${h.lines}) · ${h.trust}`).join('\n');
 }
 
+/** Other notes that touch the same code as `slug`: same symbol, a dependency in common, same file. */
+function relatedTo(slug, entry, side) {
+  const keys = new Map(); // key → how
+  for (const l of entry.links || []) {
+    keys.set(`${l.repo}|${l.file}|${l.symbol}`, 'symbol');
+    for (const d of l.deps || []) if (!keys.has(`${l.repo}|${d.file}|${d.symbol}`)) keys.set(`${l.repo}|${d.file}|${d.symbol}`, 'dependency');
+    if (!keys.has(`${l.repo}|${l.file}`)) keys.set(`${l.repo}|${l.file}`, 'file');
+  }
+  const rank = { symbol: 3, dependency: 2, file: 1 };
+  const out = new Map();
+  for (const [other, e] of Object.entries(side.notes)) {
+    if (other === slug) continue;
+    let best = null;
+    for (const l of e.links || []) {
+      const cands = [[`${l.repo}|${l.file}|${l.symbol}`, 'symbol'], ...(l.deps || []).map((d) => [`${l.repo}|${d.file}|${d.symbol}`, 'dependency']), [`${l.repo}|${l.file}`, 'file']];
+      for (const [k, how] of cands) {
+        const mine = keys.get(k);
+        if (!mine) continue;
+        const via = rank[mine] < rank[how] ? mine : how;
+        if (!best || rank[via] > rank[best.via]) best = { slug: other, via, symbol: via === 'file' ? null : k.split('|').pop(), file: k.split('|')[1] };
+      }
+    }
+    if (best) out.set(other, best);
+  }
+  return [...out.values()].sort((a, b) => rank[b.via] - rank[a.via] || a.slug.localeCompare(b.slug));
+}
+
 function runCheck(vault, { write = false, repo = null } = {}) {
   requireVault(vault);
   freshen();
@@ -515,6 +546,7 @@ function runCheck(vault, { write = false, repo = null } = {}) {
     results.push({ slug, verdict, items, was, partial });
 
     if (write) {
+      entry.related = relatedTo(slug, entry, side);
       for (const i of items) {
         if (i.state === 'moved') { i.link.lines = fmtRange(i.first, i.last); if (i.file) i.link.file = i.file; }
         // a link made before body fingerprints or dependencies existed gets them while its

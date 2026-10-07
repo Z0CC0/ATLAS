@@ -351,6 +351,19 @@ function shapeOf(node) {
 /** True when the file calls code in ways a static graph cannot see (the false-positive list). */
 const DYNAMIC = /ipcMain\.(?:handle|on)\s*\(|ipcRenderer\.|contextBridge|getattr\s*\(|globalThis\[|window\[|\bkoffi\b|importlib|__import__|\beval\s*\(|new Function\s*\(|\bdispatch\w*\s*\(|\[\s*['"`][\w-]+['"`]\s*\]\s*\(|addEventListener\s*\(|\.on\s*\(\s*['"`]/;
 
+/** The names a class or interface declares as its parents: extends, implements, Python bases. */
+function basesOf(node) {
+  const out = [];
+  const take = (n) => { if (!n) return; const stack = [n]; while (stack.length) { const m = stack.pop(); if (IDENTIFIERS.has(m.type) && m.namedChildCount === 0) out.push(m.text); else if (m.type === 'member_expression' || m.type === 'attribute' || m.type === 'scoped_type_identifier' || m.type === 'generic_type' || m.type === 'nested_type_identifier') { const last = m.childForFieldName('property') || m.childForFieldName('attribute') || m.childForFieldName('name') || m.namedChild(0); if (last && last.namedChildCount === 0) out.push(last.text); } else for (let i = 0; i < m.namedChildCount; i += 1) stack.push(m.namedChild(i)); } };
+  for (let i = 0; i < node.namedChildCount; i += 1) {
+    const c = node.namedChild(i);
+    if (/class_heritage|extends_clause|implements_clause|extends_type_clause|superclass|super_interfaces|base_list|superclasses|extends_interfaces|interface_type_list/.test(c.type)) take(c);
+  }
+  const sc = node.childForFieldName('superclasses') || node.childForFieldName('superclass');
+  if (sc) take(sc);
+  return [...new Set(out)];
+}
+
 /**
  * Everything the code graph wants from one file, from one parse:
  * `{ defs: [{ name, kind, line, first, last, top, exported, shape, tokens, refs }], imports, dynamic, broken }`.
@@ -389,7 +402,8 @@ function analyze(source, file) {
         }
         const shape = shapeOf(node);
         const exported = /^\s*(?:export\b|module\.exports|exports\.)/.test(source.split(/\r?\n/)[first - 1] || '') || (grammar === 'python' && top && !name.text.startsWith('_')) || (grammar === 'go' && /^[A-Z]/.test(name.text));
-        defs.push({ name: name.text, kind: node.type, line: name.startPosition.row + 1, first, last, top, exported, shape: shape.join(' '), tokens: shape.length, refs: [...used].filter((u) => !bound.has(u)).sort() });
+        const bases = /class|interface|struct/.test(node.type) ? basesOf(node).filter((b) => b !== name.text) : [];
+        defs.push({ name: name.text, kind: node.type, line: name.startPosition.row + 1, first, last, top, exported, shape: shape.join(' '), tokens: shape.length, refs: [...used].filter((u) => !bound.has(u)).sort(), bases });
       }
       const nextTop = top && !SCOPES.test(node.type);
       for (let i = node.namedChildCount - 1; i >= 0; i -= 1) stack.push([node.namedChild(i), nextTop]);

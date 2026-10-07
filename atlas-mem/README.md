@@ -74,6 +74,16 @@ and `inbox reject <slug>` (removed, and its source hash remembered so it never c
 Nothing enters the vault without that yes. Measured on this machine: 39 real sessions and 67
 documents extracted in under two seconds; the model pass at about 0.1 $ per source.
 
+Three more things, all deterministic: `codegraph` records what a class extends or
+implements (`inherits` edges) and answers `impact <graph> <project> <symbol> [--depth 2]`
+with the blast radius, what calls or inherits from a symbol and then what calls those;
+`memcheck check --write` records for every note which other notes touch the same code
+(`related`: same symbol, a shared dependency, the same file), the link the code implies
+without touching a wikilink; `harvest pairs <vault>` lists the notes that share enough words
+to be read side by side, and `harvest verdicts write|list` keeps what a model or a person
+decided about each pair (the same thing, a contradiction, neither). The prompt for that
+judgement is `tools/pairs-prompt.md`.
+
 ## What it costs
 
 | | tokens |
@@ -86,7 +96,7 @@ a few lines. Loading all sixteen grammars takes about 90 ms.
 
 ## What was tried
 
-The three tools have 84 tests (`node --test tests/memcheck.test.mjs tests/parse.test.mjs
+The three tools have 87 tests (`node --test tests/memcheck.test.mjs tests/parse.test.mjs
 tests/relocate.test.mjs tests/deps.test.mjs`). The command was run as a skill in two real
 sessions on a copy of a vault: a check that found a stale note and put the question in one
 line, and a write that produced a correct note with two code links taken from the parse. Both

@@ -125,6 +125,20 @@ test('check --write adds dependencies to an older link whose code is held', opts
   assert.equal(side(s.vault).notes['retry-limit'].links[0].deps.length, 2);
 });
 
+test('check --write records which notes touch the same code', opts, () => {
+  const s = setup();
+  s.link();
+  fs.writeFileSync(path.join(s.vault, 'wait-note.md'), '---\nname: wait-note\ndescription: a note\nmetadata:\n  type: project\n---\n\nwait sleeps.\n');
+  fs.writeFileSync(path.join(s.vault, 'far-note.md'), '---\nname: far-note\ndescription: a note\nmetadata:\n  type: project\n---\n\nelsewhere.\n');
+  m.main(['link', s.vault, 'wait-note', s.repo, 'src/a.js', 'wait']);
+  m.main(['link', s.vault, 'far-note', s.repo, 'src/b.js', 'parse']);
+  check(s.vault, true);
+  const notes = side(s.vault).notes;
+  assert.deepEqual(notes['retry-limit'].related, [{ slug: 'wait-note', via: 'dependency', symbol: 'wait', file: 'src/a.js' }], 'retry depends on wait, which wait-note describes');
+  assert.deepEqual(notes['wait-note'].related.map((r) => r.slug + ':' + r.via), ['retry-limit:dependency']);
+  assert.deepEqual(notes['far-note'].related, [], 'another file: nothing in common');
+});
+
 test('impact: the notes a change to a file or a symbol would touch', opts, () => {
   const s = setup();
   s.link();

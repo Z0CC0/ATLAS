@@ -15,6 +15,9 @@
  *   node harvest.mjs inbox list   <vault> [--json]
  *   node harvest.mjs inbox accept <vault> <slug>
  *   node harvest.mjs inbox reject <vault> <slug>
+ *   node harvest.mjs pairs  <vault> [--min 0.35] [--json]
+ *   node harvest.mjs verdicts write <vault> <verdicts.json>
+ *   node harvest.mjs verdicts list  <vault> [--json]
  *
  * `extract` reads Claude Code transcripts (one JSONL per session) and keeps, in order, the
  * first request of the session, the user's messages that read like a decision, a rule, a
@@ -237,13 +240,61 @@ function inboxReject(vault, slug) {
 }
 
 // ---------------------------------------------------------------------------------------
+// pairs: what a model (or a person) should read side by side
+
+/** Notes of the vault, by what they share in words: the candidates for "same thing" or "contradiction". */
+function pairs(vault, { min = 0.35 } = {}) {
+  const notes = readdirSync(vault).filter((f) => f.endsWith('.md') && f !== 'MEMORY.md').map((f) => parseCandidate(join(vault, f)));
+  const out = [];
+  for (let i = 0; i < notes.length; i += 1) for (let j = i + 1; j < notes.length; j += 1) {
+    const a = notes[i], b = notes[j];
+    const s = similarity(`${a.title || a.name} ${a.description}`, `${b.title || b.name} ${b.description}`);
+    const sb = similarity(a.body.slice(0, 600), b.body.slice(0, 600));
+    const score = Math.max(s, sb * 0.8);
+    if (score >= min) out.push({ a: a.slug, b: b.slug, score: Number(score.toFixed(2)) });
+  }
+  return out.sort((x, y) => y.score - x.score);
+}
+
+function pairsReport(vault, { min = 0.35, json = false } = {}) {
+  const list = pairs(vault, { min });
+  if (json) return JSON.stringify(list, null, 2);
+  if (!list.length) return 'no pair of notes shares enough words to be worth reading together';
+  return list.map((p) => `${String(p.score).padEnd(5)} ${p.a}  ↔  ${p.b}`).join('\n');
+}
+
+const verdictsPath = (vault) => join(vault, '.atlas', 'verdicts.json');
+/** Verdicts a model or a person gave on pairs: { a, b, verdict: same|contradiction|neither, why, holds? }. */
+function verdictsWrite(vault, file) {
+  const list = JSON.parse(readFileSync(file, 'utf8'));
+  if (!Array.isArray(list)) throw new Error(`${file}: expected a JSON array`);
+  const cur = existsSync(verdictsPath(vault)) ? JSON.parse(readFileSync(verdictsPath(vault), 'utf8')) : [];
+  const key = (v) => [v.a, v.b].sort().join('|');
+  const byKey = new Map(cur.map((v) => [key(v), v]));
+  let n = 0;
+  for (const v of list) { if (!v || !v.a || !v.b || !['same', 'contradiction', 'neither'].includes(v.verdict)) continue; byKey.set(key(v), { a: v.a, b: v.b, verdict: v.verdict, why: String(v.why || ''), when: new Date().toISOString().slice(0, 10) }); n += 1; }
+  mkdirSync(join(vault, '.atlas'), { recursive: true });
+  writeFileSync(verdictsPath(vault), JSON.stringify([...byKey.values()], null, 2) + '\n');
+  const kept = [...byKey.values()].filter((v) => v.verdict !== 'neither');
+  return `verdicts  ${n} recorded · ${kept.filter((v) => v.verdict === 'same').length} same · ${kept.filter((v) => v.verdict === 'contradiction').length} contradiction`;
+}
+function verdictsList(vault, json = false) {
+  const list = existsSync(verdictsPath(vault)) ? JSON.parse(readFileSync(verdictsPath(vault), 'utf8')) : [];
+  const live = list.filter((v) => existsSync(join(vault, `${v.a}.md`)) && existsSync(join(vault, `${v.b}.md`)));
+  if (json) return JSON.stringify(live, null, 2);
+  const shown = live.filter((v) => v.verdict !== 'neither');
+  if (!shown.length) return 'no pair marked as the same thing or as a contradiction';
+  return shown.map((v) => `${v.verdict.padEnd(13)} ${v.a}  ↔  ${v.b}\n              ${v.why}`).join('\n');
+}
+
+// ---------------------------------------------------------------------------------------
 // entry
 
 function main(argv) {
   const [cmd, ...rest] = argv;
   const opt = (n) => { const i = rest.indexOf(n); return i >= 0 ? rest[i + 1] : null; };
   const flag = (n) => rest.includes(n);
-  const pos = rest.filter((a, i) => !a.startsWith('--') && !(i > 0 && ['--out', '--min-kb', '--max-kb', '--skip'].includes(rest[i - 1])));
+  const pos = rest.filter((a, i) => !a.startsWith('--') && !(i > 0 && ['--out', '--min-kb', '--max-kb', '--skip', '--min'].includes(rest[i - 1])));
   switch (cmd) {
     case 'extract': {
       if (!pos[0]) throw Object.assign(new Error('usage: extract <claude-projects-dir> --out <dir> [--min-kb 50] [--skip a,b]'), { usage: true });
@@ -263,8 +314,19 @@ function main(argv) {
       if (sub === 'reject') return inboxReject(vault, arg);
       throw Object.assign(new Error('usage: inbox <write|list|accept|reject> <vault> …'), { usage: true });
     }
+    case 'pairs': {
+      if (!pos[0] || !existsSync(pos[0])) throw Object.assign(new Error('usage: pairs <vault> [--min 0.35] [--json]'), { usage: true });
+      return pairsReport(pos[0], { min: Number(opt('--min') || 0.35), json: flag('--json') });
+    }
+    case 'verdicts': {
+      const [sub, vault, arg] = pos;
+      if (!vault || !existsSync(vault)) throw Object.assign(new Error('usage: verdicts <write|list> <vault> …'), { usage: true });
+      if (sub === 'write') return verdictsWrite(vault, arg);
+      if (sub === 'list') return verdictsList(vault, flag('--json'));
+      throw Object.assign(new Error('usage: verdicts <write|list> <vault> …'), { usage: true });
+    }
     default:
-      throw Object.assign(new Error('usage: node harvest.mjs <extract|docs|inbox> …'), { usage: true });
+      throw Object.assign(new Error('usage: node harvest.mjs <extract|docs|inbox|pairs|verdicts> …'), { usage: true });
   }
 }
 
@@ -277,4 +339,4 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   }
 }
 
-export { extractSession, extract, docs, inboxWrite, inboxList, inboxAccept, inboxReject, parseCandidate, similarity, main };
+export { extractSession, extract, docs, inboxWrite, inboxList, inboxAccept, inboxReject, parseCandidate, similarity, pairs, pairsReport, verdictsWrite, verdictsList, main };

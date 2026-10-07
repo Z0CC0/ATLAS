@@ -89,6 +89,22 @@ test('uncalled symbols are graded, never removed', opts, async () => {
   for (const f of ['src/util.js', 'src/main.js']) assert.ok(fs.existsSync(path.join(g.root, 'alpha', f)), 'no source file touched');
 });
 
+test('inherits edges and the blast radius', opts, async () => {
+  const root = setup();
+  const w = (rel, lines) => fs.writeFileSync(path.join(root, rel), lines.join('\n') + '\n');
+  w('alpha/src/shapes.js', ['export class Shape {', '  area() { return 0; }', '}', 'export class Circle extends Shape {', '  area() { return 3; }', '}', 'export function draw(s) {', '  return s.area();', '}', 'export function paint(x) {', '  return draw(x);', '}', 'export function show(x) {', '  return paint(x);', '}']);
+  w('alpha/src/py.py', ['class Base:', '    pass', 'class Child(Base):', '    pass']);
+  const g = await cg.scan(root);
+  const sym = (n) => g.symbols.find((s) => s.name === n && s.project === 'alpha');
+  assert.ok(g.inherits.some((e) => e.from === sym('Circle').id && e.to === sym('Shape').id), 'Circle extends Shape');
+  assert.ok(g.inherits.some((e) => e.from === sym('Child').id && e.to === sym('Base').id), 'python bases');
+  assert.deepEqual(sym('Child').bases, ['Base']);
+  const rings = cg.impact(g, sym('draw').id, 3);
+  assert.deepEqual(rings.map((r) => r.map((id) => g.symbols[id].name)), [['paint'], ['show']]);
+  assert.match(cg.impactReport(g, 'alpha', 'draw'), /1 step away: 1\n {2}paint/);
+  assert.match(cg.impactReport(g, 'alpha', 'nothing'), /not a top-level symbol/);
+});
+
 test('report and the saved file round-trip', opts, async () => {
   const root = setup();
   const out = path.join(root, 'graph.json');

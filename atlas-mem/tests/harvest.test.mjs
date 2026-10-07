@@ -74,6 +74,25 @@ test('docs copies project markdown with its origin, skips big and generated file
   assert.match(fs.readFileSync(path.join(out, 'doc__P1__README.md'), 'utf8'), /^# document P1\/README\.md\nroot: /);
 });
 
+test('pairs and verdicts: notes that may say the same thing or contradict each other', () => {
+  const s = setup();
+  const w = (slug, title, desc, body) => fs.writeFileSync(path.join(s.vault, `${slug}.md`), `---\nname: ${slug}\ndescription: ${desc}\nmetadata:\n  type: project\n---\n\n${body}\n`);
+  w('dati-dal-2009', 'Dati dal 2009', 'dati Dukascopy tenuti dal 2009, HistData secondario', 'I dati Dukascopy si tengono dal 2009.');
+  w('dati-dal-2015', 'Dati dal 2015', 'dati Dukascopy solo dal 2015, niente prima', 'I dati Dukascopy prima del 2015 non si tengono.');
+  w('vetro', 'Vetro satinato', 'effetto vetro satinato scelto per i widget', 'Opzione B.');
+  const list = h.pairs(s.vault);
+  assert.ok(list.some((p) => [p.a, p.b].sort().join('|') === 'dati-dal-2009|dati-dal-2015'), 'the two data notes are a pair');
+  assert.ok(!list.some((p) => p.a === 'vetro' || p.b === 'vetro'), 'the glass note shares nothing');
+  assert.match(h.pairsReport(s.vault), /dati-dal-2009 {2}↔ {2}dati-dal-2015/);
+  const vf = path.join(s.root, 'v.json');
+  fs.writeFileSync(vf, JSON.stringify([{ a: 'dati-dal-2009', b: 'dati-dal-2015', verdict: 'contradiction', why: 'una dice 2009, l\'altra 2015' }, { a: 'vetro', b: 'esistente', verdict: 'neither' }]));
+  assert.match(h.verdictsWrite(s.vault, vf), /2 recorded · 0 same · 1 contradiction/);
+  assert.match(h.verdictsList(s.vault), /^contradiction dati-dal-2009 {2}↔ {2}dati-dal-2015/);
+  assert.equal(JSON.parse(h.verdictsList(s.vault, true)).length, 2);
+  fs.rmSync(path.join(s.vault, 'dati-dal-2015.md'));
+  assert.equal(h.verdictsList(s.vault), 'no pair marked as the same thing or as a contradiction', 'a verdict on a note that is gone is not shown');
+});
+
 test('inbox: write, list, accept into the vault with an index line, reject and never propose again', () => {
   const s = setup();
   const cands = path.join(s.root, 'c.json');
