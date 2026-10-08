@@ -13,10 +13,10 @@ It ships off. Nothing changes until you type `atlas low` or `atlas high`.
 | `atlas/` | the full plugin: four dials, nine commands, seven subagents |
 | `atlas-solo/` | the same rules and commands without the subagents |
 | `atlas-min/` | compression only: two levels, one command |
-| `atlas-code/` | `atlas` plus a coding section: fourteen more commands and an optional guard hook. Its own README says what it adds, what it costs and how far it has been tried |
-| `atlas-mem/` | `atlas` plus a memory: notes written by hand, linked to code, flagged as suspect when that code changes. One more command and 22 MB of tree-sitter grammars, which is why it is its own build |
+| `atlas-code/` | `atlas` plus a coding section: fourteen more commands (tests, verification, planning, shipping, a security audit, a catalogue search, …) and an optional guard hook. Its own README says what it adds, what it costs and what was tried on real projects |
+| `atlas-mem/` | `atlas` plus a memory: notes written by hand, linked to code, flagged as suspect when that code changes. One more command, six local tools (the stale-note check, a code graph across projects, a harvest of past sessions and documents into an inbox, search by meaning, live references from a language server, labels on code), a hook that puts a label on every grep that finds a labelled symbol, and 22 MB of tree-sitter grammars, which is why it is its own build |
 | `atlas-test/` | the bench that produced every number below, with the questions, every answer it generated and every verdict — so you can rerun it |
-| `.claude-plugin/marketplace.json` | lets Claude Code install any of the four straight from this repository |
+| `.claude-plugin/marketplace.json` | lets Claude Code install any of the five straight from this repository |
 
 ## What it does
 
@@ -95,9 +95,9 @@ depends on it. Nothing is ever written inside your repositories.
 
 `atlas` and `atlas-solo` carry byte-identical rules. The difference is whether the subagents exist, and whether their work stays out of your context.
 
-A fourth build, `atlas-code`, is `atlas` plus a coding section: tests, verification, planning, shipping and more, fourteen further commands and an optional guard hook. It loads about twice the descriptions, and most of it has not been run on real projects yet. Its own README says what it adds, what it costs and what was tried.
+A fourth build, `atlas-code`, is `atlas` plus a coding section: tests, verification, planning, shipping, a security audit, a catalogue search and more, fourteen further commands and an optional guard hook. It loads about twice the descriptions. `review`, `fix` and `secure` were run headless on real projects of several languages (C#, C++, Python, JavaScript); the rest was tried in sessions but not measured. Its own README says what it adds, what it costs and what was tried, with the cost of each run.
 
-A fifth, `atlas-mem`, is `atlas` plus a memory: notes you write by hand, one fact per file, linked to the code they describe and flagged as suspect when that code changes. One more command (119 tokens of description) and a local tool with tree-sitter grammars for thirteen languages, 22 MB of WebAssembly, which is why it is its own build. Its README says how a note knows it is stale and what the check cannot see.
+A fifth, `atlas-mem`, is `atlas` plus a memory: notes you write by hand, one fact per file, linked to the code they describe and flagged as suspect when that code changes. One more command (119 tokens of description) and six local tools with tree-sitter grammars for thirteen languages, 22 MB of WebAssembly, which is why it is its own build: the check itself, a code graph across every project under one folder (duplicates, uncalled symbols with three grades, blast radius), a harvest that turns past Claude Code sessions, project documents and a claude.ai export into candidates nobody accepts but you, search by meaning with a small local model, live references from a language server, and labels (CANONICAL, SUPERSEDED with its successor, WRONG with its reason, …) that a hook attaches to every grep or read that finds the symbol, so old code is never deleted and never found bare. Measured on real material: ten linked functions with five changed, one renamed, one deleted, one commented and one untouched gave suspect for exactly the seven that deserved it; thirty questions in other words found the right note first 24 times by words and 21 by meaning. Its README has the numbers and what the check cannot see.
 
 ## Measured
 
