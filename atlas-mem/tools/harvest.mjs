@@ -18,6 +18,7 @@
  *   node harvest.mjs inbox accept <vault> <slug>
  *   node harvest.mjs inbox reject <vault> <slug>
  *   node harvest.mjs run    <extract-dir> <out-dir> <vault> [--parallel 4] [--model <id>] [--write] [--dry]
+ *   node harvest.mjs suggest <vault> [--batch 12] [--parallel 3] [--model <id>] [--dry] [--redo]
  *   node harvest.mjs judge  <vault> [--min 0.35] [--parallel 2] [--model <id>] [--dry] [--redo]
  *   node harvest.mjs pairs  <vault> [--min 0.35] [--json]
  *   node harvest.mjs verdicts write <vault> <verdicts.json>
@@ -386,6 +387,54 @@ async function judge(vault, { min = 0.35, parallel = 2, model = DEFAULT_MODEL, d
   return `judge     ${todo.length} pairs · $${cost.toFixed(2)}\n${recorded}`;
 }
 
+const suggestionsPath = (vault) => join(vault, '.atlas', 'inbox-suggestions.json');
+
+/**
+ * A model reads every inbox candidate against the vault's index and proposes accept, merge
+ * (into which note) or reject, with the reason. Proposals only: they go to
+ * `<vault>/.atlas/inbox-suggestions.json`, where the inbox page and the app show them beside
+ * each candidate, and nothing is accepted or rejected by this. Batches of `batch` candidates
+ * per call; candidates already judged are skipped unless --redo.
+ */
+async function suggest(vault, { batch = 12, parallel = 3, model = DEFAULT_MODEL, dry = false, redo = false, log = () => {} } = {}) {
+  const tpl = readFileSync(join(HERE, 'suggest-prompt.md'), 'utf8');
+  const system = tpl.replace('{{EXISTING}}', existingList(vault)).replace(/Candidates:\s*\{\{CANDIDATES\}\}\s*$/, 'The message holds the candidates, each after a line "Candidate <slug> [<type>] (<source>):".');
+  const items = JSON.parse(inboxList(vault, true));
+  const known = existsSync(suggestionsPath(vault)) ? JSON.parse(readFileSync(suggestionsPath(vault), 'utf8')) : {};
+  const todo = redo ? items : items.filter((c) => !known[c.slug]);
+  if (dry) return `would ask about ${todo.length} of ${items.length} candidates (${items.length - todo.length} already have a suggestion) in ${Math.ceil(todo.length / batch)} calls with ${model}`;
+  const batches = [];
+  for (let i = 0; i < todo.length; i += batch) batches.push(todo.slice(i, i + batch));
+  let cost = 0, got = 0, failed = 0;
+  await pool(batches, parallel, async (b) => {
+    const msg = b.map((c) => `Candidate ${c.slug} [${c.type}] (${c.source}):\n${c.title || c.name}\n${c.description}\n${c.body.slice(0, 1500)}`).join('\n\n');
+    try {
+      const r = await callModel(system, msg, { model });
+      cost += r.cost;
+      const txt = stripFence(r.text);
+      if (txt.indexOf('[') < 0) throw new Error(`no JSON in the answer: ${txt.slice(0, 160)}`);
+      const arr = JSON.parse(txt.slice(txt.indexOf('['), txt.lastIndexOf(']') + 1));
+      const slugs = new Set(b.map((c) => c.slug));
+      for (const s of arr) {
+        if (!s || !slugs.has(s.slug) || !['accept', 'merge', 'reject'].includes(s.verdict)) continue;
+        known[s.slug] = { verdict: s.verdict, into: s.into || undefined, why: String(s.why || '').slice(0, 300), when: new Date().toISOString().slice(0, 10) };
+        got += 1;
+      }
+      log(`ok   ${b.length} candidates  $${r.cost.toFixed(2)}`);
+    } catch (e) { failed += 1; log(`FAIL batch of ${b.length}: ${e.message}`); }
+    mkdirSync(join(vault, '.atlas'), { recursive: true });
+    writeFileSync(suggestionsPath(vault), JSON.stringify(known, null, 2));
+  });
+  const counts = { accept: 0, merge: 0, reject: 0 };
+  for (const s of Object.values(known)) if (counts[s.verdict] !== undefined) counts[s.verdict] += 1;
+  return `suggest   ${got} suggested now · ${failed} batches failed · $${cost.toFixed(2)}\nsuggestions ${Object.keys(known).length} in all · ${counts.accept} accept · ${counts.merge} merge · ${counts.reject} reject`;
+}
+
+/** The suggestions as a map slug → { verdict, into, why, when }, or {}. */
+function suggestionsList(vault) {
+  return existsSync(suggestionsPath(vault)) ? JSON.parse(readFileSync(suggestionsPath(vault), 'utf8')) : {};
+}
+
 // ---------------------------------------------------------------------------------------
 // pairs: what a model (or a person) should read side by side
 
@@ -441,7 +490,7 @@ async function main(argv) {
   const [cmd, ...rest] = argv;
   const opt = (n) => { const i = rest.indexOf(n); return i >= 0 ? rest[i + 1] : null; };
   const flag = (n) => rest.includes(n);
-  const pos = rest.filter((a, i) => !a.startsWith('--') && !(i > 0 && ['--out', '--min-kb', '--max-kb', '--skip', '--min', '--parallel', '--model'].includes(rest[i - 1])));
+  const pos = rest.filter((a, i) => !a.startsWith('--') && !(i > 0 && ['--out', '--min-kb', '--max-kb', '--skip', '--min', '--parallel', '--model', '--batch'].includes(rest[i - 1])));
   const log = (l) => process.stderr.write(l + '\n');
   switch (cmd) {
     case 'run': {
@@ -484,6 +533,10 @@ async function main(argv) {
       }
       throw Object.assign(new Error('usage: inbox <write|list|accept|reject|apply> <vault> …'), { usage: true });
     }
+    case 'suggest': {
+      if (!pos[0] || !existsSync(pos[0])) throw Object.assign(new Error('usage: suggest <vault> [--batch 12] [--parallel 3] [--model <id>] [--dry] [--redo]'), { usage: true });
+      return suggest(pos[0], { batch: Number(opt('--batch') || 12), parallel: Number(opt('--parallel') || 3), model: opt('--model') || DEFAULT_MODEL, dry: flag('--dry'), redo: flag('--redo'), log });
+    }
     case 'pairs': {
       if (!pos[0] || !existsSync(pos[0])) throw Object.assign(new Error('usage: pairs <vault> [--min 0.35] [--json]'), { usage: true });
       return pairsReport(pos[0], { min: Number(opt('--min') || 0.35), json: flag('--json') });
@@ -509,4 +562,4 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   }
 }
 
-export { extractSession, extract, extractClaude, docs, run, judge, callModel, inboxWrite, inboxList, inboxAccept, inboxReject, parseCandidate, similarity, pairs, pairsReport, verdictsWrite, verdictsList, main, DEFAULT_MODEL };
+export { suggest, suggestionsList, extractSession, extract, extractClaude, docs, run, judge, callModel, inboxWrite, inboxList, inboxAccept, inboxReject, parseCandidate, similarity, pairs, pairsReport, verdictsWrite, verdictsList, main, DEFAULT_MODEL };

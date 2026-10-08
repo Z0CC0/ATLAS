@@ -27,10 +27,10 @@ function groupOf(source) {
   return s.slice(0, 40) || 'unknown';
 }
 
-function page(items, title) {
+function page(items, title, suggestions = {}) {
   const groups = new Map();
   for (const c of items) { const g = groupOf(c.source); if (!groups.has(g)) groups.set(g, []); groups.get(g).push(c); }
-  const data = JSON.stringify(items.map((c) => ({ slug: c.slug, title: c.title || c.slug, description: c.description, type: c.type, source: c.source, body: c.body, group: groupOf(c.source) })));
+  const data = JSON.stringify(items.map((c) => ({ slug: c.slug, title: c.title || c.slug, description: c.description, type: c.type, source: c.source, body: c.body, group: groupOf(c.source), hint: suggestions[c.slug] || null })));
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><title>${esc(title)}</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -53,6 +53,7 @@ h2 button{font-size:11px;padding:3px 8px}
 .chip.feedback{color:var(--red);border-color:var(--red)} .chip.user{color:var(--gold);border-color:var(--gold)}
 .desc{color:var(--dim);font-size:12.5px;margin-top:3px} .src{color:var(--faint);font-size:10.5px;margin-top:2px;word-break:break-all}
 pre{white-space:pre-wrap;word-break:break-word;font:12px/1.55 ui-monospace,Consolas,monospace;background:rgba(0,0,0,.35);border:1px solid var(--line);border-radius:8px;padding:10px;margin:8px 0 0;user-select:text}
+.hint{font-size:11.5px;margin-top:6px;padding:6px 8px;border-radius:6px;background:rgba(255,255,255,.04);border-left:3px solid var(--faint)} .hint.accept{border-left-color:var(--red)} .hint.merge{border-left-color:var(--gold)} .hint b{text-transform:uppercase;font-size:10px;letter-spacing:.05em}
 .acts{display:flex;gap:6px;margin-top:8px} .acts .state{margin-left:auto;font-size:11px;color:var(--dim);align-self:center}
 #count{color:var(--dim);font-size:12px}
 </style></head><body>
@@ -60,6 +61,7 @@ pre{white-space:pre-wrap;word-break:break-word;font:12px/1.55 ui-monospace,Conso
   <input id="q" placeholder="filter: title, description, body, source…">
   <span id="types"></span>
   <span id="count"></span>
+  <button id="hints">Take the suggestions</button>
   <button id="save" class="red">Save decisions</button>
   <button id="clear">Clear</button>
 </header>
@@ -86,6 +88,7 @@ function render() {
       const d = decisions[c.slug] || '';
       html += '<div class="card ' + d + '" data-slug="' + esc(c.slug) + '"><div class="row" data-toggle="1"><b>' + esc(c.title) + '</b><span class="chip ' + esc(c.type) + '">' + esc(c.type) + '</span></div>'
         + '<div class="desc">' + esc(c.description) + '</div><div class="src">' + esc(c.source) + '</div>'
+        + (c.hint ? '<div class="hint ' + esc(c.hint.verdict) + '"><b>suggested: ' + esc(c.hint.verdict) + (c.hint.into ? ' → ' + esc(c.hint.into) : '') + '</b> · ' + esc(c.hint.why) + '</div>' : '')
         + '<pre hidden>' + esc(c.body) + '</pre>'
         + '<div class="acts"><button class="red" data-dec="accepted">Accept</button><button data-dec="rejected">Reject</button><button data-dec="">Undo</button><span class="state">' + (d || 'undecided') + '</span></div></div>';
     }
@@ -101,6 +104,7 @@ document.getElementById('main').addEventListener('click', (e) => {
 });
 document.getElementById('types').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; typeOn = typeOn === b.dataset.type ? null : b.dataset.type; render(); });
 document.getElementById('q').addEventListener('input', (e) => { q = e.target.value; render(); });
+document.getElementById('hints').addEventListener('click', () => { let n = 0; for (const c of visible()) if (c.hint && !decisions[c.slug]) { decisions[c.slug] = c.hint.verdict === 'accept' ? 'accepted' : 'rejected'; n += 1; } persist(); render(); alert(n + ' decisions taken from the suggestions (merge counts as reject: the detail goes into the named note by hand). Undecided ones only; your own decisions were kept.'); });
 document.getElementById('clear').addEventListener('click', () => { if (confirm('Forget every decision on this page?')) { decisions = {}; persist(); render(); } });
 document.getElementById('save').addEventListener('click', () => {
   const out = { accepted: [], rejected: [] };
@@ -116,9 +120,10 @@ function main(argv) {
   const ti = argv.indexOf('--title');
   if (pos.length < 2) throw new Error('usage: inbox-page.mjs <vault> <out.html> [--title "<title>"]');
   const items = JSON.parse(harvest.inboxList(pos[0], true));
+  const suggestions = harvest.suggestionsList(pos[0]);
   const out = resolve(pos[1]);
-  writeFileSync(out, page(items, ti >= 0 ? argv[ti + 1] : 'Memory inbox'));
-  return `written   ${out}  (${items.length} candidates)`;
+  writeFileSync(out, page(items, ti >= 0 ? argv[ti + 1] : 'Memory inbox', suggestions));
+  return `written   ${out}  (${items.length} candidates, ${Object.keys(suggestions).length} with a suggestion)`;
 }
 
 export { page, groupOf, main };

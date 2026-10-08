@@ -97,7 +97,11 @@ three of them the same rule written twice; `harvest inbox write <vault> <candida
 `<vault>/.atlas/inbox/`, skipping what the vault or the inbox already says in other words.
 `inbox list`, `inbox accept <slug>` (the file becomes a note, one line goes into the index)
 and `inbox reject <slug>` (removed, and its source hash remembered so it never comes back).
-To review a large inbox away from any app, `tools/inbox-page.mjs <vault> <out.html>` writes
+`harvest suggest <vault>` has a model read every candidate against the vault's index and
+propose accept, merge (into which note) or reject, with the reason, into
+`<vault>/.atlas/inbox-suggestions.json`; the inbox page and the app show the proposal beside
+each candidate and can take all of them as decisions in one click. A proposal is not a
+decision: nothing moves until the person says so. To review a large inbox away from any app, `tools/inbox-page.mjs <vault> <out.html>` writes
 one HTML page with every candidate grouped by source, Accept / Reject buttons that work
 offline, and a "Save decisions" button that downloads a JSON; `harvest inbox apply <vault>
 <decisions.json>` then accepts and rejects for real. Nothing enters the vault without that yes. Measured on this machine: 39 real sessions and 67

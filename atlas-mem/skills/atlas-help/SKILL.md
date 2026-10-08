@@ -99,7 +99,8 @@ A third tool, `tools/harvest.mjs`, feeds the memory from what already exists wit
 writing a note by itself: it pulls the decision-shaped lines out of past Claude Code sessions
 and project documents (`extract`, `docs`), takes the candidates a model proposed from them
 (`inbox write`) and keeps them in `<vault>/.atlas/inbox/` until a person accepts or rejects
-each one (`inbox accept`, `inbox reject`). A rejected candidate is never proposed again; a
+each one (`inbox accept`, `inbox reject`). `harvest suggest` has a model propose accept / merge / reject for each candidate with the
+reason, shown beside it; the person still decides. A rejected candidate is never proposed again; a
 candidate that says what the vault already says is skipped and named.
 
 `tools/labels.mjs` and `hooks/atlas-labels.js` are the labels: a table in `<vault>/.atlas/labels.json`,

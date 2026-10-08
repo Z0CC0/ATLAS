@@ -103,6 +103,8 @@ test('run and judge: --dry says what would be sent and calls nothing', async () 
   assert.ok(!fs.existsSync(path.join(outDir, 'a.json')), 'dry: nothing written');
   assert.match(await h.judge(s.vault, { dry: true }), /would judge 0 of 0 pairs/);
   assert.match(await h.main(['run', inDir, outDir, s.vault, '--dry', '--model', 'x-y']), /with x-y/);
+  assert.match(await h.suggest(s.vault, { dry: true }), /would ask about \d+ of \d+ candidates/);
+  assert.deepEqual(h.suggestionsList(s.vault), {}, 'no suggestions until the model ran');
 });
 
 test('inbox: write, list, accept into the vault with an index line, reject and never propose again', () => {
