@@ -1,6 +1,6 @@
 {
   "name": "atlas-mem",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Four independent dials — compression (low/high), rigour (ask), check and silent — plus seven subagents that keep searches, logs, pages and big files out of your conversation. Compresses without losing a fact, and refuses to start building before the goal is clear. This variant adds the memory section: notes written by hand, linked to code, and flagged as suspect when that code or what it depends on changes.",
   "author": {
     "name": "ZoCCo"

@@ -100,7 +100,7 @@ function build(state) {
 // file it writes is `off`, so the next session takes the silent path below.
 const FIRST_RUN =
   'ATLAS is installed and doing nothing yet. It stays off until you switch it on:\n' +
-  '`atlas low` shorter answers · `atlas high` half the words · `atlas help` the full card.';
+  '`atlas low` shorter answers · `atlas high` half the words.';
 
 // Claude Code keeps the output of one hook only up to about 10 KB. Above that it
 // writes the whole text to a file and hands the model a 2 KB preview, silently

@@ -18,7 +18,7 @@ nothing surprising to say, leave it empty rather than filling it.
 
 # ATLAS
 
-Four dials, twenty-three commands, seven subagents.
+Four dials, twenty-four commands, seven subagents.
 
 **It ships off.** A fresh install changes nothing until you type `atlas low` or `atlas high`.
 After that the setting persists — across turns and restarts — until you change it or type
@@ -60,7 +60,7 @@ name, the work is usually done without the command's rules.
 |---|---|---|---|
 | `atlas <dial>` | sets the dials | 40 | `/atlas:atlas high` or `atlas high` alone as the whole message. The plain form works before the command menu has loaded |
 | `atlas-help` | this card | 2.2k | |
-| `atlas-search` | answers only from a live web search | 303 | **`atlas` build only.** It is the handle on the `atlas-research` subagent, so the pages it reads never land in your session. Add "give me sources" to the request, in any language, and it hands back where to read instead of the answer: videos, discussions, articles, grouped, one line each |
+| `atlas-search` | answers only from a live web search | 303 | **Not in `atlas-solo` or `atlas-min`.** It is the handle on the `atlas-research` subagent, so the pages it reads never land in your session. Add "give me sources" to the request, in any language, and it hands back where to read instead of the answer: videos, discussions, articles, grouped, one line each |
 | `atlas-review` | what is wrong with a diff, a branch, a file or a pull request, one problem per line: where, what breaks, the fix | 1.0k | four tiers, `breaks` first. `nothing found` is the whole answer when there is nothing. Behind it, 22 short checklists, read only as the diff calls for them: one per language, plus security, tests, types, errors, a pull request. "second opinion" runs a second reviewer that has not seen the first |
 | `atlas-fix` | a failing build, type check or linter back to green: one error, one smallest change, run again | 549 | stops and says why instead of silencing an error: same error twice, more errors than before, a change of design. Ends with `PASS`, `STOPPED` or `DID NOT RUN` and four counts. One file per toolchain behind it, 10 in all |
 | `atlas-commit` | commit message for what is staged | 109 | written in normal prose whatever the level: it leaves the conversation |
@@ -142,6 +142,7 @@ nothing.
 | `atlas` | everything on this card | 3,382 |
 | `atlas-solo` | same rules, no subagents, and eight commands rather than nine | 2,331 |
 | `atlas-min` | compression only: one command, no `ask`, no `check`, no provenance marker | 1,235 |
+| `atlas-code` | everything in `atlas`, plus the coding section on this card | 5,600 |
 
 `atlas` and `atlas-solo` have byte-identical rules, verified with `diff`: they write the same
 answers. The difference is the subagents, and whether you want the work kept out of context.

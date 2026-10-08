@@ -10,6 +10,7 @@
  * of its source so it is never proposed again.
  *
  *   node harvest.mjs extract <claude-projects-dir> --out <dir> [--min-kb 50] [--skip a,b]
+ *   node harvest.mjs inbox apply <vault> <decisions.json>   (decisions saved by inbox-page.mjs)
  *   node harvest.mjs claude  <conversations.json> <out-dir> [--min-chars 2000]
  *   node harvest.mjs docs    <root> --out <dir> [--max-kb 120]
  *   node harvest.mjs inbox write  <vault> <candidates.json>
@@ -466,12 +467,22 @@ async function main(argv) {
     }
     case 'inbox': {
       const [sub, vault, arg] = pos;
-      if (!vault || !existsSync(vault)) throw Object.assign(new Error('usage: inbox <write|list|accept|reject> <vault> …'), { usage: true });
+      if (!vault || !existsSync(vault)) throw Object.assign(new Error('usage: inbox <write|list|accept|reject|apply> <vault> …'), { usage: true });
       if (sub === 'write') return inboxWrite(vault, arg);
       if (sub === 'list') return inboxList(vault, flag('--json'));
       if (sub === 'accept') return inboxAccept(vault, arg);
       if (sub === 'reject') return inboxReject(vault, arg);
-      throw Object.assign(new Error('usage: inbox <write|list|accept|reject> <vault> …'), { usage: true });
+      if (sub === 'apply') {
+        // decisions saved by inbox-page.mjs: {"accepted": [slugs], "rejected": [slugs]}
+        if (!arg || !existsSync(arg)) throw Object.assign(new Error('usage: inbox apply <vault> <decisions.json>'), { usage: true });
+        const d = JSON.parse(readFileSync(arg, 'utf8'));
+        const out = [];
+        for (const slug of d.accepted || []) { try { out.push(inboxAccept(vault, slug)); } catch (e) { out.push(`error     ${slug}: ${e.message}`); } }
+        for (const slug of d.rejected || []) { try { out.push(inboxReject(vault, slug)); } catch (e) { out.push(`error     ${slug}: ${e.message}`); } }
+        out.push(`applied   ${(d.accepted || []).length} accepted · ${(d.rejected || []).length} rejected`);
+        return out.join('\n');
+      }
+      throw Object.assign(new Error('usage: inbox <write|list|accept|reject|apply> <vault> …'), { usage: true });
     }
     case 'pairs': {
       if (!pos[0] || !existsSync(pos[0])) throw Object.assign(new Error('usage: pairs <vault> [--min 0.35] [--json]'), { usage: true });

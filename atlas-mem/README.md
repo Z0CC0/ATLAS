@@ -6,7 +6,7 @@ measurements are about `atlas`, not about this build.
 
 ## What it adds
 
-One command, `atlas memory`, in four modes chosen by the words of the request:
+One command, `atlas memory`, in five modes chosen by the words of the request:
 
 | type this | and it |
 |---|---|
@@ -14,6 +14,7 @@ One command, `atlas memory`, in four modes chosen by the words of the request:
 | `atlas memory, what did we decide about …` | finds the right note and returns it whole, saying whether the code it describes has changed since |
 | `atlas memory, is it still true?` | checks every note linked to code against the code as it is now and reports: `firm`, or `suspect` with the reason |
 | `atlas memory, tidy` | duplicates, orphans, a broken index; nothing deleted without a yes |
+| `atlas memory, mark X as superseded by Y` | labels a symbol (CANONICAL, PREFERRED, SUPERSEDED with its successor, WRONG with its reason, FRAGILE, EXPERIMENTAL); a hook then puts the label on every grep or read that finds it |
 
 Nothing is written to memory automatically. A note is created when the work decides a fact
 is worth keeping: a decision made, a correction given, a constraint stated. This keeps the
@@ -72,7 +73,8 @@ result as context, one line per symbol, with the successor and the reason. Nothi
 hidden or changed; the old code just cannot be found bare. The hook finds the vault through
 the nearest `.atlas.json` (`{"vault": "<path>"}`) at or above the working directory, then
 `~/.claude/atlas.json`, then the Claude Code memory folder of that directory; with no vault
-it is silent. The file is under 10 KB like every hook here.
+it is silent. The file is 4 KB; what a hook prints is kept under the 10 KB that Claude Code
+hands the model whole.
 
 ## Harvest: filling the memory from what already exists
 
@@ -138,25 +140,17 @@ and the tools say what is missing.
 | | tokens |
 |---|---|
 | the description, loaded every session | 119 |
-| the five files behind it, read when the command is used | 4,714 |
+| the six files behind it, read when the command is used | 4,714 |
 
 The tool is local and takes under a second on a vault of a dozen linked notes; its output is
-a few lines. Loading all sixteen grammars takes about 90 ms.
+a few lines. Loading all sixteen grammars (thirteen languages, plus CSS, INI and regular
+expressions) takes about 90 ms.
 
 ## What was tried
 
 The six tools have 100 tests (`node --test tests/*.test.mjs`; the live ones skip when their
 package is missing).
 
-The three skills of the code build were tried on this machine's own projects, headless, with
-the installed plugins off: `atlas review` on three C# files (read `review/csharp.md` and
-`method.md`, four findings, one of them a real crash path, $1.29) and on two C++ bridges
-(`review/cpp.md`, nine findings, $1.69); `atlas fix` on a C# project with three injected
-errors (`fix/csharp.md`, `dotnet build`, four errors fixed since the syntax error hid two,
-build green, $0.82); `atlas secure` on a 200-file Python daemon (58 routes read, four medium
-findings with one root cause, five low, secrets pass over 272 commits, $3.72 in 285 s).
-Java and Swift were not tried: the only files in those languages here are framework
-boilerplate.
 
 Two benches on real material, after the 0.2.9 build. Freshness: ten notes linked to ten
 functions of a 57-file Python project (a copy); five bodies changed, one function renamed,
@@ -226,8 +220,8 @@ All four persist across turns, restarts and projects until changed, and move ind
 ## Install
 
 ```bash
-/plugin marketplace add <this-repo>
-/plugin install atlas
+/plugin marketplace add Z0CC0/ATLAS
+/plugin install atlas-mem@atlas
 ```
 
 No dependencies, no build step, no telemetry.
@@ -256,7 +250,7 @@ file per project, outside the plugin, so removing and reinstalling brings back w
 before. Type `atlas off` in a project before uninstalling, or delete that folder — nothing else
 depends on it. Nothing is ever written inside your repositories.
 
-## Three builds
+## Five builds
 
 | build | what is in it | fixed cost per session at `low` |
 |---|---|---|
@@ -266,9 +260,9 @@ depends on it. Nothing is ever written inside your repositories.
 
 `atlas` and `atlas-solo` carry byte-identical rules. The difference is whether the subagents exist, and whether their work stays out of your context.
 
-A fourth build, `atlas-code`, is `atlas` plus a coding section: tests, verification, planning, shipping and more, fourteen further commands and an optional guard hook. It loads about twice the descriptions, and most of it has not been run on real projects yet. Its own README says what it adds, what it costs and what was tried.
+A fourth build, `atlas-code`, is `atlas` plus a coding section: tests, verification, planning, shipping, a security audit, a catalogue search and more, sixteen further commands and an optional guard hook. It loads about twice the descriptions. `review`, `fix` and `secure` were run headless on real projects of several languages (C#, C++, Python, JavaScript); the rest was tried in sessions but not measured. Its own README says what it adds, what it costs and what was tried, with the cost of each run.
 
-A fifth, `atlas-mem`, is `atlas` plus a memory: notes you write by hand, one fact per file, linked to the code they describe and flagged as suspect when that code changes. One more command (119 tokens of description) and a local tool with tree-sitter grammars for thirteen languages, 22 MB of WebAssembly, which is why it is its own build. Its README says how a note knows it is stale and what the check cannot see.
+A fifth, `atlas-mem`, is `atlas` plus a memory: notes you write by hand, one fact per file, linked to the code they describe and flagged as suspect when that code changes. One more command (119 tokens of description) and six local tools with tree-sitter grammars for thirteen languages, 22 MB of WebAssembly, which is why it is its own build: the check itself, a code graph across every project under one folder, a harvest of past sessions, documents and a claude.ai export into an inbox, search by meaning with a small local model, live references from a language server, and labels that a hook attaches to every grep or read that finds the symbol. Its README has the numbers and what the check cannot see.
 
 ## Measured
 

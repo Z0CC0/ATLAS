@@ -18,7 +18,7 @@ nothing surprising to say, leave it empty rather than filling it.
 
 # ATLAS
 
-Four dials, nine commands, seven subagents.
+Four dials, eight commands, no subagents.
 
 **It ships off.** A fresh install changes nothing until you type `atlas low` or `atlas high`.
 After that the setting persists — across turns and restarts — until you change it or type
@@ -60,7 +60,6 @@ name, the work is usually done without the command's rules.
 |---|---|---|---|
 | `atlas <dial>` | sets the dials | 40 | `/atlas:atlas high` or `atlas high` alone as the whole message. The plain form works before the command menu has loaded |
 | `atlas-help` | this card | 2.2k | |
-| `atlas-search` | answers only from a live web search | 303 | **`atlas` build only.** It is the handle on the `atlas-research` subagent, so the pages it reads never land in your session. Add "give me sources" to the request, in any language, and it hands back where to read instead of the answer: videos, discussions, articles, grouped, one line each |
 | `atlas-review` | what is wrong with a diff, a branch, a file or a pull request, one problem per line: where, what breaks, the fix | 1.0k | four tiers, `breaks` first. `nothing found` is the whole answer when there is nothing. Behind it, 22 short checklists, read only as the diff calls for them: one per language, plus security, tests, types, errors, a pull request. "second opinion" runs a second reviewer that has not seen the first |
 | `atlas-fix` | a failing build, type check or linter back to green: one error, one smallest change, run again | 549 | stops and says why instead of silencing an error: same error twice, more errors than before, a change of design. Ends with `PASS`, `STOPPED` or `DID NOT RUN` and four counts. One file per toolchain behind it, 10 in all |
 | `atlas-commit` | commit message for what is staged | 109 | written in normal prose whatever the level: it leaves the conversation |
@@ -70,20 +69,8 @@ name, the work is usually done without the command's rules.
 
 ## Subagents
 
-Delegated, never typed. **The work stays with them, only the answer comes back** — their reads,
-searches and logs never enter your conversation. That is the whole reason they exist, and the
-reason to skip one: when you need the material itself, delegating adds a round trip and saves
-nothing.
-
-| subagent | what it does | worth knowing |
-|---|---|---|
-| `atlas-finder` | answers "where": file and line range, one line each, nothing else | only cites ranges it actually read. Skip it when you already know the file |
-| `atlas-editor` | one small edit in at most two files, a line per file back | a third file and it hands the whole task back, on purpose |
-| `atlas-diff` | the same review, run where the diff stays: one line per problem, nothing about what is fine | reads the diff itself, so a large one never enters your context |
-| `atlas-runner` | runs tests, build or linter, returns only the deciding lines | never repairs anything, never works around a failure |
-| `atlas-browser` | drives a page, reports in words | one screenshot costs about 9,800 tokens; this pays for itself immediately |
-| `atlas-research` | searches the web: the answer with its sources, or a reading list grouped by kind | says "I did not find it" rather than "it does not exist", and never forces a weak link to fill a group |
-| `atlas-catalog` | searches the public catalogues: free APIs, free-tier services, MCP servers (the official registry and Smithery), Claude Code skills (skills.sh), plugins (Anthropic's two marketplaces), hooks and tooling. Finds, never installs | those lists are 550,000 tokens; it reads them live and hands back three candidates |
+None in this build. `atlas-solo` ships the same rules and commands without the seven
+subagents of `atlas`; work that would go to one is done in the conversation.
 
 ## Builds
 

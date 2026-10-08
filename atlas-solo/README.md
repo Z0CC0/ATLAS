@@ -18,9 +18,9 @@ It ships off. Nothing changes until you type `atlas low` or `atlas high`.
 
 All four persist across turns, restarts and projects until changed, and move independently: `atlas ask off` leaves the other three where they were.
 
-**Seven subagents** do the expensive reading somewhere else and hand back only the answer: `atlas-finder` (where is X), `atlas-editor` (a bounded edit), `atlas-diff` (what is wrong with this diff), `atlas-runner` (run the tests, return the verdict), `atlas-browser` (does the page work, without a screenshot in your context), `atlas-research` (an answer with sources, or a reading list), `atlas-catalog` (is there a free API for this).
+**Seven subagents** (in the `atlas` build; this one ships none) do the expensive reading somewhere else and hand back only the answer: `atlas-finder` (where is X), `atlas-editor` (a bounded edit), `atlas-diff` (what is wrong with this diff), `atlas-runner` (run the tests, return the verdict), `atlas-browser` (does the page work, without a screenshot in your context), `atlas-research` (an answer with sources, or a reading list), `atlas-catalog` (is there a free API for this).
 
-**Nine commands**: the dials, the reference card, `atlas-search` (an answer from a live search, or with "give me sources" a reading list), `atlas-review` (what is wrong with a diff, with a checklist for the languages in it), `atlas-fix` (a failing build, type check or linter back to green, one error at a time), `atlas-commit`, `atlas-recap` (a handover file so a new chat can continue where this one stopped), `atlas-organize` (tidies a folder with a plan first and an undo after; nothing is ever deleted), `atlas-silent`.
+**Eight commands**: the dials, the reference card, `atlas-review` (what is wrong with a diff, with a checklist for the languages in it), `atlas-fix` (a failing build, type check or linter back to green, one error at a time), `atlas-commit`, `atlas-recap` (a handover file so a new chat can continue where this one stopped), `atlas-organize` (tidies a folder with a plan first and an undo after; nothing is ever deleted), `atlas-silent`.
 
 ## Commands
 
@@ -29,7 +29,6 @@ All four persist across turns, restarts and projects until changed, and move ind
 | `/atlas:atlas` | set the dials |
 | `/atlas:atlas-help` | the reference card |
 | `/atlas:atlas-recap` | write a handover file for the conversation |
-| `/atlas:atlas-search` | answer only from a web search; with "give me sources", where to read instead |
 | `/atlas:atlas-review` | review a diff, a branch, a file or a pull request, with a checklist for the languages in it |
 | `/atlas:atlas-fix` | get a failing build, type check or linter back to green |
 | `/atlas:atlas-commit` | commit message for the staged changes |
@@ -39,8 +38,8 @@ All four persist across turns, restarts and projects until changed, and move ind
 ## Install
 
 ```bash
-/plugin marketplace add <this-repo>
-/plugin install atlas
+/plugin marketplace add Z0CC0/ATLAS
+/plugin install atlas-solo@atlas
 ```
 
 No dependencies, no build step, no telemetry.
@@ -69,7 +68,7 @@ file per project, outside the plugin, so removing and reinstalling brings back w
 before. Type `atlas off` in a project before uninstalling, or delete that folder — nothing else
 depends on it. Nothing is ever written inside your repositories.
 
-## Three builds
+## Five builds
 
 | build | what is in it | fixed cost per session at `low` |
 |---|---|---|
@@ -79,9 +78,9 @@ depends on it. Nothing is ever written inside your repositories.
 
 `atlas` and `atlas-solo` carry byte-identical rules. The difference is whether the subagents exist, and whether their work stays out of your context.
 
-A fourth build, `atlas-code`, is `atlas` plus a coding section: tests, verification, planning, shipping and more, fourteen further commands and an optional guard hook. It loads about twice the descriptions, and most of it has not been run on real projects yet. Its own README says what it adds, what it costs and what was tried.
+A fourth build, `atlas-code`, is `atlas` plus a coding section: tests, verification, planning, shipping, a security audit, a catalogue search and more, sixteen further commands and an optional guard hook. It loads about twice the descriptions. `review`, `fix` and `secure` were run headless on real projects of several languages (C#, C++, Python, JavaScript); the rest was tried in sessions but not measured. Its own README says what it adds, what it costs and what was tried, with the cost of each run.
 
-A fifth, `atlas-mem`, is `atlas` plus a memory: notes you write by hand, one fact per file, linked to the code they describe and flagged as suspect when that code changes. One more command (119 tokens of description) and a local tool with tree-sitter grammars for thirteen languages, 22 MB of WebAssembly, which is why it is its own build. Its README says how a note knows it is stale and what the check cannot see.
+A fifth, `atlas-mem`, is `atlas` plus a memory: notes you write by hand, one fact per file, linked to the code they describe and flagged as suspect when that code changes. One more command (119 tokens of description) and six local tools with tree-sitter grammars for thirteen languages, 22 MB of WebAssembly, which is why it is its own build: the check itself, a code graph across every project under one folder, a harvest of past sessions, documents and a claude.ai export into an inbox, search by meaning with a small local model, live references from a language server, and labels that a hook attaches to every grep or read that finds the symbol. Its README has the numbers and what the check cannot see.
 
 ## Measured
 

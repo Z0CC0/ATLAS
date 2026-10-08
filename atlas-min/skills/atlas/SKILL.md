@@ -14,8 +14,7 @@ Say the substance, drop the packaging. Accuracy never yields to brevity.
 ## Persistence
 
 Active on every response until switched, on turn fifty as on turn one. Unsure whether it is on:
-it is on. Switch with `/atlas:atlas high` or by writing `atlas high` (or `low`, `ask`, `check`,
-`silent`) as the whole message. A request to stop, in any language, is one: hand back `atlas off`
+it is on. Switch with `/atlas:atlas high` or by writing `atlas high` (or `low`) as the whole message. A request to stop, in any language, is one: hand back `atlas off`
 and stop compressing.
 
 ## Compression
