@@ -75,7 +75,7 @@ depends on it. Nothing is ever written inside your repositories.
 |---|---|---|
 | `atlas` | everything | 3,382 tokens |
 | `atlas-solo` | same rules, no subagents | 2,331 tokens |
-| `atlas-min` | compression only: two levels, one command | 1,235 tokens |
+| `atlas-min` | compression only: two levels, one command | 1,226 tokens |
 
 `atlas` and `atlas-solo` carry byte-identical rules. The difference is whether the subagents exist, and whether their work stays out of your context.
 
@@ -168,7 +168,7 @@ Run-to-run noise with no plugin and the rules frozen: 0.4 points in English, 0.6
 
 Those are tiktoken counts. **What the API actually bills** was measured on the bench too: the input of a one-turn call with each setup on, minus the same call with no plugin, median over the 48 questions. The rules and the reminder at `low` come to 2,207 tokens billed against 1,436 counted, a ratio of 1.54; the session tables above use the billed figure for the injected text and tiktoken for the descriptions, which the bench cannot separate from the rest of the prompt.
 
-The `atlas-min` build cuts the descriptions to 153 and the rules to 1,082 by shipping only
+The `atlas-min` build cuts the descriptions to 153 and the rules to 1,073 by shipping only
 the compression sections. `atlas-solo` keeps every rule and drops the seven subagents: 922 in
 descriptions instead of 1,973. It also drops `atlas-search`, which is a handle on a
 subagent it does not carry — the search discipline itself lives in the `check` dial, where it

@@ -91,7 +91,7 @@ nothing.
 |---|---|---|
 | `atlas` | everything on this card | 3,382 |
 | `atlas-solo` | same rules, no subagents, and eight commands rather than nine | 2,331 |
-| `atlas-min` | compression only: one command, no `ask`, no `check`, no provenance marker | 1,235 |
+| `atlas-min` | compression only: one command, no `ask`, no `check`, no provenance marker | 1,226 |
 
 `atlas` and `atlas-solo` have byte-identical rules, verified with `diff`: they write the same
 answers. The difference is the subagents, and whether you want the work kept out of context.
