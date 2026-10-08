@@ -60,6 +60,20 @@ read the JSON back. Projects declared as a porting of one another (`--porting "A
 their duplicates marked and out of the counts. Measured on twelve projects: 665 files,
 208,000 lines, 12,500 symbols in 20 seconds. It never changes a source file.
 
+## Labels: code is never deleted, it is marked
+
+`tools/labels.mjs` keeps a small table of verdicts on symbols, `<vault>/.atlas/labels.json`:
+CANONICAL (the reference version across projects), PREFERRED, SUPERSEDED (needs its
+successor: a superseded symbol without one is refused), WRONG (with the reason, which is the
+value), FRAGILE, EXPERIMENTAL. Every label needs its reason. `set`, `unset`, `list`,
+`lookup`. The part that makes it work is the hook `hooks/atlas-labels.js`, on `PostToolUse`
+for `Grep` and `Read`: when a result names a labelled symbol, the label is attached to the
+result as context, one line per symbol, with the successor and the reason. Nothing is
+hidden or changed; the old code just cannot be found bare. The hook finds the vault through
+the nearest `.atlas.json` (`{"vault": "<path>"}`) at or above the working directory, then
+`~/.claude/atlas.json`, then the Claude Code memory folder of that directory; with no vault
+it is silent. The file is under 10 KB like every hook here.
+
 ## Harvest: filling the memory from what already exists
 
 `tools/harvest.mjs` is the third tool. `harvest extract <claude-projects> --out <dir>` reads
@@ -67,7 +81,8 @@ every past Claude Code session (one JSONL each; benchmark and scratch folders sk
 sessions skipped) and keeps, per session, the first request, the user's messages that read
 like a decision, a rule or a correction, and the assistant's paragraphs that state one: a
 few kilobytes per session instead of megabytes. `harvest docs <root> --out <dir>` collects
-the projects' markdown documents. `harvest run <extract-dir> <out-dir> <vault> [--write]` has a model turn each extract into
+the projects' markdown documents. `harvest claude <conversations.json> <out-dir>` does the same for a claude.ai data export
+(Settings → Privacy → Export data). `harvest run <extract-dir> <out-dir> <vault> [--write]` has a model turn each extract into
 candidates (the prompt is `tools/harvest-prompt.md`; the vault's existing notes are listed in
 it so they are not restated), and `harvest judge <vault>` has it say, for every pair of
 notes that share enough words, whether they are the same thing, a contradiction, or neither
@@ -130,8 +145,18 @@ a few lines. Loading all sixteen grammars takes about 90 ms.
 
 ## What was tried
 
-The five tools have 94 tests (`node --test tests/memcheck.test.mjs tests/parse.test.mjs
-tests/relocate.test.mjs tests/deps.test.mjs`).
+The six tools have 100 tests (`node --test tests/*.test.mjs`; the live ones skip when their
+package is missing).
+
+The three skills of the code build were tried on this machine's own projects, headless, with
+the installed plugins off: `atlas review` on three C# files (read `review/csharp.md` and
+`method.md`, four findings, one of them a real crash path, $1.29) and on two C++ bridges
+(`review/cpp.md`, nine findings, $1.69); `atlas fix` on a C# project with three injected
+errors (`fix/csharp.md`, `dotnet build`, four errors fixed since the syntax error hid two,
+build green, $0.82); `atlas secure` on a 200-file Python daemon (58 routes read, four medium
+findings with one root cause, five low, secrets pass over 272 commits, $3.72 in 285 s).
+Java and Swift were not tried: the only files in those languages here are framework
+boilerplate.
 
 Two benches on real material, after the 0.2.9 build. Freshness: ten notes linked to ten
 functions of a 57-file Python project (a copy); five bodies changed, one function renamed,

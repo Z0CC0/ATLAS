@@ -76,7 +76,7 @@ build adds is the part a vault cannot do by itself: notice when a note has gone 
 
 | command | what it does | files behind it | worth knowing |
 |---|---|---|---|
-| `atlas-memory` | writes a note when the work decides a fact is worth keeping; finds the right note, whole, when it matters; checks every note linked to code against the code as it is now; tidies duplicates and orphans | 5 | a note linked to code turns `suspect` when that code, or what it directly depends on, changed, moved file under another name, or disappeared. The report says what and where; the body of a note is never changed by a check |
+| `atlas-memory` | writes a note when the work decides a fact is worth keeping; finds the right note, whole, when it matters; checks every note linked to code against the code as it is now; tidies duplicates and orphans; labels code (CANONICAL, SUPERSEDED with its successor, WRONG with its reason, …) and a hook puts the label on every Grep or Read that finds the symbol | 6 | a note linked to code turns `suspect` when that code, or what it directly depends on, changed, moved file under another name, or disappeared. The report says what and where; the body of a note is never changed by a check |
 
 The tool, `tools/memcheck.mjs`, does everything that needs a hash or a comparison: a model
 cannot compute a fingerprint in its head. It parses the code with tree-sitter (grammars
@@ -101,6 +101,11 @@ and project documents (`extract`, `docs`), takes the candidates a model proposed
 (`inbox write`) and keeps them in `<vault>/.atlas/inbox/` until a person accepts or rejects
 each one (`inbox accept`, `inbox reject`). A rejected candidate is never proposed again; a
 candidate that says what the vault already says is skipped and named.
+
+`tools/labels.mjs` and `hooks/atlas-labels.js` are the labels: a table in `<vault>/.atlas/labels.json`,
+and a `PostToolUse` hook on `Grep` and `Read` that attaches the label of any symbol a result
+names, with the successor and the reason. Code is never deleted, it is marked, and it cannot
+be found without the mark. Silent when the directory has no vault.
 
 Two optional layers, each one file, each saying plainly when its dependency is missing:
 `tools/embed.mjs` finds a note by meaning (a small multilingual model that runs locally,

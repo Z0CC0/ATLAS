@@ -10,6 +10,7 @@
  * of its source so it is never proposed again.
  *
  *   node harvest.mjs extract <claude-projects-dir> --out <dir> [--min-kb 50] [--skip a,b]
+ *   node harvest.mjs claude  <conversations.json> <out-dir> [--min-chars 2000]
  *   node harvest.mjs docs    <root> --out <dir> [--max-kb 120]
  *   node harvest.mjs inbox write  <vault> <candidates.json>
  *   node harvest.mjs inbox list   <vault> [--json]
@@ -99,6 +100,46 @@ function extractSession(path, { cap = 24000 } = {}) {
 }
 
 /** Every session of every project under the Claude projects folder, filtered, to `out`. */
+/**
+ * A claude.ai data export (`conversations.json`, from Settings → Privacy → Export data) →
+ * one extract per conversation, in the same shape as a session extract. Small chats are
+ * skipped; the same signals as sessions decide which lines are kept.
+ */
+function extractClaude(file, out, { minChars = 2000, cap = 24000 } = {}) {
+  const convs = JSON.parse(readFileSync(file, 'utf8'));
+  if (!Array.isArray(convs)) throw new Error(`${file}: not a claude.ai export (expected an array of conversations)`);
+  mkdirSync(out, { recursive: true });
+  const report = [];
+  for (const c of convs) {
+    const msgs = Array.isArray(c.chat_messages) ? c.chat_messages : [];
+    const plain = (m) => clean(typeof m.text === 'string' && m.text ? m.text : textOf(m.content));
+    const total = msgs.reduce((n, m) => n + plain(m).length, 0);
+    const id = String(c.uuid || sha(JSON.stringify(c)).slice(0, 12));
+    if (total < minChars) { report.push(`skip      ${id} (${total} chars)`); continue; }
+    const turns = [];
+    let firstUser = null;
+    for (const m of msgs) {
+      const text = plain(m);
+      if (!text) continue;
+      if (m.sender === 'human') {
+        if (SKIP_USER.test(text)) continue;
+        if (!firstUser) { firstUser = text; turns.push({ who: 'U', text: clip(text, 900) }); continue; }
+        if (USER_SIGNAL.test(text)) turns.push({ who: 'U', text: clip(text, 700) });
+      } else if (m.sender === 'assistant') {
+        for (const p of text.split(/\n{2,}/)) if (p.length > 40 && ASSISTANT_SIGNAL.test(p)) turns.push({ who: 'A', text: clip(p, 500) });
+      }
+    }
+    if (!turns.length) { report.push(`empty     ${id}`); continue; }
+    let body = turns.map((t) => `${t.who}: ${t.text}`).join('\n\n');
+    if (body.length > cap) body = body.slice(0, cap) + '\n…';
+    const head = `# claude.ai conversation ${id}\nname: ${(c.name || '').replace(/\s+/g, ' ').trim()}\nfrom: ${c.created_at || ''}\nto: ${c.updated_at || ''}\nturns kept: ${turns.length}\n\n`;
+    const name = `claude-ai__${id}.md`;
+    writeFileSync(join(out, name), head + body);
+    report.push(`extracted ${name}  ${Math.round(total / 1024)} KB → ${turns.length} turns`);
+  }
+  return report.join('\n');
+}
+
 function extract(projectsDir, { out, minKb = 50, skip = ['atlas-test', 'scratchpad', 'AppData-Local-Temp'] } = {}) {
   if (!out) throw new Error('--out <dir> is required');
   mkdirSync(out, { recursive: true });
@@ -415,6 +456,10 @@ async function main(argv) {
       const skip = opt('--skip') ? opt('--skip').split(',').map((s) => s.trim()).filter(Boolean) : undefined;
       return extract(pos[0], { out: opt('--out'), minKb: Number(opt('--min-kb') || 50), ...(skip ? { skip } : {}) });
     }
+    case 'claude': {
+      if (pos.length < 2) throw new Error('usage: harvest.mjs claude <conversations.json> <out-dir> [--min-chars 2000]');
+      return extractClaude(pos[0], pos[1], { minChars: Number(opt('--min-chars') || 2000) });
+    }
     case 'docs': {
       if (!pos[0]) throw Object.assign(new Error('usage: docs <root> --out <dir> [--max-kb 60]'), { usage: true });
       return docs(pos[0], { out: opt('--out'), maxKb: Number(opt('--max-kb') || 120) });
@@ -453,4 +498,4 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   }
 }
 
-export { extractSession, extract, docs, run, judge, callModel, inboxWrite, inboxList, inboxAccept, inboxReject, parseCandidate, similarity, pairs, pairsReport, verdictsWrite, verdictsList, main, DEFAULT_MODEL };
+export { extractSession, extract, extractClaude, docs, run, judge, callModel, inboxWrite, inboxList, inboxAccept, inboxReject, parseCandidate, similarity, pairs, pairsReport, verdictsWrite, verdictsList, main, DEFAULT_MODEL };

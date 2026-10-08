@@ -5,7 +5,7 @@ description: >
   one when it matters, and — the point — flags a note as suspect when the code it describes
   has changed. Notes are markdown files in the existing vault, written by hand when the work
   decides, never captured automatically. Use for "atlas memory", "remember this", "what did
-  we decide about X", "is the memory still true", "check the memory", "tidy the memory" — in
+  we decide about X", "is the memory still true", "check the memory", "tidy the memory", "mark X as superseded" — in
   any language.
 ---
 
@@ -30,9 +30,11 @@ Everything below lives in the `memory/` folder beside this file.
    "what did we decide", "do we have anything on", "recall", "search the memory" → `recall.md`
    "is it still true", "check the memory", "stale", "verify the notes" → `check.md`
    "tidy", "merge duplicates", "clean up the memory", "fix the index" → `tidy.md`
+   "label", "mark as superseded", "canonical", "don't use X any more", "this one is wrong",
+   "which version is the reference" → `labels.md`
    Nothing named, "atlas memory": say what is there (notes by type from the index, and the
    line `memcheck status "<vault>"` prints for those linked to code) and ask which of the
-   four.
+   five.
 
 ## Capture is manual, on purpose
 
