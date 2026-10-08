@@ -47,6 +47,13 @@ function rpc(entry, args, root) {
   let buf = Buffer.alloc(0);
   let id = 0;
   const waits = new Map();
+  let stderr = '';
+  // a server that dies, at start or mid-run, answers every open request with its last words
+  const failAll = (why) => { for (const [k, w] of waits) { waits.delete(k); w.rej(new Error(why)); } };
+  child.stderr.on('data', (d) => { stderr = (stderr + d).slice(-2000); });
+  child.stdin.on('error', () => {});
+  child.on('error', (e) => failAll(`language server failed to start: ${e.message}`));
+  child.on('exit', (code) => failAll(`language server exited (${code})${stderr.trim() ? `: ${stderr.trim().slice(-400)}` : ''}`));
   child.stdout.on('data', (d) => {
     buf = Buffer.concat([buf, d]);
     for (;;) {
@@ -54,7 +61,8 @@ function rpc(entry, args, root) {
       if (head < 0) break;
       const len = Number(/Content-Length:\s*(\d+)/i.exec(buf.slice(0, head).toString())?.[1] || 0);
       if (buf.length < head + 4 + len) break;
-      const msg = JSON.parse(buf.slice(head + 4, head + 4 + len).toString('utf8'));
+      let msg;
+      try { msg = JSON.parse(buf.slice(head + 4, head + 4 + len).toString('utf8')); } catch (e) { buf = Buffer.alloc(0); failAll(`language server spoke something that is not JSON-RPC: ${e.message}`); try { child.kill(); } catch { /* gone */ } return; }
       buf = buf.slice(head + 4 + len);
       if (msg.id != null && waits.has(msg.id)) { const w = waits.get(msg.id); waits.delete(msg.id); msg.error ? w.rej(new Error(msg.error.message)) : w.res(msg.result); }
     }
@@ -127,8 +135,8 @@ async function main(argv) {
   const [cmd, ...pos] = argv;
   if (cmd === 'check') return check();
   if (cmd === 'refs') {
-    if (!pos[0] || !pos[1] || !pos[2]) throw Object.assign(new Error('usage: refs <project-root> <file> <line> [<col>|<symbol>]'), { usage: true });
-    const r = await references(pos[0], pos[1], pos[2], pos[3] ?? '0');
+    if (!pos[0] || !pos[1] || !pos[2] || !pos[3]) throw Object.assign(new Error('usage: refs <project-root> <file> <line> <col>|<symbol>  (the column or the name on that line; column 0 is usually a keyword, not the symbol)'), { usage: true });
+    const r = await references(pos[0], pos[1], pos[2], pos[3]);
     if (!r.refs.length) return `no references (${r.server})`;
     return `${r.refs.length} references (${r.server})\n` + r.refs.map((x) => `  ${x.file}:${x.line}  ${x.text}`).join('\n');
   }

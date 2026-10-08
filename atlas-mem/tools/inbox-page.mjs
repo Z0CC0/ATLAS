@@ -16,12 +16,16 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 const harvest = await import(pathToFileURL(join(HERE, 'harvest.mjs')).href);
 
 const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+// inside <script>: a body that holds </script> must not end the element
+const jsonForScript = (v) => JSON.stringify(v).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
 
 /** The source label a candidate came from, shortened to what a person recognises. */
 function groupOf(source) {
   const s = String(source || '');
   const doc = /^doc__(.+?)(?:__|$)/.exec(s);
   if (doc) return `document: ${doc[1]}`;
+  const proj = /(THE-[A-Z]+)__/.exec(s);
+  if (proj) return `session: ${proj[1].replace(/-/g, ' ')}`;
   const m = /^(?:C--Users-[^_]*?-)?(?:HUB-\d--APP-CLAUDE-THE-HUB-)?(THE-[A-Z]+|[A-Za-z0-9-]+?)__/.exec(s);
   if (m) return `session: ${m[1].replace(/-/g, ' ')}`;
   return s.slice(0, 40) || 'unknown';
@@ -30,7 +34,7 @@ function groupOf(source) {
 function page(items, title, suggestions = {}) {
   const groups = new Map();
   for (const c of items) { const g = groupOf(c.source); if (!groups.has(g)) groups.set(g, []); groups.get(g).push(c); }
-  const data = JSON.stringify(items.map((c) => ({ slug: c.slug, title: c.title || c.slug, description: c.description, type: c.type, source: c.source, body: c.body, group: groupOf(c.source), hint: suggestions[c.slug] || null })));
+  const data = jsonForScript(items.map((c) => ({ slug: c.slug, title: c.title || c.slug, description: c.description, type: c.type, source: c.source, body: c.body, group: groupOf(c.source), hint: suggestions[c.slug] || null })));
   return `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><title>${esc(title)}</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -68,10 +72,13 @@ pre{white-space:pre-wrap;word-break:break-word;font:12px/1.55 ui-monospace,Conso
 <main id="main"></main>
 <script>
 const ITEMS = ${data};
+// decisions left by an older page for candidates that are gone are dropped
+
 const KEY = 'atlas-inbox-decisions';
 let decisions = {}; try { decisions = JSON.parse(localStorage.getItem(KEY) || '{}'); } catch {}
+{ const live = new Set(ITEMS.map((c) => c.slug)); for (const k of Object.keys(decisions)) if (!live.has(k)) delete decisions[k]; }
 let typeOn = null, q = '';
-const esc = (s) => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const esc = (s) => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(decisions)); } catch {} };
 function visible() { const t = q.trim().toLowerCase(); return ITEMS.filter((c) => (!typeOn || c.type === typeOn) && (!t || [c.title, c.description, c.body, c.source, c.group].some((s) => (s || '').toLowerCase().includes(t)))); }
 function render() {
@@ -80,7 +87,7 @@ function render() {
   const acc = Object.values(decisions).filter((d) => d === 'accepted').length, rej = Object.values(decisions).filter((d) => d === 'rejected').length;
   document.getElementById('count').textContent = rows.length + ' shown · ' + acc + ' accepted · ' + rej + ' rejected · ' + (ITEMS.length - acc - rej) + ' undecided';
   const counts = {}; for (const c of ITEMS) counts[c.type] = (counts[c.type] || 0) + 1;
-  document.getElementById('types').innerHTML = Object.keys(counts).sort().map((k) => '<button data-type="' + k + '" class="' + (typeOn === k ? 'on' : '') + '">' + k + ' ' + counts[k] + '</button>').join(' ');
+  document.getElementById('types').innerHTML = Object.keys(counts).sort().map((k) => '<button data-type="' + esc(k) + '" class="' + (typeOn === k ? 'on' : '') + '">' + k + ' ' + counts[k] + '</button>').join(' ');
   let html = '';
   for (const [g, list] of [...groups].sort((a, b) => b[1].length - a[1].length)) {
     html += '<h2>' + esc(g) + ' <span class="chip">' + list.length + '</span> <button data-all="accepted" data-group="' + esc(g) + '">accept all</button><button data-all="rejected" data-group="' + esc(g) + '">reject all</button></h2>';

@@ -47,7 +47,7 @@ const WRAPPERS = new Set([
 ]);
 const FUNCTION_VALUES = new Set(['function_expression', 'arrow_function', 'function', 'generator_function', 'lambda']);
 /** A node of one of these kinds opens a body: what is defined inside it is local. */
-const SCOPES = /function|method|lambda|arrow|block|class_body|constructor|closure|^class$/;
+const SCOPES = /function|method|lambda|arrow|block|class_body|constructor|closure|^class$|interface_body|object_type|field_declaration_list|enum_body|struct_item|interface_declaration/;
 const IDENTIFIERS = new Set(['identifier', 'property_identifier', 'field_identifier', 'type_identifier', 'constant', 'name', 'word', 'private_property_identifier']);
 
 let runtime = null;          // { Parser, Language } once the package is found
@@ -229,7 +229,12 @@ function identifiersIn(node) {
     const n = stack.pop();
     if ((n.type === 'identifier' || n.type === 'shorthand_property_identifier_pattern') && n.namedChildCount === 0) out.push(n.text);
     // a default value is an expression, not a bound name
-    for (let i = 0; i < n.namedChildCount; i += 1) { const c = n.namedChild(i); if (n.childForFieldName('value') !== c) stack.push(c); }
+    // web-tree-sitter hands out a fresh wrapper each time: compare ids, not objects. A default
+    // value, a type annotation and the right side of a JS `a = 1` pattern are expressions.
+    const skip = new Set();
+    for (const f of ['value', 'type', 'right']) { const v = n.childForFieldName(f); if (v) skip.add(v.id); }
+    if (n.type === 'assignment_pattern' || n.type === 'default_parameter' || n.type === 'typed_default_parameter') { const l = n.childForFieldName('left') || n.childForFieldName('name'); if (l) { stack.push(l); continue; } }
+    for (let i = 0; i < n.namedChildCount; i += 1) { const c = n.namedChild(i); if (!skip.has(c.id)) stack.push(c); }
   }
   return out;
 }
@@ -237,7 +242,7 @@ function identifiersIn(node) {
 /** Other binders, and the field that holds the names they bind: loops, `:=`, `as`, destructuring. */
 const BINDERS = { for_in_statement: ['left'], for_statement: ['left'], range_clause: ['left'], for_expression: ['pattern'], short_var_declaration: ['left'], as_pattern: ['alias'], variable_declarator: ['name'], assignment: ['left'], let_declaration: ['pattern'], with_item: ['value'] };
 
-const REFERENCE_TYPES = new Set(['identifier', 'type_identifier', 'constant', 'word']);
+const REFERENCE_TYPES = new Set(['identifier', 'type_identifier', 'constant', 'word', 'variable']);
 
 /**
  * The names used between lines `first` and `last` (1-based) that are not defined there:

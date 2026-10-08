@@ -55,10 +55,16 @@ test('importing the tool does nothing', () => {
 test('fingerprint ignores line endings, trailing spaces, blank and comment-only lines, and nothing else', () => {
   const a = m.fingerprint(['a', '  b']);
   assert.equal(m.fingerprint(['a  ', '  b\t']), a);
-  assert.equal(m.fingerprint(['a', '', '  // why b', '  # or so', '  b']), a, 'comments and blank lines do not count');
+  assert.equal(m.fingerprint(['a', '', '  b']), a, 'blank lines never count');
+  assert.equal(m.fingerprint(['a', '', '  // why b', '  b'], null, 'x.js'), m.fingerprint(['a', '  b'], null, 'x.js'), 'in JavaScript a // line is a comment');
+  assert.notEqual(m.fingerprint(['a', '  // why b', '  b']), m.fingerprint(['a', '  b']), 'with no known language only blank lines are dropped');
   assert.notEqual(m.fingerprint(['a', 'b']), a, 'indentation counts');
   assert.notEqual(m.fingerprint(['a', '  c']), a);
-  assert.match(a, /^sha256c:[0-9a-f]{16}$/);
+  assert.match(a, /^sha256d:[0-9a-f]{16}$/);
+  const c = m.fingerprint(['#define MAX 10', 'int x;'], null, 'a.c');
+  assert.notEqual(m.fingerprint(['#define MAX 99', 'int x;'], null, 'a.c'), c, 'in C a # line is code');
+  assert.equal(m.fingerprint(['# note', 'x = 1'], null, 'a.py'), m.fingerprint(['x = 1'], null, 'a.py'), 'in Python a # line is a comment');
+  assert.notEqual(m.fingerprint(['--i;', 'x'], null, 'a.c'), m.fingerprint(['x'], null, 'a.c'), 'in C -- is code');
   const old = m.fingerprint(['a', '  b'], 'sha256:0000000000000000');
   assert.match(old, /^sha256:[0-9a-f]{16}$/, 'a stored fingerprint is compared with its own recipe');
   assert.notEqual(m.fingerprint(['a', '  // c', '  b'], old), old, 'under the old recipe a comment counted');
@@ -121,7 +127,7 @@ test('link records repo, file, lines, anchor, fingerprint and commit', () => {
   assert.equal(l.lines, '4-9');
   assert.equal(l.anchor, 1, 'the definition is one line below the start of the range');
   assert.equal(l.symbol, 'invoiceTotal');
-  assert.match(l.fingerprint, /^sha256c:/);
+  assert.match(l.fingerprint, /^sha256d:/);
   assert.match(l.commit, /^[0-9a-f]{4,}$/);
   assert.ok(path.isAbsolute(l.repo) || /^[a-z]:\//.test(l.repo));
   assert.equal(entry.trust, 'firm');
@@ -193,8 +199,8 @@ test('check --write remakes a fingerprint of the old recipe while the code is in
   assert.equal(check(s.vault)[0].verdict, 'firm', 'the old recipe still compares');
   check(s.vault, true);
   const after = side(s.vault).notes['totals-rounding'].links[0];
-  assert.match(after.fingerprint, /^sha256c:/);
-  assert.match(after.body, /^sha256c:/);
+  assert.match(after.fingerprint, /^sha256d:/);
+  assert.match(after.body, /^sha256d:/);
   fs.writeFileSync(s.file, SRC.replace('  let sum = 0;', '  // noted\n  let sum = 0;'));
   assert.equal(check(s.vault)[0].verdict, 'firm', 'and from now on a comment does not count');
 });

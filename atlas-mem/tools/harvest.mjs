@@ -155,7 +155,8 @@ function extract(projectsDir, { out, minKb = 50, skip = ['atlas-test', 'scratchp
       const path = join(dir, f);
       const kb = Math.round(statSync(path).size / 1024);
       if (kb < minKb) continue;
-      const r = extractSession(path);
+      let r;
+      try { r = extractSession(path); } catch (e) { report.push(`error     ${d.name}/${f}: ${e.message}`); continue; }
       if (!r) { report.push(`empty     ${d.name}/${f} (${kb} KB)`); continue; }
       const name = `${d.name}__${basename(f, '.jsonl')}.md`;
       writeFileSync(join(out, name), r.text);
@@ -171,15 +172,18 @@ function docs(root, { out, maxKb = 120 } = {}) {
   mkdirSync(out, { recursive: true });
   const report = [];
   // documents written about the projects, not the plugin's own skill texts nor generated folders
-  const files = listFiles(resolve(root), new Set(['.md'])).filter((f) => !/node_modules|_materiale-studio|\/dist\/|\.claude\/|\.agents\/|ritirati|duplicati|LICENSE|CHANGELOG|THIRD-PARTY|EULA|\/skills\/|\/agents\/|\/commands\/|atlas-plugin\/(code|mem)\/|\/caveman\/|\/runtime\/|dist-info/i.test(f));
+  const files = listFiles(resolve(root), new Set(['.md'])).filter((f) => !/node_modules|_materiale-studio|\/dist\/|\.claude\/|\.agents\/|ritirati|duplicati|LICENSE|CHANGELOG|THIRD-PARTY|EULA|(^|\/)skills\/|(^|\/)agents\/|(^|\/)commands\/|atlas-plugin\/(code|mem)\/|(^|\/)caveman\/|(^|\/)runtime\/|dist-info/i.test(f));
   for (const f of files) {
     const path = join(resolve(root), f);
     const size = statSync(path).size;
     const kb = Math.round(size / 1024);
     if (size / 1024 > maxKb || size === 0) { report.push(`skip      ${f} (${kb} KB)`); continue; }
-    const name = `doc__${f.replace(/[\\/]/g, '__')}`;
-    writeFileSync(join(out, name), `# document ${f}\nroot: ${resolve(root)}\n\n${readFileSync(path, 'utf8')}`);
-    report.push(`copied    ${f}  ${kb} KB`);
+    let name = `doc__${f.replace(/[\\/]/g, '__')}`;
+    if (name.length > 150) name = `doc__${sha(f)}__${basename(f).slice(0, 80)}`;
+    try {
+      writeFileSync(join(out, name), `# document ${f}\nroot: ${resolve(root)}\n\n${readFileSync(path, 'utf8')}`);
+      report.push(`copied    ${f}  ${kb} KB`);
+    } catch (e) { report.push(`error     ${f}: ${e.message}`); }
   }
   return report.join('\n');
 }
@@ -244,7 +248,14 @@ function parseCandidate(file) {
   const text = readFileSync(file, 'utf8');
   const m = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?([\s\S]*)$/.exec(text);
   const fm = m ? m[1] : '';
-  const get = (k) => { const r = new RegExp(`^\\s*${k}:\\s*(.*)$`, 'm').exec(fm); return r ? r[1].trim().replace(/^"|"$/g, '') : ''; };
+  const get = (k) => {
+    const r = new RegExp(`^\\s*${k}:\\s*(.*)$`, 'm').exec(fm);
+    if (!r) return '';
+    const v = r[1].trim();
+    // a quoted value is JSON (\" and \\ inside); a bare one is taken as is
+    if (v.startsWith('"')) { try { return String(JSON.parse(v)); } catch { return v.replace(/^"|"$/g, ''); } }
+    return v;
+  };
   return { slug: basename(file, '.md'), name: get('name'), title: get('title'), description: get('description'), type: get('type'), source: get('source'), harvested: get('harvested'), key: get('key'), body: m ? m[2].trim() : text };
 }
 
@@ -300,7 +311,7 @@ const DEFAULT_MODEL = 'claude-sonnet-5-5';
  * of a run, so after the first the prefix comes from the cache. Resolves to
  * `{ text, cost }`; rejects on a broken answer.
  */
-function callModel(system, user, { model = DEFAULT_MODEL } = {}) {
+function callModel(system, user, { model = DEFAULT_MODEL, timeoutMs = 10 * 60 * 1000 } = {}) {
   const dir = join(tmpdir(), 'atlas-harvest');
   mkdirSync(dir, { recursive: true });
   const settings = join(dir, 'settings.json');
@@ -312,14 +323,22 @@ function callModel(system, user, { model = DEFAULT_MODEL } = {}) {
   if (!existsSync(sysFile)) writeFileSync(sysFile, system);
   const args = ['-p', '--model', model, '--output-format', 'json', '--settings', settings, '--tools', '""', '--strict-mcp-config', '--mcp-config', mcp, '--disable-slash-commands', '--system-prompt-file', sysFile];
   return new Promise((res, rej) => {
-    const child = spawn('claude', args, { shell: true, windowsHide: true });
-    let buf = '', err = '';
+    // shell: true (the `claude` shim is a .cmd on Windows) joins the arguments without quotes:
+    // a path with a space would split. Quote what needs it.
+    const quoted = args.map((a) => (/[\s&|<>^]/.test(a) ? `"${a}"` : a));
+    const child = spawn('claude', quoted, { shell: true, windowsHide: true });
+    let buf = '', err = '', done = false;
+    const finish = (fn) => { if (done) return; done = true; clearTimeout(timer); fn(); };
+    // one hung call must not hold a pool worker for ever
+    const timer = setTimeout(() => { try { child.kill(); } catch { /* gone */ } finish(() => rej(new Error(`model call timed out after ${Math.round(timeoutMs / 1000)} s`))); }, timeoutMs);
     child.stdout.on('data', (d) => { buf += d; });
     child.stderr.on('data', (d) => { err += d; });
-    child.on('error', rej);
-    child.on('close', () => {
+    child.on('error', (e) => finish(() => rej(e)));
+    child.on('close', () => finish(() => {
       try { const r = JSON.parse(buf); res({ text: String(r.result || ''), cost: r.total_cost_usd || 0 }); } catch (e) { rej(new Error(`model call failed: ${(err || buf).trim().slice(0, 300) || e.message}`)); }
-    });
+    }));
+    // claude missing or exited early: an EPIPE here must become a failed call, not a crash
+    child.stdin.on('error', () => {});
     child.stdin.end(user);
   });
 }
@@ -355,9 +374,9 @@ async function run(inDir, outDir, vault, { parallel = 4, model = DEFAULT_MODEL, 
       done += 1; cands += arr.length; log(`ok   ${f}  ${arr.length} candidates  $${r.cost.toFixed(2)}`);
     } catch (e) { failed += 1; writeFileSync(join(outDir, f.replace(/\.md$/, '.err.txt')), e.message); log(`FAIL ${f}  ${e.message}`); }
   });
-  let filed = '';
+  let filed = 0;
   if (write) for (const f of readdirSync(outDir).filter((x) => x.endsWith('.json'))) filed += inboxWrite(vault, join(outDir, f)).split('\n').filter((l) => l.startsWith('candidate')).length;
-  return `run       ${done} sources · ${failed} failed · ${cands} candidates · $${cost.toFixed(2)}${write ? ` · filed in the inbox` : ''}`;
+  return `run       ${done} sources · ${failed} failed · ${cands} candidates · $${cost.toFixed(2)}${write ? ` · ${filed} filed in the inbox` : ''}`;
 }
 
 /** The vault's candidate pairs judged by the model: same thing, contradiction, neither; verdicts recorded. */
@@ -423,7 +442,10 @@ async function suggest(vault, { batch = 12, parallel = 3, model = DEFAULT_MODEL,
       log(`ok   ${b.length} candidates  $${r.cost.toFixed(2)}`);
     } catch (e) { failed += 1; log(`FAIL batch of ${b.length}: ${e.message}`); }
     mkdirSync(join(vault, '.atlas'), { recursive: true });
-    writeFileSync(suggestionsPath(vault), JSON.stringify(known, null, 2));
+    // whole or nothing: a kill mid-write must not leave half a JSON for the page and the app
+    const tmp = suggestionsPath(vault) + '.tmp';
+    writeFileSync(tmp, JSON.stringify(known, null, 2));
+    renameSync(tmp, suggestionsPath(vault));
   });
   const counts = { accept: 0, merge: 0, reject: 0 };
   for (const s of Object.values(known)) if (counts[s.verdict] !== undefined) counts[s.verdict] += 1;
@@ -517,7 +539,7 @@ async function main(argv) {
     case 'inbox': {
       const [sub, vault, arg] = pos;
       if (!vault || !existsSync(vault)) throw Object.assign(new Error('usage: inbox <write|list|accept|reject|apply> <vault> …'), { usage: true });
-      if (sub === 'write') return inboxWrite(vault, arg);
+      if (sub === 'write') { if (!arg || !existsSync(arg)) throw Object.assign(new Error('usage: inbox write <vault> <candidates.json>'), { usage: true }); return inboxWrite(vault, arg); }
       if (sub === 'list') return inboxList(vault, flag('--json'));
       if (sub === 'accept') return inboxAccept(vault, arg);
       if (sub === 'reject') return inboxReject(vault, arg);
@@ -544,7 +566,7 @@ async function main(argv) {
     case 'verdicts': {
       const [sub, vault, arg] = pos;
       if (!vault || !existsSync(vault)) throw Object.assign(new Error('usage: verdicts <write|list> <vault> …'), { usage: true });
-      if (sub === 'write') return verdictsWrite(vault, arg);
+      if (sub === 'write') { if (!arg || !existsSync(arg)) throw Object.assign(new Error('usage: verdicts write <vault> <verdicts.json>'), { usage: true }); return verdictsWrite(vault, arg); }
       if (sub === 'list') return verdictsList(vault, flag('--json'));
       throw Object.assign(new Error('usage: verdicts <write|list> <vault> …'), { usage: true });
     }

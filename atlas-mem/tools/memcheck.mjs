@@ -61,16 +61,35 @@ const TRUST = ['firm', 'suspect', 'unverified'];
  * because the recipe changed.
  */
 const COMMENT_ONLY = /^\s*(\/\/|#|\/\*|\*|--|<!--)/;
-function normalise(lines, version = 2) {
-  const kept = version === 1 ? lines : lines.filter((l) => l.trim() && !COMMENT_ONLY.test(l));
+// Which line starts mean "only a comment" depends on the language: `#define` in C and
+// `#[cfg]` in Rust are code, `--i;` in C is code, `*` alone is code outside a block comment.
+// Recipe 3 picks the markers by the file's extension; a file no list knows drops blank
+// lines only.
+const MARKERS = [
+  [/\.(py|rb|sh|bash|zsh|ps1|psm1|psd1|yaml|yml|toml|pl|pm|r|cmake|mk|nim|jl|ex|exs|cr|tcl|cfg|ini|gitignore|dockerfile)$|(^|\/)(makefile|dockerfile)$/i, /^\s*#/],
+  [/\.(js|mjs|cjs|jsx|ts|tsx|mts|cts|go|rs|java|kt|kts|c|cc|cpp|cxx|h|hh|hpp|cs|php|swift|scala|m|mm|dart|groovy|proto|css|scss|less|sass)$/i, /^\s*(\/\/|\/\*|\*\s|\*\/|\*$)/],
+  [/\.(sql|lua|hs|lhs|ada|adb|ads|vhd|vhdl|elm)$/i, /^\s*--/],
+  [/\.(html|htm|xml|svg|xhtml|vue|svelte|md|markdown)$/i, /^\s*(<!--|-->)/],
+];
+function commentOnly(file) {
+  const name = String(file || '').replace(/\\/g, '/');
+  const hit = MARKERS.filter(([ext]) => ext.test(name)).map(([, re]) => re);
+  if (!hit.length) return null;
+  return (l) => hit.some((re) => re.test(l));
+}
+function normalise(lines, version = 3, file = null) {
+  let kept = lines;
+  if (version === 2) kept = lines.filter((l) => l.trim() && !COMMENT_ONLY.test(l));
+  if (version === 3) { const isComment = commentOnly(file); kept = lines.filter((l) => l.trim() && !(isComment && isComment(l))); }
   return kept.map((l) => l.replace(/[ \t]+$/, '')).join('\n');
 }
 
-const OLD_RECIPE = /^sha256:/;
-/** The fingerprint of some lines; with `like` (a stored fingerprint), made with its recipe. */
-function fingerprint(lines, like) {
-  const old = typeof like === 'string' && OLD_RECIPE.test(like);
-  return (old ? 'sha256:' : 'sha256c:') + createHash('sha256').update(normalise(lines, old ? 1 : 2), 'utf8').digest('hex').slice(0, 16);
+const OLD_RECIPE = /^sha256c?:/;
+/** The fingerprint of some lines; with `like` (a stored fingerprint), made with its recipe; `file` picks the comment markers. */
+function fingerprint(lines, like, file = null) {
+  const v = typeof like === 'string' && /^sha256:/.test(like) ? 1 : typeof like === 'string' && /^sha256c:/.test(like) ? 2 : 3;
+  const prefix = v === 1 ? 'sha256:' : v === 2 ? 'sha256c:' : 'sha256d:';
+  return prefix + createHash('sha256').update(normalise(lines, v, file), 'utf8').digest('hex').slice(0, 16);
 }
 
 function readLines(path) {
@@ -254,7 +273,7 @@ function judge(link) {
   }
 
   const lines = readLines(path);
-  if (last <= lines.length && fingerprint(lines.slice(first - 1, last), link.fingerprint) === link.fingerprint) return withDeps(link, { state: 'held', first, last });
+  if (last <= lines.length && fingerprint(lines.slice(first - 1, last), link.fingerprint, link.file) === link.fingerprint) return withDeps(link, { state: 'held', first, last });
 
   const defs = findDefinitions(lines, link.symbol, link.file);
   if (!defs.length) {
@@ -270,7 +289,7 @@ function judge(link) {
     const nFirst = at - anchor;
     for (const sp of spansAt(lines, link.file, link.symbol, at, anchor, span)) {
       const nLast = nFirst + sp;
-      if (nFirst >= 1 && nLast <= lines.length && fingerprint(lines.slice(nFirst - 1, nLast), link.fingerprint) === link.fingerprint) {
+      if (nFirst >= 1 && nLast <= lines.length && fingerprint(lines.slice(nFirst - 1, nLast), link.fingerprint, link.file) === link.fingerprint) {
         if (nFirst === first) return withDeps(link, { state: 'held', first, last: nLast });
         return withDeps(link, { state: 'moved', first: nFirst, last: nLast, reason: `${link.symbol} moved from ${link.lines} to ${fmtRange(nFirst, nLast)}` });
       }
@@ -304,14 +323,15 @@ function withDeps(link, result) {
  * carry a `body` fingerprint can say this; older links cannot.
  */
 function renamedIn(link, lines, file, span, anchor) {
-  if (!link.body || span < 1) return null;
+  // a two-line stub matches every other stub: three real lines of body at least
+  if (!link.body || span < 3) return null;
   const parsed = parse.ready(file) ? parse.definitions(lines.join('\n'), file) : null;
   const starts = parsed ? parsed.defs.filter((d) => d.name !== link.symbol).map((d) => ({ name: d.name, at: d.line, spans: [...new Set([span, d.last - (d.line - anchor)])] })) : [];
   for (const { name, at, spans } of starts) for (const sp of spans) {
     const nFirst = at - anchor;
     const nLast = nFirst + sp;
     if (nFirst < 1 || nLast > lines.length || sp < 0) continue;
-    if (bodyFingerprint(lines.slice(nFirst - 1, nLast), anchor, link.body) === link.body) {
+    if (bodyFingerprint(lines.slice(nFirst - 1, nLast), anchor, link.body, file) === link.body) {
       return { state: 'renamed', first: nFirst, last: nLast, to: name, file, reason: `${link.symbol} seems renamed to ${name} in ${file}:${fmtRange(nFirst, nLast)} (same body); link the note again under the new name if the fact holds` };
     }
   }
@@ -337,7 +357,7 @@ function elsewhere(link, span, anchor, skip) {
     for (const at of findDefinitions(lines, link.symbol, file)) for (const sp of spansAt(lines, file, link.symbol, at, anchor, span)) {
       const nFirst = at - anchor;
       const nLast = nFirst + sp;
-      if (nFirst >= 1 && nLast <= lines.length && fingerprint(lines.slice(nFirst - 1, nLast), link.fingerprint) === link.fingerprint) {
+      if (nFirst >= 1 && nLast <= lines.length && fingerprint(lines.slice(nFirst - 1, nLast), link.fingerprint, file) === link.fingerprint) {
         return { state: 'moved', first: nFirst, last: nLast, file, reason: `${link.symbol} moved from ${link.file}:${link.lines} to ${file}:${fmtRange(nFirst, nLast)}` };
       }
     }
@@ -403,7 +423,7 @@ function depsOf(repo, file, lines, first, last, symbol) {
     let depLines;
     try { depLines = d.file === file ? lines : readLines(join(repo, d.file)); } catch { continue; }
     const range = depLines.slice(d.first - 1, d.last);
-    const dep = { file: d.file, symbol: name, lines: fmtRange(d.first, d.last), anchor: d.line - d.first, fingerprint: fingerprint(range) };
+    const dep = { file: d.file, symbol: name, lines: fmtRange(d.first, d.last), anchor: d.line - d.first, fingerprint: fingerprint(range, null, d.file) };
     if (d.last > d.first) dep.body = bodyFingerprint(range, d.line - d.first);
     deps.push(dep);
     if (deps.length >= MAX_DEPS) break;
@@ -412,8 +432,8 @@ function depsOf(repo, file, lines, first, last, symbol) {
 }
 
 /** The fingerprint of a range without the line that names the symbol. */
-function bodyFingerprint(lines, anchor, like) {
-  return fingerprint(lines.filter((_, i) => i !== anchor), like);
+function bodyFingerprint(lines, anchor, like, file = null) {
+  return fingerprint(lines.filter((_, i) => i !== anchor), like, file);
 }
 
 const BAD = new Set(['changed', 'renamed', 'gone', 'missing', 'dep-changed']);
@@ -462,8 +482,8 @@ function cmdLink(vault, slug, repo, file, range, symbol) {
     lines: fmtRange(first, last),
     anchor: inRange[0] - first,
     symbol,
-    fingerprint: fingerprint(lines.slice(first - 1, last)),
-    body: last > first ? bodyFingerprint(lines.slice(first - 1, last), inRange[0] - first) : undefined,
+    fingerprint: fingerprint(lines.slice(first - 1, last), null, rel),
+    body: last > first ? bodyFingerprint(lines.slice(first - 1, last), inRange[0] - first, null, rel) : undefined,
     commit: gitCommit(root),
   };
   const deps = depsOf(link.repo, rel, lines, first, last, symbol);
@@ -508,7 +528,8 @@ function cmdImpact(vault, repo, file, symbol, json) {
   if (!vault || !repo || !file) throw new Error('usage: impact <vault> <repo> <file> [<symbol>] [--json]');
   requireVault(vault);
   const root = normRepo(repo);
-  const rel = file.replace(/\\/g, '/');
+  // the same spelling `link` records: relative to the repository, forward slashes
+  const rel = relative(root, resolve(root, file)).replace(/\\/g, '/');
   const hits = [];
   for (const [slug, entry] of Object.entries(loadSidecar(vault).notes)) {
     for (const l of entry.links || []) {
@@ -589,10 +610,10 @@ function runCheck(vault, { write = false, repo = null } = {}) {
           const lines = readLines(join(i.link.repo, i.link.file));
           const anchor = Number.isInteger(i.link.anchor) ? i.link.anchor : 0;
           if (oldRecipe) {
-            i.link.fingerprint = fingerprint(lines.slice(i.first - 1, i.last));
-            if (i.last > i.first) i.link.body = bodyFingerprint(lines.slice(i.first - 1, i.last), anchor);
+            i.link.fingerprint = fingerprint(lines.slice(i.first - 1, i.last), null, i.link.file);
+            if (i.last > i.first) i.link.body = bodyFingerprint(lines.slice(i.first - 1, i.last), anchor, null, i.link.file);
           }
-          if (!i.link.body && i.last > i.first) i.link.body = bodyFingerprint(lines.slice(i.first - 1, i.last), anchor);
+          if (!i.link.body && i.last > i.first) i.link.body = bodyFingerprint(lines.slice(i.first - 1, i.last), anchor, null, i.link.file);
           if (!('deps' in i.link)) {
             const deps = depsOf(i.link.repo, i.link.file, lines, i.first, i.last, i.link.symbol);
             if (deps) i.link.deps = deps;
@@ -601,7 +622,7 @@ function runCheck(vault, { write = false, repo = null } = {}) {
         if (i.deps) for (const j of i.deps) {
           if (j.state === 'moved') { j.dep.lines = fmtRange(j.first, j.last); if (j.file) j.dep.file = j.file; }
           if ((j.state === 'held' || j.state === 'moved') && OLD_RECIPE.test(j.dep.fingerprint)) {
-            try { j.dep.fingerprint = fingerprint(readLines(join(i.link.repo, j.dep.file)).slice(j.first - 1, j.last)); } catch { /* the file is gone: the next check says so */ }
+            try { j.dep.fingerprint = fingerprint(readLines(join(i.link.repo, j.dep.file)).slice(j.first - 1, j.last), null, j.dep.file); } catch { /* the file is gone: the next check says so */ }
           }
         }
       }
@@ -737,7 +758,7 @@ function main(argv) {
 async function prepare(argv) {
   const [cmd] = argv;
   // all of them: a check may have to search a whole repository, and loading all takes ~90 ms
-  if (cmd === 'check' || cmd === 'link' || cmd === 'defs' || cmd === 'impact') await parse.load(Object.keys(parse.GRAMMAR_BY_EXT).map((e) => `x${e}`));
+  if (['check', 'link', 'defs', 'impact', 'unlink', 'rekey'].includes(cmd)) await parse.load(Object.keys(parse.GRAMMAR_BY_EXT).map((e) => `x${e}`));
 }
 
 // Nothing runs on import: a test that loads this file must not touch a vault.

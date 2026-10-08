@@ -64,7 +64,11 @@ function resolveImport(mod, fromFile, files, grammar) {
   if (!mod.startsWith('.') && !mod.startsWith('/')) return null;
   const rel = posix.normalize(posix.join(posix.dirname(fromFile), mod));
   const exts = ['', '.js', '.mjs', '.cjs', '.ts', '.tsx', '.jsx', '.mts', '.cts'];
-  return tryAll([...exts.map((e) => rel + e), ...exts.slice(1).map((e) => posix.join(rel, 'index' + e))]);
+  const found = tryAll([...exts.map((e) => rel + e), ...exts.slice(1).map((e) => posix.join(rel, 'index' + e))]);
+  if (found != null) return found;
+  // TypeScript under NodeNext or a bundler imports `./x.js` and means `x.ts`
+  const m = /^(.*)\.(js|mjs|cjs)$/.exec(rel);
+  return m ? tryAll([`${m[1]}.ts`, `${m[1]}.tsx`, `${m[1]}.mts`, `${m[1]}.cts`]) : null;
 }
 
 /**
@@ -131,7 +135,7 @@ async function scan(root, { skip = [], porting = [], onProgress = null } = {}) {
       for (const im of a.imports) {
         const to = resolveImport(im.module, rec.path, fileList, rec.lang);
         if (to != null && fileId.has(`${project.name}|${to}`)) { const toId = fileId.get(`${project.name}|${to}`); rec.imports.push(toId); out.imports.push({ from: rec.id, to: toId }); }
-        else if (im.module && !im.module.startsWith('.')) { const lib = im.module.split('/')[0].replace(/^@([^/]+)\/.*/, '@$1'); if (!rec.external.includes(lib)) rec.external.push(lib); pr.external[lib] = (pr.external[lib] || 0) + 1; }
+        else if (im.module && !im.module.startsWith('.') && !/^[@~]\//.test(im.module)) { const lib = im.module.split('/')[0].replace(/^@([^/]+)\/.*/, '@$1'); if (!rec.external.includes(lib)) rec.external.push(lib); pr.external[lib] = (pr.external[lib] || 0) + 1; }
       }
     }
     // inherits: a class whose parent one top-level symbol of the project defines
@@ -179,22 +183,28 @@ async function scan(root, { skip = [], porting = [], onProgress = null } = {}) {
 
   // dead-code candidates: top-level, nothing in the project calls them, graded by the
   // false-positive list. A label, never an action.
+  // one pass over the text of each project: identifier → the lines that hold it, so each
+  // uncalled symbol is a lookup and not a regex over every line of the project
+  const where = new Map(); // project → Map(name → [{file, line}])
+  for (const other of out.files) {
+    if (!where.has(other.project)) where.set(other.project, new Map());
+    const idx = where.get(other.project);
+    const lines = sources.get(other.id) || [];
+    for (let i = 0; i < lines.length; i += 1) {
+      for (const m of lines[i].matchAll(/[A-Za-z_$][\w$]*/g)) {
+        let arr = idx.get(m[0]); if (!arr) { arr = []; idx.set(m[0], arr); }
+        arr.push({ file: other.id, line: i + 1 });
+      }
+    }
+  }
   for (const s of out.symbols) {
     if (s.in > 0) continue;
     if (!/function|method|class|def/.test(s.kind) && !/_declarator|assignment/.test(s.kind)) continue;
     const f = out.files[s.file];
-    const re = new RegExp(`\\b${s.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`);
     // the name anywhere else in the project: another file, or its own file outside the definition
-    let elsewhere = false;
-    for (const other of out.files) {
-      if (other.project !== s.project) continue;
-      const lines = sources.get(other.id) || [];
-      for (let i = 0; i < lines.length; i += 1) {
-        if (other.id === s.file && i + 1 >= s.first && i + 1 <= s.last) continue;
-        if (re.test(lines[i])) { elsewhere = true; break; }
-      }
-      if (elsewhere) break;
-    }
+    const name = s.name.replace(/^\$/, '');
+    const hits = (where.get(s.project) || new Map()).get(name) || [];
+    const elsewhere = hits.some((h) => !(h.file === s.file && h.line >= s.first && h.line <= s.last));
     const entry = /^(main|index|app|server|cli|preload|background)\.|^(main|index|app|__init__|__main__|setup|manage|conftest)\.[a-z]+$/.test(basename(f.path)) || /tests?\//.test(f.path) || /\.test\.|\.spec\.|_test\.|^test_/.test(basename(f.path));
     let grade, why;
     if (elsewhere) { grade = 'uncertain'; why = 'the name appears elsewhere in the project (a string, a comment, a dynamic call)'; }
@@ -268,8 +278,12 @@ function impact(g, symbolId, depth = 2) {
 }
 
 function impactReport(g, project, symbol, depth = 2) {
-  const s = g.symbols.find((x) => x.project === project && x.name === symbol);
-  if (!s) return `${symbol} is not a top-level symbol of ${project}`;
+  // `<file>:<symbol>` picks one definition when the name is defined in several files
+  const [fileWanted, nameWanted] = symbol.includes(':') ? [symbol.slice(0, symbol.lastIndexOf(':')).replace(/\\/g, '/'), symbol.slice(symbol.lastIndexOf(':') + 1)] : [null, symbol];
+  const all = g.symbols.filter((x) => x.project === project && x.name === nameWanted && (!fileWanted || g.files[x.file].path === fileWanted));
+  if (!all.length) return `${symbol} is not a top-level symbol of ${project}`;
+  if (all.length > 1) return `${nameWanted} is defined ${all.length} times in ${project}; say which one as <file>:<symbol>:\n` + all.map((x) => `  ${g.files[x.file].path}:${x.first}-${x.last}`).join('\n');
+  const s = all[0];
   const rings = impact(g, s.id, depth);
   if (!rings.length) return `nothing in ${project} calls or inherits from ${symbol}`;
   return rings.map((ring, i) => `${i + 1} step${i ? 's' : ''} away: ${ring.length}\n` + ring.map((id) => { const t = g.symbols[id]; return `  ${t.name}  ${g.files[t.file].path}:${t.first}-${t.last}`; }).join('\n')).join('\n');

@@ -62,6 +62,14 @@ async function embed(texts) {
   return out;
 }
 
+/** Whether the library is on this machine, without loading the model (that would download 130 MB). */
+function libraryInstalled() {
+  for (const b of [HERE, process.env.ATLAS_NODE_MODULES ? dirname(process.env.ATLAS_NODE_MODULES) : null, process.cwd()].filter(Boolean)) {
+    try { createRequire(join(b, 'x.js')).resolve('@huggingface/transformers'); return true; } catch { /* next */ }
+  }
+  return false;
+}
+
 function notesOf(vault) {
   return readdirSync(vault).filter((f) => f.endsWith('.md') && f !== 'MEMORY.md').map((f) => {
     const text = readFileSync(join(vault, f), 'utf8').replace(/<private>[\s\S]*?<\/private>/gi, ' ');
@@ -83,7 +91,7 @@ const RECIPE = 2; // 1: one vector per note; 2: two (whole note, and name + desc
 const empty = () => ({ model: MODEL, recipe: RECIPE, notes: {} });
 function loadIndex(vault) {
   if (!existsSync(indexPath(vault))) return empty();
-  try { const i = JSON.parse(readFileSync(indexPath(vault), 'utf8')); return i && i.notes && i.recipe === RECIPE ? i : empty(); } catch { return empty(); }
+  try { const i = JSON.parse(readFileSync(indexPath(vault), 'utf8')); return i && i.notes && i.recipe === RECIPE && i.model === MODEL ? i : empty(); } catch { return empty(); }
 }
 
 /** Embeds the notes whose text changed since the last run; drops the ones that are gone. */
@@ -139,10 +147,12 @@ async function main(argv) {
     case 'index': return index(vault);
     case 'search': {
       if (!pos[1]) throw Object.assign(new Error('usage: search <vault> "<query>" [--k 8] [--json]'), { usage: true });
-      const r = await search(vault, pos.slice(1).join(' '), Number(opt('--k') || 8));
+      const k = Number(opt('--k') || 8);
+      if (!Number.isInteger(k) || k < 1) throw Object.assign(new Error('--k must be a whole number of at least 1'), { usage: true });
+      const r = await search(vault, pos.slice(1).join(' '), k);
       return flag('--json') ? JSON.stringify(r, null, 2) : r.map((x) => `${x.score.toFixed(3)}  ${x.slug.padEnd(44)} ${x.description.slice(0, 80)}`).join('\n');
     }
-    case 'status': { const s = status(vault); s.installed = !!(await loadModel().catch(() => null)); return `index     ${s.indexed} of ${s.notes} notes · ${s.stale} stale · built ${s.built || 'never'} · library ${s.installed ? 'present' : 'missing'}`; }
+    case 'status': { const s = status(vault); s.installed = libraryInstalled(); return `index     ${s.indexed} of ${s.notes} notes · ${s.stale} stale · built ${s.built || 'never'} · library ${s.installed ? 'present' : 'missing'}`; }
     default: throw Object.assign(new Error('usage: node embed.mjs <index|search|status> <vault> …'), { usage: true });
   }
 }

@@ -37,7 +37,13 @@ const tablePath = (vault) => join(vault, '.atlas', 'labels.json');
 function load(vault) {
   const p = tablePath(vault);
   if (!existsSync(p)) return { version: 1, labels: [] };
-  try { const t = JSON.parse(readFileSync(p, 'utf8')); return t && Array.isArray(t.labels) ? t : { version: 1, labels: [] }; } catch { return { version: 1, labels: [] }; }
+  try {
+    const t = JSON.parse(readFileSync(p, 'utf8'));
+    if (!t || !Array.isArray(t.labels)) return { version: 1, labels: [] };
+    // a hand-edited row without a symbol or a label is skipped, not a crash
+    t.labels = t.labels.filter((e) => e && typeof e.symbol === 'string' && typeof e.label === 'string');
+    return t;
+  } catch { return { version: 1, labels: [] }; }
 }
 
 function save(vault, table) {

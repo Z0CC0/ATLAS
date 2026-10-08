@@ -28,8 +28,10 @@ and a sidecar file beside the notes, `<vault>/.atlas/links.json`, that the tool 
 writes. For a note about code it records which repository, which file, which definition, a
 fingerprint of those lines, the commit, and what that code directly depends on in the same
 repository. The fingerprint ignores line endings, trailing spaces, blank lines and lines that
-hold only a comment: a comment added inside a function is not a change (measured: it made a
-note suspect for nothing). At check time the tool parses the file again and decides:
+hold only a comment in that file's language (`#` in Python, `//` in C and JavaScript, `--` in
+SQL; `#define` in C stays code): a comment added inside a function is not a change (measured:
+it made a note suspect for nothing). Older fingerprints keep their own recipe and `check --write`
+remakes them while the code is intact. At check time the tool parses the file again and decides:
 
 | state | meaning | effect on the note |
 |---|---|---|
