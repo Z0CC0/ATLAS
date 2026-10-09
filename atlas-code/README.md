@@ -58,14 +58,32 @@ The hook runs on every shell command and file edit, whether or not a switch is o
 
 | | `atlas` | `atlas-code` |
 |---|---|---|
-| descriptions, loaded in every session | 1,973 | 4,191 |
+| descriptions, loaded in every session | 1,973 | 4,702 |
 | rules injected at `low` | 1,409 | 1,409 |
-| fixed cost at `low` | 3,382 | 5,600 |
-| first turn as billed, at `low` | 4,180 | 6,398 |
+| fixed cost at `low` | 3,382 | 6,111 |
+| first turn as billed, at `low` | 4,180 | 6,909 |
 | a 40-turn session at `low`, against no plugin | -10.5% | +0.5% |
 | a 295-turn session at `low` | -28.5% | -27.0% |
 | a 40-turn session at `high` | -17.0% | -5.9% |
 | a 295-turn session at `high` | -35.4% | -33.9% |
+
+The four session rows were computed with 4,191 tokens of descriptions, before the five
+subagents below added 511 (tiktoken, measured on the built frontmatter): add 511 tokens once
+per session to each of them.
+
+## Five subagents
+
+The heavy modes of five skills run in a subagent, so what they read never enters the
+conversation: `atlas-auditor` (the whole-project audit of `atlas-secure`), `atlas-fixer` (the
+fix loop when a build shows more than five errors or takes longer than about twenty seconds),
+`atlas-profiler` (the measured attempts of `atlas-perf`), `atlas-documenter` (map, onboarding,
+trace and sync of `atlas-docs`), `atlas-tester` (coverage, end to end, a whole module). Each
+skill says when it delegates and keeps the small case in the conversation; each subagent reads
+the same rule files as its skill, at the absolute paths the skill passes, and returns only the
+report. `atlas-review` now delegates to `atlas-diff` above 120 lines of diff instead of 300.
+Why: the audit of a 200-file project read fifty files over 285 seconds; in a conversation that
+reading is paid again on every later turn. The price is 511 tokens of descriptions in every
+session, used or not.
 
 The first three rows are tiktoken counts (`o200k_base`), made the same way as for the other
 builds. The 109 files behind these skills are about 86,000 tokens in all and are read a few

@@ -42,6 +42,14 @@ Nothing personal, no secrets, no real hostnames or keys in examples: placeholder
 The `atlas-finder` subagent for where things are, when it exists; positions come back, files
 do not.
 
+## Where the work goes
+
+`map`, `onboard` and `trace` read most of a project; `sync` reads every claim in the docs
+against the code. Delegate them to the `atlas-documenter` subagent, when it exists, with the
+root, the mode, where to write, and the absolute path of the mode's file (beside this
+file). It returns the document or the list; print it unchanged. One paragraph
+to fix, one README line to check: here.
+
 ## Form
 
 Documents are written for people who did not set any dial: whole sentences, ordinary prose,

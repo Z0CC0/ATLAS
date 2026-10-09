@@ -38,6 +38,15 @@ do not load. A test that runs and fails on an assertion is a behaviour, not a bu
 line each in the report, handed back. Asked outright to make failing tests pass: `method.md`,
 last section.
 
+## Where the work goes
+
+After the first run: more than five errors, or a build that takes longer than about twenty
+seconds, or a CI log to work from: delegate to the `atlas-fixer` subagent, when it exists,
+with the project root, the exact command, and the absolute paths of `fix/method.md` and the
+toolchain file (they live beside this file). It runs the whole loop where the logs stay and
+hands back the report and the list of files it changed; print the report unchanged and say
+the files are already edited. One or two errors you can see: fix here.
+
 ## Who runs the command
 
 The `atlas-runner` subagent, when it exists: give it the exact command, take back the verdict

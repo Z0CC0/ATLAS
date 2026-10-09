@@ -29,6 +29,17 @@ a full audit ("is it safe", nothing named) runs all three passes in the order `m
 3. "secrets", "keys", "leaked", "exposed credentials", "in the history" → `secure/secrets.md`
 4. "the code", "injection", "auth", "whole program" → `secure/code.md`
 
+## Where the work goes
+
+A full audit, or anything that means reading a whole tree ("is it safe", "audit this",
+"any secrets leaked" with no file named): delegate to the `atlas-auditor` subagent, when it
+exists, with the project root, what to skip, and the absolute paths of `secure/method.md`,
+`deps.md`, `secrets.md` and `code.md` (they live beside this file). The audit reads dozens
+of files and runs for minutes; in this conversation that reading would stay for ever. Print
+its report unchanged, then offer the hardening pass. One named file, one dependency, one
+question ("is this query injectable"): answer here with the matching pass file. Without the
+subagent: run the passes here.
+
 ## With the other skills
 
 The per-diff security review and its checklist is `atlas-review`'s `security.md`; this audits

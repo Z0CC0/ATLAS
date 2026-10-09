@@ -37,6 +37,14 @@ by itself.
 No infrastructure is resized, no index is created on a real database, no cache is flushed
 in production: those are proposed with the command.
 
+## Where the work goes
+
+More than one measured attempt, or a profile to read: delegate to the `atlas-profiler`
+subagent, when it exists, with the root, how the slow thing is reproduced, the number that
+matters, and the absolute paths of `perf/method.md` and the angle file (beside this file).
+Timings and profiler output stay with it; print its table of attempts unchanged. A single
+measurement that answers the question: take it here through `atlas-runner`.
+
 ## Form
 
 The active compression level governs the prose. It never overrides the variant table in

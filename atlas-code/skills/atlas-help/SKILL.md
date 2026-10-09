@@ -18,7 +18,7 @@ nothing surprising to say, leave it empty rather than filling it.
 
 # ATLAS
 
-Four dials, twenty-four commands, seven subagents.
+Four dials, twenty-four commands, twelve subagents.
 
 **It ships off.** A fresh install changes nothing until you type `atlas low` or `atlas high`.
 After that the setting persists — across turns and restarts — until you change it or type
@@ -80,7 +80,7 @@ request that named the command loaded it every time; the same request in plain w
 
 | command | what it does | files behind it | worth knowing |
 |---|---|---|---|
-| `atlas-test` | writes tests: test-first, coverage gaps, end to end, a deployed site | 14 | a new test that fails because the code is wrong is kept and reported |
+| `atlas-test` | writes tests: test-first, coverage gaps, end to end, a deployed site | 14 | a new test that fails because the code is wrong is kept and reported; a whole module goes to `atlas-tester` |
 | `atlas-verify` | build, types, lint, tests, leftovers, in one pass, compared with the last run | 3 | changes nothing; `READY`, `NOT READY` or `CANNOT TELL` |
 | `atlas-plan` | steps before code, sized to the change, then waits; or carries the work through to a commit | 7 | two stops for a yes: after the plan, before the commit |
 | `atlas-multi` | asks other models (Codex, Gemini) for an opinion, a review or an approach | 4 | shows what is sent and waits for a yes, every time |
@@ -131,6 +131,11 @@ nothing.
 | `atlas-editor` | one small edit in at most two files, a line per file back | a third file and it hands the whole task back, on purpose |
 | `atlas-diff` | the same review, run where the diff stays: one line per problem, nothing about what is fine | reads the diff itself, so a large one never enters your context |
 | `atlas-runner` | runs tests, build or linter, returns only the deciding lines | never repairs anything, never works around a failure |
+| `atlas-auditor` | the whole-project security audit of `atlas-secure`, where the fifty files it reads stay | returns the ranked report with proof; changes nothing |
+| `atlas-fixer` | the fix loop of `atlas-fix` where the build logs stay: one error, smallest change, run again | files edited on disk, report with four counts back |
+| `atlas-profiler` | the measured attempts of `atlas-perf`: baseline, one change, keep or revert by the number | returns the table of attempts, not the profiles |
+| `atlas-documenter` | reads a codebase and writes the map, the onboarding, a trace, or the list of stale claims | every statement traceable to a file |
+| `atlas-tester` | coverage gaps and the tests for a module, where the runner logs stay | a test that fails because the code is wrong is kept |
 | `atlas-browser` | drives a page, reports in words | one screenshot costs about 9,800 tokens; this pays for itself immediately |
 | `atlas-research` | searches the web: the answer with its sources, or a reading list grouped by kind | says "I did not find it" rather than "it does not exist", and never forces a weak link to fill a group |
 | `atlas-catalog` | searches the public catalogues: free APIs, free-tier services, MCP servers (the official registry and Smithery), Claude Code skills (skills.sh), plugins (Anthropic's two marketplaces), hooks and tooling. Finds, never installs | those lists are 550,000 tokens; it reads them live and hands back three candidates |

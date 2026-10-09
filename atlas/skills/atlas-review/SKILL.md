@@ -59,7 +59,7 @@ two)`. A line one reviewer found and the other read and rejected is dropped and 
 
 ## Where the work goes
 
-A diff under 300 lines: review here. Larger, or a branch, or a PR: delegate to `atlas-diff`
+A diff under 120 lines: review here. Larger, or a branch, or a PR: delegate to `atlas-diff`
 with the paths of the files it must read and the exact target (`git diff`, `git diff main...`,
 a file, `gh pr diff N`), so the diff never enters this conversation. The subagent returns
 findings in the line format above; print them unchanged.

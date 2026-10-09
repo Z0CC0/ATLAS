@@ -41,6 +41,14 @@ change code to make an existing failing test pass unless the request is test-fir
 that code: a red test that was green before is `atlas-fix`'s last section, or a bug to report.
 It never commits. It never deletes or skips a test.
 
+## Where the work goes
+
+`coverage`, `e2e`, and tests for a whole module or project: delegate to the `atlas-tester`
+subagent, when it exists, with the root, the mode, and the absolute paths of `test/method.md`,
+the language file and the mode file (beside this file). Coverage output and runner logs stay
+with it; it returns the report and the files it wrote. Tests for the one function in front of
+you: write them here and run them through `atlas-runner`.
+
 ## Form
 
 The active compression level governs the prose. It never overrides the report format in
