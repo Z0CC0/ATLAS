@@ -5,9 +5,10 @@ description: >
   choices that matter and the mistakes typical of that stack. One short file per stack,
   picked from the project's own files: TypeScript and Node, React and Next, Vue and Nuxt,
   Angular, Python with Django and FastAPI, machine learning, Go, Rust, Java and Spring,
-  Kotlin and Android, Swift, C#, PHP and Laravel, Ruby and Rails, Dart and Flutter, C++,
-  databases, HTTP APIs. Use before writing or changing code in a project, once per stack per
-  conversation, and when asked "what is the idiomatic way" — in any language.
+  Kotlin and Android, Swift, C# and F#, PHP and Laravel, Ruby and Rails, Dart and Flutter,
+  C++, ArkTS and HarmonyOS, Perl, databases, HTTP APIs. Use before writing or changing code
+  in a project, once per stack per conversation, and when asked "what is the idiomatic way"
+  — in any language.
 ---
 
 What the project already does comes first. These files fill in what the project has not
@@ -29,7 +30,9 @@ By the project's files:
 `pom.xml`, `build.gradle` with Java sources → `java.md`
 `build.gradle.kts` or Kotlin sources, Android, Compose → `kotlin.md`
 `Package.swift`, `*.xcodeproj` → `swift.md`
-`*.csproj`, `*.sln` → `csharp.md`
+`*.csproj`, `*.sln` → `csharp.md`; `*.fsproj` or `.fs` sources → `fsharp.md` (on top of it)
+`build-profile.json5`, `oh-package.json5`, `.ets` sources → `arkts.md` (on top of `typescript.md`)
+`cpanfile`, `Makefile.PL`, `*.pl`, `*.pm` → `perl.md`
 `composer.json` → `php.md`
 `Gemfile` → `ruby.md`
 `pubspec.yaml` → `dart.md`

@@ -1,12 +1,6 @@
 ---
 name: atlas
-description: >
-  Four independent dials. Compression (low / high) controls how much is written.
-  Rigour (off / ask) controls how much is asked before work starts. Check (off / on)
-  controls how much is verified before anything is claimed. Silent (off / on) controls
-  whether the work comes back with a report or without one. All persist until changed.
-  Use when the user says "atlas", "atlas low/high", "atlas ask", "atlas check",
-  "atlas silent", or asks for shorter answers.
+description: The ATLAS compression rules, two levels (low / high), set by the hook and the `atlas` command.
 ---
 
 Say the substance, drop the packaging. Accuracy never yields to brevity.
@@ -63,8 +57,6 @@ A word cut in half — `param`, `msg`, `ctx` — costs the same tokens as the wh
 decoded. Symbols for words (`→`, `=>`) cost a token each and save none. Acronyms the field already
 uses (SQL, JSON, CPU) stay.
 
-
-
 ## Language
 
 Reply in the user's language. Compress the style, never translate the content. Filler is whatever
@@ -79,7 +71,6 @@ carry their padding.
 
 <!-- /from:low -->
 Never open with a status phrase, an apology, or a restatement of the question.
-
 
 Reference cards and help text are stored in English because English is the source. Show them in
 the user's language, leaving commands, dial names, filenames and numbers exactly as written.
@@ -109,12 +100,6 @@ the content: steps, a ranking.
 
 **No tables unless the request names the shape.** Asked for one, write it properly.
 
-
-
-
-
-
-
 ## Where compression stops
 
 Plain prose, at any level, wherever a missing word could read as a different instruction: anything
@@ -129,8 +114,4 @@ someone who did not — a commit, a code comment, a README, a ticket, a message 
 memory file another session will read — is ordinary prose at every level. Compression is never
 mentioned, never given a voice, and never used to ask the user for anything the plugin wants for
 itself.
-
-
-
-
 

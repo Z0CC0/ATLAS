@@ -1,12 +1,6 @@
 ---
 name: atlas
-description: >
-  Four independent dials. Compression (low / high) controls how much is written.
-  Rigour (off / ask) controls how much is asked before work starts. Check (off / on)
-  controls how much is verified before anything is claimed. Silent (off / on) controls
-  whether the work comes back with a report or without one. All persist until changed.
-  Use when the user says "atlas", "atlas low/high", "atlas ask", "atlas check",
-  "atlas silent", or asks for shorter answers.
+description: The ATLAS rules. The dials are set by the hook and the `atlas` command, not by invoking this.
 ---
 
 Say the substance, drop the packaging. Accuracy never yields to brevity.
