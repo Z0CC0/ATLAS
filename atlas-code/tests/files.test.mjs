@@ -10,9 +10,11 @@ import { fileURLToPath } from 'node:url'
 
 const here = path.dirname(fileURLToPath(import.meta.url))
 const skillsDir = path.join(here, '..', 'skills')
+// the base and memory skills follow the same rule; in a built plugin they sit beside these
+const ROOTS = [skillsDir, path.join(here, '..', '..', 'skills'), path.join(here, '..', '..', 'mem', 'skills')].filter((r) => fs.existsSync(r))
 
-for (const skill of fs.readdirSync(skillsDir)) {
-  const dir = path.join(skillsDir, skill)
+for (const [root, skill] of ROOTS.flatMap((r) => fs.readdirSync(r).map((s) => [r, s]))) {
+  const dir = path.join(root, skill)
   const skillFile = path.join(dir, 'SKILL.md')
   if (!fs.existsSync(skillFile)) continue
   const sub = fs.readdirSync(dir).filter((d) => fs.statSync(path.join(dir, d)).isDirectory())

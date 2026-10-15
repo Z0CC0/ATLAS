@@ -1,0 +1,154 @@
+{
+  "A_ricerca.atlas-high.1.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.atlas-high.1.txt::9 hours and 40": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.atlas-high.2.txt::10:20": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.atlas-high.2.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.atlas-high.2.txt::9 hours and 40": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.none.1.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.none.1.txt::9 hours and 40": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.none.2.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.none.2.txt::9 hours and 40": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.style-high.1.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.style-high.1.txt::9 hours and 40": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.style-high.2.txt::same temperature": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.style-high.2.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.style-high.2.txt::9 hours and 40": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.style-low.1.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.style-low.1.txt::9 hours and 40": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.style-low.2.txt::9 hours and 15": {
+    "present": true,
+    "answer": "YES"
+  },
+  "A_ricerca.style-low.2.txt::9 hours and 40": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.none.1.txt::connection pool": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.none.1.txt::try/finally": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.none.1.txt::rising latency": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.none.1.txt::mask": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.none.2.txt::connection pool": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.none.2.txt::rising latency": {
+    "present": true,
+    "answer": "YES"
+  },
+  "B_tecnica.none.2.txt::pool_size": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.none.2.txt::mask": {
+    "present": false,
+    "answer": "NO"
+  },
+  "B_tecnica.style-high.2.txt::try/finally": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.atlas-high.1.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.atlas-low.2.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.none.1.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.none.2.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.style-high.1.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "C_breve.style-high.2.txt::cardinalit": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.none.1.txt::latency": {
+    "present": true,
+    "answer": "YES"
+  },
+  "E_confronto.none.2.txt::latency": {
+    "present": true,
+    "answer": "YES"
+  },
+  "G_procedura.style-low.1.txt::irreversibl": {
+    "present": true,
+    "answer": "YES"
+  },
+  "M_aperta.style-high.2.txt::part that changes": {
+    "present": true,
+    "answer": "YES"
+  },
+  "M_aperta.style-high.2.txt::full rewrite": {
+    "present": true,
+    "answer": "YES"
+  }
+}

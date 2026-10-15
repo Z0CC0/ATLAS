@@ -290,6 +290,19 @@ Everything below follows from the measurements above. None of it is required; ea
 - **English commands, English hook phrases.** Requests in any language are recognised by the model, but the phrases the hook matches by itself ("stop atlas", "normal mode") are English. `atlas off` is a name and works everywhere.
 - **The state is per project, keyed by the folder a session runs in** (walked up to the nearest `.git` or `.atlas.json`). Two checkouts of the same repository are two settings; a folder with no `.git` is its own project. It was one global setting until 0.1.4, and that setting followed you into every project. Stored outside the plugin, so uninstalling does not reset it.
 - **`atlas-browser` needs the desktop app's Browser pane.** From the plain CLI it has nothing to drive and says so.
+**The same rules as an output style, without the hook (2026-10-15).** Twelve of the English
+questions, two rounds, `claude-opus-5-5`, the 0.3.6 rules: injected by the session-start hook
+and re-stated by the tracker (`atlas low` / `atlas high`), or written once into the system
+prompt as a Claude Code output style made from the hook's own output (`style-low` /
+`style-high`, `atlas-test/style-rules.mjs`). Saving against no plugin: hook 31.3% at `low`
+and 38.4% at `high`; style 34.2% and 40.4%. Details lost: 0 of 132 in every row. Billed input
+of the one-turn call: the same, 2,100-2,300 tokens over no plugin either way. The bands of the
+two rounds do not overlap, so the two to three points are not noise, but the gap is small and
+one-turn calls cannot show the one thing the hook pays for every turn: the 27-32 token reminder
+is absent in the style. Not measured: sessions of many turns, Italian, other models, and
+whether replacing Claude Code's own output-style text changes its coding behaviour. Rows in
+`atlas-test/generated/style.en/`.
+
 - **The compression figure is 2 rounds on 48 questions with fixed fact sheets, one model (`claude-opus-5-5`, 2026-09-26).** It measures form with the information held constant; answers that have to find their own facts vary more, and another model compresses by another amount: Sonnet 5 gave larger savings under every plugin.
 - **It shortens output only.** Your input, your files and what tools return are not touched: a hook cannot rewrite a tool's result.
 
