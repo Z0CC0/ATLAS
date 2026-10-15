@@ -13,10 +13,11 @@ It ships off. Nothing changes until you type `atlas low` or `atlas high`.
 | `atlas/` | the full plugin: four dials, nine commands, seven subagents |
 | `atlas-solo/` | the same rules and commands without the subagents |
 | `atlas-min/` | compression only: two levels, one command |
-| `atlas-code/` | `atlas` plus a coding section: fourteen more commands (tests, verification, planning, shipping, a security audit, a catalogue search, …) and an optional guard hook. Its own README says what it adds, what it costs and what was tried on real projects |
+| `atlas-code/` | `atlas` plus a coding section: sixteen more commands (tests, verification, planning, shipping, a security audit, a catalogue search, …) and an optional guard hook. Its own README says what it adds, what it costs and what was tried on real projects |
 | `atlas-mem/` | `atlas` plus a memory: notes written by hand, linked to code, flagged as suspect when that code changes. One more command, six local tools (the stale-note check, a code graph across projects, a harvest of past sessions and documents into an inbox, search by meaning, live references from a language server, labels on code), a hook that puts a label on every grep that finds a labelled symbol, and 22 MB of tree-sitter grammars, which is why it is its own build |
+| `atlas-write/` | `atlas` plus a writing section: the spec before the build, the changelog and release notes after it, the text other agents read, the explanation one person needs. Four more commands |
 | `atlas-test/` | the bench that produced every number below, with the questions, every answer it generated and every verdict — so you can rerun it |
-| `.claude-plugin/marketplace.json` | lets Claude Code install any of the five straight from this repository |
+| `.claude-plugin/marketplace.json` | lets Claude Code install any of the six straight from this repository |
 
 ## What it does
 
@@ -85,19 +86,21 @@ file per project, outside the plugin, so removing and reinstalling brings back w
 before. Type `atlas off` in a project before uninstalling, or delete that folder — nothing else
 depends on it. Nothing is ever written inside your repositories.
 
-## Three builds
+## Six builds
 
 | build | what is in it | fixed cost per session at `low` |
 |---|---|---|
 | `atlas` | everything | 3,294 tokens |
 | `atlas-solo` | same rules, no subagents | 2,243 tokens |
-| `atlas-min` | compression only: two levels, one command | 1,235 tokens |
+| `atlas-min` | compression only: two levels, one command | 1,137 tokens |
 
 `atlas` and `atlas-solo` carry byte-identical rules. The difference is whether the subagents exist, and whether their work stays out of your context.
 
-A fourth build, `atlas-code`, is `atlas` plus a coding section: tests, verification, planning, shipping, a security audit, a catalogue search and more, fourteen further commands and an optional guard hook. It loads about twice the descriptions. `review`, `fix` and `secure` were run headless on real projects of several languages (C#, C++, Python, JavaScript); the rest was tried in sessions but not measured. Its own README says what it adds, what it costs and what was tried, with the cost of each run.
+A fourth build, `atlas-code`, is `atlas` plus a coding section: tests, verification, planning, shipping, a security audit, a catalogue search and more, sixteen further commands and an optional guard hook. It loads about twice the descriptions. `review`, `fix` and `secure` were run headless on real projects of several languages (C#, C++, Python, JavaScript); the rest was tried in sessions but not measured. Its own README says what it adds, what it costs and what was tried, with the cost of each run.
 
 A fifth, `atlas-mem`, is `atlas` plus a memory: notes you write by hand, one fact per file, linked to the code they describe and flagged as suspect when that code changes. One more command (119 tokens of description) and six local tools with tree-sitter grammars for thirteen languages, 22 MB of WebAssembly, which is why it is its own build: the check itself, a code graph across every project under one folder (duplicates, uncalled symbols with three grades, blast radius), a harvest that turns past Claude Code sessions, project documents and a claude.ai export into candidates nobody accepts but you, search by meaning with a small local model, live references from a language server, and labels (CANONICAL, SUPERSEDED with its successor, WRONG with its reason, …) that a hook attaches to every grep or read that finds the symbol, so old code is never deleted and never found bare. Measured on real material: ten linked functions with five changed, one renamed, one deleted, one commented and one untouched gave suspect for exactly the seven that deserved it; thirty questions in other words found the right note first 24 times by words and 21 by meaning. Its README has the numbers and what the check cannot see.
+
+A sixth, `atlas-write`, is `atlas` plus a writing section for the documents that are not code: `atlas spec` (an idea into a specification that can be built and checked, the handoff to the plan, the review of a spec), `atlas changelog` (the entry and the release notes from the history, and the version they call for), `atlas brief` (what agents read: `CLAUDE.md`, scoped rules, a skill's description measured in tokens), `atlas explain` (one thing for one reader: plain words, a decision with its options, a table of numbers with what it proves). Four commands, 402 tokens of descriptions, twelve rule files of about 6,500 tokens read one or two at a time; fixed cost at `low` 3,696.
 
 ## Measured
 

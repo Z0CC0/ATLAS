@@ -37,11 +37,14 @@ word ("the database choice", "how the user wants to be told about blockers"), as
 model:
 
 ```
-node "${CLAUDE_PLUGIN_ROOT}/tools/embed.mjs" search "<vault>" "<the question>" --k 5
+node "${CLAUDE_PLUGIN_ROOT}/tools/embed.mjs" search "<vault>" "<the question>" --k 5 --words
 ```
 
-It returns the nearest notes with a score; above about 0.5 the match is usually right. Read
-the notes whole, as always. It needs the `@huggingface/transformers` package; when the tool
+`--words` scores the question's words on every note too and fuses the two rankings: a note
+the question names outright comes first even when its meaning is far from the words, and a
+paraphrase still reaches its note (on 30 questions in other words than the notes, the right
+note came first 21 times by meaning alone, 23 by words alone, 26 fused). Read the notes
+whole, as always. It needs the `@huggingface/transformers` package; when the tool
 says it is missing, say so and stay with the word search. Never write a note from a search
 result.
 

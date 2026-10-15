@@ -29,7 +29,8 @@ the request call for; each file is short and says what it is for in its first li
    false positives that are never findings.
 2. One file per language in the diff, chosen by file extension: `typescript.md` (.ts .tsx .js
    .jsx .mjs), `python.md`, `go.md`, `rust.md`, `java-kotlin.md` (.java .kt .kts), `swift.md`,
-   `csharp.md`, `cpp.md` (.c .cc .cpp .h .hpp), `php.md`, `dart.md`. Frameworks by import, on top of the
+   `csharp.md`, `fsharp.md` (.fs .fsx), `cpp.md` (.c .cc .cpp .h .hpp), `php.md`, `dart.md`,
+   `perl.md` (.pl .pm .t), `arkts.md` (.ets, on top of `typescript.md`). Frameworks by import, on top of the
    language: `react.md` (react, next), `vue.md` (vue, nuxt), `database.md` (any SQL string, ORM
    call, migration file), `ml.md` (torch, tensorflow, sklearn, xgboost, transformers, or code
    that splits data, trains, scores or serves a model). No file for the language: review with `method.md` alone and say so
