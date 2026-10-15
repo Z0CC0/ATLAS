@@ -1,0 +1,3 @@
+Yes.
+
+Same for every empty collection: list, tuple, dict, set and string all false in boolean context.

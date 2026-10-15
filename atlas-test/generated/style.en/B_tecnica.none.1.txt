@@ -1,0 +1,23 @@
+Your API is leaking database connections, not running slow queries. The pool runs dry under load, and every request after that waits on it.
+
+The leak is in the middleware at `db/session.py:47`. The connection is released only on the success path. When the handler raises an exception, the release call is never reached, and that connection stays held until it times out. Each failed request costs you one connection. After a few hundred failures the pool is empty, and every later request queues for a connection that is not coming back. That queueing is why you see latency climbing instead of immediate errors.
+
+The fix is to release in a `finally` block so the error path gives the connection back too:
+
+```python
+conn = pool.acquire()
+try:
+    return handler(conn, request)
+finally:
+    pool.release(conn)
+```
+
+Do not reach for a bigger pool as the fix. Raising `pool_size` only pushes back the moment the pool empties. The leak stays, and the lockup comes later instead of never. Raise it only after the fix is in, and only if the real load calls for it.
+
+To see the behaviour before and after the change, run:
+
+```
+pytest tests/test_pool.py -k exhaustion -x
+```
+
+The test fails on the current code and passes once the release moves into the `finally` block.

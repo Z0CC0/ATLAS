@@ -1,0 +1,3 @@
+Usually not. On a column with only three distinct values, the B-tree index is normally not used at all. Any filter on one of those values will match a large share of the table, and the planner prefers a sequential scan once the filter selects more than roughly 5 to 10 per cent of the rows. So the index sits idle while still costing you on every write and taking up disk space.
+
+The one case where it pays off is a partial index on the rare value. If one of the three values is uncommon and you query for it often, index only the rows that have that value. That index stays small, is cheap to maintain, and the planner will use it, because the filter now selects a small slice of the table.

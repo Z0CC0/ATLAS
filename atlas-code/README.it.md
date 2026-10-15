@@ -43,8 +43,8 @@ Funzionano entrambe le forme: `atlas high` scritto come intero messaggio, oppure
 ## Installazione
 
 ```bash
-/plugin marketplace add <questo-repo>
-/plugin install atlas
+/plugin marketplace add Z0CC0/ATLAS
+/plugin install atlas-code@atlas
 ```
 
 Nessuna dipendenza, nessuna compilazione, nessuna telemetria.
@@ -83,7 +83,7 @@ nessuna regola dice mai che una risposta non si puo' avere perche' ne manca uno.
 |---|---|---|
 | **Context7** | `atlas-research` e `check` lo interrogano per primo sulle API di una libreria: una chiamata per la versione giusta, dove una ricerca ne prende quattro e puo' finire su una pagina che parla di un'altra | `claude mcp add --transport http --scope user context7 https://mcp.context7.com/mcp` |
 | **Chrome DevTools MCP** | le due cose che `atlas-browser` non puo' fare — pagine dietro un login e tracce di prestazioni. Quelle le restituisce invece di riferire cosa vede un visitatore anonimo | `claude mcp add --scope user chrome-devtools -- npx -y chrome-devtools-mcp@latest` |
-| **Composio** | un gateway solo verso Gmail, Notion, Slack, GitHub e il resto, cosi' i subagenti arrivano ai dati veri e non solo al web | `claude mcp add --transport http --scope user composio https://connect.composio.dev/mcp` poi `claude mcp login composio` |
+| **Composio** | un gateway verso Gmail, Notion, Slack, GitHub e il resto, cosi' i subagenti arrivano ai dati veri e non solo al web | `claude mcp add --transport http --scope user composio https://connect.composio.dev/mcp` poi `claude mcp login composio` |
 
 `--scope user` conta: senza, il server esiste solo nel progetto dove hai lanciato il comando.
 Dopo, riavvia Claude Code — gli MCP si leggono all'avvio.
@@ -129,18 +129,18 @@ dove vale per ogni risposta invece che per un comando solo.
 turno, su una sessione da 295 turni — la media misurata su sessioni vere — sono 7.965 token,
 piu' del doppio di tutto il resto messo insieme.
 
-Ogni comando installato costa circa 100 token a sessione per sempre, che tu lo usi o no:
-le descrizioni stanno nell'elenco che si carica sempre, i contenuti no. È il motivo per cui
-le regole dei livelli sono filtrate: si inietta solo il livello attivo, mai tutti e tre.
+Le descrizioni di skill, comandi e subagenti costano 1.886 token a sessione per sempre, che
+tu li usi o no: stanno nell'elenco che si carica sempre, i contenuti no. È il motivo per cui
+le regole dei livelli sono filtrate: si inietta solo il livello attivo, mai entrambi.
 
 ## Cosa NON fa
 
 - Non comprime l'input, i tuoi file, né l'output dei tool. Accorcia **l'output**
-- Misurata il 26/09/2026 con `claude-opus-5-5` contro il plugin assente su 24 domande inglesi e 24 italiane, ognuna con la sua scheda di fatti cosi' che cambi solo la forma, 2 giri a testa in sessioni nuove, token contati dall'API sul testo visibile: **`low` -37% in italiano e -37% in inglese, `high` -43% e -46%**. Dettagli persi, mediana: `low` 0 e 1 su 264, `high` 1 e 0. Rumore fra giri 0.6 punti: una differenza piu' piccola non e' un effetto. Un altro modello comprime di un altro tanto: Sonnet 5, l'8 settembre, risparmiava di piu' con ogni plugin
+- Misurata il 26/09/2026 con `claude-opus-5-5` contro il plugin assente su 24 domande inglesi e 24 italiane, ognuna con la sua scheda di fatti cosi' che cambi solo la forma, 2 giri a testa in sessioni nuove, token contati dall'API sul testo visibile: **`low` -37% in italiano e -37% in inglese, `high` -43% e -46%**. Dettagli persi, mediana: `low` 0 su 264 in italiano e 1 su 263 in inglese, `high` 1 su 264 e 0 su 263. Rumore fra giri 0,6 punti in italiano e 0,4 in inglese: una differenza piu' piccola non e' un effetto. Un altro modello comprime di un altro tanto: Sonnet 5, l'8 settembre 2026, risparmiava di piu' con ogni plugin
 - **`low` e `high` distano 9 e 7 punti.** `high` e' il regolamento piu' duro e si legge piu' telegrafico: il risparmio e' vero, e lo e' anche il costo in leggibilita'
 - `atlas-min` e' misurata a parte, con le sue regole ridotte; `atlas-solo` ha le stesse regole di `atlas` byte per byte e non e' stata rimisurata
-- `atlas-mem`, la quinta build, e' `atlas` piu' una memoria: note scritte a mano, un fatto per file, legate al codice che descrivono e segnate sospette quando quel codice cambia. Un comando in piu' (119 token di descrizione) e uno strumento locale con le grammatiche tree-sitter di tredici linguaggi, 22 MB, per questo e' una build a parte. Il suo README dice come una nota si accorge di essere vecchia e cosa il controllo non vede
-- `atlas-code`, la quarta build, e' `atlas` piu' una sezione per il codice (test, verifica, piano, pubblicazione e altro: quattordici comandi in piu' e un hook di guardia opzionale). Carica circa il doppio delle descrizioni e in gran parte non e' ancora stata provata su progetti veri: il suo README dice cosa aggiunge, cosa costa e cosa e' stato provato
+- `atlas-mem`, la quinta build, e' `atlas` piu' una memoria: note scritte a mano, un fatto per file, legate al codice che descrivono e segnate sospette quando quel codice cambia. Un comando in piu' e sei strumenti locali (controllo di scadenza, grafo del codice fra progetti, raccolta da sessioni e documenti, ricerca per significato con un modello locale, riferimenti vivi dal server di linguaggio, etichette sul codice agganciate a Grep e Read), con le grammatiche tree-sitter di tredici linguaggi, 22 MB: per questo e' una build a parte. Il suo README dice come una nota si accorge di essere vecchia e cosa il controllo non vede
+- `atlas-code`, la quarta build, e' `atlas` piu' una sezione per il codice (test, verifica, piano, pubblicazione e altro: sedici skill in piu', cinque subagenti e un hook di guardia opzionale). Carica piu' del doppio delle descrizioni; `review`, `fix` e `secure` sono state provate senza interfaccia su progetti veri (C#, C++, Python), il resto in sessione ma senza misura: il suo README dice cosa aggiunge, cosa costa e cosa e' stato provato
 - Non conviene su tutti gli usi. Le regole costano 1.073-1.531 token a sessione e il promemoria 27-32 a turno. Se le tue risposte sono corte, misura prima di fidarti
 - I comandi sono parole inglesi. Le richieste in qualsiasi lingua vengono riconosciute; le frasi che l'hook intercetta da solo ("stop atlas", "normal mode") sono solo inglesi, e `atlas off` funziona ovunque
 - `ask` non può sapere quello che non hai detto. Riduce le assunzioni sbagliate, non le elimina

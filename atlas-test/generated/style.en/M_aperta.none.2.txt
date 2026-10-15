@@ -1,0 +1,11 @@
+Before picking an architecture, map what actually changes. Stable parts of your monolith gain nothing from being split, so look at the commit history and find the modules that keep moving. Those are the only candidates for extraction.
+
+Second, find the transaction boundaries. Any transaction that would span two services becomes a distributed problem, with all the retry and consistency work that implies. Where the data is tightly coupled, keep it together.
+
+On the rewrite itself, do not run a full new system in parallel with the old one. That approach almost always fails because the old system keeps changing and the copy never catches up. Use progressive strangling instead: put a router in front, move one piece at a time, and keep the old system authoritative until the new piece is verified.
+
+Be honest about the cost of microservices. Every service wants its own releases, monitoring, logs, alerts, and someone who looks after it. Below five developers that operational cost almost always exceeds the benefit.
+
+The option nobody mentions is the modular monolith. You get sharp internal boundaries, one release, and the ability to extract a module the day it is genuinely needed. For a PHP monolith with unclear change patterns, this is the recommendation.
+
+The deciding question is not technical. Ask what your team must be able to do a year from now that it cannot do today, and let that answer choose the architecture.

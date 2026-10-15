@@ -1,0 +1,9 @@
+{
+  "output_tokens": 459,
+  "thinking_tokens": 116,
+  "cache_creation_input_tokens": 13156,
+  "cache_read_input_tokens": 22713,
+  "input_tokens": 2,
+  "model": "claude-fable-5-1",
+  "duration_ms": 8276
+}

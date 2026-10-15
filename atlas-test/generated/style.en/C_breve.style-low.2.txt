@@ -1,0 +1,7 @@
+No. B-tree index on low cardinality column normally not used.
+
+Planner prefers sequential scan when filter selects more than roughly 5-10 per cent of rows, and with three values nearly every filter does.
+
+Index still costs writes and disk space, so it only loses.
+
+Exception: partial index on rare value, which does work.

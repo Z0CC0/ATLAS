@@ -1,0 +1,21 @@
+Here's a debounce you can drop in with no library:
+
+```javascript
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Each call cancels the pending timer and starts a new one. The wrapped function only runs once the calls stop for the full delay.
+
+A few things to keep in place when you write it yourself:
+
+- **Call clearTimeout before every new setTimeout.** Skip it and the timers pile up, so the function fires more than once.
+- **Keep the variable `t` in the closure**, outside the returned function. If it lived inside, every call would get its own timer and nothing would be debounced.
+- **Forward the arguments with the spread.** Without it, the called function receives nothing.
+
+Two limits to know about. This version returns nothing, so if you need the result of the debounced call you have to wrap it in a Promise. And if you want the opposite behaviour, running immediately and then ignoring calls for a period, that is a throttle, which is a different function.

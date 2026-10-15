@@ -1,0 +1,13 @@
+After a write, replicas disagree briefly, then converge within finite time once writes stop.
+
+Trade against availability: strong consistency must refuse requests when replicas cannot talk.
+
+Why care: you post comment, reload, comment missing. Hits whoever reads right after writing.
+
+Common fix: session that just wrote reads from primary replica, not everyone.
+
+Convergence same region under a second; across regions, seconds.
+
+Not defect, choice: most systems that scale accept it deliberately.
+
+Unacceptable only in few recognisable cases: account balances, seat availability, uniqueness of identifier.

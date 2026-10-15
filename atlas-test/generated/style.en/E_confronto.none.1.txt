@@ -1,0 +1,10 @@
+For a small project, use Postgres. You already run it, and a queue built on SELECT FOR UPDATE SKIP LOCKED carries roughly a thousand jobs a minute, which is more than a small project needs.
+
+Two things make it the better fit at this size:
+
+- **The job lives in the same transaction as your data.** If the write that enqueued it rolls back, the job never starts. With a separate queue you have to handle that case yourself.
+- **Persistence comes free.** If the process dies, the queue is still in the table.
+
+Redis wins on raw performance. It handles far more volume and answers in under a millisecond. But it costs you one more service to run, monitor and upgrade, and persistence is not on by default. Without AOF enabled, a restart loses every queued job.
+
+Start on Postgres and move to Redis only when your volume genuinely demands it.

@@ -36,6 +36,7 @@ const ORDER = [
   'minx-low', 'minx-high', 'minx2-low', 'minx2-high',
   'caveman-lite', 'caveman-full', 'caveman-ultra',
   'adhd',
+  'style-low', 'style-high',
 ];
 
 function args(argv) {

@@ -1,0 +1,7 @@
+Go with Postgres.
+
+For a small project, a table and `SELECT FOR UPDATE SKIP LOCKED` is all the queue you need. That pattern comfortably handles up to roughly a thousand jobs per minute. The real win is that the job row lives in the same transaction as your data. If the write that enqueued it rolls back, the job never exists, so a worker can never start processing something that was never committed. You also get persistence for free. If the process dies, the queue is still sitting in the database.
+
+Redis is the stronger queue on raw numbers. It handles far more volume and responds in under a millisecond. But you pay for that with one more service to run, monitor and upgrade. Persistence is also not the default. Without AOF enabled, a restart loses every queued job.
+
+Start on Postgres. Move to Redis only when your volume genuinely demands it.

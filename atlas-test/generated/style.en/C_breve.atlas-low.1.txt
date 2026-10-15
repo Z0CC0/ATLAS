@@ -1,0 +1,5 @@
+No, normally not worth it.
+
+On a low cardinality column the B-tree index is normally not used: the planner prefers a sequential scan when the filter selects more than roughly 5-10 per cent of the rows, and with three values almost any filter does. Meanwhile the index still costs writes and disk space.
+
+The exception: if one of the three values is rare, a partial index on that value does work, because the filter then selects a small fraction of the rows.

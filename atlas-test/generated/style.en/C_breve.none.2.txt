@@ -1,0 +1,5 @@
+Generally no. A B-tree index on a column with only three distinct values is normally not used, because each value matches a large share of the table. Once a filter selects more than roughly 5 to 10 per cent of the rows, the planner prefers a sequential scan over walking the index, and with three values you are almost always above that threshold.
+
+Meanwhile the index is not free. Every insert, update and delete has to maintain it, and it takes disk space, so you pay the write cost for an index that rarely gets chosen.
+
+The one case where it pays off is when one of the three values is rare and you query for it. There, a partial index that covers only that rare value does work: it stays small, it is cheap to maintain, and the planner will use it because the filter now selects a small fraction of the rows.

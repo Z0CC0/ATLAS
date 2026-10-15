@@ -103,6 +103,14 @@ const CONFIGURATIONS = [
   // strongest version of it. A copy of the file and its MIT licence sit in
   // third-party/i-have-adhd; COMMIT names the revision.
   { id: 'adhd', atlas: 'off:off:off', caveman: 'off', systemPrompt: join(HERE, 'third-party', 'i-have-adhd', 'SKILL.md') },
+
+  // The same rules delivered once as a Claude Code output style (written into the
+  // system prompt, no hook, no per-turn reminder) instead of injected at session start
+  // and re-stated every turn. ATLAS itself is off for these rows. The style files are
+  // the hook's own output, written by style-rules.mjs; run it first. If the headless
+  // CLI ignored the style, the billed input would equal `none`: the data would say so.
+  { id: 'style-low', atlas: 'off:off:off', caveman: 'off', outputStyle: 'atlas-bench-low' },
+  { id: 'style-high', atlas: 'off:off:off', caveman: 'off', outputStyle: 'atlas-bench-high' },
 ];
 
 const rulesOf = (variant) => join(HERE, '..', variant || 'atlas', 'skills', 'atlas', 'SKILL.md');
@@ -125,6 +133,10 @@ function activateVariant(name) {
 
 // No tool may run: the facts are in the prompt, and a search would measure the search.
 const DISALLOWED = 'WebSearch,WebFetch,Bash,Read,Edit,Write,Glob,Grep,Task,TodoWrite,Agent';
+// No MCP server either: their tool schemas are tens of thousands of input tokens that
+// no row can use, paid on every call. Since 2026-10-15; the rows of one run stay
+// comparable with each other, the billed input is not comparable with earlier runs.
+const LEAN = ['--strict-mcp-config', '--mcp-config', '{"mcpServers":{}}'];
 
 const INSTRUCTIONS = {
   it: {
@@ -268,7 +280,8 @@ function main() {
       // the earlier benches measured no plugin at all. The billed input caught it.
       const extra = cfg.systemPrompt ? ['--append-system-prompt', readFileSync(cfg.systemPrompt, 'utf8').split(/\r?\n---\r?\n/).slice(1).join('\n---\n')] : [];
       if (cfg.systemPrompt && !extra[1].trim()) throw new Error(`empty system prompt from ${cfg.systemPrompt}`);
-      const out = execFileSync('claude', ['-p', prompt(cases[name], language), '--output-format', 'json', '--disallowed-tools', DISALLOWED, ...extra], {
+      if (cfg.outputStyle) extra.push('--settings', JSON.stringify({ outputStyle: cfg.outputStyle }));
+      const out = execFileSync('claude', ['-p', prompt(cases[name], language), '--output-format', 'json', '--disallowed-tools', DISALLOWED, ...LEAN, ...extra], {
         encoding: 'utf8', maxBuffer: 16 * 1024 * 1024,
         env: { ...process.env, CAVEMAN_DEFAULT_MODE: cfg.caveman },
       });

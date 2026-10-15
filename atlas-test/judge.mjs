@@ -163,7 +163,7 @@ function main() {
     n++;
     process.stdout.write(`[${String(n).padStart(4)}/${jobs.length}] ${j.f} — ${j.detail} ... `);
     try {
-      const out = execFileSync('claude', ['-p', judgePrompt(j.text, j.detail, language), '--disallowed-tools', DISALLOWED], {
+      const out = execFileSync('claude', ['-p', judgePrompt(j.text, j.detail, language), '--disallowed-tools', DISALLOWED, '--strict-mcp-config', '--mcp-config', '{"mcpServers":{}}'], {
         encoding: 'utf8', maxBuffer: 4 * 1024 * 1024, env: { ...process.env, CAVEMAN_DEFAULT_MODE: 'off' },
       }).trim();
       const yes = /^\s*(si|sì|yes)\b/i.test(out);
