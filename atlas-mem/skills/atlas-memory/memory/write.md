@@ -20,9 +20,25 @@ about it and save that, or decline in one line.
 
 ## Does it already exist
 
-Before creating a file, look for a note that covers this (`recall.md`). Found: update it,
-do not add a second one; duplicates are how a vault rots. A fact that contradicts an existing
-note is not written over it: show the two together and let the user say which holds.
+Before creating a file, look for a note that covers this: the index by words, then
+
+```
+node "${CLAUDE_PLUGIN_ROOT}/tools/embed.mjs" search "<vault>" "<the fact, in one line>" --k 3 --words
+```
+
+Read the top hits whole and decide, in one of four ways, and say which:
+
+- **update** — a note on the same fact exists: edit it (the new detail, the date), keep its
+  slug and its links. Duplicates are how a vault rots.
+- **contradiction** — a note says the opposite or a different value: never written over.
+  Show the two together and let the user say which holds; the loser gets a line saying it
+  was superseded, with the date, and the winner links to it.
+- **nothing** — the fact is already there, in those words or better: no write, say so.
+- **add** — nothing covers it: a new file, linked with `[[slug]]` to the nearest notes the
+  search returned when they are related.
+
+Without the embedding library the search says so; then the index and the descriptions
+alone decide, and a doubt is a question to the user, not a second file.
 
 ## Writing the file
 

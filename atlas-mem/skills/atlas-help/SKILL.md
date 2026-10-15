@@ -106,7 +106,10 @@ candidate that says what the vault already says is skipped and named.
 `tools/labels.mjs` and `hooks/atlas-labels.js` are the labels: a table in `<vault>/.atlas/labels.json`,
 and a `PostToolUse` hook on `Grep` and `Read` that attaches the label of any symbol a result
 names, with the successor and the reason. Code is never deleted, it is marked, and it cannot
-be found without the mark. Silent when the directory has no vault.
+be found without the mark. Silent when the directory has no vault. `hooks/atlas-precompact.js`,
+on `PreCompact`, keeps the session's decision-shaped lines in `<vault>/.atlas/harvest/` before
+the conversation is compacted, as raw material for `harvest run`, and hands them back as context
+when the session resumes on its summary; nothing enters the vault.
 
 Two optional layers, each one file, each saying plainly when its dependency is missing:
 `tools/embed.mjs` finds a note by meaning (a small multilingual model that runs locally,

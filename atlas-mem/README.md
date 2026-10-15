@@ -78,6 +78,20 @@ the nearest `.atlas.json` (`{"vault": "<path>"}`) at or above the working direct
 it is silent. The file is 4 KB; what a hook prints is kept under the 10 KB that Claude Code
 hands the model whole.
 
+A second hook, `hooks/atlas-precompact.js`, runs on `PreCompact`: before Claude Code
+compacts a conversation, the lines of this session that read like a decision, a rule, a
+preference or a correction are pulled out of the transcript, the same way `harvest extract`
+reads past sessions, and written to `<vault>/.atlas/harvest/<session>.md`. Compaction keeps a
+summary and drops the words; this keeps the words that matter. Nothing enters the vault: the
+file is raw material, and `harvest run <vault>/.atlas/harvest <out> <vault>` turns it into
+candidates for the inbox, each still needing a yes. A session that compacts twice replaces
+its file. No vault, no transcript, or nothing decision-shaped beyond the first request: it
+writes nothing. It never blocks the compaction (always exit 0, 10 s timeout). The same file
+runs on `SessionStart` with the `compact` matcher, when the conversation resumes on its
+summary: the lines kept for this session come back as additional context, under 6 KB, so a
+rule stated before the compaction is still in front of the model after it. Compaction keeps
+the gist; this keeps the rules.
+
 ## Harvest: filling the memory from what already exists
 
 `tools/harvest.mjs` is the third tool. `harvest extract <claude-projects> --out <dir>` reads
