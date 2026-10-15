@@ -45,9 +45,10 @@ do not.
 ## Where the work goes
 
 `map`, `onboard` and `trace` read most of a project; `sync` reads every claim in the docs
-against the code. Delegate them to the `atlas-documenter` subagent, when it exists, with the
-root, the mode, where to write, and the absolute path of the mode's file (beside this
-file). It returns the document or the list; print it unchanged. One paragraph
+against the code. Delegate them to the `atlas-documenter` subagent, when it exists, whatever
+the size of the project (a small one read here still stays in this conversation for every
+later turn), with the root, the mode, where to write, and the absolute path of the mode's
+file (beside this file). It returns the document or the list; print it unchanged. One paragraph
 to fix, one README line to check: here.
 
 ## Form
