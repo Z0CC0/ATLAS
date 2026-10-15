@@ -58,10 +58,10 @@ The hook runs on every shell command and file edit, whether or not a switch is o
 
 | | `atlas` | `atlas-code` |
 |---|---|---|
-| descriptions, loaded in every session | 1,886 | 4,626 |
+| descriptions, loaded in every session | 1,886 | 4,658 |
 | rules injected at `low` | 1,408 | 1,408 |
-| fixed cost at `low` | 3,294 | 6,034 |
-| first turn as billed, at `low` | 4,092 | 6,832 |
+| fixed cost at `low` | 3,294 | 6,066 |
+| first turn as billed, at `low` | 4,092 | 6,864 |
 | a 40-turn session at `low`, against no plugin | -10.5% | +0.5% |
 | a 295-turn session at `low` | -28.5% | -27.0% |
 | a 40-turn session at `high` | -17.0% | -5.9% |
@@ -87,7 +87,7 @@ reading is paid again on every later turn. The price is 511 tokens of descriptio
 session, used or not.
 
 The first three rows are tiktoken counts (`o200k_base`), made the same way as for the other
-builds. The 112 files behind these skills are about 79,000 tokens in all and are read a few
+builds. The 114 files behind these skills are about 80,000 tokens in all and are read a few
 at a time.
 
 **The session rows are a model, not a separate measurement.** The bench measured what the

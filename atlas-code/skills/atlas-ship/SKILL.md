@@ -4,8 +4,9 @@ description: >
   Gets finished work out: a pull request, a container image, a pipeline, a deploy, with the
   checks before and the way back written down. Angles by the request: "PR", "pull request";
   "deploy", "release", "rollout"; "docker", "compose", "container"; "kubernetes", "helm"; "CI",
-  "pipeline", "GitHub Actions"; "branch", "rebase", "tag"; "monitoring", "dashboard", "alerts"; "installer".
-  Never pushes, publishes or deploys without a yes. Use for "atlas ship", "open a PR", "get
+  "pipeline", "GitHub Actions"; "branch", "rebase", "tag"; "monitoring", "dashboard", "alerts"; "installer";
+  "terraform", "infrastructure"; and for anything that cannot be undone, the blast radius, the way
+  back and the dry run before the yes. Never pushes, publishes or deploys without a yes. Use for "atlas ship", "open a PR", "get
   this deployed", "set up CI" — in any language.
 ---
 
@@ -24,6 +25,9 @@ Everything below lives in the `ship/` folder beside this file. One file per angl
 "branch", "rebase", "merge", "tag", "undo a commit", "git" → `git.md`
 "monitoring", "dashboard", "alerts", "metrics", "what should we watch" → `observe.md`
 "installer", "setup.exe", "package the app for Windows", "Nuitka", "Inno Setup" → `installer.md`
+"terraform", "tofu", "pulumi", "bicep", "infrastructure as code", "state", "plan and apply" → `infra.md`
+Any step that deletes, overwrites, publishes or changes what runs for other people, whatever the
+angle → `guardrails.md` as well, before the yes
 Nothing named, "ship this": `pr.md`, after `atlas-verify` says `READY`.
 
 ## What needs a yes, every time
@@ -32,7 +36,8 @@ Nothing named, "ship this": `pr.md`, after `atlas-verify` says `READY`.
 tag or an image; applying to a cluster; running a deploy, a migration, a rollback; changing
 branch protection, secrets or permissions; anything that sends a notification to people.
 The yes covers the action shown, once. Shown means: the exact command, the target, and what
-it changes.
+it changes; for an irreversible step, also the three facts of `guardrails.md`: the blast radius
+with its numbers, the way back verified, the dry run read.
 
 ## With the other skills
 
