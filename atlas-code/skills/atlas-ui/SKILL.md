@@ -18,11 +18,14 @@ like, and whether a keyboard, a screen reader and a small phone can use it.
 Everything below lives in the `ui/` folder beside this file.
 
 1. `ui/method.md`, always: what to read in the project first, the states every component
-   has, how the result is checked, the report.
+   has, how the result is checked, the report. Then `ui/house.md`: how to find the project's
+   own style file and what in it overrides every rule here.
 2. By the words of the request, one file or more:
    "direction", "redesign", "landing page", "looks generic", a new screen from nothing →
    `direction.md`
    "polish", "feels off", "cramped", "flat", "unfinished", "make it nicer" → `polish.md`
+   "taste", "make it beautiful", "looks cheap", "like a real product", "what would a
+   designer do", a screen built from nothing → `taste.md` (with `direction.md`)
    "accessibility", "a11y", "WCAG", "screen reader", "keyboard", "contrast" → `a11y.md`
    "animate", "transition", "motion", "feels jumpy" → `motion.md`
    "tokens", "design system", "theme", "dark mode", "inconsistent colours" → `tokens.md`

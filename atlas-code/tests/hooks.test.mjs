@@ -100,6 +100,11 @@ eq('rigour change keeps level', tracker.parseCommand('/atlas ask', { level: 'low
 eq('ask off clears only rigour', tracker.parseCommand('/atlas ask off', { level: 'low', rigour: 'ask', check: 'off', silent: 'off' }), { level: 'low', rigour: 'off', check: 'off', silent: 'off' });
 eq('/atlas off clears both', tracker.parseCommand('/atlas off', { level: 'low', rigour: 'ask', check: 'off', silent: 'off' }), { level: 'off', rigour: 'off', check: 'off', silent: 'off' });
 check('unknown argument changes nothing', tracker.parseCommand('/atlas banana', S) === null);
+eq('atlas guard on is a switch, not a dial', tracker.parseSwitch('atlas guard on'), { name: 'guard', on: true });
+eq('atlas guard alone means on', tracker.parseSwitch('/atlas:atlas guard'), { name: 'guard', on: true });
+eq('atlas finish off', tracker.parseSwitch('atlas finish off'), { name: 'finish', on: false });
+check('a dial is not a switch', tracker.parseSwitch('atlas high') === null);
+check('a switch is not a dial', tracker.parseCommand('atlas guard on', S) === null);
 eq('namespaced form is accepted', tracker.parseCommand('/atlas:atlas high', S), { level: 'high', rigour: 'off', check: 'off', silent: 'off' });
 
 eq('English off phrase', tracker.parseCommand('stop atlas please', S), { level: 'off', rigour: 'off', check: 'off', silent: 'off' });

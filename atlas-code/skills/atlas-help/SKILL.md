@@ -105,10 +105,11 @@ request that named the command loaded it every time; the same request in plain w
 | `"guard": true` | asks before a command that destroys or publishes: `rm -rf`, `git push --force`, `git reset --hard`, `DROP TABLE`, `npm publish`. With `"freeze": "src/api"`, also before a write outside that folder |
 | `"gate": true` | turns back the first edit of each file once per session, with what to look up first |
 | `"finish": true` | when the answer ends, warns if it said something was skipped, still failing or not run. English phrases only. Never blocks |
+| `atlas guard on` / `atlas guard off` (also `gate`, `finish`) | by voice: writes the switch to `~/.claude/atlas.json`; a project's `.atlas.json` still wins |
 
-**What this build costs.** Descriptions always loaded: 4,658 tokens, against 1,886 for
-`atlas`. Fixed cost at `low`: 6,066. The files behind these commands are about 80,000 tokens
-in all, in 109 files, read one or a few at a time. Every session figure elsewhere on this
+**What this build costs.** Descriptions always loaded: 4,664 tokens, against 1,892 for
+`atlas`. Fixed cost at `low`: 6,072. The files behind these commands are about 84,000 tokens
+in all, in 119 files, read one or a few at a time. Every session figure elsewhere on this
 card belongs to `atlas`; with the descriptions of this build the same model gives +0.5% at 40
 turns and -27.0% at 295 for `low` (against -10.5% and -28.5%), and -5.9% and -33.9% for
 `high` (against -17.0% and -35.4%). On a short session at `low` this build costs a little
@@ -144,10 +145,10 @@ nothing.
 
 | build | contains | fixed cost at `low` |
 |---|---|---|
-| `atlas` | everything on this card | 3,294 |
-| `atlas-solo` | same rules, no subagents, and eight commands rather than nine | 2,243 |
-| `atlas-min` | compression only: one command, no `ask`, no `check`, no provenance marker | 1,137 |
-| `atlas-code` | everything in `atlas`, plus the coding section on this card | 6,066 |
+| `atlas` | everything on this card | 3,300 |
+| `atlas-solo` | same rules, no subagents, and eight commands rather than nine | 2,249 |
+| `atlas-min` | compression only: one command, no `ask`, no `check`, no provenance marker | 1,143 |
+| `atlas-code` | everything in `atlas`, plus the coding section on this card | 6,072 |
 
 `atlas` and `atlas-solo` have byte-identical rules, verified with `diff`: they write the same
 answers. The difference is the subagents, and whether you want the work kept out of context.

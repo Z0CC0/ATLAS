@@ -90,9 +90,9 @@ depends on it. Nothing is ever written inside your repositories.
 
 | build | what is in it | fixed cost per session at `low` |
 |---|---|---|
-| `atlas` | everything | 3,294 tokens |
-| `atlas-solo` | same rules, no subagents | 2,243 tokens |
-| `atlas-min` | compression only: two levels, one command | 1,137 tokens |
+| `atlas` | everything | 3,300 tokens |
+| `atlas-solo` | same rules, no subagents | 2,249 tokens |
+| `atlas-min` | compression only: two levels, one command | 1,143 tokens |
 
 `atlas` and `atlas-solo` carry byte-identical rules. The difference is whether the subagents exist, and whether their work stays out of your context.
 
@@ -100,7 +100,7 @@ A fourth build, `atlas-code`, is `atlas` plus a coding section: tests, verificat
 
 A fifth, `atlas-mem`, is `atlas` plus a memory: notes you write by hand, one fact per file, linked to the code they describe and flagged as suspect when that code changes. One more command (119 tokens of description) and six local tools with tree-sitter grammars for thirteen languages, 22 MB of WebAssembly, which is why it is its own build: the check itself, a code graph across every project under one folder (duplicates, uncalled symbols with three grades, blast radius), a harvest that turns past Claude Code sessions, project documents and a claude.ai export into candidates nobody accepts but you, search by meaning with a small local model, live references from a language server, and labels (CANONICAL, SUPERSEDED with its successor, WRONG with its reason, …) that a hook attaches to every grep or read that finds the symbol, so old code is never deleted and never found bare. Measured on real material: ten linked functions with five changed, one renamed, one deleted, one commented and one untouched gave suspect for exactly the seven that deserved it; thirty questions in other words found the right note first 24 times by words and 21 by meaning. Its README has the numbers and what the check cannot see.
 
-A sixth, `atlas-write`, is `atlas` plus a writing section for the documents that are not code: `atlas spec` (an idea into a specification that can be built and checked, the handoff to the plan, the review of a spec), `atlas changelog` (the entry and the release notes from the history, and the version they call for), `atlas brief` (what agents read: `CLAUDE.md`, scoped rules, a skill's description measured in tokens), `atlas explain` (one thing for one reader: plain words, a decision with its options, a table of numbers with what it proves). Four commands, 402 tokens of descriptions, twelve rule files of about 6,500 tokens read one or two at a time; fixed cost at `low` 3,696.
+A sixth, `atlas-write`, is `atlas` plus a writing section for the documents that are not code: `atlas spec` (an idea into a specification that can be built and checked, the handoff to the plan, the review of a spec), `atlas changelog` (the entry and the release notes from the history, and the version they call for), `atlas brief` (what agents read: `CLAUDE.md`, scoped rules, a skill's description measured in tokens), `atlas explain` (one thing for one reader: plain words, a decision with its options, a table of numbers with what it proves). Four commands, 408 tokens of descriptions, twelve rule files of about 6,500 tokens read one or two at a time; fixed cost at `low` 3,702.
 
 ## Measured
 
@@ -154,11 +154,11 @@ Run-to-run noise with no plugin and the rules frozen: 0.4 points in English, 0.6
 
 | setup | descriptions, always loaded | injected on the first turn, as billed | first turn, total |
 |---|---|---|---|
-| `atlas` at `low` | 1,886 | 2,207 | 4,092 |
-| `atlas` at `high` | 1,886 | 2,304 | 4,189 |
-| `atlas-solo` at `low` | 835 | 2,207 | 3,041 |
-| `atlas-min` at `low` | 65 | 1,650 | 1,714 |
-| `atlas-min` at `high` | 65 | 1,832 | 1,896 |
+| `atlas` at `low` | 1,892 | 2,207 | 4,098 |
+| `atlas` at `high` | 1,892 | 2,304 | 4,195 |
+| `atlas-solo` at `low` | 841 | 2,207 | 3,047 |
+| `atlas-min` at `low` | 71 | 1,650 | 1,720 |
+| `atlas-min` at `high` | 71 | 1,832 | 1,902 |
 | caveman `lite` | 1,281 | 2,027 | 3,308 |
 | caveman `full` | 1,281 | 2,086 | 3,367 |
 | caveman `ultra` | 1,281 | 2,126 | 3,407 |
@@ -209,7 +209,7 @@ caveman, for comparison
 
 **Read the two measurements together.** Per answer, against caveman `ultra`, `atlas high` compresses 18 points more in English (46% against 28%) and 18 points more in Italian (43% against 26%). Per session, the first turn of the full `atlas` build costs 4,180 tokens at `low` against 3,367 for caveman `full`: 1,973 against 1,281 of descriptions, paid in every chat whether or not they are used, and 2,207 against 2,086 of injected rules. `atlas-min` carries the same compression rules and 153 tokens of descriptions: its best setup is 32 points cheaper than caveman at 40 turns and 26 points cheaper than caveman at 295 turns; the full build is 20 points cheaper than caveman at 40 turns and 24 points cheaper than caveman at 295 turns. If tokens are the only thing you want, `atlas-min`; the full build buys the dials and the subagents, and this is what they cost.
 
-**Fixed cost per session**, `atlas` build, tiktoken: 1,408 tokens of rules at `low`, 1,531 at `high`, plus 1,886 of skill, command and subagent descriptions that are loaded whether or not they are used. The per-turn reminder is 27–32 tokens; over a long session it is the largest number of all. `atlas-solo` carries 922 of descriptions, `atlas-min` 153 and 1,082 tokens of rules. The API bills the injected rules and reminder at about 1.54 times the tiktoken count, which is why the table of billed costs runs higher.
+**Fixed cost per session**, `atlas` build, tiktoken: 1,408 tokens of rules at `low`, 1,531 at `high`, plus 1,892 of skill, command and subagent descriptions that are loaded whether or not they are used. The per-turn reminder is 27–32 tokens; over a long session it is the largest number of all. `atlas-solo` carries 922 of descriptions, `atlas-min` 153 and 1,082 tokens of rules. The API bills the injected rules and reminder at about 1.54 times the tiktoken count, which is why the table of billed costs runs higher.
 
 Token counts for the fixed costs are tiktoken (`o200k_base`), an approximation of Claude's tokenizer, except where a line says "billed"; the compression figures come from the API's own counts. Compare them with each other, not with a bill.
 
@@ -260,9 +260,9 @@ Everything below follows from the measurements above. None of it is required; ea
 
 **Write the request with the constraint in it.** "In under 50 lines", "only the failing test", "one option, not a comparison": the model follows a stated bound better than any rule about brevity, and the bound costs you a few words.
 
-**Every plugin you install costs its descriptions in every chat, on or off.** Count them once: this one is 1,886 tokens on the full build, 835 without the subagents, caveman 2.7.0 1,281, a large toolkit can be 30,000. Remove what you have not used in a month.
+**Every plugin you install costs its descriptions in every chat, on or off.** Count them once: this one is 1,892 tokens on the full build, 841 without the subagents, caveman 2.7.0 1,281, a large toolkit can be 30,000. Remove what you have not used in a month.
 
-**`atlas-min` when tokens are the only thing you want.** Same compression rules, one command, no subagents, 65 tokens of descriptions: measured against caveman 2.7.0 on the same day, at `high` it compresses 19 points more per answer than caveman `ultra`, and over 295 turns its best setup is 26 points cheaper than caveman.
+**`atlas-min` when tokens are the only thing you want.** Same compression rules, one command, no subagents, 71 tokens of descriptions: measured against caveman 2.7.0 on the same day, at `high` it compresses 19 points more per answer than caveman `ultra`, and over 295 turns its best setup is 26 points cheaper than caveman.
 
 **Memory files in English.** They load at every start; the tokenizer reads English about a third cheaper than Italian and cheaper still than most other languages. Write `MEMORY.md` in English even if you talk to the model in your own.
 

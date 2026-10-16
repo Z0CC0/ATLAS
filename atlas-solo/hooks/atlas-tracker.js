@@ -9,6 +9,9 @@
 //
 // Always exits 0. A hook that fails must not cost the user a prompt.
 
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 const cfg = require('./atlas-config');
 
 // Natural-language switches.
@@ -186,6 +189,37 @@ const SILENT_NOTICE =
   'only before starting and only when the answer changes the result; a blocked or failed task ' +
   'is still reported, in one line. `atlas silent off` ends it.';
 
+// The three switches of the guard hook (atlas-code build) live in a config file, not in
+// the dial state: `.atlas.json` in the project wins, else `~/.claude/atlas.json`. By voice,
+// "atlas guard on" / "atlas guard off" (and gate, finish) write the user file, so the user
+// can turn them off for a session of work that must not be interrupted and back on after.
+// A project file, when it exists, still wins: the message says so.
+const SWITCH = /^\/?atlas(?::atlas)?\s+(guard|gate|finish)(?:\s+(on|off))?$/;
+
+/** `{ name, on }` when the prompt is a switch command, else null. */
+function parseSwitch(prompt) {
+  const m = SWITCH.exec(String(prompt).trim().toLowerCase().replace(/\s+/g, ' '));
+  return m ? { name: m[1], on: m[2] !== 'off' } : null;
+}
+
+/** Writes the switch to the user file; returns what the model should say. */
+function applySwitch(sw, cwd) {
+  const file = path.join(os.homedir(), '.claude', 'atlas.json');
+  let config = {};
+  try { const v = JSON.parse(fs.readFileSync(file, 'utf8')); if (v && typeof v === 'object' && !Array.isArray(v)) config = v; } catch (e) { /* none yet */ }
+  config[sw.name] = sw.on;
+  fs.mkdirSync(path.dirname(file), { recursive: true });
+  fs.writeFileSync(file, JSON.stringify(config, null, 2) + '\n');
+  let project = null;
+  for (let dir = path.resolve(cwd || process.cwd()); ; dir = path.dirname(dir)) {
+    if (fs.existsSync(path.join(dir, '.atlas.json'))) { project = path.join(dir, '.atlas.json'); break; }
+    if (path.dirname(dir) === dir) break;
+  }
+  return `[ATLAS internal] ${sw.name} ${sw.on ? 'on' : 'off'}, written to ${file}` +
+    (project ? `. A project file exists at ${project} and wins over it: say so in the confirmation` : '') +
+    '. The switch acts in the atlas-code build only; confirm in one line and say nothing else.';
+}
+
 async function main() {
   let input;
   try {
@@ -213,6 +247,12 @@ async function main() {
         },
       })
     );
+    process.exit(0);
+  }
+
+  const sw = parseSwitch(prompt);
+  if (sw) {
+    process.stdout.write(JSON.stringify({ hookSpecificOutput: { hookEventName: 'UserPromptSubmit', additionalContext: applySwitch(sw, input.cwd) } }));
     process.exit(0);
   }
 
@@ -267,6 +307,8 @@ ${reminder(state)}`,
 if (require.main === module) main();
 
 module.exports = {
+  parseSwitch,
+  applySwitch,
   parseCommand,
   reminder,
   statusLine,

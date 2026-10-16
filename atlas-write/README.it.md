@@ -115,13 +115,13 @@ pubblici, `atlas-browser` guida una pagina che gli hai indicato. Mandano la tua 
 |---|---|
 | regole iniettate a `low` (predefinito) | 1.408 |
 | regole iniettate a `high` | 1.531 |
-| descrizioni di skill, comandi e subagenti, sempre presenti | 1.886 |
+| descrizioni di skill, comandi e subagenti, sempre presenti | 1.892 |
 | promemoria per turno | 27-32 |
-| **totale al livello predefinito** | **3.294** |
+| **totale al livello predefinito** | **3.300** |
 
-La build `atlas-min` porta le descrizioni a 65 e le regole a 1.073, perche' contiene solo le
-sezioni sulla compressione. `atlas-solo` tiene tutte le regole e toglie i sette subagenti: 835 di
-descrizioni invece di 1.886. Toglie anche `atlas-search`, che e' la maniglia di un subagente
+La build `atlas-min` porta le descrizioni a 71 e le regole a 1.073, perche' contiene solo le
+sezioni sulla compressione. `atlas-solo` tiene tutte le regole e toglie i sette subagenti: 841 di
+descrizioni invece di 1.892. Toglie anche `atlas-search`, che e' la maniglia di un subagente
 che li non c'e' — la disciplina di ricerca sta comunque nella manopola `check`,
 dove vale per ogni risposta invece che per un comando solo.
 
@@ -129,7 +129,7 @@ dove vale per ogni risposta invece che per un comando solo.
 turno, su una sessione da 295 turni — la media misurata su sessioni vere — sono 7.965 token,
 piu' del doppio di tutto il resto messo insieme.
 
-Le descrizioni di skill, comandi e subagenti costano 1.886 token a sessione per sempre, che
+Le descrizioni di skill, comandi e subagenti costano 1.892 token a sessione per sempre, che
 tu li usi o no: stanno nell'elenco che si carica sempre, i contenuti no. È il motivo per cui
 le regole dei livelli sono filtrate: si inietta solo il livello attivo, mai entrambi.
 
@@ -140,7 +140,7 @@ le regole dei livelli sono filtrate: si inietta solo il livello attivo, mai entr
 - **`low` e `high` distano 9 e 7 punti.** `high` e' il regolamento piu' duro e si legge piu' telegrafico: il risparmio e' vero, e lo e' anche il costo in leggibilita'
 - `atlas-min` e' misurata a parte, con le sue regole ridotte; `atlas-solo` ha le stesse regole di `atlas` byte per byte e non e' stata rimisurata
 - `atlas-mem`, la quinta build, e' `atlas` piu' una memoria: note scritte a mano, un fatto per file, legate al codice che descrivono e segnate sospette quando quel codice cambia. Un comando in piu' e sei strumenti locali (controllo di scadenza, grafo del codice fra progetti, raccolta da sessioni e documenti, ricerca per significato con un modello locale, riferimenti vivi dal server di linguaggio, etichette sul codice agganciate a Grep e Read), con le grammatiche tree-sitter di tredici linguaggi, 22 MB: per questo e' una build a parte. Il suo README dice come una nota si accorge di essere vecchia e cosa il controllo non vede
-- `atlas-write`, la sesta build, e' `atlas` piu' una sezione di scrittura per i documenti che non sono codice: `atlas spec` (da un'idea a una specifica costruibile e verificabile, il passaggio al piano, la revisione di una specifica), `atlas changelog` (la voce e le note di rilascio dalla storia di git, e la versione che ne segue), `atlas brief` (cio' che leggono gli agenti: `CLAUDE.md`, regole per cartella, la descrizione di una skill misurata in token), `atlas explain` (una cosa per un lettore: parole semplici, una decisione con le sue opzioni, una tabella di numeri con cio' che dimostra). Quattro comandi, 402 token di descrizioni, dodici file di regole letti uno o due alla volta; fisso a `low` 3.696
+- `atlas-write`, la sesta build, e' `atlas` piu' una sezione di scrittura per i documenti che non sono codice: `atlas spec` (da un'idea a una specifica costruibile e verificabile, il passaggio al piano, la revisione di una specifica), `atlas changelog` (la voce e le note di rilascio dalla storia di git, e la versione che ne segue), `atlas brief` (cio' che leggono gli agenti: `CLAUDE.md`, regole per cartella, la descrizione di una skill misurata in token), `atlas explain` (una cosa per un lettore: parole semplici, una decisione con le sue opzioni, una tabella di numeri con cio' che dimostra). Quattro comandi, 408 token di descrizioni, dodici file di regole letti uno o due alla volta; fisso a `low` 3.702
 - `atlas-code`, la quarta build, e' `atlas` piu' una sezione per il codice (test, verifica, piano, pubblicazione e altro: sedici skill in piu', cinque subagenti e un hook di guardia opzionale). Carica piu' del doppio delle descrizioni; `review`, `fix` e `secure` sono state provate senza interfaccia su progetti veri (C#, C++, Python), il resto in sessione ma senza misura: il suo README dice cosa aggiunge, cosa costa e cosa e' stato provato
 - Non conviene su tutti gli usi. Le regole costano 1.073-1.531 token a sessione e il promemoria 27-32 a turno. Se le tue risposte sono corte, misura prima di fidarti
 - I comandi sono parole inglesi. Le richieste in qualsiasi lingua vengono riconosciute; le frasi che l'hook intercetta da solo ("stop atlas", "normal mode") sono solo inglesi, e `atlas off` funziona ovunque

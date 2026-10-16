@@ -1,6 +1,6 @@
 {
   "name": "atlas-write",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Four independent dials — compression (low/high), rigour (ask), check and silent — plus seven subagents that keep searches, logs, pages and big files out of your conversation. Compresses without losing a fact, and refuses to start building before the goal is clear. This variant adds the writing section: the spec before the build, the changelog and release notes after it, the text other agents read, and the explanation one person needs.",
   "author": {
     "name": "ZoCCo"

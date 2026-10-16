@@ -73,9 +73,9 @@ depends on it. Nothing is ever written inside your repositories.
 
 | build | what is in it | fixed cost per session at `low` |
 |---|---|---|
-| `atlas` | everything | 3,294 tokens |
-| `atlas-solo` | same rules, no subagents | 2,243 tokens |
-| `atlas-min` | compression only: two levels, one command | 1,137 tokens |
+| `atlas` | everything | 3,300 tokens |
+| `atlas-solo` | same rules, no subagents | 2,249 tokens |
+| `atlas-min` | compression only: two levels, one command | 1,143 tokens |
 
 `atlas` and `atlas-solo` carry byte-identical rules. The difference is whether the subagents exist, and whether their work stays out of your context.
 
@@ -83,7 +83,7 @@ A fourth build, `atlas-code`, is `atlas` plus a coding section: tests, verificat
 
 A fifth, `atlas-mem`, is `atlas` plus a memory: notes you write by hand, one fact per file, linked to the code they describe and flagged as suspect when that code changes. One more command (119 tokens of description) and six local tools with tree-sitter grammars for thirteen languages, 22 MB of WebAssembly, which is why it is its own build: the check itself, a code graph across every project under one folder, a harvest of past sessions, documents and a claude.ai export into an inbox, search by meaning with a small local model, live references from a language server, and labels that a hook attaches to every grep or read that finds the symbol. Its README has the numbers and what the check cannot see.
 
-A sixth, `atlas-write`, is `atlas` plus a writing section for the documents that are not code: `atlas spec` (an idea into a specification that can be built and checked, the handoff to the plan, the review of a spec), `atlas changelog` (the entry and the release notes from the history, and the version they call for), `atlas brief` (what agents read: `CLAUDE.md`, scoped rules, a skill's description measured in tokens), `atlas explain` (one thing for one reader: plain words, a decision with its options, a table of numbers with what it proves). Four commands, 402 tokens of descriptions, twelve rule files of about 6,500 tokens read one or two at a time; fixed cost at `low` 3,696.
+A sixth, `atlas-write`, is `atlas` plus a writing section for the documents that are not code: `atlas spec` (an idea into a specification that can be built and checked, the handoff to the plan, the review of a spec), `atlas changelog` (the entry and the release notes from the history, and the version they call for), `atlas brief` (what agents read: `CLAUDE.md`, scoped rules, a skill's description measured in tokens), `atlas explain` (one thing for one reader: plain words, a decision with its options, a table of numbers with what it proves). Four commands, 408 tokens of descriptions, twelve rule files of about 6,500 tokens read one or two at a time; fixed cost at `low` 3,702.
 
 ## Measured
 
@@ -158,21 +158,21 @@ Run-to-run noise with no plugin and the rules frozen: 0.4 points in English, 0.6
 | `low` | -25% | -33% |
 | `high` | -29% | -38% |
 
-**Fixed cost per session**, `atlas` build: 1,408 tokens of rules at `low`, 1,531 at `high`, plus 1,886 of skill, command and subagent descriptions that are loaded whether or not they are used. The per-turn reminder is 27–32 tokens; over a long session it is the largest number of all.
+**Fixed cost per session**, `atlas` build: 1,408 tokens of rules at `low`, 1,531 at `high`, plus 1,892 of skill, command and subagent descriptions that are loaded whether or not they are used. The per-turn reminder is 27–32 tokens; over a long session it is the largest number of all.
 
 | | tokens per session |
 |---|---|
 | rules injected at `low` (default) | 1,408 |
 | rules injected at `high` | 1,531 |
-| skill, command and subagent descriptions, always present | 1,886 |
+| skill, command and subagent descriptions, always present | 1,892 |
 | per-turn reminder | 27-32 |
-| **total at the default** | **3,294** |
+| **total at the default** | **3,300** |
 
 Those are tiktoken counts. **What the API actually bills** was measured on the bench too: the input of a one-turn call with each setup on, minus the same call with no plugin, median over the 48 questions. The rules and the reminder at `low` come to 2,207 tokens billed against 1,436 counted, a ratio of 1.54; the session tables above use the billed figure for the injected text and tiktoken for the descriptions, which the bench cannot separate from the rest of the prompt.
 
-The `atlas-min` build cuts the descriptions to 65 and the rules to 1,073 by shipping only
-the compression sections. `atlas-solo` keeps every rule and drops the seven subagents: 835 in
-descriptions instead of 1,886. It also drops `atlas-search`, which is a handle on a
+The `atlas-min` build cuts the descriptions to 71 and the rules to 1,073 by shipping only
+the compression sections. `atlas-solo` keeps every rule and drops the seven subagents: 841 in
+descriptions instead of 1,892. It also drops `atlas-search`, which is a handle on a
 subagent it does not carry — the search discipline itself lives in the `check` dial, where it
 covers every answer rather than one command.
 
@@ -206,9 +206,9 @@ Everything below follows from the measurements above. None of it is required; ea
 
 **Write the request with the constraint in it.** "In under 50 lines", "only the failing test", "one option, not a comparison": the model follows a stated bound better than any rule about brevity, and the bound costs you a few words.
 
-**Every plugin you install costs its descriptions in every chat, on or off.** Count them once: this one is 1,886 tokens on the full build, 835 without the subagents, caveman 2.7.0 1,281, a large toolkit can be 30,000. Remove what you have not used in a month.
+**Every plugin you install costs its descriptions in every chat, on or off.** Count them once: this one is 1,892 tokens on the full build, 841 without the subagents, caveman 2.7.0 1,281, a large toolkit can be 30,000. Remove what you have not used in a month.
 
-**`atlas-min` when tokens are the only thing you want.** Same compression rules, one command, no subagents, 65 tokens of descriptions: measured against caveman 2.7.0 on the same day, at `high` it compresses 19 points more per answer than caveman `ultra`, and over 295 turns its best setup is 26 points cheaper than caveman.
+**`atlas-min` when tokens are the only thing you want.** Same compression rules, one command, no subagents, 71 tokens of descriptions: measured against caveman 2.7.0 on the same day, at `high` it compresses 19 points more per answer than caveman `ultra`, and over 295 turns its best setup is 26 points cheaper than caveman.
 
 **Memory files in English.** They load at every start; the tokenizer reads English about a third cheaper than Italian and cheaper still than most other languages. Write `MEMORY.md` in English even if you talk to the model in your own.
 

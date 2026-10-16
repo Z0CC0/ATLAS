@@ -1,0 +1,56 @@
+# Export: formats, sizes, where it will be shown
+
+The render is finished when it plays where it is meant to play, at the size it will be
+seen, without a re-encode by the platform that softens it. Export is decided from the
+destination, before the final render, and done with `ffmpeg` on this machine.
+
+## By destination
+
+**Web page, embedded** — MP4, H.264 High profile, `yuv420p` (anything else does not play in
+every browser), AAC audio 128 kbps or no audio track at all when silent, `-movflags
++faststart` so it starts before it is downloaded. 1920×1080 at 30 fps for screen content;
+60 fps only when motion is the content. Target 4 to 8 Mbps for 1080p (`-crf 20` to `23`).
+A WebM (VP9) beside it when the page serves modern browsers and size matters.
+
+**YouTube, a video platform** — the same H.264, but higher bitrate (12 to 16 Mbps at
+1080p, `-crf 18`): the platform re-encodes, and a soft source becomes a softer result.
+Audio at 48 kHz. Loudness around −14 LUFS integrated, measured with `ffmpeg -af
+loudnorm=print_format=summary`, peaks under −1 dBTP.
+
+**Vertical and square** (stories, reels, a phone-first page) — 1080×1920 or 1080×1080,
+composed for that frame, not cropped from 16:9 after the fact: text safe inside the
+central 80%, nothing important in the top or bottom 15% where interfaces overlay.
+
+**A slide, a document, an email** — a GIF only when the player will not run video, and then
+under 10 seconds, 800 px wide, 12 to 15 fps, a limited palette (`palettegen` / `paletteuse`);
+otherwise an MP4 and a poster image.
+
+**Archive, a source to edit later** — ProRes or DNxHR, or a lossless `-crf 0` H.264, kept
+beside the project; the delivery file is derived from it, never the reverse.
+
+## Stills from the piece
+
+A poster frame chosen by hand (the clearest frame, not the first) at the video's
+resolution, PNG for screens with text, JPEG at quality 85 to 90 for photographs; 1280×720
+for a thumbnail with text large enough to read at 300 px wide. Diagrams exported as SVG when
+the tool produces one, PNG at 2x otherwise.
+
+## Checks before saying it is done
+
+The file plays from the start in a browser and in the system player; the first frame is
+not black; the audio is not out of sync at the end (drift shows last); the size is what the
+destination accepts; the duration is the planned one to the second; captions, when
+delivered separately, line up at three points (start, middle, end). `ffprobe` prints the
+codec, resolution, frame rate and bitrate, and those four are written in the delivery note.
+
+## Common commands
+
+```
+ffmpeg -i in.mov -c:v libx264 -profile:v high -pix_fmt yuv420p -crf 20 -preset slow -c:a aac -b:a 128k -movflags +faststart out.mp4
+ffmpeg -i in.mp4 -vf "scale=1080:-2" -c:v libx264 -crf 22 -c:a copy out-1080.mp4
+ffmpeg -i in.mp4 -ss 00:00:12 -frames:v 1 poster.png
+ffmpeg -i in.mp4 -vf "fps=12,scale=800:-1:flags=lanczos,split[s0][s1];[s0]palettegen[p];[s1][p]paletteuse" out.gif
+ffmpeg -i in.mp4 -af loudnorm=I=-14:TP=-1:LRA=11 -c:v copy out-loud.mp4
+```
+
+Each is run once on a short clip first; a render of the whole piece is the last step.
