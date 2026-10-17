@@ -25,3 +25,8 @@ replaced it".
 
 Coverage numbers are not findings. A percentage says which lines ran, not which behaviours
 were checked. Quote one only when the project enforces a threshold and the diff crosses it.
+
+One mutation, by hand, on the path the diff cares about most: a condition inverted, a
+boundary moved by one, a return replaced with a constant; the suite run; the change undone.
+A suite that stays green has no test holding that path: one line, `fragile`, naming the
+mutation that survived. One mutation per review, not a campaign.

@@ -14,7 +14,12 @@ the reason, not invented.
    (`console.log`, `print`, `dbg!`, `dd(`), `TODO`/`FIXME` added by this work, commented-out
    blocks, `.only` / `fdescribe` / `@Ignore` / `skip` added to tests, secrets or keys by shape
    (`sk-`, `AKIA`, `-----BEGIN`, `password =`), merge markers, files that should not be
-   tracked (`.env`, dumps, build output).
+   tracked (`.env`, dumps, build output). And, in the same files, the five ways a check is
+   made to pass without the work being done: a threshold lowered in a config or a workflow;
+   an assertion removed from a test that stays; a suppression added (`eslint-disable`,
+   `@ts-ignore`, `# noqa`, `# type: ignore`, `istanbul ignore`, `nosemgrep`); a stub or an
+   empty `catch` where logic was expected; a name added to an allowlist. Each is one line,
+   and a step that passed only because of one is `failed`, not `passed`.
 6. **The diff is the diff that was meant.** `git status` and `git diff --stat` against the
    base: a file changed that the task never mentioned, a lockfile or generated file changed
    with no dependency change, a mode change, a whole-file reformat. Each is one line.

@@ -56,3 +56,11 @@ No: delete the line.
 `Bash` is for `git diff`, `git show`, `git log`, `gh pr diff`, and for the project's own check
 commands when a language file lists them: reading and running checks, never changing files.
 A check that fails is one line, the first decisive error quoted exactly, tier `breaks`.
+
+## A dependency changed
+
+One dependency per change, or the lines cannot be told apart. The lockfile diff is read,
+not skipped: what else moved, from where. The changelog between the two versions is read
+for the parts the project uses; a major bump with the changelog unread is `ask`. A
+dependency added for something the standard library or an installed one already does is
+`unclear`, with the alternative named.

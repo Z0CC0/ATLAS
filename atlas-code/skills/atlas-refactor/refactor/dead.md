@@ -55,3 +55,11 @@ and is counted apart in the report, so the lower test count is explained.
 
 Not done: commenting code out instead of removing it; leaving a stub "for compatibility"
 nobody asked for; removing a thing because it looks old.
+
+## Retiring a whole thing
+
+An endpoint, a job, a service, a module with its own consumers: use measured to zero first,
+from logs over a window as long as the slowest cycle it serves (a monthly report needs a
+month), then a notice with a date to whoever could still call it, then the removal. The
+one who removes it migrates the callers that remain; the callers are not asked to migrate
+themselves. Nothing is removed on "nobody uses this any more" said from memory.

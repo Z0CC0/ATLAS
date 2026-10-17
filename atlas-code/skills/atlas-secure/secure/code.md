@@ -49,6 +49,24 @@ These are where a whole-tree audit finds what a per-diff review cannot:
   input; a shell invoked with a string rather than an argument array; `pickle`/`yaml.load`/
   native deserialisers on external bytes; user input in a path handed to the filesystem; SSRF
   where the server fetches a URL the user gave.
+- **The logic, not the syntax.** A flow with steps (checkout, signup, approval): can a step
+  be skipped, repeated, replayed, or left half done and resumed? A check followed by an
+  act with nothing holding the row in between is a race. A quantity that can be negative,
+  zero, or past the maximum; a window of time that can be reopened; a setting that falls
+  back to the permissive value when the config line is missing.
+- **A feature used as a weapon.** Export and import as a way to take data out or put code
+  in; search and filters as an oracle on rows the caller may not read; errors and response
+  times that differ between "no such user" and "wrong password"; a bulk action that does
+  for a thousand what was authorised for one.
+- **The small things the audit must not miss**: a `TODO` or `FIXME` that mentions auth,
+  tokens or validation; `/debug`, `/env`, `/metrics`, `/admin` reachable without auth; a
+  redirect parameter (`next`, `return`, `url`, `redirect`) used unchecked; seed, test or
+  demo credentials that would be valid in production; a stack trace or an internal path
+  in a response.
+
+The inputs every door is read against, once, as a list: absent, empty, zero, negative,
+maximum, over the limit, duplicate, mixed encoding, stale, revoked, reordered, concurrent,
+half migrated, rolled back.
 
 ## Run a static analyser when there is one
 

@@ -51,9 +51,20 @@ Tiers follow `method.md`, set by reachability, not by the advisory's own label a
   installed from a path. Where it comes from and whether the source is pinned to a commit, not
   a moving branch.
 - **Install scripts**: a dependency that runs a `postinstall`/`preinstall` script is code that
-  ran on the machine already. Worth a line when one is unexpected on a leaf package.
+  ran on the machine already, before anyone read it. On a project that does not gate them:
+  a `medium`, with the fix in three steps: the first install with scripts off (the package
+  manager's own flag or setting, from its current documentation, never from memory); the
+  scripts of what asked to run one read; the ones needed allowed by name in a policy file
+  that is committed, and the install frozen to the lock. An unexpected script on a leaf
+  package is its own line.
 - **Lock file integrity**: the lock exists and is committed; `npm ci` / `--frozen-lockfile`
   used in CI so the resolved versions are the audited ones.
+- **The pipeline as code that grants power**: a workflow that runs on a pull request from a
+  fork with the repository's secrets in reach, or that checks out the pull request's own
+  ref under a privileged trigger; an action pinned to a moving tag instead of a commit; a
+  cache shared between jobs of different trust; a token with write permissions in a job
+  that only reads. Each is a `high` when the repository takes outside contributions, a
+  `medium` otherwise.
 
 ## Report
 

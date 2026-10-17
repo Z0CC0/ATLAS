@@ -29,6 +29,11 @@ it; the other's silence is not a vote.
 Each line is then read here against the code. A line that is wrong, the guard exists, the
 input cannot occur, is struck with the reason, in the report, not silently. A line that
 stands is fixed.
+Before anything is fixed, every line is sorted, in this order: the reviewer misread the
+contract (struck, with the sentence of the contract); actionable (fixed); a trade-off taken
+on purpose (written down beside the code, not fixed); noise. A round whose lines are all
+trade-offs and noise is a round that found nothing, and two of them in a row end the
+review: it is performing, not finding.
 
 ## Fix and go again
 

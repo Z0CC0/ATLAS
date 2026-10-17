@@ -19,9 +19,14 @@ they must agree on the database and on each other's messages.
 **Blue-green**: the new version beside the old, traffic switched at once, the old kept warm
 for the switch back. Costs double capacity for the overlap; the database is still shared.
 **Canary**: a small share of traffic to the new version, watched, widened in steps. Needs
-metrics per version and a number that means "stop".
+metrics per version and a number that means "stop". Steps of 5, 25, 50, 100 percent unless
+the platform fixes others; the stop numbers written before the first step: error rate above
+twice the baseline, p95 more than half above the baseline, a new error in more than one
+session in a thousand, each one a way back, not a discussion.
 **Flag**: the code ships dark and is turned on later, for some users first. The deploy and
-the release become two events; the second is the reversible one.
+the release become two events; the second is the reversible one. A flag has a removal date
+when it is created, two weeks after full rollout unless said otherwise, and a flag is never
+read inside another flag.
 
 ## Order when the data changes
 

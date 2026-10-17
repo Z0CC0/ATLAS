@@ -35,6 +35,11 @@ and to the runbook step. An alert nobody acts on is removed or fixed: a channel 
 alerts hides the real one.
 Thresholds from the service's own history, with a duration, so one slow minute does not
 wake anyone.
+Two severities and no third: one wakes a person now, the other waits for the next working
+day. Every alert that can wake someone has a runbook of at least three lines: what it
+means, the first place to look, how to stop the bleeding. A label on a metric is never a
+user id, an email, a request id or a full URL: a label with unbounded values is a bill and
+a dead dashboard.
 
 ## Cut
 
@@ -53,3 +58,6 @@ The dashboard and alert definitions as files in the repository when the platform
 it, so they are reviewed and versioned. What was built, the questions it answers, and what
 is still not observable, one line each. Applying them to a live monitoring system waits for
 a yes.
+Proof before hand-over, where a staging environment exists: one error forced on purpose
+and found in the logs by its request id; one alert fired on purpose and seen where it
+should arrive. Without the proof the telemetry is reported as `not verified`, not as done.

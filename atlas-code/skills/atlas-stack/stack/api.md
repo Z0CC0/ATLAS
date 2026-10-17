@@ -48,6 +48,15 @@ route: the caller may reach this row. Input validated by schema at the edge. Rat
 stricter on login and expensive operations. Request size limits. CORS with named origins.
 A request id accepted or generated, returned, and logged.
 
+Anything that creates or charges takes an idempotency key, and the key names the intent
+(this order, this transfer), not the attempt. The key is claimed in one atomic step, a
+unique constraint on the store: a check followed by an insert is a race. The hash of the
+request body is stored with the key; the same key with a different body is `422`, the same
+key still in flight is `409` or a wait, the same key already done returns the first answer.
+A call has three outcomes, not two: success, failure, and unknown (timeout, lost
+connection), and only the key makes the retry after unknown safe. Keys are kept longer
+than the longest retry chain a client can run, or the retry after expiry is a duplicate.
+
 ## One more integration
 
 Adding a provider, a connector or a plugin beside existing ones: open two that are already

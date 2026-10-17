@@ -45,6 +45,19 @@ When the spec is written from a discussion, every requirement that came from the
 kept in their words where the words are precise, and their words are replaced only where
 they were vague, with the replacement shown in the open questions if it could be wrong.
 What the person said they do not want goes to "out", with "asked for exclusion" as the reason.
+Each question asked carries the answer the writer expects, so a yes costs one word and a no
+corrects a concrete guess. The questions stop when the next three answers can be predicted.
+"Whatever you think is best" is a delegation, written down as one; "sounds good" is not a
+yes to the exact words, and the exact words are read back. The read-back ends with what is
+out of scope.
+
+## More than one module
+
+A spec for something with several parts starts with a map before any part is written: one
+row per module, what it owns, which modules it depends on, and the order they can be built
+in. A dependency that goes both ways is a design error found here, not in the code. Each
+module then gets its own spec in the sections above, and the shared vocabulary lives in one
+file they all point to.
 
 ## Where it goes
 

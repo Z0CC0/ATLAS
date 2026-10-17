@@ -81,7 +81,7 @@ request that named the command loaded it every time; the same request in plain w
 | command | what it does | files behind it | worth knowing |
 |---|---|---|---|
 | `atlas-test` | writes tests: test-first, coverage gaps, end to end, a deployed site | 14 | a new test that fails because the code is wrong is kept and reported; a whole module goes to `atlas-tester` |
-| `atlas-verify` | build, types, lint, tests, leftovers, in one pass, compared with the last run | 3 | changes nothing; `READY`, `NOT READY` or `CANNOT TELL` |
+| `atlas-verify` | build, types, lint, tests, leftovers, the project's own bar, in one pass, compared with the last run | 4 | changes nothing; `READY`, `NOT READY` or `CANNOT TELL` |
 | `atlas-plan` | steps before code, sized to the change, then waits; or carries the work through to a commit | 7 | two stops for a yes: after the plan, before the commit |
 | `atlas-multi` | asks other models (Codex, Gemini) for an opinion, a review or an approach | 4 | shows what is sent and waits for a yes, every time |
 | `atlas-docs` | docs true to the code: sync, a map, onboarding, one feature traced, locale files | 5 | writes only what the code supports |

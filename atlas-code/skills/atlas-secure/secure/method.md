@@ -31,8 +31,19 @@ Tiers, in this order:
 execution. `high` — the same, but needs a condition that often holds (a logged-in user, a
 known id). `medium` — real, but limited to what the attacker already has, or hard to reach.
 `low` — defence in depth, hardening, a smell with no path shown.
-A weakness seen but not shown to be reachable is `unproven`, with what is missing to confirm
-it, not dropped and not dressed up as `critical`.
+A tier never exceeds the damage shown: when the concrete harm cannot be stated, the tier is
+lower than it feels. A weakness seen but not shown to be reachable is `unproven`, with the
+one check that would settle it (a config value, a caller, a test input), not dropped and
+not dressed up as `critical`.
+
+Every `critical` and `high` line is then handed, alone with the files it names and without
+the reasoning that produced it, to a second reader (`atlas-diff` when it exists, a fresh
+pass here when not) whose job is to break it: the guard that exists, the input that cannot
+occur, the boundary not crossed. What survives is reported as confirmed; what does not is
+struck with the reason, in the report. The one who found a line never confirms it.
+
+Two audits of the same tree find more than one: a second run starts from the first report,
+and the report says which run it is.
 
 The proof is concrete and read from the code: the input, the path from the entry point to the
 sink, the result. Nothing is run against the program to prove a point.

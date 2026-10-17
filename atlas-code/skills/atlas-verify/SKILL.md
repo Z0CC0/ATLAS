@@ -19,6 +19,8 @@ Everything below lives in the `verify/` folder beside this file.
 2. By the words of the request, on top of it:
    "release", "production", "launch", "deploy", "go live", "ship" → `release.md`
    "buttons", "click", "handlers", "UI state", "nothing happens when I press" → `clicks.md`
+   "coverage", "threshold", "the bar", "ratchet", "exception", or a project with thresholds
+   in CI → `bar.md`
    A deployed URL → that is `atlas-test` in its site mode; say so and hand over.
 
 ## Who runs the commands
