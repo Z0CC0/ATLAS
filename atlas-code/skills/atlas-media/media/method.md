@@ -62,6 +62,13 @@ Python, a browser) at the version the tool wants, the fonts the plan names prese
 or a service only when the plan truly needs one and the person said yes. Said as a list
 of PASS and FAIL, once, and fixed before anything is built. (gbro-collage-broll, MIT.)
 
+## Quality before tokens, for a video
+
+The reading a video needs (the framework's own rules, the transition catalogue, the
+typography list) is done in full, before the first line, whatever it costs: a video made
+with less than the installed tools offer is the expensive outcome, not the tokens. The
+compression dial still governs the conversation, not the work.
+
 ## Draft first
 
 Render at the lowest quality and smallest size the tool offers until structure and timing
@@ -77,7 +84,8 @@ strip; then a crop at full resolution where the detail is. Three zooms, in that 
 cost less than one wrong render. For the key actions (a hand-over, a fall, a hit) the
 strip is at a fifth of a second; two full passes of sheets before the final render.
 
-Legibility is a gate with a formula, not an impression: every on-screen text is registered
+Legibility is a gate with a formula, not an impression (`tools/readcheck.mjs` beside these
+files, for any page with a seekable timeline): every on-screen text is registered
 with its box; it counts as visible only while the whole box is inside the frame; it must
 hold for at least `max(1.5, letters / 15 + 1.5)` seconds (characters / 4.5 for Chinese,
 Japanese, Korean), sampled every 0.04 s; a text that fails is listed with its time, and

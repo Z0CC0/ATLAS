@@ -92,7 +92,7 @@ request that named the command loaded it every time; the same request in plain w
 | `atlas-publish` | a private project made ready to go public, on a copy | 4 | created private first; public is a second yes |
 | `atlas-ui` | direction, polish, accessibility, motion, tokens, from a screenshot | 7 | WCAG 2.2 AA basics applied to every component |
 | `atlas-build-ai` | code that calls a model: prompts, tools, evals, retrieval, cost, MCP | 9 | model names and prices are looked up, never remembered |
-| `atlas-media` | explainers, video in React, slides, recorded demos, with local tools | 7 | no generation service, no upload |
+| `atlas-media` | video with the best framework installed (HyperFrames first), slides, recorded demos, with local tools | 12 | quality before tokens for a video; a legibility gate on every text; no generation service, no upload |
 | `atlas-context` | what every session loads, when to compact, one answer at a chosen depth | 4 | measures, does not guess |
 | `atlas-secure` | whole-project security audit: dangerous code, vulnerable dependencies, secrets in the files and the git history | 4 | only your own code; every finding carries its proof; changes nothing |
 | `atlas-stack` | how code is written in this project's language and framework | 18 | `atlas-plan` sends for it before writing code; it can be named too. The project's own conventions come first |

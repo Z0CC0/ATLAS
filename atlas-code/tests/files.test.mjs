@@ -39,7 +39,9 @@ for (const [root, skill] of ROOTS.flatMap((r) => fs.readdirSync(r).map((s) => [r
     }
     // paths in the user's project that happen to share the folder name: atlas-docs writes `docs/onboarding.md`
     const OUTPUT = { 'atlas-docs': ['onboarding.md'], 'atlas-brief': ['engine.md', 'migrations.md', 'workflows.md'] } // examples of files to write
-    for (const n of named) if (!/^[A-Z][A-Z_.-]+\.md$/.test(n) && !(OUTPUT[skill] || []).includes(n)) assert.ok(files.has(n) || everywhere.has(n), `${skill} names ${n}, which no skill ships`)
+    // files of a framework installed beside the plugin, named so they are read from there: atlas-media reads HyperFrames' own skills
+    const EXTERNAL = { 'atlas-media': ['rules-index.md', 'blueprints-index.md', 'full-screen-motion.md', 'overview.md', 'catalog.md', 'typography.md'] }
+    for (const n of named) if (!/^[A-Z][A-Z_.-]+\.md$/.test(n) && !(OUTPUT[skill] || []).includes(n) && !(EXTERNAL[skill] || []).includes(n)) assert.ok(files.has(n) || everywhere.has(n), `${skill} names ${n}, which no skill ships`)
     for (const f of files) assert.ok(named.has(f) || f === 'method.md', `${skill}/${f} exists but nothing names it`)
   })
 }
