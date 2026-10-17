@@ -60,6 +60,15 @@ npx remotion render <composition-id> out/video.mp4
 Draft with a lower scale or a frame range; final at full size. Props for a variant are
 passed as JSON. Concurrency lowered if the machine runs out of memory.
 
+## An audit of what moves
+
+Before the first full render, a list made from the composition itself: every animated
+element, when it starts and ends, where its box is at the start and the end; from it the
+dead zones (a second where nothing moves and nothing was meant to be still) and the
+elements that enter and never leave or leave before they are seen. A script that walks the
+sequences and prints this is cheap and catches what the eye skips. (The animation map:
+heygen-com/hyperframes, Apache-2.0.)
+
 ## Usual mistakes
 
 A CSS animation that looks fine in the studio and stutters in the render. `Math.random`

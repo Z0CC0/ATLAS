@@ -25,6 +25,22 @@ A cut is the default and is invisible. A fade (200 to 400 ms) marks a change of 
 time. A wipe or a slide says "next item in a sequence" and is used for nothing else.
 Nothing spins, zooms through or shatters in a tool's explainer; a transition the viewer
 notices has taken attention from the content. One transition style per piece.
+By energy: a calm piece crosses in 0.5 to 0.8 s, a medium one in 0.3 to 0.5, a fast one in
+0.15 to 0.3; the opening a little longer, the outro longest. One primary transition
+carries 60 to 70 percent of the changes, one or two accents the rest. The outgoing and the
+incoming scene move at the same instant: a fade-out followed by a fade-in is two
+transitions and a hole. Nothing exits except on the last scene; what is finished is cut
+away by the next scene's entrance. The rhythm is written before building, as a pattern
+("fast, fast, SLOW, fast, hold"), and the finished piece is checked against it. (The
+bands, the 60-70 rule, the no-exit rule and the pattern: heygen-com/hyperframes,
+Apache-2.0.)
+
+## What crosses the cut
+
+Every cut names the element that survives it, in the storyboard's carry columns: a
+colour, a shape, a position, a direction of movement. A piece where nothing ever carries
+is a slideshow; a piece where everything carries is one shot. Checked by looking at the
+frame before and the frame after each cut side by side. (onetake's "carry".)
 
 ## Motion inside a shot
 
@@ -39,7 +55,20 @@ state lasts and stop when it ends.
 
 Before the final render, the shot list with durations is read as a sequence of numbers:
 three shots of the same length in a row make a metronome, five seconds followed by one
-second is a jolt unless the meaning jolts. The whole piece is watched at 1.5x: what still
+second is a jolt unless the meaning jolts. As numbers: the shot lengths vary (their
+coefficient of variation at least a quarter, or it is a metronome); some frames are still
+(a quarter of them, with at least one quiet stretch of a second, or the eye never rests);
+at least one burst exists (several big changes inside a second and a half, not evenly
+spaced); two consecutive shots never end the same way. Per movement: fast 0.15 to 0.3 s,
+medium 0.3 to 0.5, slow 0.5 to 0.8, very slow 0.8 to 2; the slowest scene three times
+slower than the fastest; no more than two movements in a scene with the same easing; a
+stagger finishes inside half a second however many items it has; an entrance longer than
+its exit (0.4 against 0.25). A scene splits roughly 30-40-30: build, breathe with one
+ambient movement, resolve. Anything that travels more than about eighty pixels a frame (at
+1080p) needs motion blur or a shorter path; blur on one to three elements per piece, never
+on text that must be read. (The measurable rhythm gates: onetake; the movement bands, the
+stagger cap, the asymmetry, the 30-40-30 and the blur budget: hyperframes.)
+The whole piece is watched at 1.5x: what still
 reads at that speed was too slow; what is lost was too fast. Then once at normal speed
 with the sound off: the pictures alone must tell the order of things.
 

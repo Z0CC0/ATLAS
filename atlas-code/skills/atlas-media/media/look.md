@@ -45,6 +45,30 @@ short and long ends, and whether lengths cluster (a steady beat) or alternate (l
 broken by bursts). With music, whether cuts land on beats.
 The new piece is cut to that distribution, not to one number.
 
+## Energy, as a map
+
+Beside the cut list, the energy of the reference over time: the mean change between
+consecutive frames, sampled a dozen times a second, written as one character per sample on
+a scale from still to violent, so a minute of footage is a line of text that shows where
+the bursts and the holds are. From it: the share of still frames, the cut timestamps, the
+bursts. What transfers to the new piece is this shape, never the frames. (onetake's
+reference deconstruction.)
+
+## Type and layout for a frame that is watched, not read
+
+Headlines 64 to 120 px at 1080p, body 28 to 42, labels 18 to 24; anything under 24 px is a
+decision to defend. Text that is on screen three seconds must be readable in two. Content
+fills 60 to 80 percent of the width; nothing that matters outside the central 90 percent
+(action-safe), titles inside 80 percent (title-safe), captions' own band kept clear at
+the bottom. Decoration under 10 percent opacity is invisible on a compressed stream; a
+full-screen linear gradient on a dark ground bands in H.264. On a dark background, body
+type a touch lighter in weight and looser in line height. (hyperframes' video
+composition and typography references, Apache-2.0.)
+
+Adherence to the piece's own spec is checked by extraction, not by eye: every colour,
+font, weight and radius in the source listed and compared with the spec; a value that is
+not there is a `raw` line in the report. (hyperframes' design adherence.)
+
 ## Other things worth noting, by looking at the stills
 
 Framing and distance, camera movement, depth of field, grain and texture, overlays, how

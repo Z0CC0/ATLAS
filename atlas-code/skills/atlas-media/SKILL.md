@@ -28,6 +28,7 @@ Everything below lives in the `media/` folder beside this file.
    "slides", "deck", "presentation", "convert this PowerPoint" → `slides.md`
    "demo", "walkthrough", "screen recording", "record the app" → `demo.md`
    "script", "narration", "voice-over", "storyboard", "captions", "how long" → `script.md`
+   "music", "to the beat", "the track", "bpm", "cut to the song" → `music.md`
    "pacing", "rhythm", "cuts", "transitions", "it drags", "too fast" → `cut.md`
    "export", "format", "for YouTube / Instagram / a slide", "file too big", "ffmpeg" → `export.md`
    "Blender", "rig", "walk cycle", "retarget", "feet sliding", "facing the wrong way" →

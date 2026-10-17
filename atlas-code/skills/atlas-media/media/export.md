@@ -28,6 +28,29 @@ otherwise an MP4 and a poster image.
 **Archive, a source to edit later** — ProRes or DNxHR, or a lossless `-crf 0` H.264, kept
 beside the project; the delivery file is derived from it, never the reverse.
 
+## Sound, when there is a voice
+
+The voice is carved, not merely ducked: under speech the music loses six to seven decibels
+across the voice's band (250 Hz to 2.5 kHz, deepest around 1.6 kHz), dynamically, with a
+fast attack and a release of about a third of a second, so it swells back between
+sentences. Before mastering the voice peaks at −3 dBFS or below with no clipped samples;
+a piece with no quiet (a few frames of near silence somewhere in each stretch) is tiring.
+Two sound effects inside 40 ms are one; one reverb for the whole piece, not one per
+scene. Symptom to filter: rumble, high-pass at 80 Hz; boominess, 200 Hz; mud, 250 Hz;
+clarity, a touch at 3 kHz; harshness, 3.2 kHz. Master for a film at −16 LUFS integrated
+and −3.5 dBTP, for a platform at its own target (above). (The carve and the thresholds:
+hyperframes' audio skill, Apache-2.0, and onetake.)
+
+A video that will be scrubbed or cut later is re-encoded with a keyframe every second
+(`-g 30 -keyint_min 30` at 30 fps), or seeking lands on the wrong frame.
+
+## What makes a render slow
+
+A `backdrop-filter` or a `filter: blur()` layer on every frame, dozens of animated
+shadows, images far larger than the frame (3840 wide is enough for 1080p), an element that
+has exited and is still painted: hide it. One such change can triple the render time of
+a piece. (hyperframes' performance guide.)
+
 ## Stills from the piece
 
 A poster frame chosen by hand (the clearest frame, not the first) at the video's

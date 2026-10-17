@@ -40,7 +40,12 @@ typing with a per-key delay, so text appears and is not pasted;
 a pause after each meaningful change, long enough to read what appeared (a second or two),
 and none where nothing new is shown;
 scrolling smoothly to bring the next thing into view before acting on it;
-one flow per recording, one to two minutes; longer is several recordings.
+one flow per recording, one to two minutes; longer is several recordings;
+text the voice names is legible at the output size (at least 26 px after the recording is
+scaled to the frame), or the recording zooms to it; a click is a press and a release about
+75 ms apart on the real centre of the element; one close-up per operation, not a whole
+flow at one distance; the gaps in the narration (about half a second) set the pauses, and
+the recording is as long as the voice, never padded. (onetake's demo rules.)
 
 The page is clean before the first frame: fonts and data loaded, no cookie banner, no
 development overlay, a neutral window size, no notifications.
