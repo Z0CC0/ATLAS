@@ -15,6 +15,19 @@ from that, not over it.
 
 Not answerable from the project: ask, at most these three, once.
 
+## Four kinds of screen, and what wins in each
+
+A screen is one of four things, and the kind decides every tie. **Persuade**: it must earn
+attention and an action in seconds; the one idea gets the size and the space. **Operate**:
+a tool used for hours; scanning, speed and the controls people already know win, and the
+product's own character is allowed exactly four things: the type, the palette, the density
+and one signature move; it never invents the navigation or the controls. **Read**: a long
+text; structure for comprehension, measure, rhythm, nothing that competes with the words.
+**Experience**: the content leads (a map, a canvas, a video) and the interface recedes
+until needed. Name the kind in the brief; a tool designed like a pitch is the most common
+way a screen goes wrong. (The four modes and the four things a tool may own are
+pbakaus/impeccable's, Apache-2.0.)
+
 ## The decisions
 
 Write them down in a few lines before any component; they are the brief the rest is held
@@ -34,7 +47,11 @@ boxes do.
 worded.
 
 One thing that is the product's own: a layout idea, a typographic choice, a way of showing
-its data. One is enough; three is noise.
+its data. One is enough; three is noise. Written as one sentence before building: "on this
+screen, <something from the subject> becomes <the device>", so the idea can be checked.
+Then the ownership test: cover the logo, could this screen belong to anyone? Would the
+same idea pass for the nearest competitor? If yes to either, the idea is not yet the
+product's own. (The sentence and the test are Leonxlnx/taste-skill's, MIT.)
 
 ## Signs of no direction
 

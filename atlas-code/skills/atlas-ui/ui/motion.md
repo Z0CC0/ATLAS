@@ -23,8 +23,12 @@ The project's motion tokens when it has them. Otherwise define a few and use onl
 | leaving | about two thirds of entering | ease-in |
 
 Larger things and longer distances take a little longer; nothing in an interface needs
-more than about 400 ms. Entering eases out (fast, then settles); leaving eases in. Linear
-only for continuous things: a spinner, a progress bar.
+more than about 400 ms, except one deliberately authored entrance of a focal element
+(500 to 800 ms), once per screen. Easing by job: entering or leaving, ease-out; moving from
+one place to another, ease-in-out; a colour or opacity change on hover, ease; constant
+travel (a spinner, a progress bar), linear. One curve per job, held as a token. (The bands
+and the easing-by-job table are shared by pbakaus/impeccable, Apache-2.0, and
+Leonxlnx/taste-skill, MIT.)
 Springs for what follows a finger or can be interrupted (drag, sheets, toggles): they carry
 velocity and reverse naturally. Low bounce for interfaces; visible bounce only for play.
 
@@ -48,7 +52,10 @@ is shorter and quieter than the entrance.
 Stagger: 20 to 40 ms between items, capped so the last of a long list does not wait; only
 on first appearance, not on every update.
 One thing moves at a time for attention. Two simultaneous movements share duration and
-easing.
+easing. Many children driven from one changing variable on their parent repaint them all
+at once: each child animates its own property. The ladder of means: a CSS transition, then
+the Web Animations API when script must control it, then View Transitions for a change of
+view; a library only above that.
 Nothing blocks input while it moves. Layout does not jump when it ends.
 Server rendering: the first paint is the final state or an intentional initial one, the
 same on server and client; no flash from hidden to shown on hydration.

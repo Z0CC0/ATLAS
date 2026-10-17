@@ -25,6 +25,14 @@ Loading keeps the layout it will have: no jump when the data lands. Empty says w
 place is for and offers the first action. Error says what happened in the user's words and
 what to do next; it never shows a stack trace or a bare code.
 
+The states have kinds, and each kind is its own design: loading the first time, loading
+more, refreshing; empty because there is nothing yet, because the search found nothing,
+because the filter hides everything; error from the network, from a refusal (not allowed,
+not found, expired), from the server, from the user's input, from a limit reached; success;
+two of the same at once (a double submit, two edits of one record); a reader who may look
+but not change. A component that handles "error" with one message has handled one of six.
+(The matrix is the one pbakaus/impeccable, Apache-2.0, checks in its harden pass.)
+
 ## Layout that survives
 
 Content decides the size: no fixed heights on anything holding text. It holds at 320 CSS
@@ -37,10 +45,35 @@ or an aspect ratio.
 When a browser is available: `atlas-browser` opens the page and reports in words what
 renders, at a narrow and a wide width, in light and dark when both exist, and what the
 console says. Then by keyboard alone: reach every control, see where focus is, operate it,
-leave. No browser: say `not looked at` in the report; code that compiles is not a checked
+leave. For a loop of looks (several widths, both schemes, before and after) `browser.md`:
+a browser driven from the shell writes files and costs an image only when one is read.
+No browser: say `not looked at` in the report; code that compiles is not a checked
 interface.
 
 Type check and the project's linter run as for any change.
+
+## Measure first, then look
+
+Before any judgement by eye, the checks that are numbers, from `browser.md` when the
+shell browser is there and by hand otherwise: text covered by another element; text
+clipped at a width; an element off-screen; a console error on load; a heading level
+skipped; contrast under the tier of `a11y.md`; a value outside the tokens (`raw`). Each
+failing check is written down with its number and fixed before taste is discussed: a
+screen with a hidden heading is not "a bit cramped", it is broken, and no amount of polish
+counts until it is not. The verdict has a ceiling while any of these stands. (Measured
+gates before the critique, and the ceiling, come from Leonxlnx/taste-skill, MIT.)
+
+Two readings, kept apart until the end: what the eye says about the design (hierarchy,
+direction, taste) and what the browser proves (the gates above, the states exercised, the
+keyboard walk). Written as two lists, then joined; one read that mixes them hides the gaps
+in the other. The order of fixing, when both lists are long: broken tasks, data loss and
+misleading states; missing states; hierarchy, flow and drift from the house file; visual
+and motion inconsistency; cleanup. (Two assessments and the triage order are
+pbakaus/impeccable's, Apache-2.0.)
+
+Two rounds of fix and look, fixes batched between them. A third round is a decision taken
+with the person, after saying which quality is still missing; unattended work stops at the
+second verdict with the open items listed.
 
 ## Report
 

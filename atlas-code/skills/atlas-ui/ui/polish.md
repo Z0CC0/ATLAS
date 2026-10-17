@@ -13,6 +13,14 @@ things everywhere. More space around a group than inside it.
 Optical, not only geometric: a play triangle, an arrow, an icon beside text often needs a
 pixel or two to look centred. Icons the same visual weight and stroke as their neighbours,
 aligned to the text's centre line, not to its box.
+Squint at the whole screen: two or three large masses and two or three anchor lines are a
+composition; six of each means nothing was decided. A heading sits closer to its own
+content than to the section above it; the space above a heading is at least twice the space
+below it. A module repeated identically is for a list, not for the sections of a page.
+(Squint, anchors and the heading rule: Leonxlnx/taste-skill, MIT.)
+The phone width is its own composition, not the desktop squeezed: margins 16 to 20 px, body
+16 to 18 px, targets at least 44 px, images re-cropped for portrait, the order of things
+decided again.
 
 ## Shape
 
@@ -34,6 +42,15 @@ Numbers that change or line up in columns (prices, counters, timers, tables):
 `font-variant-numeric: tabular-nums`.
 Line height tighter on large headings, looser on body. Letter spacing slightly negative on
 large display sizes, never on small text.
+The browser's own defaults belong to no design: text selection colour, the caret, custom
+scrollbars where the project styles them, the focus ring, the underline offset of links,
+the numerals in tables. Each takes the palette, or the screen has two designs on it. (From
+the craft floor of pbakaus/impeccable, Apache-2.0.)
+Copy is polish too: a verb that names the action on the button ("Save draft", not "Get
+started"); no "unlock", "seamless", "elevate", "supercharge"; no "not just X, it's Y";
+labels in the voice the brief chose. Room for translation: a third more space than the
+English needs, checked with the longest language the product ships, and logical properties
+(`margin-inline-start`) where the project supports right-to-left.
 Truncation is a decision: what is cut, where, and how the full value is reached.
 No widows of one word under a heading; no orphaned label away from its value.
 
@@ -54,6 +71,10 @@ The cursor tells the truth: pointer on what navigates or acts, default elsewhere
 Transition the properties that change, by name: `transition: all` animates things nobody
 meant. State changes are transitions, so they can reverse midway. Details in `motion.md`.
 Nothing shifts when content arrives, a scrollbar appears, or a font loads.
+The cheap checks a linter would catch, done by reading: `transition: all`; `ease-in` on
+something entering; an entrance from `scale(0)` (start at 0.95 to 0.98); `100vh` on a
+phone (use `svh` or `dvh`); a pulse, bounce or ping that loops forever; a hover that moves
+an image. (The list is Leonxlnx/taste-skill's lint, MIT.)
 
 ## Colour and contrast
 

@@ -30,6 +30,9 @@ Everything below lives in the `ui/` folder beside this file.
    "animate", "transition", "motion", "feels jumpy" → `motion.md`
    "tokens", "design system", "theme", "dark mode", "inconsistent colours" → `tokens.md`
    a screenshot, a mock-up, a design export, "build this" → `from-image.md`
+   "critique", "review this screen", "what is wrong with it", "is it good" → `method.md`
+   (measure first), then `polish.md` and `taste.md`
+   "check it in the browser", "at every width", "dark mode too" → `browser.md`
    Nothing named, a component to build: `method.md` and `polish.md`.
 
 Every new or changed component is held to the "always" section of `a11y.md`, asked or not.

@@ -48,11 +48,25 @@ Several images of one flow: shared components are found across all of them first
 each screen. Several widths of one screen: they are the breakpoints, and the differences
 between them are the responsive rules.
 
+## Inventory before code
+
+Before the first component is written, the image is turned into a list: every visible
+element, its kind (the project's component or a new one), its text, its place in the tree,
+its spacing from its neighbours in pixels of the image. The list is the contract: a
+feature that is visible and not in the list is a miss found later at ten times the cost.
+Shown to the person when the image is ambiguous; otherwise written at the top of the
+report as `inventory`. (The gate "every visible feature maps to a component before any
+code" is borrowed from img2threejs, Apache-2.0, which does it for 3D objects.)
+
 ## Compare
 
 When a browser is available, `atlas-browser` opens the result at the image's width and
 reports the differences from the reference in words: spacing, alignment, sizes, colours,
-missing elements. Fix what differs; two passes, then report what remains.
+missing elements; `browser.md` when the comparison loops. The comparison is one image
+beside the other at the same width, never the result alone: a screenshot read without the
+reference finds nothing. Fix what differs; two passes, then report what remains. A third
+pass only if the second moved toward the reference; two passes that undo each other are an
+oscillation, and the report says so instead of a fourth.
 
 ```
 built    src/pages/Pricing.tsx  3 existing components, 1 new (PlanCard)
