@@ -15,6 +15,12 @@ energy jumps), the rolls (several hits closer than half a beat). The storyboard'
 then written in beats and bars, and converted; a scene that starts "at 1.73 s" is a scene
 that drifts.
 
+One timeline drives picture, music and foley together: sections with their tempo and beat
+count, every hit addressed as a section and a beat, and the visual events exported as a
+list with their exact time so each sound sits on its frame. Before the final render the
+visual hits and the audio onsets are swept against each other: the aim is zero
+milliseconds, the tolerance five. (lemomo-ai/lemo-opuscar, MIT.)
+
 ## Using it
 
 Cuts land on beats, the important ones on downbeats; a cut between beats is a decision and

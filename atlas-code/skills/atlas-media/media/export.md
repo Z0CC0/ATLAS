@@ -41,6 +41,19 @@ clarity, a touch at 3 kHz; harshness, 3.2 kHz. Master for a film at −16 LUFS i
 and −3.5 dBTP, for a platform at its own target (above). (The carve and the thresholds:
 hyperframes' audio skill, Apache-2.0, and onetake.)
 
+The mix in numbers: the voice compressed first, then the balance set by RMS with the
+voice about 10 dB above the music; the band from 20 to 120 Hz about 3 dB under the rest;
+no pad notes below MIDI 48; a bass line with its second and third harmonics so it speaks
+on small speakers. Master in two passes (`loudnorm=I=-14:TP=-1.2:LRA=11` with
+`linear=true` for a platform; a film at its own target), video `-crf 19 -preset slow`,
+audio AAC 256k, `+faststart`; then the file is measured again (`ebur128=peak=true`) and a
+result off by more than 1 LU or a peak above −1 dB fails the export and deletes the file.
+Film grain is added by the encoder at the end (`noise=c0s=N:allf=t`), never drawn in the
+frame: grain in the picture makes every frame incompressible and slow; footage that
+already has grain is encoded with `-tune grain` and a higher CRF; light backgrounds get
+less, pixel and vector styles none. The loudness target is stated in the brief, so the
+mix, the master and the check agree on one number. (lemomo-ai/lemo-opuscar, MIT.)
+
 A video that will be scrubbed or cut later is re-encoded with a keyframe every second
 (`-g 30 -keyint_min 30` at 30 fps), or seeking lands on the wrong frame.
 

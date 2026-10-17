@@ -28,6 +28,11 @@ as long as its reads take, not the reverse. Timing is the rule most often got wr
 this list is what keeps it honest. (The reads as the unit of timing: JohnHeibel/
 ClaudeAnimationBase, MIT.)
 
+**The brief, in one message.** The questions that change the piece, asked once, with the
+defaults stated beside them (30 to 60 seconds unless told otherwise; longer multiplies
+time and tokens; the loudness target; anything that would need the network), and the gaps
+filled with the defaults, not with a second round of questions. (lemomo-ai/lemo-opuscar, MIT.)
+
 **What was asked, and nothing beside it.** A title card is a title card, not a title card
 plus three scenes, music and captions; an addition is proposed and built after a yes.
 (heygen-com/hyperframes, Apache-2.0.)
@@ -42,7 +47,11 @@ the same pixels on any machine, in any order, twice. Nothing in a composition re
 clock, the date, an unseeded random, the network, the pointer or the scroll; a loop
 repeats a finite number of times computed from the duration; fonts and media are loaded
 before the timeline is built, never while it plays; a simulation is precomputed from a
-fixed seed. A frame that comes out different twice is a bug found before the render.
+fixed seed. A frame that comes out different twice is a bug found before the render. No state carried
+from the previous frame. Drawings may step on twos (twelve changes a second) where the
+style wants it, but the camera and the light move every frame: a stepped camera reads as
+lag. Any effect that follows a subject (an iris, a zoom, a spotlight) goes through the one
+function that maps the world to the screen; screen coordinates are never typed by hand. (lemomo-ai/lemo-opuscar, MIT.)
 (The contract is heygen-com/hyperframes', Apache-2.0, and JohnHeibel/ClaudeAnimationBase's,
 MIT; Remotion states it too.)
 
@@ -65,13 +74,34 @@ judge the picture), a delivery render (the final settings of `export.md`), once,
 yes. Before any of them, stills: the first, middle and last frame of every scene on one
 contact sheet; then, for a moment that matters, every frame of that half-second in a
 strip; then a crop at full resolution where the detail is. Three zooms, in that order,
-cost less than one wrong render. (The ladder and the stills gate: hyperframes; the
+cost less than one wrong render. For the key actions (a hand-over, a fall, a hit) the
+strip is at a fifth of a second; two full passes of sheets before the final render.
+
+Legibility is a gate with a formula, not an impression: every on-screen text is registered
+with its box; it counts as visible only while the whole box is inside the frame; it must
+hold for at least `max(1.5, letters / 15 + 1.5)` seconds (characters / 4.5 for Chinese,
+Japanese, Korean), sampled every 0.04 s; a text that fails is listed with its time, and
+the render does not proceed. Fast is fine; make it fast with fewer words per screen. (lemomo-ai/lemo-opuscar, MIT.)
+
+On the final file, by tool and then by eye: loudness and true peak (`ffmpeg -af
+ebur128=peak=true`), black frames (`blackdetect`), the voice transcribed back from the mix
+and compared with the script, no NaN or empty frames; then watched once at full speed with
+the sound on, and the last seconds watched twice, because the end is where a render is
+cut short. A film that states facts carries a `FACTS.md`: each claim with its source and
+the quoted wording, or the measurement that produced it. (lemomo-ai/lemo-opuscar, MIT.) (The ladder and the stills gate: hyperframes; the
 sheet-strip-crop loop: ClaudeAnimationBase.)
 
 When a generation service or an expensive render is in the plan: the spend is gated. The
 idea in text, approved; the still, approved; only then the moving version. Only what was
 approved consumes budget; a partial approval advances the approved items and leaves the
 rest. (gbro-collage-broll, MIT.)
+
+## Rendering in parallel
+
+One browser (or one process) per worker, frames piped to one encoder per worker, the
+segments joined without re-encoding; a lock on the output path so two renders never write
+one file; the number of concurrent renders capped machine-wide; a page error kills the
+render instead of producing a film with a hole in it. (lemomo-ai/lemo-opuscar, MIT.)
 
 ## Long output stays out
 
@@ -91,7 +121,13 @@ What was not looked at is said.
 
 Fonts, images, music, footage and logos come from the user or from the project. Nothing is
 downloaded from the web into a piece without a yes and a note of its licence. Faces,
-voices and trademarks of others are not put in.
+voices and trademarks of others are not put in. What is taken in is CC0, CC BY or OFL, or
+the person's own; public-domain counts as CC0, "no known restrictions" does not; a
+share-alike or database licence is named to the person before it is used. Every asset in
+a `CREDITS` file, and at sign-off a search of the sources finds no licence text outside
+`LICENSE` and `CREDITS`. Fonts are self-hosted beside the piece and loaded before the first
+draw (`document.fonts.load`), never linked from a font service at render time; text is
+measured after the font and the letter-spacing are set, or the measure is wrong. (lemomo-ai/lemo-opuscar, MIT.)
 
 ## Files
 

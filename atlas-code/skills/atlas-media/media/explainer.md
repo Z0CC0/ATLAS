@@ -56,6 +56,10 @@ objects that snap between states instead of moving; motion that is mechanically 
 every shot a different world with nothing carried; a still element that jitters because
 it is redrawn with a different seed each frame; a thing that floats where it should touch.
 (ClaudeAnimationBase's failure list, MIT, written for cartoons and true here.)
+With data: columns selected by header name, never by index; every fact the narration
+claims printed from the data before the render; no value beyond the real data; a colour
+ramp never stretched to exaggerate a change, pale stays pale; the voice never over a
+rush, a silence or a morph. (lemomo-ai/lemo-opuscar, MIT.)
 Text or formulas overflowing the frame. Everything animated with the same duration. An
 object added without being animated in, so it pops. Formulas rendered with LaTeX on a
 machine that does not have it: use plain text objects or say what must be installed.

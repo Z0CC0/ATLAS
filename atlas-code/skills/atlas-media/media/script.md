@@ -51,6 +51,15 @@ table: "<who> wants <what>, but <obstacle>, so <what we show>". (Carry fields:
 hyperframes' product-launch skill and onetake; the rhyme and the logline:
 ClaudeAnimationBase.)
 
+Before the table, for a piece with any ambition, the treatment: three candidate
+structures and the chosen one with its reason; the logline; a benchmark piece with what to
+learn from it and what not; the shot list (framing, angle, move, duration, reason); the
+beat sheet by the second; the cue map (tempo, bars, instruments per section, the beats
+where cuts, actions and subtitles land); a sound design table (ambience bed, main foley,
+music state per section); the subtitle and title design. A storyboard of six to nine key
+shots rendered with real code, tiled with shot number, framing, duration and line, only
+when the person asks for one; otherwise the treatment is approved and production starts. (lemomo-ai/lemo-opuscar, MIT.)
+
 A spoken line that needs a picture of its own (B-roll, an illustration): one line, one
 image, one metaphor, three to six objects at most, the emotion of the line choosing the
 base colour, and never the line's own words printed on the screen. (gbro-collage-broll,
@@ -68,6 +77,16 @@ and well above the lower fifth in 9:16 where the interfaces of phones overlay, a
 percent scrim behind the text box only. One group on screen at a time. The caption file
 (`.srt` or `.vtt`) is generated from the script timings, not typed twice. (The numbers are
 hyperframes' caption rail, Apache-2.0.)
+A subtitle holds at least 1.8 s and never less than the spoken line plus 0.6 s; a text
+that animates in holds, after the animation, letters ÷ 15 + 1.5 s (characters ÷ 4.5 + 1.5
+for Chinese, Japanese, Korean); a title card at least 4 s; two options the viewer must
+compare, at least 2.5 s before the verdict. These are asserted in the timeline, not hoped.
+The text the voice reads and the text the screen shows are two fields of one line: the
+voice gets numbers spelled out and abbreviations expanded, the screen gets digits and the
+short form. A generated voice is transcribed back and compared with the script line by
+line (a similarity under about 0.92 is regenerated), and its word timestamps drive the
+caption reveal. Two languages at once: one line each per cue, never wrapped; a long cue is
+split, not stacked. (lemomo-ai/lemo-opuscar, MIT.)
 
 A second language is a strings table and a switch, never a second shoot: the same
 composition with the other strings, verified frame by frame against the first where no

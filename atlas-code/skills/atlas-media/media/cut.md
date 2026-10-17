@@ -35,6 +35,15 @@ away by the next scene's entrance. The rhythm is written before building, as a p
 bands, the 60-70 rule, the no-exit rule and the pattern: heygen-com/hyperframes,
 Apache-2.0.)
 
+## Silence, and the sound that follows it
+
+At least two real silences, or near silences, before the turn or the emotional peak; the
+first sound after a silence is one of the most important sounds of the piece, so it is
+chosen, not whatever happens next. Sound carries a transition at least twice (a J-cut,
+where the next scene is heard before it is seen; an L-cut, the reverse). Before the
+heaviest impact, a short suck-out: 0.2 to 0.45 s with music and foley down about 25 dB,
+then the hit. (lemomo-ai/lemo-opuscar, MIT.)
+
 ## What crosses the cut
 
 Every cut names the element that survives it, in the storyboard's carry columns: a
@@ -59,7 +68,13 @@ second is a jolt unless the meaning jolts. As numbers: the shot lengths vary (th
 coefficient of variation at least a quarter, or it is a metronome); some frames are still
 (a quarter of them, with at least one quiet stretch of a second, or the eye never rests);
 at least one burst exists (several big changes inside a second and a half, not evenly
-spaced); two consecutive shots never end the same way. Per movement: fast 0.15 to 0.3 s,
+spaced); two consecutive shots never end the same way. Durations in note values when the piece
+has a beat: a snap starts one note early and lands on the beat; the finest subdivision
+used divides the frames in a minute evenly (at 24 fps, 1,440), or the hits drift off
+their frames. The camera: at least four different moves and real changes of framing in a
+piece, one signature shot, the subject filling at least a third of the frame height at the
+key moments, no frozen frame longer than a second (a hold still creeps 2 to 5 percent),
+transitions made from the medium itself before a default fade. Per movement: fast 0.15 to 0.3 s,
 medium 0.3 to 0.5, slow 0.5 to 0.8, very slow 0.8 to 2; the slowest scene three times
 slower than the fastest; no more than two movements in a scene with the same easing; a
 stagger finishes inside half a second however many items it has; an entrance longer than
@@ -71,6 +86,14 @@ stagger cap, the asymmetry, the 30-40-30 and the blur budget: hyperframes.)
 The whole piece is watched at 1.5x: what still
 reads at that speed was too slow; what is lost was too fast. Then once at normal speed
 with the sound off: the pictures alone must tell the order of things.
+
+## What fails, seen in renders
+
+The subject too small or against the frame edge; a colour on the same colour; subtitles
+covering the subject; a gag too fast to land; a blank frame inside a transition; an effect
+timed to a subject that stops tracking it after a camera move; poses switched inside a
+condition instead of blended with keyframes and easing (a deliberate one-frame pop is the
+exception); a rolling object whose rotation is not distance ÷ radius. (lemomo-ai/lemo-opuscar, MIT.)
 
 ## What drags, in practice
 

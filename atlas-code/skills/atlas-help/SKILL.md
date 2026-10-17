@@ -108,7 +108,7 @@ request that named the command loaded it every time; the same request in plain w
 | `atlas guard on` / `atlas guard off` (also `gate`, `finish`) | by voice: writes the switch to `~/.claude/atlas.json`; a project's `.atlas.json` still wins |
 
 **What this build costs.** Descriptions always loaded: 4,664 tokens, against 1,892 for
-`atlas`. Fixed cost at `low`: 6,072. The files behind these commands are about 91,000 tokens
+`atlas`. Fixed cost at `low`: 6,072. The files behind these commands are about 93,000 tokens
 in all, in 121 files, read one or a few at a time. Every session figure elsewhere on this
 card belongs to `atlas`; with the descriptions of this build the same model gives +0.5% at 40
 turns and -27.0% at 295 for `low` (against -10.5% and -28.5%), and -5.9% and -33.9% for

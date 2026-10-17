@@ -45,7 +45,12 @@ text the voice names is legible at the output size (at least 26 px after the rec
 scaled to the frame), or the recording zooms to it; a click is a press and a release about
 75 ms apart on the real centre of the element; one close-up per operation, not a whole
 flow at one distance; the gaps in the narration (about half a second) set the pauses, and
-the recording is as long as the voice, never padded. (onetake's demo rules.)
+the recording is as long as the voice, never padded. (onetake's demo rules.) The cursor moves on smoothed, spring-eased paths and never
+teleports, with a small push on the click; the recording zooms in, never out of 1:1, and
+never blurs readable text; motion blur only on a whip, slow moves stay sharp; a keystroke
+HUD when keys matter; foley placed off the word onsets so it does not mask the voice;
+every button, mode and shortcut shown is checked against the product's own documentation
+before recording. (lemomo-ai/lemo-opuscar, MIT.)
 
 The page is clean before the first frame: fonts and data loaded, no cookie banner, no
 development overlay, a neutral window size, no notifications.

@@ -89,7 +89,7 @@ reading is paid again on every later turn. The price is 511 tokens of descriptio
 session, used or not.
 
 The first three rows are tiktoken counts (`o200k_base`), made the same way as for the other
-builds. The 121 files behind these skills are about 91,000 tokens in all and are read a few
+builds. The 121 files behind these skills are about 93,000 tokens in all and are read a few
 at a time.
 
 **The session rows are a model, not a separate measurement.** The bench measured what the

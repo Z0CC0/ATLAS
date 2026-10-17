@@ -65,6 +65,15 @@ full-screen linear gradient on a dark ground bands in H.264. On a dark backgroun
 type a touch lighter in weight and looser in line height. (hyperframes' video
 composition and typography references, Apache-2.0.)
 
+A style the piece follows lives in two files: the invariants (what it is not, materials,
+colour logic, type, motion quality, camera grammar, sound palette, the moves native to it,
+the pitfalls of its medium, the space left for variation: three structures, three
+openings, three endings) and one example's numbers, kept apart so the numbers are read as
+an example and the rules as rules. And the guard against copying the example: after the
+treatment, the new piece and the reference are compared on six axes (structure, opening,
+signature shot, camera path, shape of the score, ending) and at least four must differ;
+at the end, the contact sheet beside the reference's poster. (lemomo-ai/lemo-opuscar, MIT.)
+
 Adherence to the piece's own spec is checked by extraction, not by eye: every colour,
 font, weight and radius in the source listed and compared with the spec; a value that is
 not there is a `raw` line in the report. (hyperframes' design adherence.)
