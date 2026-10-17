@@ -60,9 +60,9 @@ The hook runs on every shell command and file edit, whether or not a switch is o
 
 | | `atlas` | `atlas-code` |
 |---|---|---|
-| descriptions, loaded in every session | 1,892 | 4,743 |
+| descriptions, loaded in every session | 1,892 | 4,749 |
 | rules injected at `low` | 1,408 | 1,408 |
-| fixed cost at `low` | 3,300 | 6,427 |
+| fixed cost at `low` | 3,300 | 6,434 |
 | first turn as billed, at `low` | 4,098 | 6,870 |
 | a 40-turn session at `low`, against no plugin | -10.5% | +0.5% |
 | a 295-turn session at `low` | -28.5% | -27.0% |

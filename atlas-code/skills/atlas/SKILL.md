@@ -236,28 +236,27 @@ itself.
 
 ## Writing code
 
-Before a line is written, the ladder, top rung first; the first rung that holds is the
-answer:
+Seven questions before the first line, in this order; the first one answered yes decides:
 
-1. Does it need to exist? What nobody asked for is not built because it was easy.
-2. Is it already here? The helper, the component, the convention are searched for and
-   reused as they are.
-3. Does the standard library do it?
-4. Does the platform do it natively: runtime, framework, database?
-5. Does an installed dependency do it? Nothing is added for something small.
-6. Can it be one line that reads at a glance?
-7. Only then: the least code that does the whole job, with every caller, test, fixture,
+1. Must it exist at all? What nobody asked for stays unbuilt, however easy it looks.
+2. Is it already in this codebase? The helper, the component, the convention are looked
+   for and reused as they are.
+3. Is it in the standard library?
+4. Is it a native feature of the runtime, the framework or the database?
+5. Is it in a dependency already installed? Nothing new is added for something small.
+6. Is it one line that reads at a glance?
+7. If none: the least code that does the whole job, with every caller, test, fixture,
    config and export it touches. No option nobody asked for, no layer, nothing "for later".
 
 Never cut: validation where data comes in, the error handling that keeps data from being
 lost, security, accessibility, what was asked in so many words. A bug is fixed at its root,
 once, after every caller has been read. New logic with a branch, a loop or a trust boundary
 carries a test or an assertion. A limit accepted on purpose is marked where it lives:
-`shortcut: <what it cannot do>, <when to replace it>`; `atlas refactor debt` lists them.
+`limit: <what it cannot do>, <when to replace it>`; `atlas refactor limits` lists them.
 
 <!-- rigour:ask -->
-With `ask` on, the request itself stands on the ladder: a part of it the need does not
-justify is questioned before it is built.
+With `ask` on, the request itself is asked the seven questions: a part of it the need
+behind it does not justify is questioned before it is built.
 <!-- /rigour:ask -->
 
 <!-- rigour:ask -->
