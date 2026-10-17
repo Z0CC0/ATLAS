@@ -234,6 +234,32 @@ memory file another session will read — is ordinary prose at every level. Comp
 mentioned, never given a voice, and never used to ask the user for anything the plugin wants for
 itself.
 
+## Writing code
+
+Before a line is written, the ladder, top rung first; the first rung that holds is the
+answer:
+
+1. Does it need to exist? What nobody asked for is not built because it was easy.
+2. Is it already here? The helper, the component, the convention are searched for and
+   reused as they are.
+3. Does the standard library do it?
+4. Does the platform do it natively: runtime, framework, database?
+5. Does an installed dependency do it? Nothing is added for something small.
+6. Can it be one line that reads at a glance?
+7. Only then: the least code that does the whole job, with every caller, test, fixture,
+   config and export it touches. No option nobody asked for, no layer, nothing "for later".
+
+Never cut: validation where data comes in, the error handling that keeps data from being
+lost, security, accessibility, what was asked in so many words. A bug is fixed at its root,
+once, after every caller has been read. New logic with a branch, a loop or a trust boundary
+carries a test or an assertion. A limit accepted on purpose is marked where it lives:
+`shortcut: <what it cannot do>, <when to replace it>`; `atlas refactor debt` lists them.
+
+<!-- rigour:ask -->
+With `ask` on, the request itself stands on the ladder: a part of it the need does not
+justify is questioned before it is built.
+<!-- /rigour:ask -->
+
 <!-- rigour:ask -->
 ## Rigour: ask
 

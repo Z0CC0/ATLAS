@@ -4,9 +4,10 @@ description: >
   Changes the shape of code without changing what it does: removes dead code, simplifies,
   merges duplicates, and learns an old codebase's own style before writing in it. One move at
   a time, tests green before and after each, anything that goes red undone. Removes nothing
-  before the list is shown and approved. Use for "atlas refactor", "clean this up", "dead
-  code", "unused exports", "simplify this", "remove the duplication", "match the existing
-  style" — in any language.
+  before the list is shown and approved. Lists the shortcuts marked in the code and says
+  which have outgrown their trigger. Use for "atlas refactor", "clean this up", "dead code",
+  "unused exports", "simplify this", "remove the duplication", "match the existing style",
+  "what did we skip", "technical debt" — in any language.
 ---
 
 Same behaviour, better shape. A refactor that changes what the code does is a bug with good
@@ -23,6 +24,7 @@ Everything below lives in the `refactor/` folder beside this file.
    "simplify", "too complicated", "hard to read", "clean this up" → `simplify.md`
    "duplication", "repeated", "copy-paste", "merge these" → `duplicates.md`
    "existing style", "legacy", "match the conventions", "how is it done here" → `style.md`
+   "debt", "shortcuts", "what did we skip", "atlas refactor debt" → `debt.md`
    Nothing named: `simplify.md`, on the files the user pointed at or the current diff.
 
 Work in a codebase nobody here has written in before: `style.md` first, whatever the
