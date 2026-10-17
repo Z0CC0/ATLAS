@@ -204,6 +204,32 @@ The vault is yours and stays in your format; the tool never edits a note. A note
 code that is not on this machine is reported as not checked, never as broken. Nothing leaves
 the machine.
 
+## Inside a shipped artifact: `atlas-artifact`
+
+`tools/artifact.mjs` reads an installed program the way a person would open the box: the
+`.asar` (or the folder under `resources/`) as bytes, every module outside `node_modules`,
+and reports what the entry reaches, the IPC channels in both directions with their pairing
+(a channel sent and never handled, a channel pushed and never listened for), the
+`contextBridge` keys, every `BrowserWindow` with its preload and the preferences that
+matter, the hosts in URL literals, the processes it starts by name, the system APIs it
+touches, `eval`, the secret-shaped environment variables it reads, the native addons. A
+wrapper the app wrote around `ipcMain.handle` is recognised and its callers counted,
+marked `derived`. `sqlite` reads a database file read-only: schema, counts, indexes,
+triggers, a sample of one table on request. `map` decodes a source map and turns a bundled
+position back into a file, line and name.
+
+Every answer is one record: an id derived from the record, the subject with its sha256,
+the operation, a confidence (`observed` from the bytes, `derived` from observed facts,
+`inferred` when the reading could be wrong), the coverage in words, the limitations. The
+reading is textual and says so: a channel built from a variable or a URL assembled at run
+time is an `unknown` in the report, not a missing fact. `--text` prints twenty readable
+lines; the JSON is read by page. Nothing is executed, nothing is written, no network.
+Binaries (`.exe`, ELF, Mach-O, APK, firmware) are recognised by `detect` and not read.
+
+On the THE ATLAS installer's own archive (180 MB, 7,790 files): 0.25 s, 14 modules, 60
+handlers of which 49 through the app's wrapper, 67 channels, every renderer call paired,
+26 hosts, 8 processes started by name.
+
 ---
 
 # ATLAS
