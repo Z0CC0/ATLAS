@@ -54,8 +54,25 @@ URLs, registry keys, Windows and POSIX paths found as text, with counts. A strin
 string: that the program contains a URL does not mean it ever requests it, and the report
 says so.
 
+## .NET method bodies: `cil`
+
+For a .NET assembly, `cil <file.dll>` goes past the headers into the code: it decodes the
+CIL (the bytecode the runtime runs) of each method to a readable listing, the way `ildasm`
+shows it. The opcode table is from the specification (ECMA-335, Partition III), so every
+instruction is named; a method call, a field access, a `newobj` has its token resolved to
+`Type::member` through the metadata; a `ldstr` shows the string. `--type <name>` or
+`--method <name>` narrows it; `--max` caps how many bodies come back; the rest page.
+
+Every run reports its coverage: how many method bodies were decoded and how many fully,
+with any opcode the reader did not know listed (on the whole .NET core library and four
+more assemblies, 42,949 methods, 100%, no unknown opcode). A native method, a runtime
+method or an abstract one has no byte stream and is said to have none. The exception-handler
+regions after a fat method body are not listed yet.
+
 ## Not yet
 
-Code. A function's instructions, what it calls, what a string is used for: that reader
-is being written, architecture by architecture, with its coverage measured. Until then
-the report ends where the headers end, and says it.
+Native code (x86-64, ARM64) and Android bytecode (Dalvik): the instruction decoders for
+those are being written from their specifications (Intel SDM, the Arm ARM, the Dalvik
+format), architecture by architecture, each with its coverage measured, and readable
+pseudocode on top. Until a decoder lands, the report for that kind ends where the headers
+end, and says it.

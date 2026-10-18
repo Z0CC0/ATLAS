@@ -21,9 +21,16 @@ The code that runs is the archive, not the repository. This reads the archive.
 
 Before anything is opened: the artifact belongs to the person, or they say they are allowed
 to look inside it. Not sure: ask, one line, and stop until the answer. A program that is
-not theirs is read only with their word that they may, written in the report. Nothing here
-bypasses a licence, a protection, a login or a check; nothing here is run; the archive is
-read as bytes and left as it was.
+not theirs is read only with their word that they may, written in the report.
+
+This reads and explains — headers, bytecode, instructions, control flow — so a person
+understands their own compiled software and so `atlas-secure` can audit it. It is not for
+defeating anything: no licence, serial, trial or activation is removed or forged; no
+digital-rights, anti-cheat or anti-tamper layer is bypassed; no authentication or paywall
+is circumvented; no patched or cracked copy is produced. A request that is really one of
+those is declined in one line, whatever the words around it. The reading is of the bytes as
+they are; the archive is left unchanged, and only `observe` ever runs the program, under
+the gate in Boundaries.
 
 ## What to read
 
@@ -43,6 +50,8 @@ Everything below lives in the `artifact/` folder beside this file.
    there", "what does it contact" → `app.md` (alive for a few seconds), only after a yes
    a `.exe`, `.dll`, `.node`, an ELF, a Mach-O, "what does this binary import", "is it
    .NET", "which Go modules", "is it signed", "is it hardened" → `binary.md`
+   ".NET", "CIL", "IL", "disassemble this assembly", "what does this method do", a `.dll`
+   whose code you want read → `binary.md` (the `cil` section)
    an `.apk`, firmware, a `.wasm` → not read yet: say so in one line, and what `detect`
    reported.
 

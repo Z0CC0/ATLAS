@@ -9,6 +9,7 @@
  */
 
 import { inflateSync } from 'node:zlib';
+import * as cil from './artifact-cil.mjs';
 
 const u8 = (b, o) => b[o];
 const u16 = (b, o) => b.readUInt16LE(o);
@@ -23,7 +24,7 @@ const MACHINES = { 0x14c: 'x86', 0x8664: 'x86-64', 0x1c0: 'arm', 0xaa64: 'arm64'
 const SUBSYSTEMS = { 1: 'native', 2: 'windows-gui', 3: 'windows-cui', 9: 'windows-ce', 10: 'efi-application', 16: 'windows-boot' };
 const DLL_CHARS = [[0x20, 'high-entropy-va'], [0x40, 'dynamic-base'], [0x80, 'force-integrity'], [0x100, 'nx-compat'], [0x200, 'no-isolation'], [0x400, 'no-seh'], [0x800, 'no-bind'], [0x1000, 'app-container'], [0x2000, 'wdm-driver'], [0x4000, 'control-flow-guard'], [0x8000, 'terminal-server-aware']];
 
-function readPe(b) {
+function readPe(b, opts) {
   if (b.length < 0x40 || u16(b, 0) !== 0x5a4d) throw new Error('not a PE file (no MZ)');
   const peOff = u32(b, 0x3c);
   if (peOff + 24 > b.length || u32(b, peOff) !== 0x4550) throw new Error('not a PE file (no PE signature)');
@@ -87,7 +88,7 @@ function readPe(b) {
   // CLR
   const clr = dir(14);
   let dotnet = null;
-  if (clr.rva) { try { dotnet = readClr(b, toOff(clr.rva), toOff, limitations); } catch (e) { limitations.push(`.NET metadata not read: ${e.message}`); } }
+  if (clr.rva) { try { dotnet = readClr(b, toOff(clr.rva), toOff, limitations, opts && opts.clr); } catch (e) { limitations.push(`.NET metadata not read: ${e.message}`); } }
   // resources: version info and manifest
   let version = null, manifest = null;
   const res = dir(2);
@@ -158,7 +159,7 @@ const SCHEMA = {
   0x26: ['File', [4, 'S', 'B']], 0x27: ['ExportedType', [4, 4, 'S', 'S', 'C:Implementation']], 0x28: ['ManifestResource', [4, 4, 'S', 'C:Implementation']], 0x29: ['NestedClass', ['T:0x02', 'T:0x02']], 0x2a: ['GenericParam', [2, 2, 'C:TypeOrMethodDef', 'S']], 0x2b: ['MethodSpec', ['C:MethodDefOrRef', 'B']], 0x2c: ['GenericParamConstraint', ['T:0x2a', 'C:TypeDefOrRef']],
 };
 
-function readClr(b, off, toOff, limitations) {
+function readClr(b, off, toOff, limitations, clrOpts) {
   if (off === null || off + 72 > b.length) throw new Error('CLR header outside the file');
   const metaRva = u32(b, off + 8), metaSize = u32(b, off + 12), flags = u32(b, off + 16);
   const entryToken = u32(b, off + 20);
@@ -214,6 +215,35 @@ function readClr(b, off, toOff, limitations) {
     types.push({ name: ns ? `${ns}.${name}` : name, methods: Math.max(0, next - first), public: vis === 1 || vis === 2, interface: Boolean(flags & 0x20), abstract: Boolean(flags & 0x80), sealed: Boolean(flags & 0x100) });
   }
   const methodName = (r) => { const nm = str(cell(0x06, r, 3)); for (let ti = types.length - 1; ti >= 0; ti -= 1) { if (cell(0x02, ti + 1, 5) <= r) return `${types[ti].name}::${nm}`; } return nm; };
+  // turning a metadata token into a name: the tables the loader reads, read the same way
+  const typeRefName = (r) => { const nm = str(cell(0x01, r, 1)), ns = str(cell(0x01, r, 2)); return ns ? `${ns}.${nm}` : nm || `typeref#${r}`; };
+  const typeName = (r) => (types[r - 1] ? types[r - 1].name : `type#${r}`);
+  const memberRefName = (r) => {
+    const v = cell(0x0a, r, 0), nm = str(cell(0x0a, r, 1)); const tags = [0x02, 0x01, 0x1a, 0x06, 0x1b]; const pt = tags[v & 7], pr = v >> 3;
+    let cls = '?'; if (pt === 0x02) cls = typeName(pr); else if (pt === 0x01) cls = typeRefName(pr); else if (pt === 0x1a) cls = moduleRefs[pr - 1] || `moduleref#${pr}`; else if (pt === 0x06) cls = methodName(pr);
+    return `${cls}::${nm}`;
+  };
+  const methodSpecName = (r) => { const v = cell(0x2b, r, 0); return (v & 1) === 0 ? methodName(v >> 1) : memberRefName(v >> 1); };
+  const resolveToken = (tok) => {
+    const tbl = tok >>> 24, row = tok & 0xffffff; if (!row) return `0x${tok.toString(16)}`;
+    switch (tbl) {
+      case 0x06: return methodName(row);
+      case 0x0a: return memberRefName(row);
+      case 0x01: return typeRefName(row);
+      case 0x02: return typeName(row);
+      case 0x04: return 'field ' + (str(cell(0x04, row, 1)) || `#${row}`);
+      case 0x1b: return `typespec#${row}`;
+      case 0x2b: return methodSpecName(row);
+      default: return `tok(0x${tbl.toString(16)}:${row})`;
+    }
+  };
+  const readUserString = (tok) => {
+    const off = tok & 0xffffff; // the low three bytes of the ldstr token are the #US offset; 0x70 marks the heap
+    if (!usHeap || off >= usHeap.size) return `str#${off}`;
+    let o = usHeap.off + off; let len = u8(b, o);
+    if ((len & 0x80) === 0) o += 1; else if ((len & 0xc0) === 0x80) { len = ((len & 0x3f) << 8) | u8(b, o + 1); o += 2; } else { len = ((len & 0x1f) << 24) | (u8(b, o + 1) << 16) | (u8(b, o + 2) << 8) | u8(b, o + 3); o += 4; }
+    return len === 0 ? '' : b.toString('utf16le', o, o + len - 1);
+  };
   // P/Invoke
   const pinvoke = [];
   for (let r = 1; r <= (rows[0x1c] || 0) && r <= 5000; r += 1) {
@@ -235,12 +265,40 @@ function readClr(b, off, toOff, limitations) {
     }
   }
   const entryMethod = (entryToken >>> 24) === 0x06 && (entryToken & 0xffffff) ? methodName(entryToken & 0xffffff) : null;
-  return {
+  const result = {
     runtimeVersion, flags: { ilOnly: Boolean(flags & 1), require32: Boolean(flags & 2), strongNameSigned: Boolean(flags & 8), nativeEntry: Boolean(flags & 0x10) }, metadataBytes: metaSize, streams: Object.keys(streams),
     module: moduleName, assembly, assemblyRefs, moduleRefs, entryMethod,
     counts: { types: nTypes, methods: nMethods, fields: rows[0x04] || 0, memberRefs: rows[0x0a] || 0, typeRefs: rows[0x01] || 0, pinvoke: pinvoke.length, userStrings: userStrings.length },
     types: types.slice(0, 500), pinvoke, userStrings: userStrings.slice(0, 300),
   };
+  // CIL: decode the bodies of the methods the caller asked for. A body is tiny (header byte,
+  // low two bits 0x2, size in the high six) or fat (12-byte header). IL only; native and
+  // runtime methods have no byte stream to read.
+  if (clrOpts && clrOpts.decodeMethods) {
+    const decoded = []; let attempted = 0, full = 0; const unknown = new Set();
+    const want = clrOpts.decodeMethods, max = clrOpts.max || 60;
+    for (let r = 1; r <= nMethods && r <= 500000; r += 1) {
+      const nm = methodName(r);
+      if (!want(nm)) continue;
+      if (decoded.length >= max) { decoded.truncated = true; break; }
+      const rva = cell(0x06, r, 0), implFlags = cell(0x06, r, 1);
+      if (!rva || (implFlags & 3) !== 0) { decoded.push({ method: nm, rva, note: 'no IL body (native, runtime or abstract)' }); continue; }
+      const bo = toOff(rva);
+      if (bo === null || bo >= b.length) { decoded.push({ method: nm, rva, note: 'body RVA not in any section' }); continue; }
+      const b0 = b[bo]; let codeStart, codeSize, maxStack = 8, localTok = 0;
+      if ((b0 & 3) === 2) { codeSize = b0 >> 2; codeStart = bo + 1; }
+      else if ((b0 & 3) === 3) { maxStack = b.readUInt16LE(bo + 2); codeSize = b.readUInt32LE(bo + 4); localTok = b.readUInt32LE(bo + 8); codeStart = bo + 12; }
+      else { decoded.push({ method: nm, rva, note: `unknown method-body header 0x${b0.toString(16)}` }); continue; }
+      if (codeStart + codeSize > b.length) { decoded.push({ method: nm, rva, note: 'code extends past the file' }); continue; }
+      attempted += 1;
+      const d = cil.decode(b, codeStart, codeSize, { token: resolveToken, string: readUserString });
+      if (d.complete) full += 1; else if (d.stoppedAt) unknown.add(d.stoppedAt);
+      decoded.push({ method: nm, rva, codeSize, maxStack, localVarSigTok: localTok, count: d.instructions.length, complete: d.complete, stoppedAt: d.stoppedAt, instructions: d.instructions });
+    }
+    result.decoded = decoded;
+    result.cilCoverage = { attempted, fullyDecoded: full, percent: attempted ? Math.round((full / attempted) * 100) : null, unknownOpcodes: [...unknown], truncated: Boolean(decoded.truncated) };
+  }
+  return result;
 }
 
 // ---------------------------------------------------------------- ELF
@@ -429,8 +487,8 @@ function interestingStrings(b) {
   };
 }
 
-function readBinary(b) {
-  if (b.length >= 2 && b[0] === 0x4d && b[1] === 0x5a) { const r = readPe(b); r.go = readGo(b); r.rust = readRust(b, r.sections); r.strings = interestingStrings(b); return r; }
+function readBinary(b, opts) {
+  if (b.length >= 2 && b[0] === 0x4d && b[1] === 0x5a) { const r = readPe(b, opts); r.go = readGo(b); r.rust = readRust(b, r.sections); r.strings = interestingStrings(b); return r; }
   if (b.length >= 4 && b[0] === 0x7f && b.toString('latin1', 1, 4) === 'ELF') { const r = readElf(b); r.go = readGo(b); r.rust = readRust(b, r.sections); r.strings = interestingStrings(b); return r; }
   if (b.length >= 4 && [0xfeedface, 0xfeedfacf, 0xcefaedfe, 0xcffaedfe, 0xcafebabe].includes(b.readUInt32BE(0))) { const r = readMachO(b, 0); if (!r.fat) { r.go = readGo(b); r.rust = readRust(b, null); r.strings = interestingStrings(b); } return r; }
   throw new Error('not a PE, ELF or Mach-O file');

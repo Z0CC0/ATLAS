@@ -397,6 +397,57 @@ test('observe refuses without the yes, and the inspector session speaks to a liv
   } finally { child.kill(); }
 });
 
+test('the CIL decoder reads an instruction stream and resolves tokens and strings', async () => {
+  const cil = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-cil.mjs')).href);
+  const code = Buffer.from([
+    0x00,             // nop
+    0x02,             // ldarg.0
+    0x1f, 0x05,       // ldc.i4.s 5
+    0x72, 0x01, 0x00, 0x00, 0x70, // ldstr (#US token 0x70000001)
+    0x28, 0x01, 0x00, 0x00, 0x0a, // call (MemberRef token 0x0a000001)
+    0x2b, 0x01,       // br.s -> target past the ret
+    0x2a,             // ret
+  ]);
+  const resolve = { token: (t) => `tok:${t.toString(16)}`, string: (t) => (t === 0x70000001 ? 'hello' : '?') };
+  const d = cil.decode(code, 0, code.length, resolve);
+  assert.equal(d.complete, true);
+  assert.equal(d.stoppedAt, null);
+  const ops = d.instructions.map((i) => i.op);
+  assert.deepEqual(ops, ['nop', 'ldarg.0', 'ldc.i4.s', 'ldstr', 'call', 'br.s', 'ret']);
+  assert.equal(d.instructions[2].operand, 5);
+  assert.equal(d.instructions[3].operand.value, 'hello');
+  assert.equal(d.instructions[4].operand.name, 'tok:a000001');
+  assert.equal(d.instructions[5].operand.target, code.length); // 16 (after br.s) + 1
+  assert.equal(cil.format(d.instructions[3]), 'IL_0004:  ldstr  "hello"');
+  // a two-byte prefix opcode
+  const fe = cil.decode(Buffer.from([0xfe, 0x01, 0x2a]), 0, 3, resolve); // ceq; ret
+  assert.deepEqual(fe.instructions.map((i) => i.op), ['ceq', 'ret']);
+  // an unknown opcode stops decoding and is reported
+  const bad = cil.decode(Buffer.from([0x00, 0xf1, 0x2a]), 0, 3, resolve);
+  assert.equal(bad.complete, false);
+  assert.equal(bad.stoppedAt, 'f1');
+  assert.equal(bad.instructions.length, 1);
+});
+
+test('cil decodes a real .NET assembly fully, or skips when none is installed', () => {
+  const candidates = [];
+  const dotnet = 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App';
+  try { for (const v of fs.readdirSync(dotnet)) candidates.push(path.join(dotnet, v, 'System.Private.CoreLib.dll')); } catch { /* not windows / no dotnet */ }
+  const dll = candidates.find((p) => fs.existsSync(p));
+  if (!dll) { return; } // nothing to decode here
+  const r = run('cil', dll, '--max', '300');
+  assert.equal(r.code, 0, r.out + r.err);
+  const res = r.json.result;
+  assert.equal(res.coverage.percent, 100, JSON.stringify(res.coverage.unknownOpcodes));
+  assert.deepEqual(res.coverage.unknownOpcodes, []);
+  const withCalls = res.methods.find((m) => m.instructions && m.instructions.some((i) => i.op === 'call' || i.op === 'callvirt' || i.op === 'newobj'));
+  assert.ok(withCalls, 'a method with a call, its token resolved to a name');
+  const call = withCalls.instructions.find((i) => i.op === 'call' || i.op === 'callvirt' || i.op === 'newobj');
+  assert.ok(/::/.test(call.operand.name), `token resolved to Type::member, got ${call.operand.name}`);
+  assert.equal(r.json.subject.format, 'cil');
+  assert.ok(r.json.limitations.some((l) => l.includes('not executed')));
+});
+
 test('every record has the same spine', () => {
   const asar = path.join(tmp, 'demo.asar');
   for (const rec of [run('detect', asar).json, run('app', asar).json]) {

@@ -32,6 +32,7 @@ import { closeSync, existsSync, openSync, readdirSync, readFileSync, readSync, s
 import { basename, dirname, extname, join, posix, resolve } from 'node:path';
 import * as js from './artifact-js.mjs';
 import { readBinary } from './artifact-bin.mjs';
+import { format as cilFormat } from './artifact-cil.mjs';
 import { observe } from './artifact-run.mjs';
 
 const VERSION = 1;
@@ -725,6 +726,41 @@ async function cmdObserve(path) {
   emit(rec, L.join('\n'));
 }
 
+// ---------------------------------------------------------------- a .NET method body as instructions
+
+function cmdCil(path) {
+  const abs = resolve(path);
+  if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
+  const buf = readFileSync(abs);
+  const typeFilter = flags.type ? String(flags.type).toLowerCase() : null;
+  const methodFilter = flags.method ? String(flags.method).toLowerCase() : null;
+  const want = (name) => {
+    if (methodFilter) return name.toLowerCase().includes(methodFilter);
+    if (typeFilter) return name.toLowerCase().split('::')[0].includes(typeFilter);
+    return true; // a plain run decodes the first --max methods
+  };
+  let r;
+  try { r = readBinary(buf, { clr: { decodeMethods: want, max: Number(flags.max || 40) } }); } catch (e) { fail(e.message, 'unsupported'); }
+  if (!r.dotnet) fail('not a .NET assembly (no CLR metadata)', 'unsupported');
+  const d = r.dotnet;
+  const cov = d.cilCoverage || { attempted: 0, fullyDecoded: 0, percent: null, unknownOpcodes: [] };
+  const limitations = ['CIL read from the bytes, not executed; a token is resolved to a name through the metadata, a signature blob is shown as its token', 'exception-handler regions after a fat body are not listed'];
+  if (cov.unknownOpcodes.length) limitations.push(`opcodes not known to this reader, decoding stopped at them: ${cov.unknownOpcodes.join(', ')}`);
+  if (cov.truncated) limitations.push(`more methods match than the --max limit (${flags.max || 40}); raise --max or narrow with --type/--method`);
+  const subject = { name: basename(abs), path: abs, format: 'cil', bytes: buf.length, sha256: sha256(buf) };
+  const bodies = (d.decoded || []).filter((m) => m.instructions);
+  const result = { assembly: d.assembly, runtimeVersion: d.runtimeVersion, coverage: cov, methods: (d.decoded || []).map((m) => m.instructions ? { method: m.method, codeSize: m.codeSize, maxStack: m.maxStack, count: m.count, complete: m.complete, stoppedAt: m.stoppedAt, instructions: m.instructions } : { method: m.method, note: m.note }) };
+  const rec = record(subject, 'cil', { type: flags.type || null, method: flags.method || null, max: Number(flags.max || 40) }, result, { confidence: 'observed', coverage: { status: cov.unknownOpcodes.length ? 'partial' : 'complete', scope: `${cov.attempted} method bodies decoded, ${cov.fullyDecoded} fully (${cov.percent}%)` }, limitations });
+  const L = [`${subject.name}  ${d.assembly ? d.assembly.name + ' ' + d.assembly.version : d.module}  ${d.runtimeVersion}  methods decoded ${cov.attempted}, fully ${cov.fullyDecoded} (${cov.percent}%)`];
+  for (const m of (d.decoded || [])) {
+    if (!m.instructions) { L.push(`\n// ${m.method} — ${m.note}`); continue; }
+    L.push(`\n.method ${m.method}  (IL ${m.codeSize} bytes, maxstack ${m.maxStack}${m.complete ? '' : `, STOPPED at ${m.stoppedAt}`})`);
+    for (const ins of m.instructions) L.push('  ' + cilFormat(ins));
+  }
+  L.push(`\nid ${rec.id}`);
+  emit(rec, L.join('\n'));
+}
+
 // ---------------------------------------------------------------- sqlite
 
 async function cmdSqlite(path) {
@@ -840,7 +876,7 @@ function cmdDetect(path) {
 // ---------------------------------------------------------------- main
 
 if (!command || !target || flags.help || (command === 'compare' && !positional[2])) {
-  process.stdout.write('usage: node artifact.mjs detect|app|bin|sqlite|map|fuses <path> | compare <a> <b> | observe <installed folder | exe> --yes [--seconds 12] [--text] [--all] [--detail summary|full] [--page N --per 60] [--table T --limit 20] [--line L --col C]\n');
+  process.stdout.write('usage: node artifact.mjs detect|app|bin|cil|sqlite|map|fuses <path> | compare <a> <b> | observe <folder|exe> --yes [--seconds 12] [--text] [--all] [--detail summary|full] [--page N --per 60] [--table T --limit 20] [--line L --col C]\n');
   process.exit(command ? 2 : 0);
 }
 try {
@@ -850,6 +886,7 @@ try {
   else if (command === 'map') cmdMap(target);
   else if (command === 'fuses') cmdFuses(target);
   else if (command === 'bin') cmdBin(target);
+  else if (command === 'cil') cmdCil(target);
   else if (command === 'observe') await cmdObserve(target);
   else if (command === 'compare') await cmdCompare(target, positional[2]);
   else fail(`unknown command: ${command}`);
