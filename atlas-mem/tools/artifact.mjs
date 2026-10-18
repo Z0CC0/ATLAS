@@ -823,8 +823,19 @@ function cmdDisasm(path) {
   ];
   const rec = record(subject, 'disasm', { at: flags.at || null, count }, result, { confidence: 'observed', coverage: { status: coverage === 100 ? 'complete' : 'partial', scope: `${secs.length} code section(s), ${swept} instructions swept, ${good} named (${coverage}% allocated)` }, limitations });
   const L = [`${subject.name}  ${ARCH}  ${secs.map((s) => `${s.name}(${s.size})`).join(' ')}  swept ${swept} instr, ${ARCH === 'x86-64' ? 'decoded' : 'allocated'} ${coverage}%${coarseN ? `, ${coarseN} fp/simd coarse` : ''}`];
+  // symbol names for imported calls: a `call [rip+x]` lands on an IAT slot -> dll!function
+  const peSec = r.format === 'pe' ? r.sections.find((s) => s.name === secOf.name) : null;
+  const iatByRva = new Map((r.iat || []).map((e) => [e.rva, e.name]));
+  const symFor = (i) => {
+    if (!peSec || !iatByRva.size || !/^(call|jmp)$/.test(i.mnem || '')) return '';
+    const m = /\[rip([+-])0x([0-9a-f]+)\]/.exec(i.text); if (!m) return '';
+    const disp = parseInt(m[2], 16) * (m[1] === '-' ? -1 : 1);
+    const instrRva = peSec.vaddr + (secOf.off + i.addr - peSec.raw);
+    const name = iatByRva.get(instrRva + i.bytes + disp);
+    return name ? `  ; ${name}` : '';
+  };
   L.push(`\n; from 0x${at.toString(16)} (${secOf.name})`);
-  for (const i of d.instructions) L.push(`  ${i.addr.toString(16).padStart(8, '0')}  ${i.bad ? '(data) ' + i.text : i.coarse ? '~ ' + i.text : i.text}`);
+  for (const i of d.instructions) L.push(`  ${i.addr.toString(16).padStart(8, '0')}  ${i.bad ? '(data) ' + i.text : i.coarse ? '~ ' + i.text : i.text}${symFor(i)}`);
   L.push(`\nid ${rec.id}`);
   emit(rec, L.join('\n'));
 }
@@ -904,7 +915,11 @@ function cmdCfg(path) {
     'the function\'s extent is followed from the entry by recursive descent up to the byte budget; data between blocks (jump tables, constants) is not code and is not followed',
   ];
   const rec = record(subject, 'cfg', { at: flags.at || null, budget }, result, { confidence: 'derived', coverage: { status: cfg.bad ? 'partial' : 'complete', scope: `${cfg.blocks.length} basic blocks, ${cfg.instructions} instructions, ${cfg.loops} loop edge(s), from 0x${at.toString(16)}` }, limitations });
-  const body = (flags.pseudo && ARCH === 'x86-64') ? liftX86Fn(cfg, 0) : formatCfg(cfg, 0);
+  // import symbol names for call targets, when this is a PE
+  const peSec = r.format === 'pe' ? r.sections.find((s) => s.name === secOf.name) : null;
+  const iatByRva = new Map((r.iat || []).map((e) => [e.rva, e.name]));
+  const sym = (peSec && iatByRva.size) ? (ins) => { if (!/^(call|jmp)$/.test(ins.mnem || '')) return ''; const m = /\[rip([+-])0x([0-9a-f]+)\]/.exec(ins.text); if (!m) return ''; const disp = parseInt(m[2], 16) * (m[1] === '-' ? -1 : 1); return iatByRva.get(peSec.vaddr + (ins.addr - peSec.raw) + ins.len + disp) || ''; } : null;
+  const body = (flags.pseudo && ARCH === 'x86-64') ? liftX86Fn(cfg, 0, sym) : formatCfg(cfg, 0, sym);
   emit(rec, body + `\n\nid ${rec.id}`);
 }
 

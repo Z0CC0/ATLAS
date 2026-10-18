@@ -253,7 +253,9 @@ index resolved to a name (`invoke-direct {v1, v2}, Type;.method`, `const-string 
 the Android API compiled to Dalvik (6,376 classes), 55,481 method bodies, 100%, no unknown
 opcode. `cfg` recovers one function's control-flow graph from the disassembly (basic blocks, the
 direct edges, loops from back-edges) on x86-64 and arm64 — the skeleton before expressions
-and structuring. `cfg --pseudo` lifts the x86-64 CFG to low-level pseudo-C: intra-block expression folding
+and structuring. A PE's import address table is read, so a `call [rip+x]` to an import shows its
+`dll!function` in `disasm`, `cfg` and the pseudo-C (`rax = KERNEL32.MultiByteToWideChar(...)`).
+`cfg --pseudo` lifts the x86-64 CFG to low-level pseudo-C: intra-block expression folding
 (`eax = (-(ebp | 0xff))`) and branch conditions recovered from `cmp`/`test` + the jump
 (`if (esi == 0) goto …`), memory as `*(addr)`, registers as the variables. Full if/while
 structuring and type recovery are the remaining decompiler work.

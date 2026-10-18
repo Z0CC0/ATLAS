@@ -19,8 +19,9 @@ function parse(text) {
   return { mnem, ops };
 }
 
-/** Lift one block. Returns { stmts: [string], cond: {text} | null } (cond for a trailing jcc). */
-function liftBlock(insns) {
+/** Lift one block. Returns { stmts: [string], cond: {text} | null } (cond for a trailing jcc).
+ * `sym(ins)` may return an imported/exported name for a call target. */
+function liftBlock(insns, sym) {
   const env = new Map(); // register -> current expression
   const stmts = [];
   let cmp = null; // { a, b, test }
@@ -45,7 +46,7 @@ function liftBlock(insns) {
     if (mnem === 'cmp') { cmp = { a: val(ops[0]), b: val(ops[1]), test: false }; continue; }
     if (mnem === 'test') { cmp = { a: val(ops[0]), b: val(ops[1]), test: true }; continue; }
     if (mnem === 'push' || mnem === 'pop' || mnem === 'leave' || mnem === 'cdqe' || mnem === 'cqo') continue;
-    if (mnem === 'call') { const t = (ops[0] || 'fn').replace(/[^\w]/g, '_'); stmts.push(`rax = ${t}(...);`); for (const r of CALLER_SAVED) env.delete(r); env.set('rax', 'rax'); continue; }
+    if (mnem === 'call') { const named = sym && sym(ins); const t = named ? named.replace(/!/g, '.') : 'sub_' + (ops[0] || 'fn').replace(/[^\w]/g, '_'); stmts.push(`rax = ${t}(...);`); for (const r of CALLER_SAVED) env.delete(r); env.set('rax', 'rax'); continue; }
     if (mnem === 'xchg') { const [a, b] = ops; const va = val(a), vb = val(b); if (!isMem(a)) env.set(a, vb); if (!isMem(b)) env.set(b, va); continue; }
     // not modelled: show it as a comment, do not corrupt the environment
     stmts.push(`// ${ins.text}`);
@@ -66,13 +67,13 @@ function liftBlock(insns) {
 }
 
 /** Lift a whole function (its CFG) to structured pseudo-C with conditions and labelled gotos. */
-function liftFunction(cfg, base) {
+function liftFunction(cfg, base, sym) {
   base = base || 0;
   const L = (a) => 'L_' + (base + a).toString(16);
   const out = [`// function at 0x${(base + cfg.start).toString(16)} — ${cfg.blocks.length} blocks, ${cfg.loops} loop edge(s); low-level pseudo-C, no types`];
   for (const b of cfg.blocks) {
     out.push(`${L(b.start)}:`);
-    const { stmts, cond } = liftBlock(b.insns);
+    const { stmts, cond } = liftBlock(b.insns, sym);
     for (const s of stmts) out.push('  ' + s);
     const cT = b.succ.find((s) => s.cond), fall = b.succ.find((s) => s.fall), jmp = b.succ.find((s) => !s.cond && !s.fall);
     if (cond && cT) { out.push(`  if (${cond.text}) goto ${L(cT.to)};${cT.loop ? ' // loop' : ''}`); if (fall) out.push(`  goto ${L(fall.to)};`); }

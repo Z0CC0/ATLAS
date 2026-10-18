@@ -128,6 +128,10 @@ the branch condition from the preceding `cmp`/`test` and the conditional-jump ki
 value tracking, so registers are the variables and blocks keep `goto` labels: this is the
 honest middle ground, not clean C.
 
+Call targets are named. A PE's import address table (the slots a `call [rip+x]` lands on)
+is read, so an imported call shows its `dll!function` in the disassembly and `cfg`, and in
+the pseudo-C a call reads `rax = KERNEL32.MultiByteToWideChar(...)` instead of an offset.
+
 What `cfg` does not do: an indirect jump or call (through a register, a jump table, a
 virtual call) has no resolved target, so a block only it reaches is missing. The next slices turn it into readable code:
 data flow / SSA to rebuild expressions, then structuring (the gotos back into if/while/for),

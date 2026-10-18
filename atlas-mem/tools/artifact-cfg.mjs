@@ -89,14 +89,14 @@ function buildCfg(decodeAt, start, end, arch, budget) {
   return { start, blocks, loops, instructions: reachable, bad: [...insns.values()].filter((i) => !i.mnem).length };
 }
 
-/** A readable, structured text of the CFG. */
-function formatCfg(cfg, base) {
+/** A readable, structured text of the CFG. `sym(ins)` may name an imported call target. */
+function formatCfg(cfg, base, sym) {
   base = base || 0;
   const L = (a) => 'L_' + (base + a).toString(16);
   const out = [`; function at ${hx(base + cfg.start)} — ${cfg.blocks.length} blocks, ${cfg.instructions} instructions, ${cfg.loops} loop edge(s)`];
   for (const b of cfg.blocks) {
     out.push(`\n${L(b.start)}:`);
-    for (const i of b.insns) out.push(`  ${(base + i.addr).toString(16).padStart(8, '0')}  ${i.text}`);
+    for (const i of b.insns) { const s = sym && sym(i); out.push(`  ${(base + i.addr).toString(16).padStart(8, '0')}  ${i.text}${s ? '  ; ' + s : ''}`); }
     const edges = b.succ.map((s) => `${s.cond ? 'if-taken ' : s.fall ? 'fall ' : 'goto '}${L(s.to)}${s.loop ? ' (loop)' : ''}`);
     if (edges.length) out.push(`  -> ${edges.join('  |  ')}`);
     else out.push('  -> return');

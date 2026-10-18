@@ -50,23 +50,28 @@ function readPe(b, opts) {
   }
   const toOff = (rva) => { for (const s of sections) if (rva >= s.vaddr && rva < s.vaddr + Math.max(s.vsize, s.rawSize)) return s.raw + (rva - s.vaddr); return null; };
   const limitations = [];
-  // imports
+  // imports, and the import address table (the slot RVA a `call [rip+x]` lands on -> name)
   const imports = [];
+  const iat = []; // { rva, name } for each imported function's IAT slot
   const imp = dir(1);
   if (imp.rva) {
     let d = toOff(imp.rva);
     for (let k = 0; d !== null && d + 20 <= b.length && k < 512; k += 1, d += 20) {
-      const nameRva = u32(b, d + 12), oft = u32(b, d), ft = u32(b, d + 16);
-      if (!nameRva && !ft) break;
+      const nameRva = u32(b, d + 12), oft = u32(b, d), ftRva = u32(b, d + 16);
+      if (!nameRva && !ftRva) break;
       const nameOff = toOff(nameRva);
       const dll = nameOff !== null ? cstr(b, nameOff, 256) : `?rva=${nameRva}`;
+      const shortDll = dll.replace(/\.dll$/i, '');
       const names = [];
-      let t = toOff(oft || ft);
+      let t = toOff(oft || ftRva);
       for (let j = 0; t !== null && j < 4096; j += 1) {
         const v = plus ? (t + 8 <= b.length ? b.readBigUInt64LE(t) : 0n) : BigInt(t + 4 <= b.length ? u32(b, t) : 0);
         if (v === 0n) break;
-        if (plus ? (v >> 63n) & 1n : (v >> 31n) & 1n) names.push(`#${Number(v & 0xffffn)}`);
-        else { const h = toOff(Number(v & 0x7fffffffn)); names.push(h !== null ? cstr(b, h + 2, 512) : '?'); }
+        let fn;
+        if (plus ? (v >> 63n) & 1n : (v >> 31n) & 1n) fn = `#${Number(v & 0xffffn)}`;
+        else { const h = toOff(Number(v & 0x7fffffffn)); fn = h !== null ? cstr(b, h + 2, 512) : '?'; }
+        names.push(fn);
+        if (iat.length < 20000) iat.push({ rva: ftRva + j * (plus ? 8 : 4), name: `${shortDll}!${fn}` });
         t += plus ? 8 : 4;
       }
       imports.push({ dll, count: names.length, names });
@@ -105,7 +110,7 @@ function readPe(b, opts) {
   if (stampIsHash) limitations.push('the timestamp field holds a build hash, not a date (reproducible build)');
   return {
     format: 'pe', machine: MACHINES[machine] || `0x${machine.toString(16)}`, pe32plus: plus, timestamp: stampDate && !stampIsHash ? stampDate.toISOString() : null, timestampRaw: timestamp, entry, imageBase, subsystem: SUBSYSTEMS[subsystem] || subsystem,
-    dll: Boolean(characteristics & 0x2000), dllCharacteristics: DLL_CHARS.filter(([f]) => dllChars & f).map(([, n]) => n), hardening, sections, imports, exports: exportsOut, dotnet, version, manifest, limitations,
+    dll: Boolean(characteristics & 0x2000), dllCharacteristics: DLL_CHARS.filter(([f]) => dllChars & f).map(([, n]) => n), hardening, sections, imports, iat, exports: exportsOut, dotnet, version, manifest, limitations,
   };
 }
 

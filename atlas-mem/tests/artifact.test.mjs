@@ -701,6 +701,20 @@ test('the Dalvik lift rebuilds pseudo-Java (new, fields, binops, branches)', asy
   assert.deepEqual(p.map((s) => s.text), ['if (v0 == 0) goto L_8;']);
 });
 
+test('a PE exposes its import address table, and calls resolve to dll!function', () => {
+  const r = run('bin', process.execPath, '--detail', 'full');
+  if (!r.json || r.json.result.format !== 'pe') return; // not a PE host
+  const iat = r.json.result.iat;
+  assert.ok(Array.isArray(iat) && iat.length >= 1, 'the IAT is read');
+  assert.ok(iat.every((e) => typeof e.rva === 'number' && /.+!.+/.test(e.name)), 'each slot has an rva and a dll!name');
+  if (r.json.result.machine !== 'x86-64') return;
+  const d = run('disasm', process.execPath, '--count', '1500');
+  assert.equal(d.code, 0);
+  // the annotation only shows in --text; here assert the IAT lookup data is sound: at least
+  // one import is a well-known kernel/ntdll symbol
+  assert.ok(iat.some((e) => /KERNEL32!|ntdll!|ADVAPI32!/i.test(e.name)), iat.slice(0, 3).map((e) => e.name).join(','));
+});
+
 test('every record has the same spine', () => {
   const asar = path.join(tmp, 'demo.asar');
   for (const rec of [run('detect', asar).json, run('app', asar).json]) {
