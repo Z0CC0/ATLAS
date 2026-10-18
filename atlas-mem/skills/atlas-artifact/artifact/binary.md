@@ -183,11 +183,15 @@ that merges from two paths (a phi) is handled correctly through the register var
 path materialises its value into the register and the merge reads it, with the right kill
 semantics — no stale value crosses the join.
 
+A dead-store elimination pass then removes a spill `X = expr;` whose value every reader
+inlined (so X is read nowhere else) when the right-hand side has no call, with register names
+canonicalised so a value spilled as `rax` and read as `eax` is kept. This drops the leftover
+spill noise and the dead parts of the compiler's boilerplate.
+
 What `cfg` does not do: an indirect jump or call (through a register, a jump table, a
-virtual call) has no resolved target, so a block only it reaches is missing. A phi value is
-materialised on each path, not inlined across the join (inlining there would need a dead-store
-elimination pass). The field names are offsets, not a reconstructed struct with real member
-types and names — that stays the frontier.
+virtual call) has no resolved target, so a block only it reaches is missing. The field names
+are offsets, not a reconstructed struct with real member types and names — that stays the
+frontier.
 
 ## Android: `dex`
 

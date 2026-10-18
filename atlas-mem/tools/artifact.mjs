@@ -45,7 +45,7 @@ import { inferTypes } from './artifact-types.mjs';
 import { readWasm, liftWasm } from './artifact-wasm.mjs';
 import { readEvm, lift as liftEvm } from './artifact-evm.mjs';
 import { readPcap, summarise as summarisePcap } from './artifact-pcap.mjs';
-import { recoverFrame } from './artifact-frame.mjs';
+import { recoverFrame, eliminateDeadStores } from './artifact-frame.mjs';
 import { liveness, withAliases, valueFlow } from './artifact-dataflow.mjs';
 import { observe } from './artifact-run.mjs';
 
@@ -1052,7 +1052,7 @@ function cmdCfg(path) {
     const liftAt = (b) => liftX86Block(b.insns, sym, liveAt(b), vf.inEnv.get(b.start), vf.noSpill.get(b.start));
     body = flags.goto ? liftX86Fn(cfg, 0, sym) : structurize(cfg, 0, liftAt);
     const fr = recoverFrame(body);
-    body = fr.body;
+    body = eliminateDeadStores(fr.body);
     rec.result.locals = fr.locals;
     const ti = inferTypes(cfg, sym);
     rec.result.types = ti.regTypes;

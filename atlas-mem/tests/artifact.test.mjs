@@ -14,7 +14,7 @@ import { inferTypes, protoFor, signatureText } from '../tools/artifact-types.mjs
 import { readWasm, liftWasm } from '../tools/artifact-wasm.mjs';
 import { readEvm, lift as liftEvm, selectors as evmSelectors, decode as evmDecode } from '../tools/artifact-evm.mjs';
 import { readPcap, summarise as summarisePcap } from '../tools/artifact-pcap.mjs';
-import { recoverFrame } from '../tools/artifact-frame.mjs';
+import { recoverFrame, eliminateDeadStores } from '../tools/artifact-frame.mjs';
 import { liveness, defsUses, withAliases, valueFlow } from '../tools/artifact-dataflow.mjs';
 import { liftBlock as liftX86Block } from '../tools/artifact-lift-x86.mjs';
 
@@ -942,6 +942,22 @@ test('the pcap command runs end to end and detect routes to it', () => {
   assert.match(r.out, /tcp 3/);
   assert.match(r.out, /10\.0\.0\.1:12345 -> 10\.0\.0\.2:80/);
   assert.equal(run('detect', p).json.result.format, 'pcap');
+});
+
+test('dead-store elimination drops an unused pure spill, keeps live and side-effecting ones', () => {
+  const body = [
+    'void func() {',
+    '  rbx = (rsi + 2);',       // dead: rbx read nowhere -> removed
+    '  rax = (rsi + 1);',       // live: read later as eax (canonical) -> kept
+    '  rdx = alloc(rcx);',      // has a call: kept even though rdx is unused
+    '  if (eax == 0) {',        // reads eax == rax
+    '  }',
+    '}',
+  ].join('\n');
+  const out = eliminateDeadStores(body);
+  assert.ok(!/rbx = /.test(out), 'the dead store is removed');
+  assert.ok(/rax = \(rsi \+ 1\);/.test(out), 'the value read later as eax is kept');
+  assert.ok(/rdx = alloc\(rcx\);/.test(out), 'a store with a call side effect is kept');
 });
 
 test('frame recovery names stack slots and annotates the boilerplate', () => {

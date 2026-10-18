@@ -43,4 +43,44 @@ function recoverFrame(body) {
   return { body: lines.join('\n'), locals: order };
 }
 
-export { recoverFrame };
+// sub-register -> canonical 64-bit name, so a spill written `rax = …` and read later as `eax`
+// is counted as the same variable (and not wrongly deleted)
+const CANON = {};
+for (const [q, d, w, b] of [
+  ['rax', 'eax', 'ax', 'al'], ['rcx', 'ecx', 'cx', 'cl'], ['rdx', 'edx', 'dx', 'dl'], ['rbx', 'ebx', 'bx', 'bl'],
+  ['rsi', 'esi', 'si', 'sil'], ['rdi', 'edi', 'di', 'dil'], ['rbp', 'ebp', 'bp', 'bpl'], ['rsp', 'esp', 'sp', 'spl'],
+]) { for (const r of [q, d, w, b]) CANON[r] = q; }
+for (let i = 8; i <= 15; i += 1) { const q = 'r' + i; for (const r of [q, q + 'd', q + 'w', q + 'b']) CANON[r] = q; }
+const canonId = (t) => CANON[t] || t;
+
+/**
+ * Dead-store elimination over the structured body. A simple assignment `X = EXPR;` whose
+ * right-hand side has no call (so it has no side effect) and whose variable X is read nowhere
+ * else in the function is removed — it is a spill that every reader inlined, or a value never
+ * used. Register names are canonicalised so `rax = …` read later as `eax` is kept. Run to a
+ * fixpoint, since removing one dead store can make another dead. Comments and the condition
+ * lines count as reads, so anything still referenced is kept.
+ */
+function eliminateDeadStores(body) {
+  let lines = body.split('\n');
+  for (let pass = 0; pass < 6; pass += 1) {
+    const count = {};
+    for (const m of lines.join('\n').matchAll(/\b([a-z_][a-z0-9_]*)\b/g)) { const c = canonId(m[1]); count[c] = (count[c] || 0) + 1; }
+    let removed = false;
+    const keep = [];
+    for (const line of lines) {
+      const m = /^\s*([a-z_][a-z0-9_]*) = (.+);\s*$/.exec(line);
+      if (m) {
+        const lhs = canonId(m[1]); const rhs = m[2];
+        const pure = !/[a-z_][a-z0-9_]*\s*\(/.test(rhs); // no function call on the rhs
+        if (pure && count[lhs] === 1) { removed = true; continue; } // defined, read nowhere: dead
+      }
+      keep.push(line);
+    }
+    lines = keep;
+    if (!removed) break;
+  }
+  return lines.join('\n');
+}
+
+export { recoverFrame, eliminateDeadStores };
