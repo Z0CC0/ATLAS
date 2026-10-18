@@ -14,6 +14,7 @@ node <plugin>/tools/artifact.mjs bin    <file.exe | .dll | .node | ELF | Mach-O>
 node <plugin>/tools/artifact.mjs cil    <file.dll | .exe> [--type <name>] [--method <name>] [--max 40] [--pseudo]
 node <plugin>/tools/artifact.mjs disasm <file.exe | .dll | ELF | Mach-O> [--at <hexoff>] [--count 60]
 node <plugin>/tools/artifact.mjs cfg    <file.exe | ELF | Mach-O> [--at <hexoff>] [--budget 8192] [--pseudo]
+node <plugin>/tools/artifact.mjs dex    <file.apk | .dex> [--class <name>] [--method <name>] [--max 40] [--pseudo]
 node <plugin>/tools/artifact.mjs fuses  <app.exe | installed folder>
 node <plugin>/tools/artifact.mjs compare <app A> <app B> [--all]
 node <plugin>/tools/artifact.mjs observe <installed folder | exe> --yes [--seconds 12]

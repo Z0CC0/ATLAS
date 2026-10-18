@@ -114,7 +114,7 @@ function decodeInsns(u, n, resolve) {
   }
   return { instructions: out, complete, stoppedAt, units: i };
 }
-function rel(i, d) { const t = i + d; return `+${d} (${t >= 0 ? '0x' + (t * 2).toString(16) : t})`; }
+function rel(i, d) { return 'L_' + ((i + d) * 2).toString(16); }
 function hexh(v, op) { return '0x' + v.toString(16) + (op === 0x15 || op === 0x19 ? '0000' : ''); }
 
 // ---------------------------------------------------------------- DEX container
@@ -185,7 +185,7 @@ function readDex(buf, opts) {
           attempted += 1;
           const d = decodeInsns((idx) => buf.readUInt16LE(insnsOff + idx * 2), insnsSize, resolve);
           if (d.complete) full += 1; else if (d.stoppedAt) unknown.add(d.stoppedAt);
-          result.decoded.push({ method: mn, registers, units: insnsSize, count: d.instructions.length, complete: d.complete, stoppedAt: d.stoppedAt, instructions: d.instructions });
+          result.decoded.push({ method: mn, registers, units: insnsSize, count: d.instructions.length, complete: d.complete, stoppedAt: d.stoppedAt, instructions: d.instructions, pseudo: (opts && opts.pseudo) ? liftDalvik(d.instructions) : undefined });
         }
       };
       readMethods(dm); if (!result.decodedTruncated) readMethods(vm);
@@ -221,4 +221,86 @@ function dexEntriesFromZip(buf) {
   return out;
 }
 
-export { readDex, decodeInsns, dexEntriesFromZip, OPS };
+/**
+ * Lift a decoded Dalvik method to readable pseudo-Java. Our own, over our own DEX reader.
+ * Dalvik is register-based with its pool indices already resolved to names, so the lift is a
+ * forward substitution over the registers: a register holds the expression last written to
+ * it, substituted into later uses; a field or array store, an invoke whose result nobody
+ * takes, a return and a throw are the statements. `new-instance` + `invoke-direct <init>`
+ * fold into `new Type(args)`; `invoke` + `move-result` folds the call into the destination.
+ * Branch targets get a label and a `goto`; no if/while structuring. Nothing is executed.
+ */
+const BINJ = { add: '+', sub: '-', mul: '*', div: '/', rem: '%', and: '&', or: '|', xor: '^', shl: '<<', shr: '>>', ushr: '>>>' };
+const IFJ = { 'if-eq': '==', 'if-ne': '!=', 'if-lt': '<', 'if-ge': '>=', 'if-gt': '>', 'if-le': '<=', 'if-eqz': '==', 'if-nez': '!=', 'if-ltz': '<', 'if-gez': '>=', 'if-gtz': '>', 'if-lez': '<=' };
+const shortType = (d) => { if (!d) return d; let s = d; let arr = ''; while (s[0] === '[') { arr += '[]'; s = s.slice(1); } if (s[0] === 'L') s = s.slice(1, -1).split('/').pop(); else s = ({ V: 'void', Z: 'boolean', B: 'byte', S: 'short', C: 'char', I: 'int', J: 'long', F: 'float', D: 'double' }[s] || s); return s + arr; };
+const methShort = (ref) => String(ref).split('.').pop();
+const fieldShort = (ref) => String(ref).split('.').pop().split(':')[0];
+const classOf = (ref) => shortType(String(ref).split(/;?\./)[0] + (String(ref).includes(';') ? ';' : ''));
+
+function liftDalvik(instructions) {
+  const env = new Map();
+  const out = [];
+  const val = (r) => (env.has(r) ? env.get(r) : r);
+  const labels = new Set();
+  for (const ins of instructions) { const m = /\bL_([0-9a-f]+)\b/.exec(ins.text); if (m && /^(if-|goto)/.test(ins.op)) labels.add(parseInt(m[1], 16)); }
+  const newInst = new Map();
+  for (let k = 0; k < instructions.length; k += 1) {
+    const ins = instructions[k]; const byte = ins.off * 2;
+    if (labels.has(byte)) { for (const [r, e] of env) if (e !== r) out.push({ off: ins.off, text: `${r} = ${e};` }); env.clear(); out.push({ off: ins.off, text: `L_${byte.toString(16)}:` }); }
+    const op = ins.op; const rest = ins.text.slice(ins.op.length).trim();
+    const regs = [...rest.matchAll(/v(\d+)/g)].map((x) => 'v' + x[1]);
+    const label = (/(L_[0-9a-f]+)/.exec(rest) || [])[1];
+    const strM = /"((?:[^"\\]|\\.)*)"/.exec(rest);
+    const immM = /#(-?(?:0x)?[0-9a-fA-F]+)/.exec(rest);
+    const refM = /,\s*([\[A-Za-z][\w$/;.:<>\[\]]*)\s*$/.exec(rest) || (op === 'new-instance' || op === 'const-class' || op === 'check-cast' ? /,\s*(\S+)\s*$/.exec(rest) : null);
+    const ref = refM ? refM[1] : null;
+    const push = (t) => out.push({ off: ins.off, text: t });
+    const emit = () => { /* flush a pending invoke with no result */ };
+    if (op === 'nop' || /^monitor-/.test(op)) continue;
+    if (op === 'const-string') { env.set(regs[0], strM ? '"' + strM[1] + '"' : '""'); continue; }
+    if (op === 'const-class') { env.set(regs[0], shortType(ref) + '.class'); continue; }
+    if (/^const/.test(op)) { env.set(regs[0], immM ? immM[1].replace('0x', '0x') : '0'); continue; }
+    if (/^move-result/.test(op) || op === 'move-exception') { if (!env.has('$ret')) env.set(regs[0], op === 'move-exception' ? 'ex' : '$result'); else { env.set(regs[0], env.get('$ret')); env.delete('$ret'); } continue; }
+    if (/^move/.test(op)) { env.set(regs[0], val(regs[1])); continue; }
+    if (op === 'return-void') { push('return;'); continue; }
+    if (/^return/.test(op)) { push(`return ${val(regs[0])};`); continue; }
+    if (op === 'throw') { push(`throw ${val(regs[0])};`); continue; }
+    if (op === 'check-cast') { env.set(regs[0], `((${shortType(ref)})${val(regs[0])})`); continue; }
+    if (op === 'instance-of') { env.set(regs[0], `(${val(regs[1])} instanceof ${shortType(ref)})`); continue; }
+    if (op === 'array-length') { env.set(regs[0], `${val(regs[1])}.length`); continue; }
+    if (op === 'new-instance') { newInst.set(regs[0], shortType(ref)); env.set(regs[0], `new ${shortType(ref)}`); continue; }
+    if (op === 'new-array') { env.set(regs[0], `new ${shortType(ref).replace('[]', '')}[${val(regs[1])}]`); continue; }
+    if (/^aget/.test(op)) { env.set(regs[0], `${val(regs[1])}[${val(regs[2])}]`); continue; }
+    if (/^aput/.test(op)) { push(`${val(regs[1])}[${val(regs[2])}] = ${val(regs[0])};`); continue; }
+    if (/^iget/.test(op)) { env.set(regs[0], `${val(regs[1])}.${fieldShort(ref)}`); continue; }
+    if (/^iput/.test(op)) { push(`${val(regs[1])}.${fieldShort(ref)} = ${val(regs[0])};`); continue; }
+    if (/^sget/.test(op)) { env.set(regs[0], `${classOf(ref)}.${fieldShort(ref)}`); continue; }
+    if (/^sput/.test(op)) { push(`${classOf(ref)}.${fieldShort(ref)} = ${val(regs[0])};`); continue; }
+    if (/^invoke/.test(op)) {
+      const isStatic = /static/.test(op); const method = methShort(ref);
+      let expr;
+      if (!isStatic && method === '<init>' && regs.length && newInst.has(regs[0])) { expr = `new ${newInst.get(regs[0])}(${regs.slice(1).map(val).join(', ')})`; env.set(regs[0], expr); newInst.delete(regs[0]); continue; }
+      if (isStatic) expr = `${classOf(ref)}.${method}(${regs.map(val).join(', ')})`;
+      else expr = `${val(regs[0])}.${method}(${regs.slice(1).map(val).join(', ')})`;
+      const next = instructions[k + 1];
+      if (next && /^move-result/.test(next.op)) env.set('$ret', expr); else push(`${expr};`);
+      continue;
+    }
+    const base = op.split('-')[0];
+    if (BINJ[base] && /2addr/.test(op)) { env.set(regs[0], `(${val(regs[0])} ${BINJ[base]} ${val(regs[1])})`); continue; }
+    if (BINJ[base] && /lit/.test(op)) { env.set(regs[0], base === 'rsub' ? `(${immM ? immM[1] : '0'} - ${val(regs[1])})` : `(${val(regs[1])} ${BINJ[base]} ${immM ? immM[1] : '0'})`); continue; }
+    if (op === 'rsub-int' || op === 'rsub-int/lit8') { env.set(regs[0], `(${immM ? immM[1] : '0'} - ${val(regs[1])})`); continue; }
+    if (BINJ[base]) { env.set(regs[0], `(${val(regs[1])} ${BINJ[base]} ${val(regs[2])})`); continue; }
+    if (/^neg-/.test(op)) { env.set(regs[0], `(-${val(regs[1])})`); continue; }
+    if (/^not-/.test(op)) { env.set(regs[0], `(~${val(regs[1])})`); continue; }
+    if (/-to-/.test(op)) { env.set(regs[0], `(${op.split('-to-')[1]})${val(regs[1])}`); continue; }
+    if (/^cmp/.test(op)) { env.set(regs[0], `cmp(${val(regs[1])}, ${val(regs[2])})`); continue; }
+    if (op === 'goto' || /^goto/.test(op)) { push(`goto ${label};`); continue; }
+    if (IFJ[op]) { const z = /z$/.test(op); const cond = z ? `${val(regs[0])} ${IFJ[op]} 0` : `${val(regs[0])} ${IFJ[op]} ${val(regs[1])}`; push(`if (${cond}) goto ${label};`); continue; }
+    void emit;
+    push(`// ${ins.text}`);
+  }
+  return out;
+}
+
+export { readDex, decodeInsns, dexEntriesFromZip, liftDalvik, OPS };

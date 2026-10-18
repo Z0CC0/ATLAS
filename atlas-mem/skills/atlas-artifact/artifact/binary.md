@@ -149,8 +149,17 @@ is no length to get wrong. Coverage is how many method bodies decoded fully, wit
 unknown opcode listed. Measured on a real DEX (the Android API compiled to Dalvik, 6,376
 classes, 63,630 methods): 55,481 method bodies, 100%, no unknown opcode.
 
-What is not done: the exception table and debug line info of a method, and the
-control-flow graph and pseudocode (the next slices). A register's value is not tracked.
+`dex --pseudo` lifts each method to readable pseudo-Java. Dalvik is register-based with its
+pool references already resolved, so the lift is a forward substitution over the registers:
+a register holds the expression last written to it, substituted into later uses; a
+`new-instance` plus its `<init>` fold into `new Type(args)`, an `invoke` whose result a
+`move-result` takes folds the call into the destination, a field or array store and a return
+and a throw are the statements. So the android.jar stub comes back as
+`throw new RuntimeException("Stub!");`. Branch targets get a label and a `goto`; full
+if/while structuring is not done.
+
+What is not done: the exception table and debug line info of a method, and if/while
+structuring of the pseudo-Java. A register's value is not tracked across blocks.
 
 ## Not yet
 

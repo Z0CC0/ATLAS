@@ -847,7 +847,7 @@ function cmdDex(path) {
   const unk = new Set();
   for (const dx of dexes) {
     let r;
-    try { r = readDex(dx.data, { decodeMethods: (flags['no-code'] ? () => false : want), max: Number(flags.max || 40) }); } catch (e) { out.files.push({ name: dx.name, error: e.message }); continue; }
+    try { r = readDex(dx.data, { decodeMethods: (flags['no-code'] ? () => false : want), max: Number(flags.max || 40), pseudo: Boolean(flags.pseudo) }); } catch (e) { out.files.push({ name: dx.name, error: e.message }); continue; }
     out.files.push({ name: dx.name, version: r.version, counts: r.counts });
     out.counts = out.counts || { strings: 0, types: 0, methods: 0, classes: 0 };
     out.counts.strings += r.counts.strings; out.counts.types += r.counts.types; out.counts.methods += r.counts.methods; out.counts.classes += r.counts.classes;
@@ -865,7 +865,8 @@ function cmdDex(path) {
   for (const m of out.decoded) {
     if (!m.instructions) { L.push(`\n// ${m.method} — ${m.note}`); continue; }
     L.push(`\n.method ${m.method}  (${m.units} units, ${m.registers} regs${m.complete ? '' : `, STOPPED at ${m.stoppedAt}`})`);
-    for (const ins of m.instructions) L.push(`  ${ins.off.toString(16).padStart(4, '0')}:  ${ins.text}`);
+    if (flags.pseudo && m.pseudo) for (const s of m.pseudo) L.push(/:$/.test(s.text) ? s.text : '  ' + s.text);
+    else for (const ins of m.instructions) L.push(`  ${ins.off.toString(16).padStart(4, '0')}:  ${ins.text}`);
   }
   L.push(`\nid ${rec.id}`);
   emit(rec, L.join('\n'));

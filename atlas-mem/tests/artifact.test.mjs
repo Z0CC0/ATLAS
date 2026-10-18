@@ -673,6 +673,34 @@ test('cfg --pseudo lifts a real x86-64 function to pseudo-C, or skips', () => {
   assert.ok(c.json && c.json.result.blockCount >= 1);
 });
 
+test('the Dalvik lift rebuilds pseudo-Java (new, fields, binops, branches)', async () => {
+  const dex = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-dex.mjs')).href);
+  // new-instance + <init> + const-string + throw  ->  throw new RuntimeException("Stub!");
+  let p = dex.liftDalvik([
+    { off: 0, op: 'new-instance', text: 'new-instance v1, Ljava/lang/RuntimeException;' },
+    { off: 2, op: 'const-string', text: 'const-string v2, "Stub!"' },
+    { off: 4, op: 'invoke-direct', text: 'invoke-direct {v1, v2}, Ljava/lang/RuntimeException;.<init>' },
+    { off: 7, op: 'throw', text: 'throw v1' },
+  ]);
+  assert.deepEqual(p.map((s) => s.text), ['throw new RuntimeException("Stub!");']);
+  // a binop folded into a field store
+  p = dex.liftDalvik([
+    { off: 0, op: 'add-int', text: 'add-int v0, v1, v2' },
+    { off: 1, op: 'iput', text: 'iput v0, v3, Lcom/X;.count:I' },
+  ]);
+  assert.deepEqual(p.map((s) => s.text), ['v3.count = (v1 + v2);']);
+  // an invoke whose result is taken, then returned
+  p = dex.liftDalvik([
+    { off: 0, op: 'invoke-virtual', text: 'invoke-virtual {v1}, Lcom/X;.size' },
+    { off: 3, op: 'move-result', text: 'move-result v0' },
+    { off: 4, op: 'return', text: 'return v0' },
+  ]);
+  assert.deepEqual(p.map((s) => s.text), ['return v1.size();']);
+  // a conditional branch
+  p = dex.liftDalvik([{ off: 0, op: 'if-eqz', text: 'if-eqz v0, L_8' }]);
+  assert.deepEqual(p.map((s) => s.text), ['if (v0 == 0) goto L_8;']);
+});
+
 test('every record has the same spine', () => {
   const asar = path.join(tmp, 'demo.asar');
   for (const rec of [run('detect', asar).json, run('app', asar).json]) {
