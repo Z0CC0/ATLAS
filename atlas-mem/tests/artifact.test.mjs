@@ -13,6 +13,7 @@ import { structurize, dominates, domTree, rpo } from '../tools/artifact-struct.m
 import { inferTypes, protoFor, signatureText } from '../tools/artifact-types.mjs';
 import { readWasm, liftWasm } from '../tools/artifact-wasm.mjs';
 import { readEvm, lift as liftEvm, selectors as evmSelectors, decode as evmDecode } from '../tools/artifact-evm.mjs';
+import { readPcap, summarise as summarisePcap } from '../tools/artifact-pcap.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const tool = path.join(here, '..', 'tools', 'artifact.mjs');
@@ -878,6 +879,43 @@ test('the evm command runs end to end', () => {
   assert.match(r.out, /function selectors \(1\)/);
   assert.match(r.out, /0x12345678/);
   assert.equal(run('evm', p).json.coverage.status, 'complete');
+});
+
+// Build a minimal classic pcap by hand: Ethernet / IPv4 / TCP packets.
+function makePcap() {
+  const pkt = (src, dst, sp, dp) => {
+    const eth = Buffer.from([0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 1, 0x08, 0x00]);
+    const ip = Buffer.alloc(20); ip[0] = 0x45; ip[9] = 6;
+    src.split('.').forEach((x, i) => { ip[12 + i] = +x; }); dst.split('.').forEach((x, i) => { ip[16 + i] = +x; });
+    const tcp = Buffer.alloc(20); tcp.writeUInt16BE(sp, 0); tcp.writeUInt16BE(dp, 2);
+    return Buffer.concat([eth, ip, tcp]);
+  };
+  const rec = (frame) => { const h = Buffer.alloc(16); h.writeUInt32LE(frame.length, 8); h.writeUInt32LE(frame.length, 12); return Buffer.concat([h, frame]); };
+  const gh = Buffer.alloc(24); gh.writeUInt32LE(0xa1b2c3d4, 0); gh.writeUInt16LE(2, 4); gh.writeUInt16LE(4, 6); gh.writeUInt32LE(65535, 16); gh.writeUInt32LE(1, 20);
+  return Buffer.concat([gh, rec(pkt('10.0.0.1', '10.0.0.2', 12345, 80)), rec(pkt('10.0.0.1', '10.0.0.2', 12345, 80)), rec(pkt('10.0.0.2', '10.0.0.1', 80, 12345))]);
+}
+
+test('a classic pcap decodes Ethernet/IPv4/TCP and summarises conversations', () => {
+  const cap = readPcap(makePcap());
+  assert.equal(cap.format, 'pcap');
+  assert.equal(cap.linktype, 'ethernet');
+  assert.equal(cap.packets.length, 3);
+  assert.equal(cap.packets[0].src, '10.0.0.1');
+  assert.equal(cap.packets[0].dport, 80);
+  const sum = summarisePcap(cap);
+  assert.equal(sum.protocols.tcp, 3);
+  assert.equal(sum.conversations[0].flow, '10.0.0.1:12345 -> 10.0.0.2:80 (tcp)');
+  assert.equal(sum.conversations[0].packets, 2);
+});
+
+test('the pcap command runs end to end and detect routes to it', () => {
+  const p = path.join(tmp, 'cap.pcap');
+  fs.writeFileSync(p, makePcap());
+  const r = run('pcap', p, '--text');
+  assert.equal(r.code, 0);
+  assert.match(r.out, /tcp 3/);
+  assert.match(r.out, /10\.0\.0\.1:12345 -> 10\.0\.0\.2:80/);
+  assert.equal(run('detect', p).json.result.format, 'pcap');
 });
 
 test.after(() => { try { fs.rmSync(tmp, { recursive: true, force: true }); } catch { /* windows */ } });

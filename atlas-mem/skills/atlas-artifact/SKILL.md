@@ -60,6 +60,8 @@ Everything below lives in the `artifact/` folder beside this file.
    (the `wasm` section)
    EVM bytecode, a smart contract, Ethereum, Solidity bytecode, a `.evm`, "what functions
    does this contract expose" → `binary.md` (the `evm` section)
+   a `.pcap`, a `.pcapng`, a network capture, "what's talking to what", a protocol capture →
+   `binary.md` (the `pcap` section)
    firmware → not read yet: say so in one line, and what `detect` reported.
 
 ## Boundaries

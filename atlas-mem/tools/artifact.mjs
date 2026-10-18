@@ -44,6 +44,7 @@ import { structurize } from './artifact-struct.mjs';
 import { inferTypes } from './artifact-types.mjs';
 import { readWasm, liftWasm } from './artifact-wasm.mjs';
 import { readEvm, lift as liftEvm } from './artifact-evm.mjs';
+import { readPcap, summarise as summarisePcap } from './artifact-pcap.mjs';
 import { observe } from './artifact-run.mjs';
 
 const VERSION = 1;
@@ -93,6 +94,8 @@ const MAGIC = [
   ['zip', (b) => b[0] === 0x50 && b[1] === 0x4b && (b[2] === 3 || b[2] === 5 || b[2] === 7)],
   ['wasm', (b) => b.readUInt32LE(0) === 0x6d736100],
   ['evm', (b) => (b[0] === 0x60 && (b[1] === 0x80 || b[1] === 0x60) && b[2] === 0x60 && b[3] === 0x40 && b[4] === 0x52) || /^(0x)?60(80|60)604052/i.test(b.subarray(0, 14).toString('latin1'))],
+  ['pcapng', (b) => b.readUInt32LE(0) === 0x0a0d0d0a],
+  ['pcap', (b) => [0xa1b2c3d4, 0xd4c3b2a1, 0xa1b23c4d, 0x4d3cb2a1].includes(b.readUInt32LE(0)) || [0xa1b2c3d4, 0xd4c3b2a1, 0xa1b23c4d, 0x4d3cb2a1].includes(b.readUInt32BE(0))],
   ['gzip', (b) => b[0] === 0x1f && b[1] === 0x8b],
   ['pdf', (b) => b.subarray(0, 5).toString('latin1') === '%PDF-'],
 ];
@@ -971,6 +974,38 @@ function cmdEvm(path) {
   emit(rec, L.join('\n'));
 }
 
+// ---------------------------------------------------------------- network capture
+
+function cmdPcap(path) {
+  const abs = resolve(path);
+  if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
+  const buf = readFileSync(abs);
+  let cap;
+  try { cap = readPcap(buf); } catch (e) { fail(e.message, 'unsupported'); }
+  const sum = summarisePcap(cap);
+  const max = Math.max(1, Math.min(2000, Number(flags.max || 40)));
+  const result = {
+    format: cap.format,
+    endian: cap.endian,
+    linktype: cap.linktype,
+    packetCount: cap.packets.length,
+    protocols: sum.protocols,
+    conversations: sum.conversations,
+    packets: cap.packets.slice(0, max).map((p) => ({ l3: p.l3, proto: p.proto || null, src: p.src || null, dst: p.dst || null, sport: p.sport ?? null, dport: p.dport ?? null, bytes: p.origlen ?? p.caplen ?? null })),
+  };
+  const subject = { name: basename(abs), path: abs, format: cap.format, bytes: buf.length, sha256: sha256(buf) };
+  const limitations = [
+    'decoded from the capture per the file format, not replayed; the stack decoded is Ethernet / IPv4 / IPv6 / TCP / UDP / ICMP — other link types and deeper protocols (TLS, HTTP payloads) are not parsed',
+    'payload bytes are not reassembled; a conversation is counted by packet, not by reconstructed stream',
+  ];
+  const rec = record(subject, 'pcap', { max }, result, { confidence: 'observed', coverage: { status: 'complete', scope: `${cap.packets.length} packets, ${sum.conversations.length} conversations` }, limitations });
+  const L = [`${subject.name}  ${cap.format} (${cap.endian}-endian), link ${cap.linktype}  ${cap.packets.length} packets`];
+  L.push(`\nprotocols: ${Object.entries(sum.protocols).map(([k, v]) => `${k} ${v}`).join(', ') || '(none decoded)'}`);
+  if (sum.conversations.length) { L.push('\ntop conversations:'); for (const c of sum.conversations.slice(0, 20)) L.push(`  ${c.packets.toString().padStart(6)}  ${c.flow}`); }
+  L.push(`\nid ${rec.id}`);
+  emit(rec, L.join('\n'));
+}
+
 // ---------------------------------------------------------------- control-flow graph of a function
 
 function cmdCfg(path) {
@@ -1136,7 +1171,7 @@ function cmdDetect(path) {
   if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
   const st = statSync(abs);
   const format = st.isDirectory() ? detectDir(abs) : detectFile(abs);
-  const next = { asar: 'app', 'electron-app': 'app', 'electron-install': 'app', 'node-app': 'app', sqlite: 'sqlite', 'source-map': 'map', pe: 'bin', elf: 'bin', 'mach-o': 'bin', dex: 'dex', apk: 'dex', wasm: 'wasm', evm: 'evm' }[format] || null;
+  const next = { asar: 'app', 'electron-app': 'app', 'electron-install': 'app', 'node-app': 'app', sqlite: 'sqlite', 'source-map': 'map', pe: 'bin', elf: 'bin', 'mach-o': 'bin', dex: 'dex', apk: 'dex', wasm: 'wasm', evm: 'evm', pcap: 'pcap', pcapng: 'pcap' }[format] || null;
   const subject = { name: basename(abs), path: abs, format, bytes: st.isDirectory() ? null : st.size, sha256: st.isDirectory() ? null : fileSha(abs) };
   const rec = record(subject, 'detect', {}, { format, next: next ? `node artifact.mjs ${next} "${abs}"` : null }, { coverage: { status: 'complete', scope: st.isDirectory() ? 'folder name and package.json' : 'the first 32 bytes and the extension' }, limitations: st.isDirectory() ? [] : ['a format is read from its magic bytes; a file with a wrong header is reported as unknown'] });
   emit(rec, `${format}  ${abs}${next ? `\nnext  ${rec.result.next}` : ''}`);
@@ -1145,7 +1180,7 @@ function cmdDetect(path) {
 // ---------------------------------------------------------------- main
 
 if (!command || !target || flags.help || (command === 'compare' && !positional[2])) {
-  process.stdout.write('usage: node artifact.mjs detect|app|bin|cil|disasm|cfg|dex|wasm|evm|sqlite|map|fuses <path> | compare <a> <b> | observe <folder|exe> --yes [--seconds 12] [--text] [--all] [--detail summary|full] [--page N --per 60] [--table T --limit 20] [--line L --col C] [--func name] [--pseudo]\n');
+  process.stdout.write('usage: node artifact.mjs detect|app|bin|cil|disasm|cfg|dex|wasm|evm|pcap|sqlite|map|fuses <path> | compare <a> <b> | observe <folder|exe> --yes [--seconds 12] [--text] [--all] [--detail summary|full] [--page N --per 60] [--table T --limit 20] [--line L --col C] [--func name] [--pseudo]\n');
   process.exit(command ? 2 : 0);
 }
 try {
@@ -1161,6 +1196,7 @@ try {
   else if (command === 'dex') cmdDex(target);
   else if (command === 'wasm') cmdWasm(target);
   else if (command === 'evm') cmdEvm(target);
+  else if (command === 'pcap') cmdPcap(target);
   else if (command === 'observe') await cmdObserve(target);
   else if (command === 'compare') await cmdCompare(target, positional[2]);
   else fail(`unknown command: ${command}`);

@@ -206,7 +206,18 @@ constant `PUSH` gives the jump target. A computed jump target comes off the stac
 time and is left as the expression. The names behind the selector hashes need a signature
 database, which is not shipped; the hashes are reported as-is.
 
+## Network captures: `pcap`
+
+`pcap <file>` reads a libpcap or pcapng capture: the link type and byte order from the
+header, then every packet record. It decodes the common stack — Ethernet (with VLAN tags),
+IPv4 / IPv6, TCP / UDP / ICMP — and summarises the protocol counts and the conversations
+(source and destination address and port, ordered by packet count). `--max N` caps how many
+individual packets the JSON lists. The payload bytes are not reassembled and higher
+protocols (TLS, HTTP bodies) are not parsed; a conversation is counted by packet, not by
+reconstructed stream. Useful for reversing a wire protocol from a capture without a live tap.
+
 ## Not yet
 
 Expression reconstruction's last native frontier is user-struct and full type recovery (API
-prototypes already type the call sites). Firmware and pcap are read by header only for now.
+prototypes already type the call sites). Firmware is read by header only; payload reassembly
+and higher-layer protocol decode on top of `pcap` are a later slice.
