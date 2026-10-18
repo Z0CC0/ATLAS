@@ -119,9 +119,17 @@ skeleton every decompiler builds before expressions and structuring; it is ours,
 own x86-64 and ARM64 decoders. The output is the blocks with their instructions and their
 successors (`-> if-taken L_… | fall L_…`, `(loop)` on a back-edge).
 
+`cfg --pseudo` lifts the x86-64 CFG one step further, to low-level pseudo-C. Within a block
+it folds expressions — a register holds the expression last assigned to it, substituted
+into later uses, so a `mov`/`add`/`neg` chain collapses into one statement — and it recovers
+the branch condition from the preceding `cmp`/`test` and the conditional-jump kind
+(`test esi, esi` + `je` becomes `if (esi == 0)`). A memory write is `*(addr) = …`, a call is
+`rax = sub_…(…)`, a return is `return rax;`. There is no type recovery and no cross-block
+value tracking, so registers are the variables and blocks keep `goto` labels: this is the
+honest middle ground, not clean C.
+
 What `cfg` does not do: an indirect jump or call (through a register, a jump table, a
-virtual call) has no resolved target, so a block only it reaches is missing; and this is
-the control-flow skeleton, not pseudocode. The next slices turn it into readable code:
+virtual call) has no resolved target, so a block only it reaches is missing. The next slices turn it into readable code:
 data flow / SSA to rebuild expressions, then structuring (the gotos back into if/while/for),
 then — for native — approximate types. A value is still not tracked and a call target is an
 offset, not a symbol.

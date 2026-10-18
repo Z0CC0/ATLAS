@@ -648,6 +648,31 @@ test('cfg recovers a function from a real binary, or skips', () => {
   assert.ok(c.json.limitations.some((l) => l.includes('indirect')));
 });
 
+test('the x86 lift folds expressions and recovers a branch condition', async () => {
+  const lx = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-lift-x86.mjs')).href);
+  const insns = [
+    { mnem: 'mov', text: 'mov rax, rcx' },
+    { mnem: 'add', text: 'add rax, 0x5' },
+    { mnem: 'cmp', text: 'cmp rax, rdx' },
+    { mnem: 'je', text: 'je 0x10' },
+  ];
+  const r = lx.liftBlock(insns);
+  assert.ok(r.stmts.includes('rax = (rcx + 0x5);'), r.stmts.join(' | '));
+  assert.equal(r.cond.text, '(rcx + 0x5) == rdx');
+  // a memory store, and test+jne -> != 0
+  const r2 = lx.liftBlock([{ mnem: 'mov', text: 'mov [rdi], rsi' }, { mnem: 'test', text: 'test rsi, rsi' }, { mnem: 'jne', text: 'jne 0x8' }]);
+  assert.ok(r2.stmts.includes('*(rdi) = rsi;'));
+  assert.equal(r2.cond.text, 'rsi != 0');
+});
+
+test('cfg --pseudo lifts a real x86-64 function to pseudo-C, or skips', () => {
+  const b = run('bin', process.execPath, '--compact');
+  if (!b.json || (b.json.result.machine !== 'x86-64')) return;
+  const c = run('cfg', process.execPath, '--pseudo', '--budget', '512');
+  assert.equal(c.code, 0, c.out + c.err);
+  assert.ok(c.json && c.json.result.blockCount >= 1);
+});
+
 test('every record has the same spine', () => {
   const asar = path.join(tmp, 'demo.asar');
   for (const rec of [run('detect', asar).json, run('app', asar).json]) {

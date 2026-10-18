@@ -39,6 +39,7 @@ import { readDex, dexEntriesFromZip } from './artifact-dex.mjs';
 import { decodeOne as x86decode } from './artifact-x86.mjs';
 import { decodeOne as arm64decode } from './artifact-arm64.mjs';
 import { buildCfg, formatCfg } from './artifact-cfg.mjs';
+import { liftFunction as liftX86Fn } from './artifact-lift-x86.mjs';
 import { observe } from './artifact-run.mjs';
 
 const VERSION = 1;
@@ -902,7 +903,8 @@ function cmdCfg(path) {
     'the function\'s extent is followed from the entry by recursive descent up to the byte budget; data between blocks (jump tables, constants) is not code and is not followed',
   ];
   const rec = record(subject, 'cfg', { at: flags.at || null, budget }, result, { confidence: 'derived', coverage: { status: cfg.bad ? 'partial' : 'complete', scope: `${cfg.blocks.length} basic blocks, ${cfg.instructions} instructions, ${cfg.loops} loop edge(s), from 0x${at.toString(16)}` }, limitations });
-  emit(rec, formatCfg(cfg, 0) + `\n\nid ${rec.id}`);
+  const body = (flags.pseudo && ARCH === 'x86-64') ? liftX86Fn(cfg, 0) : formatCfg(cfg, 0);
+  emit(rec, body + `\n\nid ${rec.id}`);
 }
 
 // ---------------------------------------------------------------- sqlite
