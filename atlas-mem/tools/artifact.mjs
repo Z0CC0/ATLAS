@@ -36,6 +36,9 @@ import { format as cilFormat } from './artifact-cil.mjs';
 import { disasm as x86disasm } from './artifact-x86.mjs';
 import { disasm as arm64disasm } from './artifact-arm64.mjs';
 import { readDex, dexEntriesFromZip } from './artifact-dex.mjs';
+import { decodeOne as x86decode } from './artifact-x86.mjs';
+import { decodeOne as arm64decode } from './artifact-arm64.mjs';
+import { buildCfg, formatCfg } from './artifact-cfg.mjs';
 import { observe } from './artifact-run.mjs';
 
 const VERSION = 1;
@@ -867,6 +870,41 @@ function cmdDex(path) {
   emit(rec, L.join('\n'));
 }
 
+// ---------------------------------------------------------------- control-flow graph of a function
+
+function cmdCfg(path) {
+  const abs = resolve(path);
+  if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
+  const buf = readFileSync(abs);
+  let r;
+  try { r = readBinary(buf); } catch (e) { fail(e.message, 'unsupported'); }
+  const ARCH = r.machine || r.cpu;
+  if (ARCH !== 'x86-64' && ARCH !== 'arm64') fail(`${ARCH || r.format} not supported; x86-64 and arm64`, 'unsupported');
+  const secs = codeSections(r);
+  if (!secs.length) fail('no code section found', 'not_found');
+  let entryOff = null;
+  if (r.format === 'pe' && r.entry) { const s = r.sections.find((x) => r.entry >= x.vaddr && r.entry < x.vaddr + Math.max(x.vsize, x.rawSize)); if (s) entryOff = s.raw + (r.entry - s.vaddr); }
+  else if (r.format === 'elf' && r.entry) { const s = r.sections.find((x) => r.entry >= x.addr && x.addr && r.entry < x.addr + x.size); if (s) entryOff = s.off + (r.entry - s.addr); }
+  const textSec = secs.find((s) => s.name === '.text' || s.name === '__text') || secs[0];
+  const at = flags.at ? parseInt(String(flags.at), 16) : (entryOff !== null ? entryOff : textSec.off);
+  const secOf = secs.find((s) => at >= s.off && at < s.off + s.size) || textSec;
+  const end = Math.min(secOf.off + secOf.size, buf.length);
+  const budget = Math.max(16, Math.min(65536, Number(flags.budget || 8192)));
+  const decodeAt = ARCH === 'x86-64'
+    ? (pos) => { const d = x86decode(buf, pos, end); return d ? { addr: pos, len: d.len, text: d.text, mnem: d.mnem, bad: d.bad } : null; }
+    : (pos) => { if (pos + 4 > end) return null; const d = arm64decode(buf.readUInt32LE(pos)); return { addr: pos, len: 4, text: d.text, mnem: d.mnem, bad: d.bad }; };
+  const cfg = buildCfg(decodeAt, at, end, ARCH, budget);
+  const result = { arch: ARCH, functionAt: at, blocks: cfg.blocks.map((b) => ({ start: b.start, instructions: b.insns.length, successors: b.succ })), blockCount: cfg.blocks.length, instructions: cfg.instructions, loopEdges: cfg.loops };
+  const subject = { name: basename(abs), path: abs, format: 'cfg', bytes: buf.length, sha256: sha256(buf) };
+  const limitations = [
+    'control flow recovered from direct branches only: an indirect jump or call (through a register, a jump table or a virtual call) has no resolved target, so a block it leads to may be missing',
+    'this is the control-flow skeleton, not pseudocode: expression reconstruction (data flow / SSA) and structuring into if/while/for are the next slices; a value is not tracked and a call target is an offset, not a symbol',
+    'the function\'s extent is followed from the entry by recursive descent up to the byte budget; data between blocks (jump tables, constants) is not code and is not followed',
+  ];
+  const rec = record(subject, 'cfg', { at: flags.at || null, budget }, result, { confidence: 'derived', coverage: { status: cfg.bad ? 'partial' : 'complete', scope: `${cfg.blocks.length} basic blocks, ${cfg.instructions} instructions, ${cfg.loops} loop edge(s), from 0x${at.toString(16)}` }, limitations });
+  emit(rec, formatCfg(cfg, 0) + `\n\nid ${rec.id}`);
+}
+
 // ---------------------------------------------------------------- sqlite
 
 async function cmdSqlite(path) {
@@ -982,7 +1020,7 @@ function cmdDetect(path) {
 // ---------------------------------------------------------------- main
 
 if (!command || !target || flags.help || (command === 'compare' && !positional[2])) {
-  process.stdout.write('usage: node artifact.mjs detect|app|bin|cil|disasm|dex|sqlite|map|fuses <path> | compare <a> <b> | observe <folder|exe> --yes [--seconds 12] [--text] [--all] [--detail summary|full] [--page N --per 60] [--table T --limit 20] [--line L --col C]\n');
+  process.stdout.write('usage: node artifact.mjs detect|app|bin|cil|disasm|cfg|dex|sqlite|map|fuses <path> | compare <a> <b> | observe <folder|exe> --yes [--seconds 12] [--text] [--all] [--detail summary|full] [--page N --per 60] [--table T --limit 20] [--line L --col C]\n');
   process.exit(command ? 2 : 0);
 }
 try {
@@ -994,6 +1032,7 @@ try {
   else if (command === 'bin') cmdBin(target);
   else if (command === 'cil') cmdCil(target);
   else if (command === 'disasm') cmdDisasm(target);
+  else if (command === 'cfg') cmdCfg(target);
   else if (command === 'dex') cmdDex(target);
   else if (command === 'observe') await cmdObserve(target);
   else if (command === 'compare') await cmdCompare(target, positional[2]);

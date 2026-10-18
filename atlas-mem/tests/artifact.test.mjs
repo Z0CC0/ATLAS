@@ -616,6 +616,38 @@ test('cil --pseudo lifts a real assembly without crashing, when one is installed
   assert.ok(m.pseudo.some((s) => /throw new .*ArgumentNullException/.test(s.text)), m.pseudo.map((s) => s.text).join(' | '));
 });
 
+test('the CFG builder splits blocks, resolves direct edges and finds a loop', async () => {
+  const cfg = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-cfg.mjs')).href);
+  // 0: je 0x8 (cond, fall to 4) ; 4: jmp -0x4 (back to 0 -> loop) ; 8: ret
+  const prog = {
+    0: { addr: 0, len: 4, mnem: 'je', text: 'je 0x8', bad: false },
+    4: { addr: 4, len: 4, mnem: 'jmp', text: 'jmp -0x4', bad: false },
+    8: { addr: 8, len: 4, mnem: 'ret', text: 'ret', bad: false },
+  };
+  const g = cfg.buildCfg((pos) => prog[pos] || null, 0, 12, 'x86-64', 8192);
+  assert.equal(g.blocks.length, 3);
+  assert.equal(g.loops, 1);
+  const b0 = g.blocks.find((b) => b.start === 0);
+  assert.deepEqual(b0.succ.map((s) => s.to).sort((a, b) => a - b), [4, 8]);
+  const b4 = g.blocks.find((b) => b.start === 4);
+  assert.equal(b4.succ[0].to, 0);
+  assert.equal(b4.succ[0].loop, true);
+  const txt = cfg.formatCfg(g, 0);
+  assert.ok(/L_0:/.test(txt) && /loop/.test(txt) && /return/.test(txt));
+});
+
+test('cfg recovers a function from a real binary, or skips', () => {
+  const b = run('bin', process.execPath, '--compact');
+  const arch = b.json && b.json.result && (b.json.result.machine || b.json.result.cpu);
+  if (arch !== 'x86-64') return;
+  const c = run('cfg', process.execPath, '--budget', '512');
+  assert.equal(c.code, 0, c.out + c.err);
+  assert.equal(c.json.result.arch, 'x86-64');
+  assert.ok(c.json.result.blockCount >= 1);
+  assert.ok(c.json.result.instructions >= 1);
+  assert.ok(c.json.limitations.some((l) => l.includes('indirect')));
+});
+
 test('every record has the same spine', () => {
   const asar = path.join(tmp, 'demo.asar');
   for (const rec of [run('detect', asar).json, run('app', asar).json]) {

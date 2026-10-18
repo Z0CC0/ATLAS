@@ -109,8 +109,22 @@ their operands (`stp x29, x30, [sp, -0x10]!`, `adrp x3, …` then `ldr x3, [x3, 
 The coverage is the share of words that are an allocated encoding; on a real ARM64 binary,
 100% allocated, nothing unaligned, the prologue and GOT-load patterns read back correctly.
 
-What is not done here (either architecture): a value is not tracked, a call target is an
-offset not a symbol, the control-flow graph and pseudocode are the next slices.
+### The control-flow graph: `cfg`
+
+`cfg <file> [--at <hexoffset>]` recovers one function's control-flow graph from the
+disassembly: from the entry it follows the flow (fall-through and the resolved direct
+branch targets) by recursive descent, splits the instructions into basic blocks at every
+branch and branch target, draws the edges, and marks a back-edge as a loop. This is the
+skeleton every decompiler builds before expressions and structuring; it is ours, over our
+own x86-64 and ARM64 decoders. The output is the blocks with their instructions and their
+successors (`-> if-taken L_… | fall L_…`, `(loop)` on a back-edge).
+
+What `cfg` does not do: an indirect jump or call (through a register, a jump table, a
+virtual call) has no resolved target, so a block only it reaches is missing; and this is
+the control-flow skeleton, not pseudocode. The next slices turn it into readable code:
+data flow / SSA to rebuild expressions, then structuring (the gotos back into if/while/for),
+then — for native — approximate types. A value is still not tracked and a call target is an
+offset, not a symbol.
 
 ## Android: `dex`
 
