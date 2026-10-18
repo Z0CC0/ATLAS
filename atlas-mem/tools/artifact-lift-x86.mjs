@@ -33,7 +33,22 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
   const FRAME = /^(rsp|rbp|esp|ebp|sp|bp|spl|bpl)$/; // the frame base stays symbolic for frame recovery
   const subAddr = (inner) => inner.replace(/\b([re]?[abcd]x|[re]?[sd]i|[re]?[sb]p|r\d+[dwb]?|[abcd]l|sil|dil|bpl|spl)\b/g, (t) => (!FRAME.test(t) && env.has(t) ? env.get(t) : t));
   const mem = (t) => subAddr(t.slice(1, -1));
-  const val = (t) => { if (t == null) return '?'; if (isMem(t)) return `*(${mem(t)})`; if (env.has(t)) return env.get(t); return t; };
+  // render a memory dereference as array / field access when the address has that shape:
+  // [base+index*scale] -> base[index], [base+disp] -> base->field_disp, [base] -> *base.
+  // the frame base (rsp/rbp) and rip-relative globals are left flat for the other passes.
+  const sub1 = (r) => (!FRAME.test(r) && env.has(r) ? env.get(r) : r);
+  const deref = (t) => {
+    const inner = t.slice(1, -1);
+    const m = /^([a-z][a-z0-9]*)?(?:\+([a-z][a-z0-9]*)\*(\d+))?([+-]0x[0-9a-f]+)?$/.exec(inner);
+    const base = m && m[1];
+    if (!base || FRAME.test(base) || base === 'rip') return `*(${subAddr(inner)})`;
+    const idx = m[2], disp = m[4];
+    const bv = sub1(base); const B = /[ +*/^&|-]/.test(bv) ? `(${bv})` : bv;
+    if (idx) { if (disp) return `*(${subAddr(inner)})`; return `${B}[${sub1(idx)}]`; }
+    if (disp) return `${B}->field_${disp.replace('+0x', '').replace('-0x', 'm')}`;
+    return `*${B}`;
+  };
+  const val = (t) => { if (t == null) return '?'; if (isMem(t)) return deref(t); if (env.has(t)) return env.get(t); return t; };
   for (let k = 0; k < insns.length; k += 1) {
     const ins = insns[k]; const { mnem, ops } = parse(ins.text);
     const last = k === insns.length - 1;
@@ -41,12 +56,12 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
     if (/^j/.test(mnem) && last) break; // the terminator; handled by the condition below
     if (mnem === 'ret' || mnem === 'retf') break;
     if (mnem === 'mov' || mnem === 'movzx' || mnem === 'movsx' || mnem === 'movsxd') {
-      const [dst, src] = ops; if (isMem(dst)) stmts.push(`*(${mem(dst)}) = ${val(src)};`); else env.set(dst, val(src)); continue;
+      const [dst, src] = ops; if (isMem(dst)) stmts.push(`${deref(dst)} = ${val(src)};`); else env.set(dst, val(src)); continue;
     }
     if (mnem === 'lea') { const [dst, m] = ops; env.set(dst, `&(${subAddr(m.slice(1, -1))})`); continue; }
     if ((mnem === 'xor' || mnem === 'sub') && ops.length === 2 && ops[0] === ops[1] && !isMem(ops[0])) { env.set(ops[0], '0'); continue; } // the zeroing idiom
-    if (BIN[mnem] && ops.length >= 2) { const [dst, src] = ops; const e = `(${val(dst)} ${BIN[mnem]} ${val(src)})`; if (isMem(dst)) stmts.push(`*(${mem(dst)}) = ${e};`); else env.set(dst, e); continue; }
-    if (mnem === 'inc' || mnem === 'dec') { const d = ops[0]; const e = `(${val(d)} ${mnem === 'inc' ? '+' : '-'} 1)`; if (isMem(d)) stmts.push(`*(${mem(d)}) = ${e};`); else env.set(d, e); continue; }
+    if (BIN[mnem] && ops.length >= 2) { const [dst, src] = ops; const e = `(${val(dst)} ${BIN[mnem]} ${val(src)})`; if (isMem(dst)) stmts.push(`${deref(dst)} = ${e};`); else env.set(dst, e); continue; }
+    if (mnem === 'inc' || mnem === 'dec') { const d = ops[0]; const e = `(${val(d)} ${mnem === 'inc' ? '+' : '-'} 1)`; if (isMem(d)) stmts.push(`${deref(d)} = ${e};`); else env.set(d, e); continue; }
     if (mnem === 'neg') { env.set(ops[0], `(-${val(ops[0])})`); continue; }
     if (mnem === 'not') { env.set(ops[0], `(~${val(ops[0])})`); continue; }
     if (mnem === 'cmp') { cmp = { a: val(ops[0]), b: val(ops[1]), test: false }; continue; }

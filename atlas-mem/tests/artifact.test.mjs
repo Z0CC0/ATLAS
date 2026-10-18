@@ -669,8 +669,18 @@ test('the x86 lift folds expressions and recovers a branch condition', async () 
   assert.equal(r.cond.text, '(rcx + 0x5) == rdx');
   // a memory store, and test+jne -> != 0
   const r2 = lx.liftBlock([{ mnem: 'mov', text: 'mov [rdi], rsi' }, { mnem: 'test', text: 'test rsi, rsi' }, { mnem: 'jne', text: 'jne 0x8' }]);
-  assert.ok(r2.stmts.includes('*(rdi) = rsi;'));
+  assert.ok(r2.stmts.includes('*rdi = rsi;'), r2.stmts.join(' | '));
   assert.equal(r2.cond.text, 'rsi != 0');
+});
+
+test('the lift renders array and field access from the address shape', async () => {
+  const lx = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-lift-x86.mjs')).href);
+  const load = lx.liftBlock([{ mnem: 'mov', text: 'mov rax, [r8+rcx*8]' }], null, new Set(['rax']));
+  assert.ok(load.stmts.includes('rax = r8[rcx];'), load.stmts.join(' | '));
+  const field = lx.liftBlock([{ mnem: 'mov', text: 'mov rax, [rcx+0x70]' }], null, new Set(['rax']));
+  assert.ok(field.stmts.includes('rax = rcx->field_70;'), field.stmts.join(' | '));
+  const store = lx.liftBlock([{ mnem: 'mov', text: 'mov [r8+rax*8], rdx' }]);
+  assert.ok(store.stmts.includes('r8[rax] = rdx;'), store.stmts.join(' | '));
 });
 
 test('cfg --pseudo lifts a real x86-64 function to pseudo-C, or skips', () => {
@@ -989,7 +999,7 @@ test('value forwarding carries a value along a linear chain, into a block that u
     { start: 3, insns: [{ addr: 3, len: 3, text: 'mov rax, rbx', mnem: 'mov' }, { addr: 6, len: 1, text: 'ret', mnem: 'ret' }], succ: [] },
   ] };
   const vf = valueFlow(cfg, (insns, ie) => liftX86Block(insns, null, null, ie));
-  assert.equal(vf.inEnv.get(3).get('rbx'), '*(rdx)', 'rbx forwarded into the block that reads it');
+  assert.equal(vf.inEnv.get(3).get('rbx'), '*rdx', 'rbx forwarded into the block that reads it');
   assert.ok(vf.noSpill.get(0).has('rbx'), 'the single consuming successor lets the def block skip the spill');
 });
 

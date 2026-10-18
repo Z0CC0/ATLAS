@@ -170,12 +170,18 @@ The zeroing idiom `xor r, r` / `sub r, r` reads as `r = 0`. The passes are conse
 unmodelled instruction marks its registers used and nothing defined, so a write is dropped
 only when the register is provably dead.
 
+Memory access reads as array and field access, from the shape of the address: `[base+index*
+scale]` becomes `base[index]`, `[base+disp]` becomes `base->field_<disp>`, `[base]` becomes
+`*base`. This names the offsets off a pointer as fields and the scaled index as an array
+subscript — the observed layout, not an invented named type; the frame base and rip-relative
+globals are left flat for the other passes.
+
 What `cfg` does not do: an indirect jump or call (through a register, a jump table, a
 virtual call) has no resolved target, so a block only it reaches is missing. Forwarding is
-limited to linear chains: a value that merges from two paths (a true phi) is not forwarded
-across the join — it is materialised on each path and read as a variable, which is correct
-but less compact. Full SSA with phi nodes needs the lift rebuilt on width-canonical registers
-and is not done; user structs are not recovered.
+limited to linear chains: a value that merges from two paths (a true phi) is read as a
+variable on each path, which is correct but less compact. The field names are offsets, not a
+reconstructed struct with real member types and names — that, and full SSA with phi nodes
+(which needs the lift rebuilt on width-canonical registers), stay the frontier.
 
 ## Android: `dex`
 
