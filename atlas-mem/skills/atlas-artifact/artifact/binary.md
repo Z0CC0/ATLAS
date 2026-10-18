@@ -176,12 +176,18 @@ scale]` becomes `base[index]`, `[base+disp]` becomes `base->field_<disp>`, `[bas
 subscript — the observed layout, not an invented named type; the frame base and rip-relative
 globals are left flat for the other passes.
 
+The register state is width-canonical: it is keyed on the 64-bit register, so writing `eax`
+kills the old value of `rax` and zero-extends into the top half, writing `al` is a partial
+write that leaves a wider read opaque, and `inc rax` is seen by a later read of `eax`. A value
+that merges from two paths (a phi) is handled correctly through the register variable: each
+path materialises its value into the register and the merge reads it, with the right kill
+semantics — no stale value crosses the join.
+
 What `cfg` does not do: an indirect jump or call (through a register, a jump table, a
-virtual call) has no resolved target, so a block only it reaches is missing. Forwarding is
-limited to linear chains: a value that merges from two paths (a true phi) is read as a
-variable on each path, which is correct but less compact. The field names are offsets, not a
-reconstructed struct with real member types and names — that, and full SSA with phi nodes
-(which needs the lift rebuilt on width-canonical registers), stay the frontier.
+virtual call) has no resolved target, so a block only it reaches is missing. A phi value is
+materialised on each path, not inlined across the join (inlining there would need a dead-store
+elimination pass). The field names are offsets, not a reconstructed struct with real member
+types and names — that stays the frontier.
 
 ## Android: `dex`
 

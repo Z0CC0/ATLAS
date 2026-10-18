@@ -999,7 +999,7 @@ test('value forwarding carries a value along a linear chain, into a block that u
     { start: 3, insns: [{ addr: 3, len: 3, text: 'mov rax, rbx', mnem: 'mov' }, { addr: 6, len: 1, text: 'ret', mnem: 'ret' }], succ: [] },
   ] };
   const vf = valueFlow(cfg, (insns, ie) => liftX86Block(insns, null, null, ie));
-  assert.equal(vf.inEnv.get(3).get('rbx'), '*rdx', 'rbx forwarded into the block that reads it');
+  assert.equal(vf.inEnv.get(3).get('rbx').expr, '*rdx', 'rbx forwarded into the block that reads it');
   assert.ok(vf.noSpill.get(0).has('rbx'), 'the single consuming successor lets the def block skip the spill');
 });
 

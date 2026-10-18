@@ -53,6 +53,8 @@ function defsUses(ins) {
     if (mnem === 'lea') { if (dst && isReg(dst)) def.add(canon(dst)); }
     else if (isMem(dst)) useReg(dst);
     else if (dst && isReg(dst)) { if (isWide(dst)) def.add(canon(dst)); else { use.add(canon(dst)); def.add(canon(dst)); } }
+  } else if ((mnem === 'xor' || mnem === 'sub') && dst && dst === src && isReg(dst)) {
+    def.add(canon(dst)); // the zeroing idiom defines, it does not read
   } else if (BINOPS.has(mnem)) {
     if (src !== undefined) useReg(src);
     if (isMem(dst)) useReg(dst);
@@ -144,8 +146,8 @@ function valueFlow(cfg, lift) {
   for (const b of blocks) for (const s of b.succ) if (byId.has(s.to)) preds.get(s.to).push(b.start);
   const useOf = new Map(blocks.map((b) => [b.start, blockUseDef(b.insns).use])); // canonical regs read by the block
 
-  // keep only short, non-frame expressions in the forwarded environment
-  const capped = (m) => { const o = new Map(); for (const [k, v] of m) if (typeof v === 'string' && v.length <= CAP && !FRAMEREG.has(k)) o.set(k, v); return o; };
+  // keep only short, non-frame expressions in the forwarded environment (values are {expr,w})
+  const capped = (m) => { const o = new Map(); for (const [k, v] of m) if (v && typeof v.expr === 'string' && v.expr.length <= CAP && !FRAMEREG.has(k)) o.set(k, v); return o; };
   const outEnv = new Map(); const inEnv = new Map();
 
   // entry env: only when there is exactly one predecessor (no merge, no phi), and only for
@@ -172,7 +174,7 @@ function valueFlow(cfg, lift) {
       const prev = outEnv.get(start);
       const oe = capped(lift(b.insns, ie).outEnv);
       inEnv.set(start, ie);
-      if (!prev || prev.size !== oe.size || [...oe].some(([k, v]) => prev.get(k) !== v)) { outEnv.set(start, oe); changed = true; }
+      if (!prev || prev.size !== oe.size || [...oe].some(([k, v]) => (prev.get(k) || {}).expr !== v.expr)) { outEnv.set(start, oe); changed = true; }
     }
   }
 
@@ -184,7 +186,7 @@ function valueFlow(cfg, lift) {
     // suppress a spill only if there is exactly one successor and it inherits this value
     if (succ.length === 1 && (preds.get(succ[0].to) || []).length === 1) {
       const sie = inEnv.get(succ[0].to) || new Map();
-      for (const [r, e] of oe) if (e !== r && sie.get(r) === e) ns.add(r);
+      for (const [r, e] of oe) if (e.expr !== r && (sie.get(r) || {}).expr === e.expr) ns.add(r);
     }
     noSpill.set(b.start, ns);
   }
