@@ -46,6 +46,7 @@ import { readWasm, liftWasm } from './artifact-wasm.mjs';
 import { readEvm, lift as liftEvm } from './artifact-evm.mjs';
 import { readPcap, summarise as summarisePcap } from './artifact-pcap.mjs';
 import { recoverFrame, eliminateDeadStores, structLayouts, synthStructs, renderStructs, fieldWidths, arrayElems, fnPtrFields } from './artifact-frame.mjs';
+import { pointsTo, renderPointsTo } from './artifact-pointsto.mjs';
 import { liveness, withAliases, valueFlow } from './artifact-dataflow.mjs';
 import { observe } from './artifact-run.mjs';
 
@@ -1075,9 +1076,10 @@ function cmdCfg(path) {
       if (slots.length) { head.push('// inferred variable types (from the API-typed value stored into each slot):'); head.push('//   ' + slots.map(([s, t]) => `${t} ${s}`).join('; ')); }
       else if (fr.locals.length) { head.push(`// stack locals recovered: ${[...new Set(fr.locals)].join(', ')}`); }
       rec.result.slotTypes = ti.slotTypes || {};
+      const pt = pointsTo(cfg);
       const structs = synthStructs(body, fieldWidths(cfg), fnPtrFields(cfg));
-      rec.result.structs = structs;
-      if (structs.length) head.push(...renderStructs(structs));
+      if (pt.structs.length) { rec.result.structs = pt.structs; head.push(...renderPointsTo(pt.structs)); }
+      else if (structs.length) { rec.result.structs = structs; head.push(...renderStructs(structs)); }
       else if (layouts.length) { head.push('// observed pointer layouts (field offsets accessed, not named members):'); for (const l of layouts) head.push(`//   ${l.base}: ${l.fields.join(', ')}`); }
       rec.result.arrays = arrays;
       if (arrays.length) { head.push('// observed arrays (element type from the index scale / access width):'); for (const a of arrays) head.push(`//   ${a.elem} ${a.base}[]  // stride ${a.scale}`); }

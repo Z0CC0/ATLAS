@@ -14,6 +14,7 @@ import { inferTypes, protoFor, signatureText } from '../tools/artifact-types.mjs
 import { readWasm, liftWasm } from '../tools/artifact-wasm.mjs';
 import { readEvm, lift as liftEvm, selectors as evmSelectors, decode as evmDecode } from '../tools/artifact-evm.mjs';
 import { readPcap, summarise as summarisePcap } from '../tools/artifact-pcap.mjs';
+import { pointsTo } from '../tools/artifact-pointsto.mjs';
 import { recoverFrame, eliminateDeadStores, structLayouts, synthStructs, fieldWidths, arrayElems, fnPtrFields } from '../tools/artifact-frame.mjs';
 import { liveness, defsUses, withAliases, valueFlow } from '../tools/artifact-dataflow.mjs';
 import { liftBlock as liftX86Block } from '../tools/artifact-lift-x86.mjs';
@@ -973,6 +974,24 @@ test('struct layout inference groups field offsets off a base, sorted, 2+ only',
   assert.ok(rcx, 'rcx is reported');
   assert.deepEqual(rcx.fields, ['+0x48', '+0x50'], 'offsets sorted');
   assert.ok(!lay.some((l) => l.base === 'rdx'), 'a single-field base is not reported');
+});
+
+test('points-to merges accesses to one object across registers, and splits distinct args', () => {
+  const cfg = { start: 0, blocks: [{ start: 0, insns: [
+    { addr: 0, mnem: 'mov', text: 'mov rax, rcx' },        // rax = arg0 (rcx)
+    { addr: 3, mnem: 'mov', text: 'mov rdx, [rcx+0x8]' },  // arg0.field_8  (via rcx)
+    { addr: 6, mnem: 'mov', text: 'mov rsi, [rax+0x10]' }, // arg0.field_10 (via rax, same object)
+    { addr: 9, mnem: 'mov', text: 'mov rbx, [r9+0x20]' },  // arg3.field_20 (a different object)
+    { addr: 12, mnem: 'mov', text: 'mov rbp, [r9+0x28]' }, // arg3.field_28
+    { addr: 15, mnem: 'ret', text: 'ret' },
+  ], succ: [] }] };
+  const pt = pointsTo(cfg);
+  const a0 = pt.structs.find((s) => s.origin === 'arg0');
+  const a3 = pt.structs.find((s) => s.origin === 'arg3');
+  assert.ok(a0, 'arg0 struct exists');
+  assert.deepEqual(a0.members.map((m) => m.field), ['field_8', 'field_10'], 'arg0 fields merged across rcx and rax');
+  assert.ok(a3, 'arg3 is a separate object, not merged with arg0');
+  assert.deepEqual(a3.members.map((m) => m.field), ['field_20', 'field_28']);
 });
 
 test('a field called indirectly is typed as a function pointer', () => {

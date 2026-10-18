@@ -188,8 +188,16 @@ inlined (so X is read nowhere else) when the right-hand side has no call, with r
 canonicalised so a value spilled as `rax` and read as `eax` is kept. This drops the leftover
 spill noise and the dead parts of the compiler's boilerplate.
 
+An intra-procedural points-to pass groups the field accesses by the *object*, not the
+register. Each pointer value carries an origin tag — an incoming argument (`arg0`..`arg3`), a
+call's return, a global, or a pointer loaded from another object's field (`arg0.f0`) — and the
+tag propagates through copies and interior-pointer arithmetic, so `[rcx+8]` and, after
+`mov rax, rcx`, `[rax+0x10]` fall on the same object and merge into one `struct arg0_t`; two
+different arguments stay two structs. A merge of disagreeing origins clears the tag (no false
+merge). When no object can be tagged, the pass falls back to grouping by register.
+
 For each pointer with two or more distinct fields, a `struct` declaration is synthesised above
-the function from the `base->field_…` accesses — a first sketch of struct reconstruction. Each
+the function. Each
 field's type is inferred: a pointer when the field's value is itself dereferenced or indexed,
 otherwise an integer whose width is the access size recovered from the instruction (`mov eax,
 [rcx+0x24]` makes `field_24` 32-bit, `mov rdx, [rcx+0x28]` makes `field_28` 64-bit; the widest
