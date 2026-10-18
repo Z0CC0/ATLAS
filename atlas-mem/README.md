@@ -263,8 +263,10 @@ dominator trees into `if/else` and `while`/`for (;;)` with `break`/`continue`, a
 recovered where anchored: a resolved import call is ground truth, so a compact table of
 Win32 / C-runtime / ntdll prototypes types the argument registers (rcx/rdx/r8/r9) and the
 return (rax), annotated in place (`rax = (ULONG)ADVAPI32.EventRegister(/* LPCGUID, … */)`),
-with sign carried from signed vs unsigned jumps; an unanchored type stays `?`. User structs
-and a fully-typed C remain the frontier.
+with sign carried from signed vs unsigned jumps; an unanchored type stays `?`. The stack
+frame is then recovered: each slot becomes a named local (`*(rsp+0x30)` → `local_30`), and
+the compiler boilerplate (stack canary, frame set-up/tear-down) is annotated. Cross-block
+data flow and user-struct recovery remain the frontier.
 `dex --pseudo` lifts each Dalvik method to pseudo-Java (register forward substitution, `new Type(args)` from new-instance + `<init>`, calls folded through `move-result`): the android.jar stub reads back as `throw new RuntimeException("Stub!");`.
 `wasm` reads a WebAssembly module per the W3C core spec: sections, signatures, imports/exports, and each function's code; `wasm --pseudo` lifts the stack machine back to structured pseudocode (block/loop/if become real control flow, loads/stores become `mem[addr]`, calls use the export/import name), e.g. a function reads back as `return (local0 + local1);`.
 `evm` reads Ethereum Virtual Machine bytecode (raw or hex) per the EVM opcode list: disassembly with JUMPDEST labels, the 4-byte function selectors from the dispatcher, and the Solidity metadata (solc version, IPFS hash); `evm --pseudo` lifts the stack to pseudo-Solidity (`storage[k]`, `msg.sender`, `calldata[x]`, constant jumps resolved).

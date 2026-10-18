@@ -147,9 +147,16 @@ the prototypes are listed above the function, and a light forward pass carries a
 `mov` copies and marks sign from a signed vs unsigned jump. A type that is not anchored
 stays `?` — honest, not guessed. User structs and a fully-typed C are still the frontier.
 
+The stack frame is recovered too (the first middle-end pass). A compiler keeps a function's
+locals at a fixed offset from the stack or frame pointer; each distinct slot is renamed to a
+variable (`*(rsp+0x30)` → `local_30`, `*(rbp+0x10)` → `arg_10`), the slots are listed as the
+function's locals, and the compiler boilerplate is annotated rather than left as noise — the
+stack-protector cookie (`// stack canary: set` / `: check`) and the frame set-up / tear-down.
+The pass renames and comments, it never deletes a statement.
+
 What `cfg` does not do: an indirect jump or call (through a register, a jump table, a
 virtual call) has no resolved target, so a block only it reaches is missing; a value is not
-tracked across blocks.
+yet tracked across blocks (cross-block data flow is the next middle-end pass).
 
 ## Android: `dex`
 

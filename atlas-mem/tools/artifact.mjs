@@ -45,6 +45,7 @@ import { inferTypes } from './artifact-types.mjs';
 import { readWasm, liftWasm } from './artifact-wasm.mjs';
 import { readEvm, lift as liftEvm } from './artifact-evm.mjs';
 import { readPcap, summarise as summarisePcap } from './artifact-pcap.mjs';
+import { recoverFrame } from './artifact-frame.mjs';
 import { observe } from './artifact-run.mjs';
 
 const VERSION = 1;
@@ -1045,6 +1046,9 @@ function cmdCfg(path) {
   let body;
   if (flags.pseudo && ARCH === 'x86-64') {
     body = flags.goto ? liftX86Fn(cfg, 0, sym) : structurize(cfg, 0, (b) => liftX86Block(b.insns, sym));
+    const fr = recoverFrame(body);
+    body = fr.body;
+    rec.result.locals = fr.locals;
     const ti = inferTypes(cfg, sym);
     rec.result.types = ti.regTypes;
     rec.result.signatures = ti.signatures.map((s) => s.text);
@@ -1054,11 +1058,12 @@ function cmdCfg(path) {
       const retCast = s.ret && s.ret !== 'void' ? `(${s.ret})` : '';
       body = body.replace(new RegExp(`(\\brax = )([\\w.]*\\b${s.name})\\(\\.\\.\\.\\)`, 'g'), `$1${retCast}$2(${argc})`);
     }
-    if (ti.signatures.length || Object.keys(ti.regTypes).length) {
+    if (ti.signatures.length || Object.keys(ti.regTypes).length || fr.locals.length) {
       const head = [];
       if (ti.signatures.length) { head.push('// resolved API prototypes (ground-truth types at these call sites):'); for (const s of ti.signatures) head.push(`//   ${s.text}`); }
       const regs = Object.entries(ti.regTypes).filter(([, t]) => t && t !== '?');
       if (regs.length) { head.push('// register types still live at the function end (a later unknown call clears the volatiles):'); head.push('//   ' + regs.map(([r, t]) => `${t} ${r}`).join(', ')); }
+      if (fr.locals.length) { head.push(`// stack locals recovered: ${[...new Set(fr.locals)].join(', ')}`); }
       body = head.join('\n') + '\n' + body;
     }
   } else body = formatCfg(cfg, 0, sym);

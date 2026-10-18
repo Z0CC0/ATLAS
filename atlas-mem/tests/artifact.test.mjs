@@ -14,6 +14,7 @@ import { inferTypes, protoFor, signatureText } from '../tools/artifact-types.mjs
 import { readWasm, liftWasm } from '../tools/artifact-wasm.mjs';
 import { readEvm, lift as liftEvm, selectors as evmSelectors, decode as evmDecode } from '../tools/artifact-evm.mjs';
 import { readPcap, summarise as summarisePcap } from '../tools/artifact-pcap.mjs';
+import { recoverFrame } from '../tools/artifact-frame.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const tool = path.join(here, '..', 'tools', 'artifact.mjs');
@@ -916,6 +917,25 @@ test('the pcap command runs end to end and detect routes to it', () => {
   assert.match(r.out, /tcp 3/);
   assert.match(r.out, /10\.0\.0\.1:12345 -> 10\.0\.0\.2:80/);
   assert.equal(run('detect', p).json.result.format, 'pcap');
+});
+
+test('frame recovery names stack slots and annotates the boilerplate', () => {
+  const body = [
+    '  *(rsp+0x50) = (*(rip+0x100) ^ (rsp - 0x58));',
+    '  rsp = (rsp - 0x58);',
+    '  *(rbp+0x10) = eax;',
+    '  rax = *(rsp+0x50);',
+    '  if ((*(rsp+0x50) ^ rsp) != *(rip+0x200)) {',
+    '  rsp = (rsp + 0x58);',
+  ].join('\n');
+  const { body: out, locals } = recoverFrame(body);
+  assert.match(out, /local_50 = \(\*\(rip\+0x100\) \^ \(rsp - 0x58\)\);  \/\/ stack canary: set/);
+  assert.match(out, /rsp = \(rsp - 0x58\);  \/\/ frame set-up/);
+  assert.match(out, /rsp = \(rsp \+ 0x58\);  \/\/ frame tear-down/);
+  assert.match(out, /\^ rsp\) != \*\(rip\+0x200\)\) \{  \/\/ stack canary: check/);
+  assert.ok(locals.includes('local_50'), 'local_50 recovered');
+  assert.ok(locals.includes('arg_10'), 'rbp+ slot recovered as an argument');
+  assert.ok(!/\*\(rsp\+0x50\)/.test(out), 'no raw stack ref left for the named slot');
 });
 
 test.after(() => { try { fs.rmSync(tmp, { recursive: true, force: true }); } catch { /* windows */ } });
