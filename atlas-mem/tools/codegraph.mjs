@@ -341,6 +341,9 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
     process.stderr.write(`codegraph: ${err.message}\n`);
     process.exitCode = err.usage ? 2 : 1;
   }
+  // Inside an Electron utility process the channel to the parent keeps the process alive
+  // for ever; under plain Node it ends by itself and this line is never reached.
+  if (process.parentPort) process.stdout.write('', () => process.exit(process.exitCode || 0));
 }
 
 export { scan, report, dupsReport, hubs, deadReport, impact, impactReport, loadGraph, resolveImport, main, VERSION, DEFAULT_SKIP };
