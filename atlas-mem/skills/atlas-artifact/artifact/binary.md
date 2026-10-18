@@ -138,10 +138,18 @@ Call targets are named. A PE's import address table (the slots a `call [rip+x]` 
 is read, so an imported call shows its `dll!function` in the disassembly and `cfg`, and in
 the pseudo-C a call reads `rax = KERNEL32.MultiByteToWideChar(...)` instead of an offset.
 
+Types are recovered where they can be anchored. A resolved import call is ground truth: a
+compact table of common Win32 / C-runtime / ntdll prototypes (from the public API headers,
+a specification) gives each `call dll!func` its parameter types in rcx/rdx/r8/r9 and its
+return type in rax under the Microsoft x64 convention. The call is annotated in place
+(`rax = (ULONG)ADVAPI32.EventRegister(/* LPCGUID, PENABLECALLBACK, PVOID, PREGHANDLE */)`),
+the prototypes are listed above the function, and a light forward pass carries a type along
+`mov` copies and marks sign from a signed vs unsigned jump. A type that is not anchored
+stays `?` — honest, not guessed. User structs and a fully-typed C are still the frontier.
+
 What `cfg` does not do: an indirect jump or call (through a register, a jump table, a
-virtual call) has no resolved target, so a block only it reaches is missing. The remaining
-decompiler work is native type recovery (register widths, signedness, pointers, struct
-fields), which stays a later slice; a value is still not tracked across blocks.
+virtual call) has no resolved target, so a block only it reaches is missing; a value is not
+tracked across blocks.
 
 ## Android: `dex`
 

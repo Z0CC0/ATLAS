@@ -10,6 +10,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { structurize, dominates, domTree, rpo } from '../tools/artifact-struct.mjs';
+import { inferTypes, protoFor, signatureText } from '../tools/artifact-types.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const tool = path.join(here, '..', 'tools', 'artifact.mjs');
@@ -762,6 +763,46 @@ test('dominators: entry dominates all, a branch does not dominate the merge', ()
   assert.ok(dominates(idom, 0, 24), 'entry dominates the merge');
   assert.ok(!dominates(idom, 8, 24), 'one branch does not dominate the merge');
   assert.equal(idom.get(24), 0, 'the merge is dominated immediately by the entry');
+});
+
+test('prototype lookup is A/W-suffix tolerant and yields a C signature', () => {
+  const a = protoFor('ADVAPI32!EventRegister');
+  assert.ok(a && a.proto.ret === 'ULONG' && a.proto.args.length === 4);
+  const w = protoFor('KERNEL32!GetModuleHandleW'); // matches GETMODULEHANDLE via the W drop
+  assert.ok(w && w.proto.ret === 'HMODULE');
+  assert.equal(signatureText('CloseHandle', protoFor('KERNEL32!CloseHandle').proto), 'BOOL CloseHandle(HANDLE)');
+  assert.equal(protoFor('MYAPP!private_helper'), null);
+});
+
+test('type recovery anchors argument and return types at a resolved call', () => {
+  const cfg = { start: 0, blocks: [
+    { start: 0, insns: [
+      { addr: 0, len: 5, text: 'mov ecx, 0x1', mnem: 'mov' },
+      { addr: 5, len: 6, text: 'call [rip+0x10]', mnem: 'call' },
+      { addr: 11, len: 2, text: 'ret', mnem: 'ret' },
+    ], succ: [] },
+  ] };
+  const sym = (ins) => (ins.mnem === 'call' ? 'KERNEL32!MultiByteToWideChar' : '');
+  const ti = inferTypes(cfg, sym);
+  assert.equal(ti.anchored, 1, 'one call anchored');
+  assert.equal(ti.signatures[0].text, 'int MultiByteToWideChar(UINT, DWORD, LPCCH, int, LPWSTR, int)');
+  assert.equal(ti.regTypes.rax, 'int', 'return typed into rax');
+  assert.equal(ti.regTypes.rcx, 'UINT', 'first arg typed into rcx');
+  assert.equal(ti.regTypes.r8, 'LPCCH', 'third arg typed into r8');
+});
+
+test('an unknown call clears the volatile register types', () => {
+  const cfg = { start: 0, blocks: [
+    { start: 0, insns: [
+      { addr: 0, len: 6, text: 'call [rip+0x10]', mnem: 'call' },  // known: sets rax/rcx...
+      { addr: 6, len: 6, text: 'call [rip+0x20]', mnem: 'call' },  // unknown: clobbers them
+      { addr: 12, len: 2, text: 'ret', mnem: 'ret' },
+    ], succ: [] },
+  ] };
+  const sym = (ins) => (ins.addr === 0 ? 'KERNEL32!CloseHandle' : 'APP!helper');
+  const ti = inferTypes(cfg, sym);
+  assert.equal(ti.anchored, 1);
+  assert.equal(ti.regTypes.rax, undefined, 'rax cleared by the later unknown call');
 });
 
 test.after(() => { try { fs.rmSync(tmp, { recursive: true, force: true }); } catch { /* windows */ } });

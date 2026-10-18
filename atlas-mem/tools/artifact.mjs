@@ -41,6 +41,7 @@ import { decodeOne as arm64decode } from './artifact-arm64.mjs';
 import { buildCfg, formatCfg } from './artifact-cfg.mjs';
 import { liftFunction as liftX86Fn, liftBlock as liftX86Block } from './artifact-lift-x86.mjs';
 import { structurize } from './artifact-struct.mjs';
+import { inferTypes } from './artifact-types.mjs';
 import { observe } from './artifact-run.mjs';
 
 const VERSION = 1;
@@ -923,6 +924,22 @@ function cmdCfg(path) {
   let body;
   if (flags.pseudo && ARCH === 'x86-64') {
     body = flags.goto ? liftX86Fn(cfg, 0, sym) : structurize(cfg, 0, (b) => liftX86Block(b.insns, sym));
+    const ti = inferTypes(cfg, sym);
+    rec.result.types = ti.regTypes;
+    rec.result.signatures = ti.signatures.map((s) => s.text);
+    // annotate each resolved call with its parameter types and typed return, in place
+    for (const s of ti.signatures) {
+      const argc = `/* ${s.args.join(', ') || 'void'} */`;
+      const retCast = s.ret && s.ret !== 'void' ? `(${s.ret})` : '';
+      body = body.replace(new RegExp(`(\\brax = )([\\w.]*\\b${s.name})\\(\\.\\.\\.\\)`, 'g'), `$1${retCast}$2(${argc})`);
+    }
+    if (ti.signatures.length || Object.keys(ti.regTypes).length) {
+      const head = [];
+      if (ti.signatures.length) { head.push('// resolved API prototypes (ground-truth types at these call sites):'); for (const s of ti.signatures) head.push(`//   ${s.text}`); }
+      const regs = Object.entries(ti.regTypes).filter(([, t]) => t && t !== '?');
+      if (regs.length) { head.push('// register types still live at the function end (a later unknown call clears the volatiles):'); head.push('//   ' + regs.map(([r, t]) => `${t} ${r}`).join(', ')); }
+      body = head.join('\n') + '\n' + body;
+    }
   } else body = formatCfg(cfg, 0, sym);
   emit(rec, body + `\n\nid ${rec.id}`);
 }

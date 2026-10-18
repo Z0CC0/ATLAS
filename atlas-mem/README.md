@@ -259,8 +259,12 @@ and structuring. A PE's import address table is read, so a `call [rip+x]` to an 
 (`eax = (-(ebp | 0xff))`), branch conditions recovered from `cmp`/`test` + the jump, memory
 as `*(addr)`, registers as the variables; then structured over the dominator and post-
 dominator trees into `if/else` and `while`/`for (;;)` with `break`/`continue`, a labelled
-`goto` only where the flow is irreducible (`--goto` keeps the flat listing). Native type
-recovery is the remaining decompiler work.
+`goto` only where the flow is irreducible (`--goto` keeps the flat listing). Types are
+recovered where anchored: a resolved import call is ground truth, so a compact table of
+Win32 / C-runtime / ntdll prototypes types the argument registers (rcx/rdx/r8/r9) and the
+return (rax), annotated in place (`rax = (ULONG)ADVAPI32.EventRegister(/* LPCGUID, … */)`),
+with sign carried from signed vs unsigned jumps; an unanchored type stays `?`. User structs
+and a fully-typed C remain the frontier.
 `dex --pseudo` lifts each Dalvik method to pseudo-Java (register forward substitution, `new Type(args)` from new-instance + `<init>`, calls folded through `move-result`): the android.jar stub reads back as `throw new RuntimeException("Stub!");`.
 `sqlite` reads a database file read-only: schema, counts, indexes, triggers, a sample of
 one table on request. `cil --pseudo` lifts a .NET method's CIL to readable pseudo-C# by simulating the stack (call arity read from the signature): e.g. `throw new ArgumentNullException(GetArgumentName(arg0));`; 7,176 core-library methods lift with no crash, straight-line with labels (no if/while structuring). `map` decodes a source map and turns a bundled position back into a file,
