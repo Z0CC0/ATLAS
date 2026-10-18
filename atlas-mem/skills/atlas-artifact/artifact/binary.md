@@ -69,9 +69,10 @@ more assemblies, 42,949 methods, 100%, no unknown opcode). A native method, a ru
 method or an abstract one has no byte stream and is said to have none. The exception-handler
 regions after a fat method body are not listed yet.
 
-## Native code: `disasm` (x86-64)
+## Native code: `disasm` (x86-64 and ARM64)
 
-`disasm <file>` decodes the x86-64 instructions of a program's code sections. The opcode
+`disasm <file>` decodes the native instructions of a program's code sections; it picks the
+decoder from the file's architecture. The x86-64 side reads the instructions. The opcode
 maps, the prefixes, the ModR/M and SIB bytes are from the specification (Intel SDM Vol. 2,
 AMD64 Vol. 3), so the length of every instruction is computed exactly: get a length wrong
 by one byte and the whole stream after it turns to noise, so length is the thing the reader
@@ -87,13 +88,22 @@ real code is read and checked. Measured on three real binaries (a C++ `node.exe`
 `git-lfs.exe`, an ELF addon): over 99% decoded, the classic prologue (`push rbp`,
 `mov rbp, rsp`, `sub rsp, …`) and the stack-canary pattern read back correctly.
 
-What is not done here: a value is not tracked, a call target is an offset not a symbol, the
-control-flow graph and pseudocode are the next slices. The SSE vector set beyond the scalar
-math is decoded for length, named approximately.
+### ARM64 (A64)
+
+The ARM64 side is simpler and surer: every A64 instruction is a fixed 32 bits, 4-byte
+aligned, so there is no length to get wrong and no desync is possible. The decoder (from
+the Arm Architecture Reference Manual, DDI 0487) picks the top-level group from four bits
+and sub-decodes by bit field: the integer, memory and branch instructions are rendered with
+their operands (`stp x29, x30, [sp, -0x10]!`, `adrp x3, …` then `ldr x3, [x3, …]`, `bl`,
+`ret`), and the scalar-FP / SIMD group is recognised as a class but named coarsely (`~`).
+The coverage is the share of words that are an allocated encoding; on a real ARM64 binary,
+100% allocated, nothing unaligned, the prologue and GOT-load patterns read back correctly.
+
+What is not done here (either architecture): a value is not tracked, a call target is an
+offset not a symbol, the control-flow graph and pseudocode are the next slices.
 
 ## Not yet
 
-ARM64 (A64) and Android bytecode (Dalvik): their decoders are being written from their
-specifications (the Arm Architecture Reference Manual, the Dalvik format), each with its
-coverage measured, and readable pseudocode on top. Until one lands, the report for that
-kind ends where the headers end, and says it.
+Android bytecode (Dalvik): the DEX container and the Dalvik instruction set, from the
+format specification, with coverage measured and readable pseudocode on top. Until it
+lands, an `.apk` is recognised by `detect` and not read inside, and the report says so.

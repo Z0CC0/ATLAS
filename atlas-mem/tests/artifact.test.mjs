@@ -494,6 +494,52 @@ test('disasm decodes a real x86-64 binary from its entry point, or skips', () =>
   assert.ok(d.json.limitations.some((l) => l.includes('not executed')));
 });
 
+test('the ARM64 decoder reads fixed-width words into mnemonics and operands', async () => {
+  const a = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-arm64.mjs')).href);
+  const cases = [
+    [0xd65f03c0, 'ret', 'ret'],
+    [0x910003fd, 'mov', 'mov x29, sp'],               // add xd, xn, #0 alias
+    [0xa9bf7bfd, 'stp', 'stp x29, x30, [sp, -0x10]!'], // pre-indexed pair
+    [0xf9400000, 'ldr', 'ldr x0, [x0]'],
+    [0xd503201f, 'nop', 'nop'],
+    [0x14000000, 'b', null],
+    [0x94000000, 'bl', null],
+    [0xd63f0000, 'blr', 'blr x0'],
+    [0x9b007c00, 'mul', null],                          // madd with Ra=31 -> mul
+    [0xaa0103e0, 'mov', 'mov x0, x1'],                  // orr xzr alias
+  ];
+  for (const [w, mn, text] of cases) {
+    const d = a.decodeOne(w >>> 0);
+    assert.equal(d.bad, false, `${(w >>> 0).toString(16)} -> ${d.text}`);
+    assert.equal(d.mnem, mn, `${(w >>> 0).toString(16)}`);
+    if (text) assert.equal(d.text, text);
+  }
+  // a word in no allocated group is reported as data, never guessed
+  assert.equal(a.decodeOne(0x00000000).bad, true);
+  // a small sweep stays aligned (fixed width, so no desync is even possible)
+  const buf = Buffer.alloc(12); buf.writeUInt32LE(0xa9bf7bfd, 0); buf.writeUInt32LE(0x910003fd, 4); buf.writeUInt32LE(0xd65f03c0, 8);
+  const sw = a.disasm(buf, 0, 12);
+  assert.deepEqual(sw.instructions.map((i) => i.mnem), ['stp', 'mov', 'ret']);
+  assert.equal(sw.unknown, 0);
+});
+
+test('disasm reads a real arm64 binary, or skips when none is here', () => {
+  const root = path.join(here, '..', '..', '..', '..', '..');
+  let found = null;
+  const tryDirs = [path.join(root, 'node_modules', 'onnxruntime-node', 'bin', 'napi-v6', 'linux', 'arm64'), path.join(root, 'node_modules', 'onnxruntime-node', 'bin', 'napi-v6', 'darwin', 'arm64')];
+  for (const dirp of tryDirs) { try { for (const f of fs.readdirSync(dirp)) if (f.endsWith('.node')) { found = path.join(dirp, f); break; } } catch { /* not here */ } if (found) break; }
+  if (!found) return;
+  const b = run('bin', found, '--compact');
+  if (!b.json || (b.json.result.machine !== 'arm64' && b.json.result.cpu !== 'arm64')) return;
+  const d = run('disasm', found, '--count', '40');
+  assert.equal(d.code, 0, d.out + d.err);
+  assert.equal(d.json.result.arch, 'arm64');
+  assert.ok(d.json.result.coverage.allocatedPercent >= 99, `allocated ${d.json.result.coverage.allocatedPercent}%`);
+  assert.equal(d.json.result.coverage.unknown, 0, 'a fixed-width decoder leaves nothing unaligned');
+  const mnems = new Set(d.json.result.listing.filter((i) => !i.bad && !i.coarse).map((i) => i.mnem));
+  assert.ok([...mnems].some((m) => ['stp', 'ldr', 'mov', 'bl', 'ret', 'adrp', 'add'].includes(m)), [...mnems].join(','));
+});
+
 test('every record has the same spine', () => {
   const asar = path.join(tmp, 'demo.asar');
   for (const rec of [run('detect', asar).json, run('app', asar).json]) {

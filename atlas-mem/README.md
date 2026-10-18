@@ -245,7 +245,10 @@ assemblies, 100%, none unknown). `disasm` decodes the x86-64 instructions of a p
 prefixes, ModR/M and SIB from the Intel SDM, so instruction length is exact), from the
 entry point by default, with a coverage number from a linear sweep (over 99% decoded on a
 C++, a Go and an ELF binary; the classic prologue and stack-canary read back correctly).
-ARM64 and Dalvik decoders are next.
+The ARM64 (A64) decoder is fixed-width (every instruction 4 bytes, from the Arm ARM, no
+length to get wrong): on a real arm64 binary, 100% allocated, the prologue and GOT-load
+patterns read back correctly. `disasm` picks the decoder from the architecture. The Dalvik
+decoder is next.
 `sqlite` reads a database file read-only: schema, counts, indexes, triggers, a sample of
 one table on request. `map` decodes a source map and turns a bundled position back into a file,
 line and name.
