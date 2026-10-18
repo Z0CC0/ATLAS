@@ -31,6 +31,6 @@ is then read from the repository, when it is here, at the path the map names.
 
 ## When the artifact is neither
 
-A `.exe`, a `.dll`, an ELF, a Mach-O, an `.apk`, a firmware image: `detect` names the format
-and the reader stops there. The report says what was recognised and that the inside was not
-read. No tool is installed to go further without a yes.
+A `.exe`, a `.dll`, an ELF, a Mach-O: `binary.md`. An `.apk`, a firmware image, a `.wasm`:
+`detect` names the format and the reader stops there. The report says what was recognised
+and that the inside was not read. No tool is installed to go further without a yes.

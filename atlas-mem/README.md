@@ -223,9 +223,16 @@ require calls), an esbuild build by its named modules, and every fact inside a b
 carries its module; when the archive ships the map, the original file, line and column
 too. `fuses` reads the build-time switches of the Electron executable after their sentinel
 (eight by name, later ones by index) and lists the ones a shipped application is not
-expected to have. `compare` reads two versions and lists what changed by name. `sqlite`
-reads a database file read-only: schema, counts, indexes, triggers, a sample of one table
-on request. `map` decodes a source map and turns a bundled position back into a file,
+expected to have. `compare` reads two versions and lists what changed by name. `bin` reads a
+compiled file by the tables its loader reads: a PE (machine, sections and their
+permissions, imports by DLL, exports, version resource, manifest, ASLR/NX/CFG/signature,
+and when a CLR header is there the .NET metadata: assembly, references, types, methods,
+every P/Invoke, user strings, entry), an ELF (needed libraries, rpath, symbols, PIE, NX,
+RELRO, canary, stripped), a Mach-O (thin or fat, dylibs, platform and SDK, rpaths,
+signature, symbols), and in any of them the Go build information (version, modules,
+settings) and the Rust compiler and crates the panic paths keep. Nothing is disassembled.
+`sqlite` reads a database file read-only: schema, counts, indexes, triggers, a sample of
+one table on request. `map` decodes a source map and turns a bundled position back into a file,
 line and name.
 
 Every answer is one record: an id derived from the record, the subject with its sha256,
@@ -244,7 +251,11 @@ namespace: 0 → 3 handlers; an app whose channels are a compiled enum: 0 → 8 
 as such. The same five, read as bundles: one webpack build of four files with 601, 142,
 100 and 13 modules and 2,249 edges in all; one esbuild-style build shipping its map, every
 finding mapped to its original file and line; fuses read from all four executables, with
-four to six switches in the weak state on each.
+four to six switches in the weak state on each. Compiled files, same day: an Electron
+executable (233 MB, 0.9 s: 7 DLLs, 3,241 exports, ASLR, CFG, unsigned), a .NET core
+library (14.6 MB, 0.2 s: 2,755 types, 39,326 methods, 550 P/Invoke), a Go tool (12 MB,
+0.2 s: go1.25.1, 22 modules, VCS revision), a Linux `.node` addon (needed libraries,
+runpath, canary) and its macOS twin (dylibs, SDK, signed).
 
 ---
 

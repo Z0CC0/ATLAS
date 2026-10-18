@@ -5,8 +5,9 @@ description: >
   application (its modules, what reaches the entry, the IPC channels in both directions, the
   preload bridge, the windows and their preferences, the hosts it talks to, the processes it
   starts, the bundles by their module tables, the fuses of its executable, what changed
-  between two versions), a SQLite file (schema, counts, a sample), a source map (where a
-  bundled line came from). Every fact with its file and line, a confidence, and what was not covered. Only for
+  between two versions), a compiled file by its headers (PE with the .NET metadata, ELF,
+  Mach-O: imports, exports, hardening, signature, Go modules, Rust crates), a SQLite file
+  (schema, counts, a sample), a source map (where a bundled line came from). Every fact with its file and line, a confidence, and what was not covered. Only for
   software the person owns or is allowed to inspect. Use for "atlas artifact", "what is in
   this app", "open this asar", "what does this installed program do", "read this database",
   "map this bundled line back" — in any language.
@@ -36,8 +37,10 @@ Everything below lives in the `artifact/` folder beside this file.
    `app.md` (the fuses section)
    "what changed", "compare the versions", "the old one and the new one", two archives →
    `app.md` (two versions)
-   a `.dll`, ELF, Mach-O, `.apk`, firmware, an `.exe` that is not Electron → not read yet:
-   say so in one line, and what `detect` reported.
+   a `.exe`, `.dll`, `.node`, an ELF, a Mach-O, "what does this binary import", "is it
+   .NET", "which Go modules", "is it signed", "is it hardened" → `binary.md`
+   an `.apk`, firmware, a `.wasm` → not read yet: say so in one line, and what `detect`
+   reported.
 
 ## Boundaries
 

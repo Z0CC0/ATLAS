@@ -8,7 +8,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const tool = path.join(here, '..', 'tools', 'artifact.mjs');
@@ -308,6 +308,71 @@ test('compare says what changed between two versions, by name', () => {
   assert.deepEqual(res.modules, { added: [], removed: ['lib/helper.js'] });
   assert.equal(r.json.confidence, 'derived');
   assert.equal(run('compare', v1).code, 2);
+});
+
+test('bin reads the running node executable: a PE on Windows, an ELF or Mach-O elsewhere', () => {
+  const r = run('bin', process.execPath);
+  assert.equal(r.code, 0, r.out + r.err);
+  const res = r.json.result;
+  assert.ok(['pe', 'elf', 'mach-o'].includes(res.format));
+  if (res.format === 'pe') {
+    assert.equal(res.pe32plus, process.arch === 'x64' || process.arch === 'arm64');
+    assert.ok(res.imports.some((i) => /^kernel32\.dll$/i.test(i.dll)), 'node imports kernel32');
+    assert.ok(res.sections.some((s) => s.name === '.text' && s.flags.includes('exec')));
+    assert.ok(res.version && /node/i.test(res.version.ProductName || res.version.FileDescription || ''), JSON.stringify(res.version));
+    assert.equal(typeof res.hardening.aslr, 'boolean');
+  } else if (res.format === 'elf') {
+    assert.ok(res.needed.length >= 1);
+    assert.equal(typeof res.hardening.pie, 'boolean');
+  } else {
+    assert.ok(res.dylibs.length >= 1);
+  }
+  assert.ok(r.json.limitations.some((l) => l.includes('not disassembled')));
+  assert.equal(r.json.subject.sha256.length, 64);
+  assert.equal(run('detect', process.execPath).json.result.next.includes(' bin '), true);
+});
+
+test('the Go and Rust readers and a hand-made ELF and Mach-O', async () => {
+  const bin = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-bin.mjs')).href);
+  // Go build info, modern layout: magic, pointer size, flags bit 1, two varint-prefixed strings
+  const mod = ['path\tgithub.com/x/app', 'mod\tgithub.com/x/app\t(devel)\t', 'dep\tgolang.org/x/sys\tv0.20.0\th1:abc=', 'build\tGOOS=linux', 'build\tGOARCH=amd64', ''].join('\n');
+  const vlq = (n) => { const out = []; do { let c = n & 0x7f; n >>= 7; if (n) c |= 0x80; out.push(c); } while (n); return Buffer.from(out); };
+  const go = Buffer.concat([Buffer.alloc(64, 0), Buffer.from('\xff Go buildinf:', 'latin1'), Buffer.from([8, 2]), Buffer.alloc(16, 0), vlq(8), Buffer.from('go1.22.3'), vlq(Buffer.byteLength(mod)), Buffer.from(mod), Buffer.alloc(32, 0)]);
+  const g = bin.readGo(go);
+  assert.equal(g.version, 'go1.22.3');
+  assert.equal(g.main.path, 'github.com/x/app');
+  assert.deepEqual(g.deps[0], { path: 'golang.org/x/sys', version: 'v0.20.0', sum: 'h1:abc=', replaced: false });
+  assert.equal(g.settings.GOOS, 'linux');
+  assert.equal(bin.readGo(Buffer.alloc(100, 1)), null);
+  // Rust: the registry paths a panic message keeps
+  const rs = Buffer.from('xx /rustc/8b0dd4d5e4b0f5c3a1e9f2b7c6d5e4f3a2b1c0d9/library/core/src/x.rs yy C:\\Users\\u\\.cargo\\registry\\src\\index.crates.io-6f17d22bba15001f\\serde-1.0.210\\src\\de.rs zz /home/u/.cargo/registry/src/index.crates.io-6f17d22bba15001f/tokio-1.40.0/src/lib.rs', 'latin1');
+  const rr = bin.readRust(rs, null);
+  assert.equal(rr.rustc.commit, '8b0dd4d5e4b0f5c3a1e9f2b7c6d5e4f3a2b1c0d9');
+  assert.deepEqual(rr.crates.map((c) => `${c.name}@${c.version}`), ['serde@1.0.210', 'tokio@1.40.0']);
+  assert.equal(bin.readRust(Buffer.from('nothing here'), null), null);
+  // a 64-bit ELF with one executable GNU_STACK segment and no sections
+  const elf = Buffer.alloc(64 + 56 * 2, 0);
+  elf.write('\x7fELF', 0, 'latin1'); elf[4] = 2; elf[5] = 1; elf[6] = 1;
+  elf.writeUInt16LE(3, 16); elf.writeUInt16LE(62, 18); elf.writeUInt32LE(1, 20);
+  elf.writeBigUInt64LE(0x1000n, 24); elf.writeBigUInt64LE(64n, 32); elf.writeUInt16LE(56, 54); elf.writeUInt16LE(2, 56); elf.writeUInt16LE(64, 58);
+  elf.writeUInt32LE(1, 64); elf.writeUInt32LE(5, 68); elf.writeBigUInt64LE(0n, 72); elf.writeBigUInt64LE(0x1000n, 80); elf.writeBigUInt64LE(0n, 88); elf.writeBigUInt64LE(BigInt(elf.length), 96); elf.writeBigUInt64LE(BigInt(elf.length), 104);
+  elf.writeUInt32LE(0x6474e551, 120); elf.writeUInt32LE(7, 124);
+  const e = bin.readElf(elf);
+  assert.equal(e.machine, 'x86-64');
+  assert.equal(e.hardening.pie, true);
+  assert.equal(e.hardening.nx, false);
+  assert.ok(e.limitations.some((l) => l.includes('no section headers')));
+  // a 64-bit Mach-O with one LC_LOAD_DYLIB and one LC_BUILD_VERSION
+  const name = Buffer.from('/usr/lib/libSystem.B.dylib\0\0\0\0\0\0');
+  const dylib = Buffer.alloc(24 + name.length); dylib.writeUInt32LE(0xc, 0); dylib.writeUInt32LE(dylib.length, 4); dylib.writeUInt32LE(24, 8); dylib.writeUInt32LE(0, 12); dylib.writeUInt32LE((1 << 16) | (2 << 8) | 3, 16); name.copy(dylib, 24);
+  const bv = Buffer.alloc(24); bv.writeUInt32LE(0x32, 0); bv.writeUInt32LE(24, 4); bv.writeUInt32LE(1, 8); bv.writeUInt32LE(14 << 16, 12); bv.writeUInt32LE(15 << 16, 16);
+  const hdr = Buffer.alloc(32); hdr.writeUInt32LE(0xfeedfacf, 0); hdr.writeUInt32LE(0x0100000c, 4); hdr.writeUInt32LE(0, 8); hdr.writeUInt32LE(2, 12); hdr.writeUInt32LE(2, 16); hdr.writeUInt32LE(dylib.length + bv.length, 20); hdr.writeUInt32LE(0x200000, 24);
+  const m = bin.readMachO(Buffer.concat([hdr, dylib, bv]), 0);
+  assert.equal(m.cpu, 'arm64');
+  assert.equal(m.filetype, 'executable');
+  assert.deepEqual(m.dylibs[0], { name: '/usr/lib/libSystem.B.dylib', weak: false, reexport: false, version: '1.2.3' });
+  assert.deepEqual(m.build, { platform: 'macos', minos: '14.0.0', sdk: '15.0.0' });
+  assert.equal(m.flags.pie, true);
 });
 
 test('every record has the same spine', () => {

@@ -12,6 +12,7 @@
  *   node artifact.mjs app    <app.asar | folder> [--all] [--detail summary|full] [--page N] [--per 60]
  *   node artifact.mjs sqlite <file.db> [--table <name>] [--limit 20]
  *   node artifact.mjs map    <file.map> [--line L --col C]
+ *   node artifact.mjs bin    <file.exe | .dll | ELF | Mach-O> [--detail full]   headers, imports, exports, .NET, Go, Rust, strings
  *   node artifact.mjs fuses  <app.exe | installed folder>        the build-time switches of an Electron executable
  *   node artifact.mjs compare <app A> <app B> [--all]          what changed between two versions, by name
  *
@@ -29,6 +30,7 @@ import { createHash } from 'node:crypto';
 import { closeSync, existsSync, openSync, readdirSync, readFileSync, readSync, statSync } from 'node:fs';
 import { basename, dirname, extname, join, posix, resolve } from 'node:path';
 import * as js from './artifact-js.mjs';
+import { readBinary } from './artifact-bin.mjs';
 
 const VERSION = 1;
 const MAX_PARSE_BYTES = 4 * 1024 * 1024;   // one source file larger than this is listed, not scanned
@@ -600,6 +602,58 @@ async function cmdCompare(first, second) {
   emit(rec, L.join('\n'));
 }
 
+// ---------------------------------------------------------------- a compiled file: PE, ELF, Mach-O
+
+function binText(rec) {
+  const r = rec.result; const L = [];
+  const s = rec.subject;
+  if (r.format === 'pe') {
+    L.push(`${s.name}  PE ${r.pe32plus ? '64' : '32'} ${r.machine}  ${r.dll ? 'dll' : 'exe'}  ${r.subsystem}  built ${r.timestamp || '?'}  ${(s.bytes / 1024 / 1024).toFixed(1)} MB`);
+    if (r.version) L.push(`version  ${[r.version.ProductName, r.version.FileVersion || r.version.fileVersionFixed, r.version.CompanyName].filter(Boolean).join(' · ')}`);
+    if (r.manifest) L.push(`manifest  execution level ${r.manifest.requestedExecutionLevel || '?'}  dpi ${r.manifest.dpiAware || '?'}`);
+    L.push(`hardening  aslr ${r.hardening.aslr} high-entropy ${r.hardening.highEntropy} nx ${r.hardening.nx} cfg ${r.hardening.cfg} signed ${r.hardening.authenticode}${r.hardening.writableCode.length ? ' WRITABLE+EXEC ' + r.hardening.writableCode.join(',') : ''}`);
+    L.push(`sections  ${r.sections.map((x) => `${x.name}(${x.flags.filter((f) => f === 'exec' || f === 'write').map((f) => f[0]).join('') || 'r'})`).join(' ')}`);
+    L.push(`imports  ${r.imports.length} dlls: ${r.imports.slice(0, 14).map((i) => `${i.dll}(${i.count})`).join(' ')}`);
+    if (r.exports) L.push(`exports  ${r.exports.named} named${r.exports.name ? ' as ' + r.exports.name : ''}: ${r.exports.names.slice(0, 10).join(' ')}`);
+    if (r.dotnet) { const d = r.dotnet; L.push(`.NET  ${d.runtimeVersion}  ${d.assembly ? d.assembly.name + ' ' + d.assembly.version : d.module}  ${d.counts.types} types, ${d.counts.methods} methods, ${d.counts.pinvoke} P/Invoke, ${d.counts.userStrings} strings  entry ${d.entryMethod || '-'}  il-only ${d.flags.ilOnly}`); if (d.assemblyRefs.length) L.push(`refs  ${d.assemblyRefs.slice(0, 12).map((a) => a.name).join(', ')}`); if (d.pinvoke.length) L.push(`pinvoke  ${d.pinvoke.slice(0, 10).map((p) => `${p.dll}!${p.entry}`).join(' ')}`); }
+  } else if (r.format === 'elf') {
+    L.push(`${s.name}  ELF${r.class} ${r.machine}  ${r.type}  interp ${r.interpreter || '-'}  ${(s.bytes / 1024 / 1024).toFixed(1)} MB`);
+    L.push(`hardening  pie ${r.hardening.pie} nx ${r.hardening.nx} relro ${r.hardening.relro} canary ${r.hardening.canary} stripped ${r.hardening.stripped}${r.hardening.writableExec ? ' WRITABLE+EXEC segments ' + r.hardening.writableExec : ''}`);
+    L.push(`needed  ${r.needed.join(' ') || '-'}${r.rpath ? '  rpath ' + r.rpath : ''}${r.runpath ? '  runpath ' + r.runpath : ''}${r.soname ? '  soname ' + r.soname : ''}`);
+    L.push(`symbols  ${r.counts.imported} imported, ${r.counts.exported} exported: ${r.imported.slice(0, 12).join(' ')}`);
+  } else if (r.format === 'mach-o') {
+    if (r.fat) { L.push(`${s.name}  fat Mach-O, ${r.slices.length} slices: ${r.slices.map((x) => x.cpu).join(', ')}`); }
+    else {
+      L.push(`${s.name}  Mach-O ${r.class} ${r.cpu}  ${r.filetype}  ${r.build ? r.build.platform + ' min ' + r.build.minos + ' sdk ' + r.build.sdk : ''}  signed ${r.signed}  pie ${r.flags.pie}`);
+      L.push(`dylibs  ${r.dylibs.map((d) => d.name.split('/').pop()).join(' ')}${r.rpaths.length ? '  rpath ' + r.rpaths.join(' ') : ''}`);
+      L.push(`symbols  ${r.counts.imported} imported, ${r.counts.exported} exported: ${r.imported.slice(0, 12).join(' ')}`);
+    }
+  }
+  if (r.go) L.push(`go  ${r.go.version || '?'}  ${r.go.main ? r.go.main.path : r.go.path || ''}  ${r.go.deps.length} deps  ${Object.entries(r.go.settings).filter(([k]) => /^(GOOS|GOARCH|CGO_ENABLED|vcs\.revision|-ldflags)$/.test(k)).map(([k, v]) => k + '=' + v).join(' ')}`);
+  if (r.rust) L.push(`rust  ${r.rust.rustc ? JSON.stringify(r.rust.rustc) : '?'}  ${r.rust.crates.length} crates seen in paths${r.rust.auditable ? `, ${r.rust.auditable.packages.length} in the audit section` : ''}: ${r.rust.crates.slice(0, 10).map((c) => c.name + '@' + c.version).join(' ')}`);
+  if (r.strings) { const st = r.strings; L.push(`strings  ${st.urls.length} urls, ${st.registry.length} registry keys, ${st.windowsPaths.length} windows paths, ${st.posixPaths.length} posix paths: ${st.urls.slice(0, 6).map((x) => x.value).join(' ')}`); }
+  L.push(`coverage ${rec.coverage.status}: ${rec.coverage.scope}`);
+  for (const l of rec.limitations) L.push(`limit  ${l}`);
+  L.push(`id ${rec.id}`);
+  return L.join('\n');
+}
+
+function cmdBin(path) {
+  const abs = resolve(path);
+  if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
+  const buf = readFileSync(abs);
+  let r;
+  try { r = readBinary(buf); } catch (e) { fail(e.message, 'unsupported'); }
+  const limitations = [...(r.limitations || []), 'headers and tables read as the loader reads them; code not disassembled, nothing run: what a function does is not known from this'];
+  if (r.go && r.go.limitations) limitations.push(...r.go.limitations);
+  delete r.limitations;
+  const subject = { name: basename(abs), path: abs, format: r.format, bytes: buf.length, sha256: sha256(buf) };
+  const full = flags.detail === 'full';
+  const result = full ? r : { ...r, sections: r.sections ? r.sections.map((s) => ({ name: s.name, size: s.rawSize ?? s.size ?? s.filesize, flags: s.flags })) : undefined, imports: r.imports ? r.imports.map((i) => ({ dll: i.dll, count: i.count, names: i.names.slice(0, 40) })) : undefined, exports: r.exports ? { ...r.exports, names: r.exports.names.slice(0, 60) } : r.exports, imported: r.imported ? r.imported.slice(0, 80) : undefined, exported: r.exported ? r.exported.slice(0, 80) : undefined, dotnet: r.dotnet ? { ...r.dotnet, types: r.dotnet.types.slice(0, 60), userStrings: r.dotnet.userStrings.slice(0, 60), pinvoke: r.dotnet.pinvoke.slice(0, 60) } : r.dotnet, segments: r.segments ? r.segments.map((s) => ({ ...s, sections: undefined })) : undefined };
+  const rec = record(subject, 'bin', { detail: full ? 'full' : 'summary' }, result, { limitations, coverage: { status: 'complete', scope: `${r.format} headers, sections, imports and exports${r.dotnet ? ', .NET metadata tables' : ''}${r.go ? ', Go build info' : ''}${r.rust ? ', Rust crate paths' : ''}, strings` } });
+  emit(rec, binText({ ...rec, result: r }));
+}
+
 // ---------------------------------------------------------------- sqlite
 
 async function cmdSqlite(path) {
@@ -706,7 +760,7 @@ function cmdDetect(path) {
   if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
   const st = statSync(abs);
   const format = st.isDirectory() ? detectDir(abs) : detectFile(abs);
-  const next = { asar: 'app', 'electron-app': 'app', 'electron-install': 'app', 'node-app': 'app', sqlite: 'sqlite', 'source-map': 'map' }[format] || null;
+  const next = { asar: 'app', 'electron-app': 'app', 'electron-install': 'app', 'node-app': 'app', sqlite: 'sqlite', 'source-map': 'map', pe: 'bin', elf: 'bin', 'mach-o': 'bin' }[format] || null;
   const subject = { name: basename(abs), path: abs, format, bytes: st.isDirectory() ? null : st.size, sha256: st.isDirectory() ? null : fileSha(abs) };
   const rec = record(subject, 'detect', {}, { format, next: next ? `node artifact.mjs ${next} "${abs}"` : null }, { coverage: { status: 'complete', scope: st.isDirectory() ? 'folder name and package.json' : 'the first 32 bytes and the extension' }, limitations: st.isDirectory() ? [] : ['a format is read from its magic bytes; a file with a wrong header is reported as unknown'] });
   emit(rec, `${format}  ${abs}${next ? `\nnext  ${rec.result.next}` : ''}`);
@@ -715,7 +769,7 @@ function cmdDetect(path) {
 // ---------------------------------------------------------------- main
 
 if (!command || !target || flags.help || (command === 'compare' && !positional[2])) {
-  process.stdout.write('usage: node artifact.mjs detect|app|sqlite|map|fuses <path> | compare <a> <b> [--text] [--all] [--detail summary|full] [--page N --per 60] [--table T --limit 20] [--line L --col C]\n');
+  process.stdout.write('usage: node artifact.mjs detect|app|bin|sqlite|map|fuses <path> | compare <a> <b> [--text] [--all] [--detail summary|full] [--page N --per 60] [--table T --limit 20] [--line L --col C]\n');
   process.exit(command ? 2 : 0);
 }
 try {
@@ -724,6 +778,7 @@ try {
   else if (command === 'sqlite') await cmdSqlite(target);
   else if (command === 'map') cmdMap(target);
   else if (command === 'fuses') cmdFuses(target);
+  else if (command === 'bin') cmdBin(target);
   else if (command === 'compare') await cmdCompare(target, positional[2]);
   else fail(`unknown command: ${command}`);
 } catch (e) {

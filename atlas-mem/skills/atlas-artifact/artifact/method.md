@@ -10,6 +10,7 @@ node <plugin>/tools/artifact.mjs detect <path>
 node <plugin>/tools/artifact.mjs app    <app.asar | installed folder | source folder> [--all] [--detail full] [--page N --per 60]
 node <plugin>/tools/artifact.mjs sqlite <file.db> [--table <name> --limit 20]
 node <plugin>/tools/artifact.mjs map    <file.map> [--line L --col C]
+node <plugin>/tools/artifact.mjs bin    <file.exe | .dll | .node | ELF | Mach-O> [--detail full]
 node <plugin>/tools/artifact.mjs fuses  <app.exe | installed folder>
 node <plugin>/tools/artifact.mjs compare <app A> <app B> [--all]
 ```
