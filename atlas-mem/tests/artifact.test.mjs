@@ -12,6 +12,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { structurize, dominates, domTree, rpo } from '../tools/artifact-struct.mjs';
 import { inferTypes, protoFor, signatureText } from '../tools/artifact-types.mjs';
 import { readWasm, liftWasm } from '../tools/artifact-wasm.mjs';
+import { readEvm, lift as liftEvm, selectors as evmSelectors, decode as evmDecode } from '../tools/artifact-evm.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const tool = path.join(here, '..', 'tools', 'artifact.mjs');
@@ -841,6 +842,42 @@ test('the wasm command runs end to end and reports complete coverage', () => {
   const j = run('wasm', p);
   assert.equal(j.json.coverage.status, 'complete');
   assert.equal(j.json.result.counts.functions, 1);
+});
+
+// A tiny contract: free-memory prologue, selector dispatch on 0x12345678, two jumpdests.
+const EVM_HEX = '608060405260003560e01c806312345678146019575b005b602a6020526040516020f3';
+
+test('EVM bytecode decodes, with PUSH carrying its immediate', () => {
+  const r = readEvm(Buffer.from(EVM_HEX, 'latin1')); // a hex *text* file
+  assert.equal(r.bytes, EVM_HEX.length / 2);
+  assert.ok(r.instructions.some((i) => i.name === 'MSTORE'));
+  assert.ok(r.instructions.some((i) => i.name === 'PUSH4' && i.value === '0x12345678'));
+  assert.equal(r.jumpdests, 2);
+  assert.equal(r.bad, 0);
+});
+
+test('EVM extracts the function selector from the dispatcher', () => {
+  const r = readEvm(Buffer.from(EVM_HEX, 'latin1'));
+  assert.equal(r.selectors.length, 1);
+  assert.equal(r.selectors[0].selector, '0x12345678');
+});
+
+test('EVM lift resolves a constant jump and reads a selector extraction', () => {
+  const ins = evmDecode(Buffer.from(EVM_HEX, 'hex'));
+  const p = liftEvm(ins);
+  assert.match(p, /calldata\[0x00\] >> 0xe0/); // top 4 bytes of calldata = the selector
+  assert.match(p, /goto L_19/);
+  assert.match(p, /storage|mem\[0x20\] = 0x2a/);
+});
+
+test('the evm command runs end to end', () => {
+  const p = path.join(tmp, 'c.evm');
+  fs.writeFileSync(p, EVM_HEX);
+  const r = run('evm', p, '--pseudo', '--text');
+  assert.equal(r.code, 0);
+  assert.match(r.out, /function selectors \(1\)/);
+  assert.match(r.out, /0x12345678/);
+  assert.equal(run('evm', p).json.coverage.status, 'complete');
 });
 
 test.after(() => { try { fs.rmSync(tmp, { recursive: true, force: true }); } catch { /* windows */ } });

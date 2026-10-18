@@ -194,6 +194,18 @@ uses the imported or exported name, and the blocks become real `if`/`loop` with 
 custom "name" section is not applied); SIMD (v128) and the `0xFC`/`0xFD`/`0xFE`-prefixed
 instructions are listed but not folded into operators.
 
+## EVM: `evm`
+
+`evm <file>` reads Ethereum Virtual Machine bytecode (raw bytes, or a hex string with or
+without `0x`) per the EVM opcode list: the instruction stream with program-counter offsets
+and JUMPDEST labels, the 4-byte function selectors pulled from the dispatcher
+(`PUSH4 <sel> … EQ … JUMPI`), and the Solidity metadata solc appends (compiler version,
+IPFS/Swarm hash). `evm --pseudo` lifts the stack back to pseudo-Solidity: `storage[k]`,
+`mem[a]`, `msg.sender`, `calldata[x]`, binary operators, and a `goto`/`if … goto` wherever a
+constant `PUSH` gives the jump target. A computed jump target comes off the stack at run
+time and is left as the expression. The names behind the selector hashes need a signature
+database, which is not shipped; the hashes are reported as-is.
+
 ## Not yet
 
 Expression reconstruction's last native frontier is user-struct and full type recovery (API

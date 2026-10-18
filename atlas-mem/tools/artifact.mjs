@@ -43,6 +43,7 @@ import { liftFunction as liftX86Fn, liftBlock as liftX86Block } from './artifact
 import { structurize } from './artifact-struct.mjs';
 import { inferTypes } from './artifact-types.mjs';
 import { readWasm, liftWasm } from './artifact-wasm.mjs';
+import { readEvm, lift as liftEvm } from './artifact-evm.mjs';
 import { observe } from './artifact-run.mjs';
 
 const VERSION = 1;
@@ -91,6 +92,7 @@ const MAGIC = [
   ['mach-o', (b) => [0xfeedface, 0xfeedfacf, 0xcefaedfe, 0xcffaedfe, 0xcafebabe].includes(b.readUInt32BE(0))],
   ['zip', (b) => b[0] === 0x50 && b[1] === 0x4b && (b[2] === 3 || b[2] === 5 || b[2] === 7)],
   ['wasm', (b) => b.readUInt32LE(0) === 0x6d736100],
+  ['evm', (b) => (b[0] === 0x60 && (b[1] === 0x80 || b[1] === 0x60) && b[2] === 0x60 && b[3] === 0x40 && b[4] === 0x52) || /^(0x)?60(80|60)604052/i.test(b.subarray(0, 14).toString('latin1'))],
   ['gzip', (b) => b[0] === 0x1f && b[1] === 0x8b],
   ['pdf', (b) => b.subarray(0, 5).toString('latin1') === '%PDF-'],
 ];
@@ -936,6 +938,39 @@ function cmdWasm(path) {
   emit(rec, L.join('\n'));
 }
 
+// ---------------------------------------------------------------- EVM bytecode
+
+function cmdEvm(path) {
+  const abs = resolve(path);
+  if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
+  const buf = readFileSync(abs);
+  let r;
+  try { r = readEvm(buf); } catch (e) { fail(e.message, 'unsupported'); }
+  if (!r.instructions.length) fail('no EVM bytecode found', 'unsupported');
+  const result = {
+    bytes: r.bytes,
+    instructionCount: r.instructions.length,
+    jumpdests: r.jumpdests,
+    selectors: r.selectors,
+    metadata: r.metadata,
+    unknownBytes: r.bad,
+  };
+  const subject = { name: basename(abs), path: abs, format: 'evm', bytes: buf.length, sha256: sha256(buf) };
+  const limitations = [
+    'decoded from the bytes per the EVM opcode list, not executed; a JUMP/JUMPI target is resolved only when a constant PUSH precedes it, since a computed target comes off the stack at run time',
+    'the function selectors are read from the dispatcher pattern (PUSH4 ... EQ ... JUMPI); the human names behind the 4-byte hashes are not recovered without a signature database',
+  ];
+  if (r.bad) limitations.push(`${r.bad} byte(s) were not a known opcode (data, or a newer opcode) and are shown as .byte`);
+  const rec = record(subject, 'evm', {}, result, { confidence: 'observed', coverage: { status: r.bad ? 'partial' : 'complete', scope: `${r.instructions.length} instructions, ${r.jumpdests} jumpdests, ${r.selectors.length} function selectors` }, limitations });
+  const L = [`${subject.name}  evm  ${r.bytes} bytes, ${r.instructions.length} instructions, ${r.jumpdests} jumpdests`];
+  if (r.selectors.length) { L.push(`\nfunction selectors (${r.selectors.length}):`); for (const s of r.selectors) L.push(`  ${s.selector}${s.dest ? '  -> ' + s.dest : ''}`); }
+  if (r.metadata) L.push(`\nmetadata: ${[r.metadata.solc ? 'solc ' + r.metadata.solc : null, r.metadata.ipfs, r.metadata.swarm].filter(Boolean).join(', ') || r.metadata.length + ' bytes'}`);
+  if (flags.pseudo) { L.push('\n// pseudocode (stack lifted, constant jumps resolved):'); L.push(liftEvm(r.instructions)); }
+  else { L.push('\n// disassembly:'); for (const i of r.instructions) L.push(`  ${i.pc.toString(16).padStart(6, '0')}:  ${i.text}`); }
+  L.push(`\nid ${rec.id}`);
+  emit(rec, L.join('\n'));
+}
+
 // ---------------------------------------------------------------- control-flow graph of a function
 
 function cmdCfg(path) {
@@ -1101,7 +1136,7 @@ function cmdDetect(path) {
   if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
   const st = statSync(abs);
   const format = st.isDirectory() ? detectDir(abs) : detectFile(abs);
-  const next = { asar: 'app', 'electron-app': 'app', 'electron-install': 'app', 'node-app': 'app', sqlite: 'sqlite', 'source-map': 'map', pe: 'bin', elf: 'bin', 'mach-o': 'bin', dex: 'dex', apk: 'dex', wasm: 'wasm' }[format] || null;
+  const next = { asar: 'app', 'electron-app': 'app', 'electron-install': 'app', 'node-app': 'app', sqlite: 'sqlite', 'source-map': 'map', pe: 'bin', elf: 'bin', 'mach-o': 'bin', dex: 'dex', apk: 'dex', wasm: 'wasm', evm: 'evm' }[format] || null;
   const subject = { name: basename(abs), path: abs, format, bytes: st.isDirectory() ? null : st.size, sha256: st.isDirectory() ? null : fileSha(abs) };
   const rec = record(subject, 'detect', {}, { format, next: next ? `node artifact.mjs ${next} "${abs}"` : null }, { coverage: { status: 'complete', scope: st.isDirectory() ? 'folder name and package.json' : 'the first 32 bytes and the extension' }, limitations: st.isDirectory() ? [] : ['a format is read from its magic bytes; a file with a wrong header is reported as unknown'] });
   emit(rec, `${format}  ${abs}${next ? `\nnext  ${rec.result.next}` : ''}`);
@@ -1110,7 +1145,7 @@ function cmdDetect(path) {
 // ---------------------------------------------------------------- main
 
 if (!command || !target || flags.help || (command === 'compare' && !positional[2])) {
-  process.stdout.write('usage: node artifact.mjs detect|app|bin|cil|disasm|cfg|dex|wasm|sqlite|map|fuses <path> | compare <a> <b> | observe <folder|exe> --yes [--seconds 12] [--text] [--all] [--detail summary|full] [--page N --per 60] [--table T --limit 20] [--line L --col C] [--func name] [--pseudo]\n');
+  process.stdout.write('usage: node artifact.mjs detect|app|bin|cil|disasm|cfg|dex|wasm|evm|sqlite|map|fuses <path> | compare <a> <b> | observe <folder|exe> --yes [--seconds 12] [--text] [--all] [--detail summary|full] [--page N --per 60] [--table T --limit 20] [--line L --col C] [--func name] [--pseudo]\n');
   process.exit(command ? 2 : 0);
 }
 try {
@@ -1125,6 +1160,7 @@ try {
   else if (command === 'cfg') cmdCfg(target);
   else if (command === 'dex') cmdDex(target);
   else if (command === 'wasm') cmdWasm(target);
+  else if (command === 'evm') cmdEvm(target);
   else if (command === 'observe') await cmdObserve(target);
   else if (command === 'compare') await cmdCompare(target, positional[2]);
   else fail(`unknown command: ${command}`);

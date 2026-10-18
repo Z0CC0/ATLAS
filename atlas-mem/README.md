@@ -267,6 +267,7 @@ with sign carried from signed vs unsigned jumps; an unanchored type stays `?`. U
 and a fully-typed C remain the frontier.
 `dex --pseudo` lifts each Dalvik method to pseudo-Java (register forward substitution, `new Type(args)` from new-instance + `<init>`, calls folded through `move-result`): the android.jar stub reads back as `throw new RuntimeException("Stub!");`.
 `wasm` reads a WebAssembly module per the W3C core spec: sections, signatures, imports/exports, and each function's code; `wasm --pseudo` lifts the stack machine back to structured pseudocode (block/loop/if become real control flow, loads/stores become `mem[addr]`, calls use the export/import name), e.g. a function reads back as `return (local0 + local1);`.
+`evm` reads Ethereum Virtual Machine bytecode (raw or hex) per the EVM opcode list: disassembly with JUMPDEST labels, the 4-byte function selectors from the dispatcher, and the Solidity metadata (solc version, IPFS hash); `evm --pseudo` lifts the stack to pseudo-Solidity (`storage[k]`, `msg.sender`, `calldata[x]`, constant jumps resolved).
 `sqlite` reads a database file read-only: schema, counts, indexes, triggers, a sample of
 one table on request. `cil --pseudo` lifts a .NET method's CIL to readable pseudo-C# by simulating the stack (call arity read from the signature): e.g. `throw new ArgumentNullException(GetArgumentName(arg0));`; 7,176 core-library methods lift with no crash, straight-line with labels (no if/while structuring). `map` decodes a source map and turns a bundled position back into a file,
 line and name.
