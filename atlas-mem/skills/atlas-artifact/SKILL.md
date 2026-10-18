@@ -6,8 +6,10 @@ description: >
   preload bridge, the windows and their preferences, the hosts it talks to, the processes it
   starts, the bundles by their module tables, the fuses of its executable, what changed
   between two versions), a compiled file by its headers (PE with the .NET metadata, ELF,
-  Mach-O: imports, exports, hardening, signature, Go modules, Rust crates), a SQLite file
-  (schema, counts, a sample), a source map (where a bundled line came from). Every fact with its file and line, a confidence, and what was not covered. Only for
+  Mach-O: imports, exports, hardening, signature, Go modules, Rust crates), the program
+  alive for a few seconds after a yes (real IPC channels, windows, network, console,
+  against the static reading), a SQLite file (schema, counts, a sample), a source map
+  (where a bundled line came from). Every fact with its file and line, a confidence, and what was not covered. Only for
   software the person owns or is allowed to inspect. Use for "atlas artifact", "what is in
   this app", "open this asar", "what does this installed program do", "read this database",
   "map this bundled line back" — in any language.
@@ -37,6 +39,8 @@ Everything below lives in the `artifact/` folder beside this file.
    `app.md` (the fuses section)
    "what changed", "compare the versions", "the old one and the new one", two archives →
    `app.md` (two versions)
+   "run it and watch", "what does it really do when it starts", "which channels are really
+   there", "what does it contact" → `app.md` (alive for a few seconds), only after a yes
    a `.exe`, `.dll`, `.node`, an ELF, a Mach-O, "what does this binary import", "is it
    .NET", "which Go modules", "is it signed", "is it hardened" → `binary.md`
    an `.apk`, firmware, a `.wasm` → not read yet: say so in one line, and what `detect`
@@ -44,10 +48,12 @@ Everything below lives in the `artifact/` folder beside this file.
 
 ## Boundaries
 
-Read, never changed: no file inside or beside the artifact is written, no process of it is
-started, no network is used. A question that needs the program running ("what does it do
-when I click") is answered from the code with that said, or is `atlas-browser`'s when the
-program is a web app. Secrets found in an artifact are reported by name and place, never
+Read, never changed: no file inside or beside the artifact is written, no network is used,
+and no process of it is started, with one exception: `observe`, which starts the person's
+own program for a few seconds under its debugging ports and stops it, and runs only after
+the person has said yes to that run, in so many words, in this conversation. A question
+that needs more than that ("what does it do when I click") is answered from the code with
+that said, or is `atlas-browser`'s when the program is a web app. Secrets found in an artifact are reported by name and place, never
 by value.
 
 ## With the other skills

@@ -70,6 +70,29 @@ archive (not shipped, or bundled under another name), a host in the archive and 
 source (a dependency's), a handler in the source and not in the archive (dead code the
 bundler dropped). The difference is the finding; neither record alone is.
 
+## Alive for a few seconds
+
+`observe` is the one reader that starts the program. It does so only with `--yes`, which
+is passed only after the person has agreed to that run in this conversation, on software
+that is theirs; and only when no instance is already running (a second instance hands
+over to the first and quits, and the first is not ours to stop). The program starts with
+its debugging ports open, lives for the seconds asked (twelve by default), and is stopped
+by its process id. In that time: from the main process, the IPC channels really
+registered, the windows with the preferences they really got, the child processes alive,
+the paths and versions, the secret-shaped environment names it can see; from every
+renderer, the requests it made (hosts, methods, who initiated), the console, the
+exceptions, the bridge keys with what they expose, the scripts loaded. The record carries
+`authority: controlled-run`.
+
+Then the correlation with the static reading: handlers seen at runtime and not in the
+code (registered through something the reader did not follow, or by a dependency), in the
+code and not at runtime (registered later, behind a condition, or dead), hosts contacted
+that no file names, hosts in the code never contacted in that time. A difference is the
+finding; the runtime alone, with nothing clicked, is a short film of the start and says so.
+
+Not done here: typing, clicking, logging in, waiting for a timer. The program's own
+environment is inherited minus the caller's own secrets.
+
 ## Two versions
 
 `compare <A> <B>` reads both and lists what changed by name: channels, handlers, hosts,

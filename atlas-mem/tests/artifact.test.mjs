@@ -375,6 +375,28 @@ test('the Go and Rust readers and a hand-made ELF and Mach-O', async () => {
   assert.equal(m.flags.pie, true);
 });
 
+test('observe refuses without the yes, and the inspector session speaks to a live Node', async () => {
+  const dir = path.join(tmp, 'srcapp');
+  const r = run('observe', dir);
+  assert.equal(r.code, 2);
+  assert.equal(r.json.error.code, 'consent');
+  const runmod = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-run.mjs')).href);
+  const port = await runmod.freePort();
+  const { spawn } = await import('node:child_process');
+  const child = spawn(process.execPath, [`--inspect=${port}`, '-e', 'globalThis.answer = 41; setInterval(() => {}, 1000)'], { stdio: 'ignore' });
+  try {
+    let targets = null;
+    for (let i = 0; i < 40 && !targets; i += 1) { targets = await runmod.listTargets(port); if (!targets || !targets.length) { targets = null; await new Promise((x) => setTimeout(x, 150)); } }
+    assert.ok(targets && targets.length, 'the inspector lists a target');
+    const s = await new runmod.Session(targets[0].webSocketDebuggerUrl).open();
+    await s.send('Runtime.enable');
+    assert.equal(await s.evaluate('globalThis.answer + 1'), 42);
+    const probe = await s.evaluate('JSON.stringify({ pid: process.pid, node: process.versions.node })');
+    assert.equal(JSON.parse(probe).pid, child.pid);
+    s.close();
+  } finally { child.kill(); }
+});
+
 test('every record has the same spine', () => {
   const asar = path.join(tmp, 'demo.asar');
   for (const rec of [run('detect', asar).json, run('app', asar).json]) {

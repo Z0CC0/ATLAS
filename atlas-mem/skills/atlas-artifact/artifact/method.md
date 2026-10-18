@@ -13,6 +13,7 @@ node <plugin>/tools/artifact.mjs map    <file.map> [--line L --col C]
 node <plugin>/tools/artifact.mjs bin    <file.exe | .dll | .node | ELF | Mach-O> [--detail full]
 node <plugin>/tools/artifact.mjs fuses  <app.exe | installed folder>
 node <plugin>/tools/artifact.mjs compare <app A> <app B> [--all]
+node <plugin>/tools/artifact.mjs observe <installed folder | exe> --yes [--seconds 12]
 ```
 
 `detect` first when the kind of file is not obvious: it names the format and prints the

@@ -15,6 +15,7 @@
  *   node artifact.mjs bin    <file.exe | .dll | ELF | Mach-O> [--detail full]   headers, imports, exports, .NET, Go, Rust, strings
  *   node artifact.mjs fuses  <app.exe | installed folder>        the build-time switches of an Electron executable
  *   node artifact.mjs compare <app A> <app B> [--all]          what changed between two versions, by name
+ *   node artifact.mjs observe <installed folder | exe> --yes [--seconds 12] [--args "..."]   the program alive for a few seconds: real IPC channels, windows, network, console; only with the person's yes
  *
  * Every command prints one record (JSON): an id derived from the record itself, the subject
  * (name, path, format, sha256, bytes), the operation and its parameters, the result, a
@@ -31,6 +32,7 @@ import { closeSync, existsSync, openSync, readdirSync, readFileSync, readSync, s
 import { basename, dirname, extname, join, posix, resolve } from 'node:path';
 import * as js from './artifact-js.mjs';
 import { readBinary } from './artifact-bin.mjs';
+import { observe } from './artifact-run.mjs';
 
 const VERSION = 1;
 const MAX_PARSE_BYTES = 4 * 1024 * 1024;   // one source file larger than this is listed, not scanned
@@ -654,6 +656,75 @@ function cmdBin(path) {
   emit(rec, binText({ ...rec, result: r }));
 }
 
+// ---------------------------------------------------------------- observe: the program alive for a few seconds
+
+/** Process ids of this executable already alive, by its full path; empty when none. */
+async function alreadyRunning(exe) {
+  const { spawnSync } = await import('node:child_process');
+  try {
+    if (process.platform === 'win32') {
+      const r = spawnSync('powershell', ['-NoProfile', '-Command', `Get-Process | Where-Object { $_.Path -eq '${exe.replace(/'/g, "''")}' } | ForEach-Object { $_.Id }`], { encoding: 'utf8', timeout: 15000 });
+      return (r.stdout || '').split(/\r?\n/).map((s) => s.trim()).filter((s) => /^\d+$/.test(s));
+    }
+    const r = spawnSync('pgrep', ['-f', exe], { encoding: 'utf8', timeout: 5000 });
+    return (r.stdout || '').split(/\n/).map((s) => s.trim()).filter((s) => /^\d+$/.test(s) && Number(s) !== process.pid);
+  } catch { return []; }
+}
+
+async function cmdObserve(path) {
+  const abs = resolve(path);
+  if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
+  if (!flags.yes) fail('observe starts the program: pass --yes after the person has agreed, on software they own', 'consent');
+  const isDir = statSync(abs).isDirectory();
+  const exe = isDir ? executableBeside(join(abs, 'resources', 'app.asar')) : abs;
+  if (!exe) fail('no executable found beside this folder', 'not_found');
+  const running = await alreadyRunning(exe);
+  if (running.length) fail(`${basename(exe)} is already running (pid ${running.join(', ')}): a second instance would hand over to it and quit, and the running one is not ours to stop. Close it first.`, 'already_running');
+  // the static reading first, for the bridge keys and the channels to correlate
+  let stat = null;
+  const fsx = isDir ? openSubject(abs) : null;
+  if (fsx) { stat = (await analyzeApp(fsx, { all: false })).out; fsx.close(); }
+  const seconds = Math.max(3, Math.min(120, Number(flags.seconds || 12)));
+  const extra = flags.args ? String(flags.args).split(/\s+/).filter(Boolean) : [];
+  const { result, limitations } = await observe(exe, { seconds, args: extra, bridgeKeys: stat ? stat.bridge.map((b) => b.key).filter(Boolean) : [], cwd: dirname(exe) });
+  // correlation with the static reading
+  let correlation = null;
+  if (stat && result.main && result.main.electron) {
+    const rt = new Set([...(result.main.electron.ipc.handle || []), ...(result.main.electron.ipc.on || [])]);
+    const st = new Set(stat.ipc.handlers.map((h) => h.channel));
+    correlation = { runtimeHandlers: rt.size, staticHandlers: st.size, runtimeOnly: [...rt].filter((c) => !st.has(c)).sort(), staticOnly: [...st].filter((c) => !rt.has(c)).sort(), windows: result.main.electron.windows.map((w) => ({ title: w.title, url: w.url.slice(0, 120), preferences: w.preferences })) };
+    const staticHosts = new Set(Object.keys(stat.urls));
+    correlation.hostsContactedNotInCode = Object.keys(result.network.hosts).filter((h) => h !== 'file' && !staticHosts.has(h)).sort();
+    correlation.hostsInCodeNotContacted = [...staticHosts].filter((h) => !result.network.hosts[h]).sort();
+  }
+  const subject = { name: basename(exe), path: exe, format: 'running-process', bytes: statSync(exe).size, sha256: fileSha(exe) };
+  const rec = record(subject, 'observe', { seconds, args: extra, yes: true }, { ...result, correlation }, { confidence: 'observed', authority: 'controlled-run', coverage: { status: 'partial', scope: `${result.seconds} s after start, ${result.pages.length} page(s) on the debugging port, main process ${result.main ? 'probed' : 'not reached'}` }, limitations });
+  const L = [];
+  const m = result.main;
+  L.push(`${subject.name}  pid ${result.pid}  ${result.seconds} s  exit ${result.exitCode === null ? 'stopped by us' : result.exitCode}`);
+  if (m && m.electron) {
+    const e = m.electron;
+    L.push(`app  ${e.name} ${e.version}  electron ${m.versions.electron || '?'} node ${m.versions.node || '?'} chrome ${m.versions.chrome || '?'}  userData ${e.paths.userData}`);
+    L.push(`ipc at runtime  ${e.ipc.handle ? e.ipc.handle.length : '?'} handle, ${e.ipc.on.length} on`);
+    for (const w of e.windows) L.push(`window  "${w.title}"  ${w.url.slice(0, 100)}  ${Object.entries(w.preferences).filter(([k, v]) => v !== undefined && k !== 'preload').map(([k, v]) => `${k}:${v}`).join(' ')}`);
+    if (m.children && m.children.length) L.push(`children  ${m.children.map((c) => `${c.file} ${c.args.slice(1, 4).join(' ')} (pid ${c.pid})`).join('; ')}`);
+    if (m.envSecretNames && m.envSecretNames.length) L.push(`env secrets visible to the process  ${m.envSecretNames.join(', ')}`);
+  } else if (m) L.push(`main  reached, electron not: ${m.electronError || '?'}`);
+  const hosts = Object.entries(result.network.hosts).sort((a, b) => b[1] - a[1]);
+  L.push(`network  ${result.network.requests.length} requests to ${hosts.length} hosts: ${hosts.slice(0, 12).map(([h, n]) => `${h} (${n})`).join(', ')}`);
+  for (const p of result.pages) { const pr = p.probe; L.push(`page  ${p.type} "${p.title}" ${p.url.slice(0, 100)}${pr ? `  bridges ${Object.entries(pr.bridges).map(([k, v]) => `${k}[${Array.isArray(v) ? v.length : '?'}]`).join(' ') || '-'}  scripts ${pr.scripts.length}` : ''}`); }
+  if (result.console.length) L.push(`console  ${result.console.length} lines, ${result.console.filter((c) => c.level === 'error').length} errors: ${result.console.slice(0, 3).map((c) => `[${c.level}] ${c.text.slice(0, 80)}`).join(' | ')}`);
+  if (result.exceptions.length) L.push(`exceptions  ${result.exceptions.length}: ${result.exceptions[0].text.slice(0, 120)}`);
+  if (correlation) {
+    L.push(`correlation  handlers runtime ${correlation.runtimeHandlers} / static ${correlation.staticHandlers}; runtime only ${correlation.runtimeOnly.length}${correlation.runtimeOnly.length ? ' (' + correlation.runtimeOnly.slice(0, 6).join(', ') + ')' : ''}; static only ${correlation.staticOnly.length}${correlation.staticOnly.length ? ' (' + correlation.staticOnly.slice(0, 6).join(', ') + ')' : ''}`);
+    L.push(`hosts  contacted and not in the code ${correlation.hostsContactedNotInCode.length}${correlation.hostsContactedNotInCode.length ? ' (' + correlation.hostsContactedNotInCode.slice(0, 6).join(', ') + ')' : ''}; in the code and not contacted ${correlation.hostsInCodeNotContacted.length}`);
+  }
+  L.push(`coverage ${rec.coverage.status}: ${rec.coverage.scope}`);
+  for (const l of limitations) L.push(`limit  ${l}`);
+  L.push(`id ${rec.id}`);
+  emit(rec, L.join('\n'));
+}
+
 // ---------------------------------------------------------------- sqlite
 
 async function cmdSqlite(path) {
@@ -769,7 +840,7 @@ function cmdDetect(path) {
 // ---------------------------------------------------------------- main
 
 if (!command || !target || flags.help || (command === 'compare' && !positional[2])) {
-  process.stdout.write('usage: node artifact.mjs detect|app|bin|sqlite|map|fuses <path> | compare <a> <b> [--text] [--all] [--detail summary|full] [--page N --per 60] [--table T --limit 20] [--line L --col C]\n');
+  process.stdout.write('usage: node artifact.mjs detect|app|bin|sqlite|map|fuses <path> | compare <a> <b> | observe <installed folder | exe> --yes [--seconds 12] [--text] [--all] [--detail summary|full] [--page N --per 60] [--table T --limit 20] [--line L --col C]\n');
   process.exit(command ? 2 : 0);
 }
 try {
@@ -779,6 +850,7 @@ try {
   else if (command === 'map') cmdMap(target);
   else if (command === 'fuses') cmdFuses(target);
   else if (command === 'bin') cmdBin(target);
+  else if (command === 'observe') await cmdObserve(target);
   else if (command === 'compare') await cmdCompare(target, positional[2]);
   else fail(`unknown command: ${command}`);
 } catch (e) {

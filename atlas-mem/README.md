@@ -223,7 +223,14 @@ require calls), an esbuild build by its named modules, and every fact inside a b
 carries its module; when the archive ships the map, the original file, line and column
 too. `fuses` reads the build-time switches of the Electron executable after their sentinel
 (eight by name, later ones by index) and lists the ones a shipped application is not
-expected to have. `compare` reads two versions and lists what changed by name. `bin` reads a
+expected to have. `compare` reads two versions and lists what changed by name. `observe`, only
+with `--yes` from the person and on their own program, starts it with its debugging ports
+open, reads the main process (the IPC channels really registered, the windows with the
+preferences they got, the child processes, paths and versions) and every renderer (network
+requests by host, console, exceptions, the bridge keys and what they expose), stops it by
+process id after the seconds asked, and correlates with the static reading: channels and
+hosts that only one side sees. It refuses when the program is already running, since the
+running instance is not its to stop. `bin` reads a
 compiled file by the tables its loader reads: a PE (machine, sections and their
 permissions, imports by DLL, exports, version resource, manifest, ASLR/NX/CFG/signature,
 and when a CLR header is there the .NET metadata: assembly, references, types, methods,
@@ -255,7 +262,10 @@ four to six switches in the weak state on each. Compiled files, same day: an Ele
 executable (233 MB, 0.9 s: 7 DLLs, 3,241 exports, ASLR, CFG, unsigned), a .NET core
 library (14.6 MB, 0.2 s: 2,755 types, 39,326 methods, 550 P/Invoke), a Go tool (12 MB,
 0.2 s: go1.25.1, 22 modules, VCS revision), a Linux `.node` addon (needed libraries,
-runpath, canary) and its macOS twin (dylibs, SDK, signed).
+runpath, canary) and its macOS twin (dylibs, SDK, signed). Alive: the author's own app for fifteen
+seconds, main process and one page reached, four channels at runtime against three in the
+code (the fourth is the event emitter's own `error`), the bridge with its forty-two keys,
+the window with the preferences the code promised, stopped by process id.
 
 ---
 
