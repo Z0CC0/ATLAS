@@ -154,17 +154,24 @@ function's locals, and the compiler boilerplate is annotated rather than left as
 stack-protector cookie (`// stack canary: set` / `: check`) and the frame set-up / tear-down.
 The pass renames and comments, it never deletes a statement.
 
-Values flow across blocks (the second middle-end pass). A backward liveness data-flow
-(live-in = use ∪ (live-out − def), to a fixpoint over the CFG) finds which registers each
-block actually leaves live; the lift then keeps only the live writes at a block's end and
+Values flow across blocks (the second and third middle-end passes). A backward liveness
+data-flow (live-in = use ∪ (live-out − def), to a fixpoint over the CFG) finds which registers
+each block actually leaves live; the lift then keeps only the live writes at a block's end and
 drops the dead ones, so the spill noise is gone. A value used only inside a memory address is
-substituted into that address, so no bare register is left without a visible definition. The
-pass is conservative: an unmodelled instruction marks its registers used and nothing defined,
-so a write is dropped only when the register is provably dead.
+substituted into that address, so no bare register is left without a visible definition. Then
+a value a block computes is forwarded into the block that uses it, along a strictly linear
+chain (one successor, one predecessor) so the value has exactly one path and can never be
+duplicated across a branch; a register the block only passes through untouched is not carried.
+The zeroing idiom `xor r, r` / `sub r, r` reads as `r = 0`. The passes are conservative: an
+unmodelled instruction marks its registers used and nothing defined, so a write is dropped
+only when the register is provably dead.
 
 What `cfg` does not do: an indirect jump or call (through a register, a jump table, a
-virtual call) has no resolved target, so a block only it reaches is missing; a merge of two
-different values is not yet a phi node, and user structs are not recovered.
+virtual call) has no resolved target, so a block only it reaches is missing. Forwarding is
+limited to linear chains: a value that merges from two paths (a true phi) is not forwarded
+across the join — it is materialised on each path and read as a variable, which is correct
+but less compact. Full SSA with phi nodes needs the lift rebuilt on width-canonical registers
+and is not done; user structs are not recovered.
 
 ## Android: `dex`
 

@@ -111,4 +111,84 @@ function withAliases(canonSet) {
   return out;
 }
 
-export { liveness, withAliases, defsUses, blockUseDef, canon };
+// ---------------------------------------------------------------- value forwarding (SSA-lite)
+
+const CAP = 72; // do not forward an expression longer than this (keeps readability, bounds blow-up)
+
+const FRAMEREG = new Set(['rsp', 'rbp', 'esp', 'ebp', 'sp', 'bp', 'spl', 'bpl']);
+
+/**
+ * Forward each register's expression across the CFG, conservatively: a block inherits its
+ * predecessor's exit environment only when it has exactly one predecessor, so there is never
+ * a value merge (a phi) to resolve and never a wrong join. A value computed before a branch
+ * then reads through into the arm that uses it, instead of being re-materialised. A block's
+ * spill of a register is suppressed only when the block has exactly one successor and that
+ * successor inherits (and so will inline) the same value — so a spill is removed, never moved
+ * or duplicated. The frame registers (rsp/rbp) are never forwarded; they stay the symbolic
+ * frame base so the stack-frame pass keeps working. `lift(insns, inEnv)` returns { outEnv };
+ * it is the same lifter used for emission, so the forwarded values match the printed ones.
+ *
+ * Returns { inEnv: Map(start -> envMap), noSpill: Map(start -> Set rawReg) }.
+ */
+function valueFlow(cfg, lift) {
+  const blocks = cfg.blocks;
+  const order = []; { // reverse-postorder over successors from the entry
+    const seen = new Set(); const post = [];
+    const succOf = new Map(blocks.map((b) => [b.start, b.succ.map((s) => s.to)]));
+    const ids = new Set(blocks.map((b) => b.start));
+    const dfs = (n) => { if (seen.has(n) || !ids.has(n)) return; seen.add(n); for (const s of (succOf.get(n) || [])) dfs(s); post.push(n); };
+    dfs(cfg.start); for (const b of blocks) dfs(b.start); order.push(...post.reverse());
+  }
+  const byId = new Map(blocks.map((b) => [b.start, b]));
+  const preds = new Map(blocks.map((b) => [b.start, []]));
+  for (const b of blocks) for (const s of b.succ) if (byId.has(s.to)) preds.get(s.to).push(b.start);
+  const useOf = new Map(blocks.map((b) => [b.start, blockUseDef(b.insns).use])); // canonical regs read by the block
+
+  // keep only short, non-frame expressions in the forwarded environment
+  const capped = (m) => { const o = new Map(); for (const [k, v] of m) if (typeof v === 'string' && v.length <= CAP && !FRAMEREG.has(k)) o.set(k, v); return o; };
+  const outEnv = new Map(); const inEnv = new Map();
+
+  // entry env: only when there is exactly one predecessor (no merge, no phi), and only for
+  // registers this block actually reads — a value passing through untouched is not carried,
+  // so it is never re-spilled here
+  const succCount = (start) => (byId.get(start) ? byId.get(start).succ.filter((s) => byId.has(s.to)).length : 0);
+  const singleIn = (start) => {
+    const ps = preds.get(start) || [];
+    // strict linear chain only: one predecessor, and that predecessor has only this successor.
+    // This makes value duplication across branches impossible (the value has exactly one path).
+    if (ps.length !== 1 || !outEnv.has(ps[0]) || succCount(ps[0]) !== 1) return new Map();
+    const use = useOf.get(start) || new Set();
+    const res = new Map();
+    for (const [r, e] of outEnv.get(ps[0])) if (use.has(canon(r))) res.set(r, e);
+    return res;
+  };
+
+  let changed = true; let guard = 0;
+  while (changed && guard < 2000) {
+    changed = false; guard += 1;
+    for (const start of order) {
+      const b = byId.get(start); if (!b) continue;
+      const ie = singleIn(start);
+      const prev = outEnv.get(start);
+      const oe = capped(lift(b.insns, ie).outEnv);
+      inEnv.set(start, ie);
+      if (!prev || prev.size !== oe.size || [...oe].some(([k, v]) => prev.get(k) !== v)) { outEnv.set(start, oe); changed = true; }
+    }
+  }
+
+  const noSpill = new Map();
+  for (const b of blocks) {
+    const oe = outEnv.get(b.start) || new Map();
+    const ns = new Set();
+    const succ = b.succ.filter((s) => byId.has(s.to));
+    // suppress a spill only if there is exactly one successor and it inherits this value
+    if (succ.length === 1 && (preds.get(succ[0].to) || []).length === 1) {
+      const sie = inEnv.get(succ[0].to) || new Map();
+      for (const [r, e] of oe) if (e !== r && sie.get(r) === e) ns.add(r);
+    }
+    noSpill.set(b.start, ns);
+  }
+  return { inEnv, noSpill, merges: new Map() };
+}
+
+export { liveness, withAliases, defsUses, blockUseDef, canon, valueFlow };

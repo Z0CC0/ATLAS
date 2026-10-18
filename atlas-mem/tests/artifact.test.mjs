@@ -15,7 +15,8 @@ import { readWasm, liftWasm } from '../tools/artifact-wasm.mjs';
 import { readEvm, lift as liftEvm, selectors as evmSelectors, decode as evmDecode } from '../tools/artifact-evm.mjs';
 import { readPcap, summarise as summarisePcap } from '../tools/artifact-pcap.mjs';
 import { recoverFrame } from '../tools/artifact-frame.mjs';
-import { liveness, defsUses, withAliases } from '../tools/artifact-dataflow.mjs';
+import { liveness, defsUses, withAliases, valueFlow } from '../tools/artifact-dataflow.mjs';
+import { liftBlock as liftX86Block } from '../tools/artifact-lift-x86.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const tool = path.join(here, '..', 'tools', 'artifact.mjs');
@@ -967,6 +968,28 @@ test('liveness keeps a register read downstream and drops a dead one', () => {
   // alias expansion covers the sub-registers for the raw-name lookup
   const ali = withAliases(live.get(0));
   assert.ok(ali.has('ebx') && ali.has('bl'));
+});
+
+test('value forwarding carries a value along a linear chain, into a block that uses it', () => {
+  const cfg = { start: 0, blocks: [
+    { start: 0, insns: [{ addr: 0, len: 3, text: 'mov rbx, [rdx]', mnem: 'mov' }], succ: [{ to: 3, fall: true }] },
+    { start: 3, insns: [{ addr: 3, len: 3, text: 'mov rax, rbx', mnem: 'mov' }, { addr: 6, len: 1, text: 'ret', mnem: 'ret' }], succ: [] },
+  ] };
+  const vf = valueFlow(cfg, (insns, ie) => liftX86Block(insns, null, null, ie));
+  assert.equal(vf.inEnv.get(3).get('rbx'), '*(rdx)', 'rbx forwarded into the block that reads it');
+  assert.ok(vf.noSpill.get(0).has('rbx'), 'the single consuming successor lets the def block skip the spill');
+});
+
+test('value forwarding does not cross a branch (no duplication, no phi)', () => {
+  const cfg = { start: 0, blocks: [
+    { start: 0, insns: [{ addr: 0, len: 3, text: 'mov rbx, [rdx]', mnem: 'mov' }, { addr: 3, len: 2, text: 'jne 0x9', mnem: 'jne' }], succ: [{ to: 9, cond: true }, { to: 5, fall: true }] },
+    { start: 5, insns: [{ addr: 5, len: 3, text: 'mov rax, rbx', mnem: 'mov' }, { addr: 8, len: 1, text: 'ret', mnem: 'ret' }], succ: [] },
+    { start: 9, insns: [{ addr: 9, len: 3, text: 'mov rax, rbx', mnem: 'mov' }, { addr: 12, len: 1, text: 'ret', mnem: 'ret' }], succ: [] },
+  ] };
+  const vf = valueFlow(cfg, (insns, ie) => liftX86Block(insns, null, null, ie));
+  assert.equal(vf.inEnv.get(5).size, 0, 'a branch predecessor forwards nothing (would duplicate)');
+  assert.equal(vf.inEnv.get(9).size, 0);
+  assert.ok(!vf.noSpill.get(0).has('rbx'), 'the two-way block keeps its spill');
 });
 
 test.after(() => { try { fs.rmSync(tmp, { recursive: true, force: true }); } catch { /* windows */ } });

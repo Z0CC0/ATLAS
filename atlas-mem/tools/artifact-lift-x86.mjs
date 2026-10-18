@@ -21,8 +21,8 @@ function parse(text) {
 
 /** Lift one block. Returns { stmts: [string], cond: {text} | null } (cond for a trailing jcc).
  * `sym(ins)` may return an imported/exported name for a call target. */
-function liftBlock(insns, sym, liveOut) {
-  const env = new Map(); // register -> current expression
+function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
+  const env = new Map(inEnv || []); // register -> current expression (seeded from predecessors)
   const stmts = [];
   let cmp = null; // { a, b, test }
   const CALLER_SAVED = ['rax', 'rcx', 'rdx', 'r8', 'r9', 'r10', 'r11', 'eax', 'ecx', 'edx'];
@@ -44,6 +44,7 @@ function liftBlock(insns, sym, liveOut) {
       const [dst, src] = ops; if (isMem(dst)) stmts.push(`*(${mem(dst)}) = ${val(src)};`); else env.set(dst, val(src)); continue;
     }
     if (mnem === 'lea') { const [dst, m] = ops; env.set(dst, `&(${subAddr(m.slice(1, -1))})`); continue; }
+    if ((mnem === 'xor' || mnem === 'sub') && ops.length === 2 && ops[0] === ops[1] && !isMem(ops[0])) { env.set(ops[0], '0'); continue; } // the zeroing idiom
     if (BIN[mnem] && ops.length >= 2) { const [dst, src] = ops; const e = `(${val(dst)} ${BIN[mnem]} ${val(src)})`; if (isMem(dst)) stmts.push(`*(${mem(dst)}) = ${e};`); else env.set(dst, e); continue; }
     if (mnem === 'inc' || mnem === 'dec') { const d = ops[0]; const e = `(${val(d)} ${mnem === 'inc' ? '+' : '-'} 1)`; if (isMem(d)) stmts.push(`*(${mem(d)}) = ${e};`); else env.set(d, e); continue; }
     if (mnem === 'neg') { env.set(ops[0], `(-${val(ops[0])})`); continue; }
@@ -58,7 +59,7 @@ function liftBlock(insns, sym, liveOut) {
   }
   // materialise the registers this block defined to a non-trivial expression (they may be
   // read by a successor; without cross-block liveness we spill them all, conservatively)
-  for (const [r, e] of env) if (e !== r && !/^\(rax\)$/.test(e) && (!liveOut || liveOut.has(r))) stmts.push(`${r} = ${e};`);
+  for (const [r, e] of env) if (e !== r && !/^\(rax\)$/.test(e) && (!liveOut || liveOut.has(r)) && !(noSpill && noSpill.has(r))) stmts.push(`${r} = ${e};`);
   // the trailing condition
   const term = insns[insns.length - 1]; let cond = null;
   if (term && /^j/.test(term.mnem) && term.mnem !== 'jmp') {
@@ -68,7 +69,7 @@ function liftBlock(insns, sym, liveOut) {
     else if (cc === 'ns') cond = { text: cmp ? `(${cmp.a} - ${cmp.b}) >= 0` : '!SF' };
     else cond = { text: `cc_${cc}` };
   }
-  return { stmts, cond };
+  return { stmts, cond, outEnv: new Map(env) };
 }
 
 /** Lift a whole function (its CFG) to structured pseudo-C with conditions and labelled gotos. */

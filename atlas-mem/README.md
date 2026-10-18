@@ -266,9 +266,10 @@ return (rax), annotated in place (`rax = (ULONG)ADVAPI32.EventRegister(/* LPCGUI
 with sign carried from signed vs unsigned jumps; an unanchored type stays `?`. The stack
 frame is then recovered: each slot becomes a named local (`*(rsp+0x30)` → `local_30`), and
 the compiler boilerplate (stack canary, frame set-up/tear-down) is annotated. A backward
-liveness pass over the CFG then drops the dead register writes at block ends (a value used
-only in an address is substituted in), so the spill noise is gone. Phi nodes at value merges
-and user-struct recovery remain the frontier.
+liveness pass over the CFG drops the dead register writes at block ends (a value used only in
+an address is substituted in), and a value is forwarded into the block that uses it along a
+linear chain (never across a branch, so it can't be duplicated); `xor r, r` reads as `r = 0`.
+Full SSA with phi nodes at value merges and user-struct recovery remain the frontier.
 `dex --pseudo` lifts each Dalvik method to pseudo-Java (register forward substitution, `new Type(args)` from new-instance + `<init>`, calls folded through `move-result`): the android.jar stub reads back as `throw new RuntimeException("Stub!");`.
 `wasm` reads a WebAssembly module per the W3C core spec: sections, signatures, imports/exports, and each function's code; `wasm --pseudo` lifts the stack machine back to structured pseudocode (block/loop/if become real control flow, loads/stores become `mem[addr]`, calls use the export/import name), e.g. a function reads back as `return (local0 + local1);`.
 `evm` reads Ethereum Virtual Machine bytecode (raw or hex) per the EVM opcode list: disassembly with JUMPDEST labels, the 4-byte function selectors from the dispatcher, and the Solidity metadata (solc version, IPFS hash); `evm --pseudo` lifts the stack to pseudo-Solidity (`storage[k]`, `msg.sender`, `calldata[x]`, constant jumps resolved).
