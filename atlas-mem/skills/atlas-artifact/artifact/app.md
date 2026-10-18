@@ -24,6 +24,19 @@ program) and reads every JavaScript and HTML file outside `node_modules`:
   clipboard, screen capture); `eval` and `new Function`; environment variables read whose
   name says key, token, secret or password.
 - **Native code.** Every `.node` addon inside or beside the archive (`app.asar.unpacked`).
+- **The bundles.** A file that is a webpack build is read by its module table: every
+  numbered module with its extent, and the edges between them from the module's own
+  require calls; an esbuild build by its named modules. A fact found inside a bundle then
+  carries the module it sits in. When the archive ships the bundle's map, every fact also
+  carries the original file, line and column the map claims; the record says it is the
+  bundler's claim.
+- **The fuses.** An installed program has an executable beside `resources/`; the build-time
+  switches live in it, after a fixed sentinel. Eight are known by name; a ninth or later
+  is reported by its index, never guessed. Six have a state a shipped application is
+  expected to have (`RunAsNode` off, cookie encryption on, `NODE_OPTIONS` ignored, the
+  inspector arguments ignored, the archive's integrity checked, only the archive loaded);
+  any other state is listed as weak and goes to `atlas-secure` as a `high` when the program
+  is distributed. `fuses <exe>` reads one executable alone.
 
 ## How it reads
 
@@ -59,6 +72,9 @@ bundler dropped). The difference is the finding; neither record alone is.
 
 ## Two versions
 
-Two archives of the same program, one `app` each, `--detail full`, and the lists compared
-by name: channels added and removed, hosts added and removed, preferences that changed,
-processes that appeared. What appeared is read first.
+`compare <A> <B>` reads both and lists what changed by name: channels, handlers, hosts,
+processes, preferences, system APIs, bridge keys, packages, native addons, environment
+secrets, fuses, modules, each as added and removed. What appeared is read first; a host or
+a process that was not there before is the question to answer. A module the bundler
+renamed shows as removed and added, and the record says so. The comparison is `derived`:
+what neither reading could see, it cannot compare.

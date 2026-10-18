@@ -217,9 +217,16 @@ touches, `eval`, the secret-shaped environment variables it reads, the native ad
 held in a constant, an object of channels, a template, a compiled enum or another file of
 the archive is resolved and marked `derived`; a wrapper the app wrote around
 `ipcMain.handle`, `ipcRenderer.invoke` or `webContents.send` is recognised from its body
-and its callers counted (`derived` for a plain call, `inferred` through an object). `sqlite` reads a database file read-only: schema, counts, indexes,
-triggers, a sample of one table on request. `map` decodes a source map and turns a bundled
-position back into a file, line and name.
+and its callers counted (`derived` for a plain call, `inferred` through an object). A webpack build
+is read by its module table (modules with their extent, edges from the module's own
+require calls), an esbuild build by its named modules, and every fact inside a bundle
+carries its module; when the archive ships the map, the original file, line and column
+too. `fuses` reads the build-time switches of the Electron executable after their sentinel
+(eight by name, later ones by index) and lists the ones a shipped application is not
+expected to have. `compare` reads two versions and lists what changed by name. `sqlite`
+reads a database file read-only: schema, counts, indexes, triggers, a sample of one table
+on request. `map` decodes a source map and turns a bundled position back into a file,
+line and name.
 
 Every answer is one record: an id derived from the record, the subject with its sha256,
 the operation, a confidence (`observed` from the bytes, `derived` from observed facts,
@@ -234,7 +241,10 @@ the author's own app (180 MB, 7,790 files) 0.9 s, 60 handlers of which 49 throug
 wrapper, 67 channels, every renderer call paired; a bundled app with Electron on a
 namespace: 0 → 3 handlers; an app whose channels are a compiled enum: 0 → 8 handlers, 12 →
 3 unknown; one app with channels built from `this` fields at run time: 23 unknown, stated
-as such.
+as such. The same five, read as bundles: one webpack build of four files with 601, 142,
+100 and 13 modules and 2,249 edges in all; one esbuild-style build shipping its map, every
+finding mapped to its original file and line; fuses read from all four executables, with
+four to six switches in the weak state on each.
 
 ---
 

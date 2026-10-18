@@ -193,6 +193,52 @@ function importBindingsOf(root) {
 }
 
 /**
+ * The bundler's own structure, when there is one: a webpack module table (an object whose
+ * members are numbered functions `79418(e,t,r){…}` or numbered pairs), or esbuild's
+ * `__commonJS({ "src/x.ts"(exports, module) {…} })` / `__esm({ "src/x.ts"() {…} })`. Returns
+ * the modules with their extent and the edges between them (webpack: calls to the module's
+ * own require parameter with a number), or null when the file is not a bundle this reads.
+ */
+function bundleOf(root) {
+  const modules = []; const edges = [];
+  const ext = (n) => ({ start: { line: n.startPosition.row + 1, col: n.startPosition.column }, end: { line: n.endPosition.row + 1, col: n.endPosition.column } });
+  let kind = null;
+  walk(root, (n) => {
+    if (kind === 'webpack') return false;
+    if (n.type === 'object' && n.namedChildCount >= 10) {
+      const kids = n.namedChildren;
+      const numbered = kids.filter((c) => (c.type === 'method_definition' && /^\d+$/.test(c.childForFieldName('name')?.text || '')) || (c.type === 'pair' && /^(number|string)$/.test(c.childForFieldName('key')?.type || '') && /^(function_expression|arrow_function|function)$/.test(c.childForFieldName('value')?.type || '')));
+      if (numbered.length >= 10 && numbered.length >= kids.length * 0.9) {
+        kind = 'webpack';
+        for (const c of numbered) {
+          const id = c.type === 'method_definition' ? c.childForFieldName('name').text : c.childForFieldName('key').text.replace(/^['"`]|['"`]$/g, '');
+          const fn = c.type === 'method_definition' ? c : c.childForFieldName('value');
+          const params = fn.childForFieldName('parameters');
+          const req = params && params.namedChildCount >= 3 ? params.namedChild(2).text : null;
+          modules.push({ id, ...ext(c) });
+          if (req) walk(fn.childForFieldName('body') || fn, (m) => {
+            if (m.type !== 'call_expression') return;
+            if (m.childForFieldName('function')?.text !== req) return;
+            const a = m.childForFieldName('arguments')?.namedChild(0);
+            if (a && a.type === 'number') edges.push({ from: id, to: a.text });
+          });
+        }
+        return false;
+      }
+    }
+    if (n.type === 'call_expression' && /^(__commonJS|__esm)$/.test(n.childForFieldName('function')?.text || '')) {
+      const obj = n.childForFieldName('arguments')?.namedChild(0);
+      const m = obj?.type === 'object' ? obj.namedChildren.find((c) => c.type === 'method_definition' || c.type === 'pair') : null;
+      const key = m ? (m.type === 'method_definition' ? m.childForFieldName('name') : m.childForFieldName('key')) : null;
+      const id = key ? (literalOf(key) ?? key.text.replace(/^['"`]|['"`]$/g, '')) : null;
+      if (id) { kind = kind || 'esbuild'; modules.push({ id, ...ext(n) }); }
+      return false;
+    }
+  });
+  return kind ? { kind, modules, edges } : null;
+}
+
+/**
  * Read one file. `imported` is what the caller resolved from the file's imports (scalars and
  * objects by local name), empty on the first pass.
  */
@@ -201,8 +247,9 @@ function scan(text, file, imported, knownWrappers) {
   knownWrappers = knownWrappers || new Map();
   return parse.withTree(text, file, (root) => {
     const consts = constantsOf(root);
-    const out = { imports: [], ipc: [], bridge: [], windows: [], prefs: [], urls: [], processes: [], shell: [], powers: [], evals: [], envSecrets: [], wrappers: [], calls: [], constants: consts, bindings: importBindingsOf(root), broken: root.hasError };
+    const out = { bundle: bundleOf(root), imports: [], ipc: [], bridge: [], windows: [], prefs: [], urls: [], processes: [], shell: [], powers: [], evals: [], envSecrets: [], wrappers: [], calls: [], constants: consts, bindings: importBindingsOf(root), broken: root.hasError };
     const line = (n) => n.startPosition.row + 1;
+    const col = (n) => n.startPosition.column;
     const fnParams = (fnNode) => { const p = fnNode.childForFieldName('parameters') || fnNode.childForFieldName('parameter'); const names = []; if (p) for (const c of (p.type === 'identifier' ? [p] : p.namedChildren)) { const id = c.type === 'identifier' ? c : c.type === 'assignment_pattern' ? c.childForFieldName('left') : c.type === 'rest_pattern' ? c.namedChild(0) : null; names.push(id && id.type === 'identifier' ? id.text : null); } return names; };
     // wrappers: a function whose body calls ipcMain.<method>(<one of its own parameters>, …)
     const functions = [];
@@ -222,26 +269,26 @@ function scan(text, file, imported, knownWrappers) {
         const obj = fn.childForFieldName('object')?.text; const method = fn.childForFieldName('property')?.text;
         const first = n.childForFieldName('arguments')?.namedChild(0);
         const main = /(^|\.)ipcMain$/.test(obj || ''), renderer = /(^|\.)ipcRenderer$/.test(obj || ''), push = method === 'send' && /webContents$/.test(obj || '');
-        if ((main && IPC_MAIN.has(method) || renderer && IPC_RENDERER.has(method) || push) && first?.type === 'identifier' && params.includes(first.text)) out.wrappers.push({ name: f.name, side: main ? 'main' : renderer ? 'renderer' : 'push', method: Boolean(f.method), ipc: method, arg: params.indexOf(first.text), line: line(n) });
+        if ((main && IPC_MAIN.has(method) || renderer && IPC_RENDERER.has(method) || push) && first?.type === 'identifier' && params.includes(first.text)) out.wrappers.push({ name: f.name, side: main ? 'main' : renderer ? 'renderer' : 'push', method: Boolean(f.method), ipc: method, arg: params.indexOf(first.text), line: line(n), col: col(n) });
       });
     }
     walk(root, (n) => {
-      if (n.type === 'import_statement') { const s = literalOf(n.childForFieldName('source')); if (s) out.imports.push({ spec: s, line: line(n), dynamic: false }); return; }
-      if (n.type === 'export_statement' && n.childForFieldName('source')) { const s = literalOf(n.childForFieldName('source')); if (s) out.imports.push({ spec: s, line: line(n), dynamic: false }); return; }
+      if (n.type === 'import_statement') { const s = literalOf(n.childForFieldName('source')); if (s) out.imports.push({ spec: s, line: line(n), col: col(n), dynamic: false }); return; }
+      if (n.type === 'export_statement' && n.childForFieldName('source')) { const s = literalOf(n.childForFieldName('source')); if (s) out.imports.push({ spec: s, line: line(n), col: col(n), dynamic: false }); return; }
       if (n.type === 'string' || n.type === 'template_string') {
         const t = literalOf(n) ?? n.text;
-        for (const m of t.matchAll(URL_RE)) out.urls.push({ url: m[0].replace(/[.,;:]+$/, ''), line: line(n) });
+        for (const m of t.matchAll(URL_RE)) out.urls.push({ url: m[0].replace(/[.,;:]+$/, ''), line: line(n), col: col(n) });
         return false;
       }
       if (n.type === 'member_expression') {
         const t = n.text;
-        if (POWERS.test(t)) out.powers.push({ api: t, line: line(n) });
-        if (/^process\.env\.[A-Z0-9_]+$/.test(t) && SECRET_ENV.test(t.split('.').pop())) out.envSecrets.push({ name: t.split('.').pop(), line: line(n) });
+        if (POWERS.test(t)) out.powers.push({ api: t, line: line(n), col: col(n) });
+        if (/^process\.env\.[A-Z0-9_]+$/.test(t) && SECRET_ENV.test(t.split('.').pop())) out.envSecrets.push({ name: t.split('.').pop(), line: line(n), col: col(n) });
         return;
       }
       if (n.type === 'new_expression') {
         if (n.childForFieldName('constructor')?.text === 'BrowserWindow') {
-          const w = { line: line(n), preload: null, preferences: [] };
+          const w = { line: line(n), col: col(n), preload: null, preferences: [] };
           const arg = n.childForFieldName('arguments')?.namedChild(0);
           if (arg) walk(arg, (p) => {
             if (p.type !== 'pair') return;
@@ -250,12 +297,12 @@ function scan(text, file, imported, knownWrappers) {
             else if (PREFS.has(k) && /^(true|false)$/.test(v?.text || '')) w.preferences.push(`${k}:${v.text}`);
           });
           out.windows.push(w);
-        } else if (n.childForFieldName('constructor')?.text === 'Function') out.evals.push({ line: line(n) });
+        } else if (n.childForFieldName('constructor')?.text === 'Function') out.evals.push({ line: line(n), col: col(n) });
         return;
       }
       if (n.type === 'pair') {
         const k = n.childForFieldName('key')?.text; const v = n.childForFieldName('value');
-        if (PREFS.has(k) && /^(true|false)$/.test(v?.text || '') && v.text !== SAFE_PREF[k]) out.prefs.push({ flag: `${k}:${v.text}`, line: line(n) });
+        if (PREFS.has(k) && /^(true|false)$/.test(v?.text || '') && v.text !== SAFE_PREF[k]) out.prefs.push({ flag: `${k}:${v.text}`, line: line(n), col: col(n) });
         return;
       }
       if (n.type !== 'call_expression') return;
@@ -263,28 +310,28 @@ function scan(text, file, imported, knownWrappers) {
       const first = args?.namedChild(0);
       if (fn?.type === 'identifier') {
         const name = fn.text;
-        if (name === 'require' || name === 'import') { const s = literalOf(first); if (s) out.imports.push({ spec: s, line: line(n), dynamic: name === 'import' }); else if (first) out.imports.push({ spec: null, expr: first.text.slice(0, 80), line: line(n), dynamic: true }); return; }
-        if (name === 'eval') { out.evals.push({ line: line(n) }); return; }
-        if (PROCESS_FNS.has(name)) { const r = resolve(first, consts, imported); out.processes.push({ command: r ? r.value : null, expr: r ? null : first?.text.slice(0, 120) || null, confidence: r ? r.confidence : null, line: line(n) }); return; }
-        if (first) out.calls.push({ name, args: args.namedChildren, line: line(n) });
+        if (name === 'require' || name === 'import') { const s = literalOf(first); if (s) out.imports.push({ spec: s, line: line(n), col: col(n), dynamic: name === 'import' }); else if (first) out.imports.push({ spec: null, expr: first.text.slice(0, 80), line: line(n), col: col(n), dynamic: true }); return; }
+        if (name === 'eval') { out.evals.push({ line: line(n), col: col(n) }); return; }
+        if (PROCESS_FNS.has(name)) { const r = resolve(first, consts, imported); out.processes.push({ command: r ? r.value : null, expr: r ? null : first?.text.slice(0, 120) || null, confidence: r ? r.confidence : null, line: line(n), col: col(n) }); return; }
+        if (first) out.calls.push({ name, args: args.namedChildren, line: line(n), col: col(n) });
         return;
       }
-      if (fn?.type === 'import') { const s = literalOf(first); out.imports.push({ spec: s, expr: s ? undefined : first?.text.slice(0, 80), line: line(n), dynamic: true }); return; }
+      if (fn?.type === 'import') { const s = literalOf(first); out.imports.push({ spec: s, expr: s ? undefined : first?.text.slice(0, 80), line: line(n), col: col(n), dynamic: true }); return; }
       if (fn?.type !== 'member_expression') return;
       const obj = fn.childForFieldName('object'); const method = fn.childForFieldName('property')?.text;
-      if (first && method && !/(^|\.)(ipcMain|ipcRenderer|contextBridge|shell)$/.test(obj?.text || '') && !/webContents$/.test(obj?.text || '')) out.calls.push({ name: method, args: args.namedChildren, line: line(n), member: true });
+      if (first && method && !/(^|\.)(ipcMain|ipcRenderer|contextBridge|shell)$/.test(obj?.text || '') && !/webContents$/.test(obj?.text || '')) out.calls.push({ name: method, args: args.namedChildren, line: line(n), col: col(n), member: true });
       const objText = obj?.text || '';
       // a bundle keeps the Electron names on a namespace: `electron.ipcMain`, `_electron.ipcRenderer`, `require("electron").shell`
       const isMain = /(^|\.)ipcMain$/.test(objText), isRenderer = /(^|\.)ipcRenderer$/.test(objText);
       if (isMain && IPC_MAIN.has(method) || isRenderer && IPC_RENDERER.has(method) || method === 'send' && /webContents$/.test(objText)) {
         const r = resolve(first, consts, imported);
         const side = isMain ? 'main' : isRenderer ? 'renderer' : 'push';
-        out.ipc.push({ side, via: `${side === 'push' ? 'webContents' : side === 'main' ? 'ipcMain' : 'ipcRenderer'}.${method}`, channel: r ? r.value : null, expr: r ? null : first?.text.slice(0, 80) || null, confidence: r ? r.confidence : null, line: line(n) });
+        out.ipc.push({ side, via: `${side === 'push' ? 'webContents' : side === 'main' ? 'ipcMain' : 'ipcRenderer'}.${method}`, channel: r ? r.value : null, expr: r ? null : first?.text.slice(0, 80) || null, confidence: r ? r.confidence : null, line: line(n), col: col(n) });
         return;
       }
-      if (/(^|\.)contextBridge$/.test(objText) && method === 'exposeInMainWorld') { const r = resolve(first, consts, imported); out.bridge.push({ key: r ? r.value : null, expr: r ? null : first?.text.slice(0, 80), line: line(n) }); return; }
-      if (/(^|\.)shell$/.test(objText) && SHELL_FNS.has(method)) { out.shell.push({ call: `shell.${method}`, line: line(n) }); return; }
-      if (/^(child_process|cp)$/.test(objText) && PROCESS_FNS.has(method) || PROCESS_FNS.has(method) && objText.length < 20 && /process/i.test(objText)) { const r = resolve(first, consts, imported); out.processes.push({ command: r ? r.value : null, expr: r ? null : first?.text.slice(0, 120) || null, confidence: r ? r.confidence : null, line: line(n) }); return; }
+      if (/(^|\.)contextBridge$/.test(objText) && method === 'exposeInMainWorld') { const r = resolve(first, consts, imported); out.bridge.push({ key: r ? r.value : null, expr: r ? null : first?.text.slice(0, 80), line: line(n), col: col(n) }); return; }
+      if (/(^|\.)shell$/.test(objText) && SHELL_FNS.has(method)) { out.shell.push({ call: `shell.${method}`, line: line(n), col: col(n) }); return; }
+      if (/^(child_process|cp)$/.test(objText) && PROCESS_FNS.has(method) || PROCESS_FNS.has(method) && objText.length < 20 && /process/i.test(objText)) { const r = resolve(first, consts, imported); out.processes.push({ command: r ? r.value : null, expr: r ? null : first?.text.slice(0, 120) || null, confidence: r ? r.confidence : null, line: line(n), col: col(n) }); return; }
       if (fn.text === 'process.env' ) return;
     });
     // calls to a wrapper with a resolvable first argument are handlers (or senders), derived
@@ -302,7 +349,7 @@ function scan(text, file, imported, knownWrappers) {
       if (!argNode) continue;
       const r = resolve(argNode, consts, imported);
       if (!r && c.member) continue;
-      out.wrapperCalls.push({ wrapper: w.name, side: w.side, via: w.side === 'push' ? 'webContents.send' : `wrapper ${w.name}`, channel: r ? r.value : null, expr: r ? null : argNode.text.slice(0, 80), confidence: c.member ? 'inferred' : 'derived', line: c.line });
+      out.wrapperCalls.push({ wrapper: w.name, side: w.side, via: w.side === 'push' ? 'webContents.send' : `wrapper ${w.name}`, channel: r ? r.value : null, expr: r ? null : argNode.text.slice(0, 80), confidence: c.member ? 'inferred' : 'derived', line: c.line, col: c.col });
     }
     delete out.calls;
     return out;

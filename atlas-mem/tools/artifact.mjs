@@ -12,6 +12,8 @@
  *   node artifact.mjs app    <app.asar | folder> [--all] [--detail summary|full] [--page N] [--per 60]
  *   node artifact.mjs sqlite <file.db> [--table <name>] [--limit 20]
  *   node artifact.mjs map    <file.map> [--line L --col C]
+ *   node artifact.mjs fuses  <app.exe | installed folder>        the build-time switches of an Electron executable
+ *   node artifact.mjs compare <app A> <app B> [--all]          what changed between two versions, by name
  *
  * Every command prints one record (JSON): an id derived from the record itself, the subject
  * (name, path, format, sha256, bytes), the operation and its parameters, the result, a
@@ -251,11 +253,12 @@ async function analyzeApp(fs, opts) {
     files: { total: all.length, bytes: all.reduce((s, f) => s + f.size, 0), sources: sources.length, html: html.length, unpacked: all.filter((f) => f.unpacked).length },
     nativeAddons: all.filter((f) => f.path.endsWith('.node')).map((f) => f.path),
     packages: {}, modules: [], edges: [], ipc: { handlers: [], senders: [], dynamic: [], wrappers: [] }, bridge: [], windows: [], preferences: [], urls: {}, processes: [], shell: [], powers: [], eval: [], envSecrets: [], renderers: [],
-    reader: 'text',
+    reader: 'text', bundles: [], maps: 0, fuses: null,
   };
   const urlSeen = new Map();
   const texts = new Map();
-  let bytesScanned = 0, skipped = 0, minified = 0, broken = 0;
+  let bytesScanned = 0, skipped = 0, minified = 0, broken = 0, maps = 0;
+  const bundles = [];
   for (const f of sources) {
     const buf = fs.read(f.path);
     if (!buf) { skipped += 1; continue; }
@@ -263,10 +266,10 @@ async function analyzeApp(fs, opts) {
     texts.set(f.path, buf.toString('utf8'));
     bytesScanned += buf.length;
   }
-  const noteUrl = (u, file, line) => {
+  const noteUrl = (u, file, line, module, origin) => {
     let host; try { host = new URL(u).host; } catch { return; }
     if (!host || /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])/.test(host) && !opts.all) return;
-    const cur = urlSeen.get(host) || { count: 0, first: { file, line }, examples: new Set() };
+    const cur = urlSeen.get(host) || { count: 0, first: { file, line, ...(module ? { module } : {}), ...(origin ? { origin } : {}) }, examples: new Set() };
     cur.count += 1; if (cur.examples.size < 3) cur.examples.add(u.slice(0, 120));
     urlSeen.set(host, cur);
   };
@@ -313,31 +316,42 @@ async function analyzeApp(fs, opts) {
         continue;
       }
       if (r.broken) broken += 1;
+      // where a fact sits: the bundle module around it, and the original source when the
+      // archive ships the bundle's map (the map is the bundler's claim, said in the record)
+      const inside = (e) => { if (!r.bundle || e.line === undefined) return null; const after = (p, q) => p.line > q.line || (p.line === q.line && p.col >= q.col); const before = (p, q) => p.line < q.line || (p.line === q.line && p.col <= q.col); const m = r.bundle.modules.find((mm) => after(e, mm.start) && before(e, mm.end)); return m ? m.id : null; };
+      const mapPath = `${f.path}.map`;
+      let origin = null;
+      if (fs.has(mapPath)) {
+        try { const mapObj = JSON.parse(fs.read(mapPath).toString('utf8')); const dec = decodeMappings(mapObj.mappings || ''); origin = (e) => { const row = dec.lines[e.line - 1] || []; let best = null; for (const s of row) if (s.gcol <= (e.col || 0) && (!best || s.gcol > best.gcol)) best = s; return best && best.src !== undefined ? { source: (mapObj.sources || [])[best.src] || null, line: best.oline + 1, col: best.ocol } : null; }; mod.map = mapPath; maps += 1; } catch { origin = null; }
+      }
+      const place = (e) => { const m = inside(e); if (m) e.module = m; const o = origin ? origin(e) : null; if (o && o.source) e.origin = o; return e; };
+      if (r.bundle) { mod.bundle = { kind: r.bundle.kind, modules: r.bundle.modules.length, edges: r.bundle.edges.length }; bundles.push({ file: f.path, kind: r.bundle.kind, modules: r.bundle.modules.length, edges: r.bundle.edges.length }); }
       for (const i of r.imports) { mod.imports += 1; if (i.spec) noteImport(f.path, i.spec, i.line); else out.edges.push({ from: f.path, to: null, expr: i.expr, line: i.line, missing: false, dynamic: true }); }
       for (const c of r.ipc) {
-        const rec = { channel: c.channel, via: c.via, file: f.path, line: c.line, confidence: c.confidence };
-        if (c.channel === null) out.ipc.dynamic.push({ file: f.path, line: c.line, via: c.via, expr: c.expr });
+        const rec = place({ channel: c.channel, via: c.via, file: f.path, line: c.line, col: c.col, confidence: c.confidence });
+        if (c.channel === null) out.ipc.dynamic.push(place({ file: f.path, line: c.line, col: c.col, via: c.via, expr: c.expr }));
         else if (c.side === 'main') out.ipc.handlers.push(rec);
         else out.ipc.senders.push(rec);
       }
       for (const c of r.wrapperCalls) {
-        const rec = { channel: c.channel, via: c.via, file: f.path, line: c.line, confidence: c.confidence };
-        if (c.channel === null) out.ipc.dynamic.push({ file: f.path, line: c.line, via: c.via, expr: c.expr });
+        const rec = place({ channel: c.channel, via: c.via, file: f.path, line: c.line, col: c.col, confidence: c.confidence });
+        if (c.channel === null) out.ipc.dynamic.push(place({ file: f.path, line: c.line, col: c.col, via: c.via, expr: c.expr }));
         else if (c.side === 'main') out.ipc.handlers.push(rec);
         else out.ipc.senders.push(rec);
       }
-      for (const b of r.bridge) out.bridge.push({ key: b.key, expr: b.expr, file: f.path, line: b.line });
-      for (const w of r.windows) out.windows.push({ file: f.path, ...w });
-      for (const pr of r.prefs) out.preferences.push({ flag: pr.flag, file: f.path, line: pr.line });
-      for (const u of r.urls) noteUrl(u.url, f.path, u.line);
-      for (const pc of r.processes) out.processes.push({ command: pc.command, expr: pc.expr, confidence: pc.confidence, file: f.path, line: pc.line });
+      for (const b of r.bridge) out.bridge.push(place({ key: b.key, expr: b.expr, file: f.path, line: b.line, col: b.col }));
+      for (const w of r.windows) out.windows.push(place({ file: f.path, ...w }));
+      for (const pr of r.prefs) out.preferences.push(place({ flag: pr.flag, file: f.path, line: pr.line, col: pr.col }));
+      for (const u of r.urls) { const e = place({ line: u.line, col: u.col }); noteUrl(u.url, f.path, u.line, e.module, e.origin); }
+      for (const pc of r.processes) out.processes.push(place({ command: pc.command, expr: pc.expr, confidence: pc.confidence, file: f.path, line: pc.line, col: pc.col }));
       if (r.processes.length) mod.spawns = r.processes.length;
-      for (const s of r.shell) out.shell.push({ call: s.call, file: f.path, line: s.line });
-      for (const pw of r.powers) out.powers.push({ api: pw.api, file: f.path, line: pw.line });
-      for (const e of r.evals) out.eval.push({ file: f.path, line: e.line });
-      for (const e of r.envSecrets) out.envSecrets.push({ name: e.name, file: f.path, line: e.line });
+      for (const s of r.shell) out.shell.push(place({ call: s.call, file: f.path, line: s.line, col: s.col }));
+      for (const pw of r.powers) out.powers.push(place({ api: pw.api, file: f.path, line: pw.line, col: pw.col }));
+      for (const e of r.evals) out.eval.push(place({ file: f.path, line: e.line, col: e.col }));
+      for (const e of r.envSecrets) out.envSecrets.push(place({ name: e.name, file: f.path, line: e.line, col: e.col }));
       out.modules.push(mod);
     }
+    out.bundles = bundles; out.maps = maps;
     out.ipc.wrappers = [...wrappers.values()].map((w) => ({ name: w.name, side: w.side, ipc: w.ipc, method: w.method, file: w.file, line: w.line }));
   } else {
     for (const f of sources) {
@@ -380,6 +394,8 @@ async function analyzeApp(fs, opts) {
   if (!entry) limitations.push('no `main` in package.json: reachability from the entry not computed');
   if (!opts.all) limitations.push('node_modules listed and counted, not scanned (--all scans them)');
   if (skipped) limitations.push(`${skipped} source file(s) not scanned (unreadable or above ${MAX_PARSE_BYTES / 1024 / 1024} MB)`);
+  if (bundles.length) limitations.push(`${bundles.length} bundle(s) read by their module table: a module is named by its bundler id${maps ? '' : ', the original file only when the archive ships the map'}`);
+  if (maps) limitations.push(`${maps} source map(s) found beside bundles and used for the original positions: a map is the bundler's claim, not checked against the bundle`);
   if (minified) limitations.push(`${minified} file(s) look minified or bundled: names inside them are the bundler's, imports are what the bundle kept`);
   if (broken) limitations.push(`${broken} file(s) did not parse cleanly (syntax the grammar does not know, or not JavaScript): read with the tree where it held`);
   if (out.ipc.dynamic.length) limitations.push(`${out.ipc.dynamic.length} IPC call(s) whose channel could not be resolved to a string (listed under ipc.dynamic with the expression)`);
@@ -445,6 +461,8 @@ function appText(rec) {
   const mods = r.modules.filter((m) => m.scanned);
   L.push(`modules ${mods.length}, reached from entry ${mods.filter((m) => m.reachedFromEntry).length}, minified ${mods.filter((m) => m.minified).length}`);
   L.push(`ipc: ${r.ipc.handlers.length} handlers, ${r.ipc.senders.length} senders/listeners, ${r.ipc.channels} channels; renderer→main never handled ${r.ipc.sentNeverHandled.length}, handled never sent ${r.ipc.handledNeverSent.length}, main→renderer never listened ${r.ipc.pushedNeverListened.length}, listened never pushed ${r.ipc.listenedNeverPushed.length}, dynamic ${r.ipc.dynamic.length}`);
+  if (r.bundles && r.bundles.length) L.push(`bundles: ${r.bundles.map((b) => `${b.file} (${b.kind}, ${b.modules} modules, ${b.edges} edges)`).join('; ')}${r.maps ? `; ${r.maps} map(s) used for original positions` : ''}`);
+  if (r.fuses) L.push(`fuses: ${r.fuses.count} read from ${basename(r.fuses.executable)}; weak ${r.fuses.weak.length ? r.fuses.weak.join(' ') : 'none'}`);
   L.push(`bridge keys ${r.bridge.map((b) => b.key).join(', ') || '-'}`);
   for (const w of r.windows) L.push(`window ${w.file}:${w.line}  preload ${w.preload || '-'}  ${w.preferences.join(' ') || ''}`);
   for (const p of r.preferences) L.push(`weak preference ${p.flag}  ${p.file}:${p.line}`);
@@ -472,6 +490,8 @@ async function cmdApp(path) {
   const detail = flags.detail || 'summary';
   const { out, limitations, coverage } = await analyzeApp(fs, { all: Boolean(flags.all), text_only: Boolean(flags['text-only']) });
   fs.close();
+  const exe = fs.kind === 'asar' ? executableBeside(fs.root) : null;
+  if (exe) { const fz = readFuses(exe); if (fz) { out.fuses = { executable: exe, ...fz }; if (fz.weak && fz.weak.length) limitations.push(`fuses: ${fz.weak.join(', ')} differ from what a shipped application is expected to have`); } }
   const st = statSync(fs.root);
   const subject = { name: basename(fs.root), path: fs.root, format: fs.kind === 'asar' ? 'asar' : detectDir(fs.root), bytes: st.isDirectory() ? out.files.bytes : st.size, sha256: st.isDirectory() ? null : fileSha(fs.root) };
   let result = out;
@@ -481,6 +501,103 @@ async function cmdApp(path) {
   }
   const rec = record(subject, 'app', { all: Boolean(flags.all), detail }, result, { limitations, coverage, confidence: 'observed' });
   emit(rec, appText({ ...rec, result: out }));
+}
+
+// ---------------------------------------------------------------- Electron fuses
+
+const FUSE_SENTINEL = Buffer.from('dL7pKGdnNz796PbbjQWNKmHXBZaB9tsX', 'latin1');
+const FUSE_NAMES = ['RunAsNode', 'EnableCookieEncryption', 'EnableNodeOptionsEnvironmentVariable', 'EnableNodeCliInspectArguments', 'EnableEmbeddedAsarIntegrityValidation', 'OnlyLoadAppFromAsar', 'LoadBrowserProcessSpecificV8Snapshot', 'GrantFileProtocolExtraPrivileges'];
+/** The state an application shipped to end users is expected to have; the rest is a weakness worth a line. */
+const FUSE_EXPECTED = { RunAsNode: 'off', EnableCookieEncryption: 'on', EnableNodeOptionsEnvironmentVariable: 'off', EnableNodeCliInspectArguments: 'off', EnableEmbeddedAsarIntegrityValidation: 'on', OnlyLoadAppFromAsar: 'on' };
+
+/** The fuse block inside an Electron executable: the sentinel, a version byte, a count, then one byte per fuse ('0' off, '1' on, 'r' removed). */
+function readFuses(path) {
+  const buf = readFileSync(path);
+  const i = buf.indexOf(FUSE_SENTINEL);
+  if (i < 0) return null;
+  const j = i + FUSE_SENTINEL.length;
+  const version = buf[j], count = buf[j + 1];
+  if (version !== 1 || count > 64) return { version, count, fuses: [], limitations: ['fuse block version not known to this reader'] };
+  const fuses = [];
+  for (let k = 0; k < count; k += 1) {
+    const ch = String.fromCharCode(buf[j + 2 + k]);
+    const name = FUSE_NAMES[k] || `fuse ${k} (added after this reader's list)`;
+    const state = ch === '1' ? 'on' : ch === '0' ? 'off' : ch === 'r' ? 'removed' : `unknown (${ch})`;
+    fuses.push({ index: k, name, state, expected: FUSE_EXPECTED[name] || null, weak: Boolean(FUSE_EXPECTED[name]) && FUSE_EXPECTED[name] !== state && state !== 'removed' });
+  }
+  return { version, count, offset: i, fuses, weak: fuses.filter((f) => f.weak).map((f) => `${f.name}:${f.state}`) };
+}
+
+/** The application's executable beside an installed archive: the largest .exe in the folder above `resources`. */
+function executableBeside(root) {
+  const dir = basename(dirname(root)) === 'resources' ? dirname(dirname(root)) : root;
+  let best = null;
+  try {
+    for (const e of readdirSync(dir)) if (/\.exe$/i.test(e)) { const s = statSync(join(dir, e)).size; if (!best || s > best.size) best = { path: join(dir, e), size: s }; }
+  } catch { /* no folder */ }
+  if (best) return best.path;
+  for (const e of ['MacOS', 'Contents/MacOS']) { try { const d = join(dir, e); const files = readdirSync(d); if (files.length) return join(d, files[0]); } catch { /* not a bundle */ } }
+  return null;
+}
+
+function cmdFuses(path) {
+  const abs = resolve(path);
+  if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
+  const exe = statSync(abs).isDirectory() ? executableBeside(join(abs, 'resources', 'app.asar')) : abs;
+  if (!exe) fail('no executable found beside this folder', 'not_found');
+  const r = readFuses(exe);
+  const subject = { name: basename(exe), path: exe, format: detectFile(exe), bytes: statSync(exe).size, sha256: fileSha(exe) };
+  if (!r) { const rec = record(subject, 'fuses', {}, { found: false }, { coverage: { status: 'complete', scope: 'the whole file searched for the fuse sentinel' }, limitations: ['no fuse block: not an Electron executable, or one built before fuses existed'] }); emit(rec, `no fuse block in ${exe}\nid ${rec.id}`); return; }
+  const rec = record(subject, 'fuses', {}, r, { coverage: { status: 'complete', scope: 'the fuse block at its sentinel' }, limitations: r.limitations || ['a fuse is a build-time switch read from the binary; what the running program does with it is not observed'] });
+  const L = [`${subject.name}  fuses v${r.version}  ${r.count} values  weak ${r.weak.length ? r.weak.join(' ') : 'none'}`];
+  for (const f of r.fuses) L.push(`${String(f.index).padStart(2)}  ${f.name.padEnd(40)} ${f.state}${f.weak ? `   expected ${f.expected}` : ''}`);
+  L.push(`id ${rec.id}`);
+  emit(rec, L.join('\n'));
+}
+
+// ---------------------------------------------------------------- compare two applications
+
+function listDiff(a, b) { const A = new Set(a), B = new Set(b); return { added: [...B].filter((x) => !A.has(x)).sort(), removed: [...A].filter((x) => !B.has(x)).sort() }; }
+
+async function cmdCompare(first, second) {
+  const paths = [first, second].map((p) => resolve(p));
+  for (const p of paths) if (!existsSync(p)) fail(`not found: ${p}`, 'not_found');
+  const recs = [];
+  for (const p of paths) {
+    const fsx = openSubject(p); if (!fsx) fail(`not an application: ${p}`, 'unsupported');
+    const { out } = await analyzeApp(fsx, { all: Boolean(flags.all) });
+    fsx.close();
+    if (statSync(p).isDirectory()) { const exe = executableBeside(fsx.root); out.fuses = exe ? readFuses(exe) : null; }
+    recs.push({ root: fsx.root, out });
+  }
+  const [A, B] = recs.map((r) => r.out);
+  const chan = (o) => [...new Set([...o.ipc.handlers, ...o.ipc.senders].map((x) => x.channel).filter(Boolean))];
+  const result = {
+    a: { path: recs[0].root, name: A.name, version: A.version }, b: { path: recs[1].root, name: B.name, version: B.version },
+    channels: listDiff(chan(A), chan(B)),
+    handlers: listDiff(A.ipc.handlers.map((h) => h.channel), B.ipc.handlers.map((h) => h.channel)),
+    hosts: listDiff(Object.keys(A.urls), Object.keys(B.urls)),
+    processes: listDiff(A.processes.map((p) => p.command || `(${p.expr})`), B.processes.map((p) => p.command || `(${p.expr})`)),
+    preferences: listDiff(A.preferences.map((p) => p.flag), B.preferences.map((p) => p.flag)),
+    powers: listDiff(A.powers.map((p) => p.api), B.powers.map((p) => p.api)),
+    bridge: listDiff(A.bridge.map((b) => b.key).filter(Boolean), B.bridge.map((b) => b.key).filter(Boolean)),
+    modules: listDiff(A.modules.map((m) => m.path), B.modules.map((m) => m.path)),
+    packages: listDiff(Object.keys(A.packages), Object.keys(B.packages)),
+    nativeAddons: listDiff(A.nativeAddons, B.nativeAddons),
+    envSecrets: listDiff(A.envSecrets.map((e) => e.name), B.envSecrets.map((e) => e.name)),
+    fuses: A.fuses && B.fuses ? listDiff(A.fuses.fuses.map((f) => `${f.name}:${f.state}`), B.fuses.fuses.map((f) => `${f.name}:${f.state}`)) : null,
+    files: { a: A.files, b: B.files },
+  };
+  const subject = { name: `${basename(recs[0].root)} → ${basename(recs[1].root)}`, path: null, format: 'comparison', bytes: null, sha256: null };
+  const rec = record(subject, 'compare', { a: recs[0].root, b: recs[1].root, all: Boolean(flags.all) }, result, { confidence: 'derived', coverage: { status: 'complete', scope: 'two `app` readings compared by name; what each reading could not see, it could not compare' }, limitations: ['a module renamed by the bundler shows as removed and added; a channel moved into a wrapper the reader does not know shows as removed'] });
+  const L = [`${A.name} ${A.version || ''} → ${B.name} ${B.version || ''}`];
+  for (const k of ['channels', 'handlers', 'hosts', 'processes', 'preferences', 'powers', 'bridge', 'packages', 'nativeAddons', 'envSecrets', 'fuses', 'modules']) {
+    const d = result[k]; if (!d) continue;
+    if (d.added.length || d.removed.length) L.push(`${k.padEnd(12)} +${d.added.length} -${d.removed.length}  ${d.added.slice(0, 8).map((x) => '+' + x).join(' ')} ${d.removed.slice(0, 8).map((x) => '-' + x).join(' ')}`.trimEnd());
+  }
+  if (L.length === 1) L.push('no difference in what the reader sees');
+  L.push(`id ${rec.id}`);
+  emit(rec, L.join('\n'));
 }
 
 // ---------------------------------------------------------------- sqlite
@@ -597,8 +714,8 @@ function cmdDetect(path) {
 
 // ---------------------------------------------------------------- main
 
-if (!command || !target || flags.help) {
-  process.stdout.write('usage: node artifact.mjs detect|app|sqlite|map <path> [--text] [--all] [--detail summary|full] [--page N --per 60] [--table T --limit 20] [--line L --col C]\n');
+if (!command || !target || flags.help || (command === 'compare' && !positional[2])) {
+  process.stdout.write('usage: node artifact.mjs detect|app|sqlite|map|fuses <path> | compare <a> <b> [--text] [--all] [--detail summary|full] [--page N --per 60] [--table T --limit 20] [--line L --col C]\n');
   process.exit(command ? 2 : 0);
 }
 try {
@@ -606,6 +723,8 @@ try {
   else if (command === 'app') await cmdApp(target);
   else if (command === 'sqlite') await cmdSqlite(target);
   else if (command === 'map') cmdMap(target);
+  else if (command === 'fuses') cmdFuses(target);
+  else if (command === 'compare') await cmdCompare(target, positional[2]);
   else fail(`unknown command: ${command}`);
 } catch (e) {
   fail(e && e.message ? e.message : String(e), 'internal');

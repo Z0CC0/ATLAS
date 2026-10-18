@@ -227,6 +227,89 @@ test('channels held in constants, enums, templates and other files are resolved 
   assert.deepEqual(res.ipc.sentNeverHandled, []);
 });
 
+test('a webpack bundle is read by its module table, findings sit in their module and map back through a shipped map', () => {
+  // two modules in one webpack-style table; module 20 requires 10; the ipc call lives in 20
+  // a table needs ten members before it is read as one (a smaller object is just an object)
+  const bundle = [
+    "var m = {",
+    "  10(e, t, r) { t.exports = { x: 1 }; },",
+    "  20(e, t, r) { const a = r(10); const { ipcMain } = r(30); ipcMain.handle('w:go', () => a.x); },",
+    "  30(e, t, r) { t.exports = require('electron'); },",
+    ...Array.from({ length: 9 }, (_, i) => `  ${40 + i}(e, t, r) { t.exports = ${i}; },`),
+    "};",
+  ].join('\n');
+  // a map that claims line 3 col 2 of the bundle came from src/go.ts line 7
+  const map = { version: 3, sources: ['src/one.ts', 'src/go.ts'], names: [], mappings: 'AAAA;AAAA;ECMA' };
+  const files = { 'package.json': JSON.stringify({ name: 'w', main: 'bundle.js' }), 'bundle.js': bundle, 'bundle.js.map': JSON.stringify(map) };
+  const asar = path.join(tmp, 'web.asar');
+  makeAsar(files, asar);
+  const r = run('app', asar, '--detail', 'full');
+  assert.equal(r.code, 0, r.out + r.err);
+  const res = r.json.result;
+  assert.deepEqual(res.bundles, [{ file: 'bundle.js', kind: 'webpack', modules: 12, edges: 2 }]);
+  assert.equal(res.maps, 1);
+  const h = res.ipc.handlers.find((x) => x.channel === 'w:go');
+  assert.equal(h.module, '20');
+  assert.deepEqual(h.origin, { source: 'src/go.ts', line: 7, col: 0 });
+  assert.ok(r.json.limitations.some((l) => l.includes("bundler's claim")));
+});
+
+test('an esbuild bundle names its modules by path', () => {
+  const bundle = [
+    "var __commonJS = (cb) => cb;",
+    "var require_a = __commonJS({ 'src/a.js'(exports, module) { module.exports = 1; } });",
+    "var require_b = __commonJS({ 'src/b.js'(exports, module) { const { ipcMain } = require('electron'); ipcMain.on('e:ping', () => {}); } });",
+  ].join('\n');
+  const dir = path.join(tmp, 'esb');
+  fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, 'package.json'), JSON.stringify({ name: 'e', main: 'bundle.js' }));
+  fs.writeFileSync(path.join(dir, 'bundle.js'), bundle);
+  const r = run('app', dir, '--detail', 'full');
+  assert.equal(r.json.result.bundles[0].kind, 'esbuild');
+  assert.equal(r.json.result.bundles[0].modules, 2);
+  assert.equal(r.json.result.ipc.handlers[0].module, 'src/b.js');
+});
+
+test('fuses are read from the executable beside an installed archive, and alone', () => {
+  const inst = path.join(tmp, 'fused');
+  fs.mkdirSync(path.join(inst, 'resources'), { recursive: true });
+  makeAsar(APP, path.join(inst, 'resources', 'app.asar'));
+  const exe = Buffer.concat([Buffer.alloc(100, 0x90), Buffer.from('dL7pKGdnNz796PbbjQWNKmHXBZaB9tsX', 'latin1'), Buffer.from([1, 8]), Buffer.from('01001101', 'latin1'), Buffer.alloc(50, 0)]);
+  fs.writeFileSync(path.join(inst, 'Fused.exe'), exe);
+  const r = run('app', inst);
+  assert.equal(r.code, 0, r.out + r.err);
+  const fz = r.json.result.fuses;
+  assert.equal(fz.count, 8);
+  assert.equal(fz.fuses[0].state, 'off');
+  assert.equal(fz.fuses[4].name, 'EnableEmbeddedAsarIntegrityValidation');
+  assert.deepEqual(fz.weak, []);
+  const alone = run('fuses', path.join(inst, 'Fused.exe'));
+  assert.equal(alone.json.result.fuses[5].state, 'on');
+  const weakExe = Buffer.concat([Buffer.from('dL7pKGdnNz796PbbjQWNKmHXBZaB9tsX', 'latin1'), Buffer.from([1, 9]), Buffer.from('101100011', 'latin1')]);
+  fs.writeFileSync(path.join(tmp, 'weak.exe'), weakExe);
+  const w = run('fuses', path.join(tmp, 'weak.exe'));
+  assert.deepEqual(w.json.result.weak, ['RunAsNode:on', 'EnableCookieEncryption:off', 'EnableNodeOptionsEnvironmentVariable:on', 'EnableNodeCliInspectArguments:on', 'EnableEmbeddedAsarIntegrityValidation:off', 'OnlyLoadAppFromAsar:off']);
+  assert.ok(w.json.result.fuses[8].name.startsWith('fuse 8'));
+  fs.writeFileSync(path.join(tmp, 'plain.exe'), Buffer.alloc(64, 1));
+  assert.equal(run('fuses', path.join(tmp, 'plain.exe')).json.result.found, false);
+});
+
+test('compare says what changed between two versions, by name', () => {
+  const v1 = path.join(tmp, 'v1'), v2 = path.join(tmp, 'v2');
+  for (const [d, extra] of [[v1, ''], [v2, "\nipcMain.handle('demo:new', () => 0);\nfetch('https://new.example.net/x');"]]) {
+    for (const [p, c] of Object.entries(APP)) { fs.mkdirSync(path.dirname(path.join(d, p)), { recursive: true }); fs.writeFileSync(path.join(d, p), p === 'main.js' ? c + extra : c); }
+  }
+  fs.unlinkSync(path.join(v2, 'lib', 'helper.js'));
+  const r = run('compare', v1, v2);
+  assert.equal(r.code, 0, r.out + r.err);
+  const res = r.json.result;
+  assert.deepEqual(res.handlers, { added: ['demo:new'], removed: [] });
+  assert.deepEqual(res.hosts, { added: ['new.example.net'], removed: [] });
+  assert.deepEqual(res.modules, { added: [], removed: ['lib/helper.js'] });
+  assert.equal(r.json.confidence, 'derived');
+  assert.equal(run('compare', v1).code, 2);
+});
+
 test('every record has the same spine', () => {
   const asar = path.join(tmp, 'demo.asar');
   for (const rec of [run('detect', asar).json, run('app', asar).json]) {

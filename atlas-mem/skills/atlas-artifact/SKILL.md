@@ -4,8 +4,9 @@ description: >
   Reads what is inside a shipped artifact without running it: an installed Electron or Node
   application (its modules, what reaches the entry, the IPC channels in both directions, the
   preload bridge, the windows and their preferences, the hosts it talks to, the processes it
-  starts), a SQLite file (schema, counts, a sample), a source map (where a bundled line came
-  from). Every fact with its file and line, a confidence, and what was not covered. Only for
+  starts, the bundles by their module tables, the fuses of its executable, what changed
+  between two versions), a SQLite file (schema, counts, a sample), a source map (where a
+  bundled line came from). Every fact with its file and line, a confidence, and what was not covered. Only for
   software the person owns or is allowed to inspect. Use for "atlas artifact", "what is in
   this app", "open this asar", "what does this installed program do", "read this database",
   "map this bundled line back" — in any language.
@@ -31,8 +32,12 @@ Everything below lives in the `artifact/` folder beside this file.
    an `.asar`, an installed Electron program, a folder with a `package.json` → `app.md`
    a `.db`, `.sqlite`, a file that starts with `SQLite format 3` → `data.md`
    a `.map`, "where does this line come from", a stack trace from a bundle → `data.md`
-   a `.exe`, `.dll`, ELF, Mach-O, `.apk`, firmware → not read yet: say so in one line, and
-   what `detect` reported.
+   "fuses", "is it hardened", "can it be run as node", the `.exe` of an Electron program →
+   `app.md` (the fuses section)
+   "what changed", "compare the versions", "the old one and the new one", two archives →
+   `app.md` (two versions)
+   a `.dll`, ELF, Mach-O, `.apk`, firmware, an `.exe` that is not Electron → not read yet:
+   say so in one line, and what `detect` reported.
 
 ## Boundaries
 
