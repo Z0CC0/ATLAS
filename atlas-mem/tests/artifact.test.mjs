@@ -540,6 +540,53 @@ test('disasm reads a real arm64 binary, or skips when none is here', () => {
   assert.ok([...mnems].some((m) => ['stp', 'ldr', 'mov', 'bl', 'ret', 'adrp', 'add'].includes(m)), [...mnems].join(','));
 });
 
+test('the Dalvik decoder reads register instructions and resolves pool references', async () => {
+  const dex = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-dex.mjs')).href);
+  // code units (16-bit LE): const/4 v0,#1 ; const-string v2,@5 ; invoke-direct {v1,v2},@3 ; return-void ; <bad>
+  const units = [0x1012, 0x021a, 0x0005, 0x2070, 0x0003, 0x0021, 0x000e];
+  const buf = Buffer.alloc(units.length * 2 + 2);
+  units.forEach((w, i) => buf.writeUInt16LE(w, i * 2));
+  buf.writeUInt16LE(0x00e3, units.length * 2); // 0xe3: an unused opcode -> stops
+  const resolve = (kind, idx) => kind === 'string' ? `"s${idx}"` : kind === 'method' ? `Foo.bar#${idx}` : `@${idx}`;
+  const d = dex.decodeInsns((i) => buf.readUInt16LE(i * 2), buf.length / 2, resolve);
+  assert.equal(d.complete, false);
+  assert.equal(d.stoppedAt, 'e3');
+  assert.deepEqual(d.instructions.map((x) => x.text), [
+    'const/4 v0, #1',
+    'const-string v2, "s5"',
+    'invoke-direct {v1, v2}, Foo.bar#3',
+    'return-void',
+  ]);
+});
+
+test('an APK (zip) yields its classes.dex, extracted', async () => {
+  const dex = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-dex.mjs')).href);
+  const content = Buffer.from('dex\n035\0THIS-IS-THE-DEX-PAYLOAD');
+  const name = Buffer.from('classes.dex');
+  const lfh = Buffer.alloc(30); lfh.writeUInt32LE(0x04034b50, 0); lfh.writeUInt16LE(0, 8); lfh.writeUInt32LE(content.length, 18); lfh.writeUInt32LE(content.length, 22); lfh.writeUInt16LE(name.length, 26);
+  const local = Buffer.concat([lfh, name, content]);
+  const cdh = Buffer.alloc(46); cdh.writeUInt32LE(0x02014b50, 0); cdh.writeUInt16LE(0, 10); cdh.writeUInt32LE(content.length, 20); cdh.writeUInt32LE(content.length, 24); cdh.writeUInt16LE(name.length, 28); cdh.writeUInt32LE(0, 42);
+  const cd = Buffer.concat([cdh, name]);
+  const eocd = Buffer.alloc(22); eocd.writeUInt32LE(0x06054b50, 0); eocd.writeUInt16LE(1, 8); eocd.writeUInt16LE(1, 10); eocd.writeUInt32LE(cd.length, 12); eocd.writeUInt32LE(local.length, 16);
+  const zip = Buffer.concat([local, cd, eocd]);
+  const got = dex.dexEntriesFromZip(zip);
+  assert.equal(got.length, 1);
+  assert.equal(got[0].name, 'classes.dex');
+  assert.equal(got[0].data.toString(), content.toString());
+});
+
+test('dex decodes a real DEX fully when one is present, else skips', () => {
+  const candidates = [];
+  const scratch = process.env.ATLAS_DEX || '';
+  if (scratch && fs.existsSync(scratch)) candidates.push(scratch);
+  const dll = candidates.find((p) => fs.existsSync(p));
+  if (!dll) return;
+  const r = run('dex', dll, '--max', '200');
+  assert.equal(r.code, 0, r.out + r.err);
+  assert.equal(r.json.result.coverage.percent, 100, JSON.stringify(r.json.result.coverage.unknownOpcodes));
+  assert.ok(r.json.result.decoded.some((m) => m.instructions && m.instructions.some((i) => /invoke/.test(i.op))));
+});
+
 test('every record has the same spine', () => {
   const asar = path.join(tmp, 'demo.asar');
   for (const rec of [run('detect', asar).json, run('app', asar).json]) {

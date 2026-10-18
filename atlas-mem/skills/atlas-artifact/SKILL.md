@@ -54,8 +54,9 @@ Everything below lives in the `artifact/` folder beside this file.
    whose code you want read → `binary.md` (the `cil` section)
    "disassemble", "x86", "x86-64", "arm64", "aarch64", "the instructions", "what does this
    function do", "the assembly of this exe" → `binary.md` (the `disasm` section)
-   an `.apk`, firmware, a `.wasm` → not read yet: say so in one line, and what `detect`
-   reported.
+   an `.apk`, a `.dex`, "Android", "Dalvik", "smali", "what does this app's code do" →
+   `binary.md` (the `dex` section)
+   firmware, a `.wasm` → not read yet: say so in one line, and what `detect` reported.
 
 ## Boundaries
 

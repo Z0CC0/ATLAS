@@ -102,8 +102,27 @@ The coverage is the share of words that are an allocated encoding; on a real ARM
 What is not done here (either architecture): a value is not tracked, a call target is an
 offset not a symbol, the control-flow graph and pseudocode are the next slices.
 
+## Android: `dex`
+
+`dex <file.apk | .dex>` reads an Android program. An `.apk` is a ZIP; its `classes*.dex`
+are pulled out (stored or deflated) and read the same way as a bare `.dex`. The container
+is a set of pools (strings, types, prototypes, fields, methods, classes), read from the
+DEX format specification; then each method's Dalvik bytecode is decoded to a readable
+listing, register by register, with every pool index resolved to a name: `const-class`,
+`const-string "…"`, `invoke-direct {v1, v2}, Type;.method`, `throw`. `--class` or
+`--method` narrows it, `--max` caps the bodies, the rest page.
+
+Dalvik is register-based and its instructions are 16-bit code units, so (like ARM64) there
+is no length to get wrong. Coverage is how many method bodies decoded fully, with any
+unknown opcode listed. Measured on a real DEX (the Android API compiled to Dalvik, 6,376
+classes, 63,630 methods): 55,481 method bodies, 100%, no unknown opcode.
+
+What is not done: the exception table and debug line info of a method, and the
+control-flow graph and pseudocode (the next slices). A register's value is not tracked.
+
 ## Not yet
 
-Android bytecode (Dalvik): the DEX container and the Dalvik instruction set, from the
-format specification, with coverage measured and readable pseudocode on top. Until it
-lands, an `.apk` is recognised by `detect` and not read inside, and the report says so.
+The control-flow graph and readable pseudocode on top of the decoders: basic blocks from
+the branches, then expression reconstruction — easiest for CIL and Dalvik (stack- and
+register-based, already typed), harder for native. Firmware, pcap and WASM are read by
+header only for now.

@@ -35,6 +35,7 @@ import { readBinary } from './artifact-bin.mjs';
 import { format as cilFormat } from './artifact-cil.mjs';
 import { disasm as x86disasm } from './artifact-x86.mjs';
 import { disasm as arm64disasm } from './artifact-arm64.mjs';
+import { readDex, dexEntriesFromZip } from './artifact-dex.mjs';
 import { observe } from './artifact-run.mjs';
 
 const VERSION = 1;
@@ -93,6 +94,8 @@ function detectFile(path) {
   const n = readSync(fd, head, 0, 32, 0);
   closeSync(fd);
   const b = head.subarray(0, n);
+  if (n >= 4 && b.toString('latin1', 0, 4) === 'dex\n') return 'dex';
+  if (n >= 4 && b[0] === 0x50 && b[1] === 0x4b && /\.apk$/i.test(path)) return 'apk';
   if (n >= 16 && asarHeader(path, true)) return 'asar';
   if (n >= 4) for (const [name, test] of MAGIC) { try { if (test(b)) return name; } catch { /* short */ } }
   const ext = extname(path).toLowerCase();
@@ -821,6 +824,48 @@ function cmdDisasm(path) {
   emit(rec, L.join('\n'));
 }
 
+// ---------------------------------------------------------------- Android: DEX / APK
+
+function cmdDex(path) {
+  const abs = resolve(path);
+  if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
+  const buf = readFileSync(abs);
+  // an .apk (or any zip) holds classes*.dex; a .dex is read directly
+  let dexes;
+  if (buf.length >= 4 && buf.toString('latin1', 0, 4) === 'dex\n') dexes = [{ name: basename(abs), data: buf }];
+  else if (buf.length >= 4 && buf[0] === 0x50 && buf[1] === 0x4b) { const e = dexEntriesFromZip(buf); if (!e || !e.length) fail('a zip/apk with no classes.dex inside', 'unsupported'); dexes = e; }
+  else fail('not a .dex or an .apk', 'unsupported');
+  const typeFilter = flags.class ? String(flags.class).toLowerCase() : null;
+  const methodFilter = flags.method ? String(flags.method).toLowerCase() : null;
+  const want = (name) => { if (methodFilter) return name.toLowerCase().includes(methodFilter); if (typeFilter) return name.toLowerCase().split('.')[0].includes(typeFilter) || name.toLowerCase().includes(typeFilter); return true; };
+  const out = { files: [], classes: 0, counts: null, coverage: { attempted: 0, fullyDecoded: 0, unknownOpcodes: [] }, decoded: [] };
+  const unk = new Set();
+  for (const dx of dexes) {
+    let r;
+    try { r = readDex(dx.data, { decodeMethods: (flags['no-code'] ? () => false : want), max: Number(flags.max || 40) }); } catch (e) { out.files.push({ name: dx.name, error: e.message }); continue; }
+    out.files.push({ name: dx.name, version: r.version, counts: r.counts });
+    out.counts = out.counts || { strings: 0, types: 0, methods: 0, classes: 0 };
+    out.counts.strings += r.counts.strings; out.counts.types += r.counts.types; out.counts.methods += r.counts.methods; out.counts.classes += r.counts.classes;
+    out.classes += r.classes.length;
+    if (r.cilCoverage) { out.coverage.attempted += r.cilCoverage.attempted; out.coverage.fullyDecoded += r.cilCoverage.fullyDecoded; r.cilCoverage.unknownOpcodes.forEach((x) => unk.add(x)); }
+    for (const m of r.decoded) { out.decoded.push({ file: dx.name, ...m }); if (out.decoded.length >= Number(flags.max || 40)) break; }
+  }
+  out.coverage.unknownOpcodes = [...unk];
+  out.coverage.percent = out.coverage.attempted ? Math.round((out.coverage.fullyDecoded / out.coverage.attempted) * 100) : null;
+  const subject = { name: basename(abs), path: abs, format: buf.toString('latin1', 0, 4) === 'dex\n' ? 'dex' : 'apk', bytes: buf.length, sha256: sha256(buf) };
+  const limitations = ['Dalvik bytecode decoded from the units, not executed; a pool index is resolved to a name, a method body\'s exception table and debug info are not listed', 'register-based: operands are vN registers; what a register holds is not tracked'];
+  if (unk.size) limitations.push(`opcodes not known to this reader: ${[...unk].join(', ')}`);
+  const rec = record(subject, 'dex', { class: flags.class || null, method: flags.method || null, max: Number(flags.max || 40) }, out, { confidence: 'observed', coverage: { status: unk.size ? 'partial' : 'complete', scope: `${dexes.length} dex, ${out.classes} classes, ${out.coverage.attempted} method bodies decoded, ${out.coverage.fullyDecoded} fully (${out.coverage.percent}%)` }, limitations });
+  const L = [`${subject.name}  ${dexes.length} dex, ${out.counts ? out.counts.classes : 0} classes, ${out.counts ? out.counts.methods : 0} methods  bodies decoded ${out.coverage.attempted}, fully ${out.coverage.fullyDecoded} (${out.coverage.percent}%)`];
+  for (const m of out.decoded) {
+    if (!m.instructions) { L.push(`\n// ${m.method} — ${m.note}`); continue; }
+    L.push(`\n.method ${m.method}  (${m.units} units, ${m.registers} regs${m.complete ? '' : `, STOPPED at ${m.stoppedAt}`})`);
+    for (const ins of m.instructions) L.push(`  ${ins.off.toString(16).padStart(4, '0')}:  ${ins.text}`);
+  }
+  L.push(`\nid ${rec.id}`);
+  emit(rec, L.join('\n'));
+}
+
 // ---------------------------------------------------------------- sqlite
 
 async function cmdSqlite(path) {
@@ -927,7 +972,7 @@ function cmdDetect(path) {
   if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
   const st = statSync(abs);
   const format = st.isDirectory() ? detectDir(abs) : detectFile(abs);
-  const next = { asar: 'app', 'electron-app': 'app', 'electron-install': 'app', 'node-app': 'app', sqlite: 'sqlite', 'source-map': 'map', pe: 'bin', elf: 'bin', 'mach-o': 'bin' }[format] || null;
+  const next = { asar: 'app', 'electron-app': 'app', 'electron-install': 'app', 'node-app': 'app', sqlite: 'sqlite', 'source-map': 'map', pe: 'bin', elf: 'bin', 'mach-o': 'bin', dex: 'dex', apk: 'dex' }[format] || null;
   const subject = { name: basename(abs), path: abs, format, bytes: st.isDirectory() ? null : st.size, sha256: st.isDirectory() ? null : fileSha(abs) };
   const rec = record(subject, 'detect', {}, { format, next: next ? `node artifact.mjs ${next} "${abs}"` : null }, { coverage: { status: 'complete', scope: st.isDirectory() ? 'folder name and package.json' : 'the first 32 bytes and the extension' }, limitations: st.isDirectory() ? [] : ['a format is read from its magic bytes; a file with a wrong header is reported as unknown'] });
   emit(rec, `${format}  ${abs}${next ? `\nnext  ${rec.result.next}` : ''}`);
@@ -936,7 +981,7 @@ function cmdDetect(path) {
 // ---------------------------------------------------------------- main
 
 if (!command || !target || flags.help || (command === 'compare' && !positional[2])) {
-  process.stdout.write('usage: node artifact.mjs detect|app|bin|cil|disasm|sqlite|map|fuses <path> | compare <a> <b> | observe <folder|exe> --yes [--seconds 12] [--text] [--all] [--detail summary|full] [--page N --per 60] [--table T --limit 20] [--line L --col C]\n');
+  process.stdout.write('usage: node artifact.mjs detect|app|bin|cil|disasm|dex|sqlite|map|fuses <path> | compare <a> <b> | observe <folder|exe> --yes [--seconds 12] [--text] [--all] [--detail summary|full] [--page N --per 60] [--table T --limit 20] [--line L --col C]\n');
   process.exit(command ? 2 : 0);
 }
 try {
@@ -948,6 +993,7 @@ try {
   else if (command === 'bin') cmdBin(target);
   else if (command === 'cil') cmdCil(target);
   else if (command === 'disasm') cmdDisasm(target);
+  else if (command === 'dex') cmdDex(target);
   else if (command === 'observe') await cmdObserve(target);
   else if (command === 'compare') await cmdCompare(target, positional[2]);
   else fail(`unknown command: ${command}`);

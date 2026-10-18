@@ -247,8 +247,11 @@ entry point by default, with a coverage number from a linear sweep (over 99% dec
 C++, a Go and an ELF binary; the classic prologue and stack-canary read back correctly).
 The ARM64 (A64) decoder is fixed-width (every instruction 4 bytes, from the Arm ARM, no
 length to get wrong): on a real arm64 binary, 100% allocated, the prologue and GOT-load
-patterns read back correctly. `disasm` picks the decoder from the architecture. The Dalvik
-decoder is next.
+patterns read back correctly. `disasm` picks the decoder from the architecture. `dex` reads an Android `.apk` (a ZIP, its `classes*.dex` pulled out) or a bare `.dex`:
+the pools from the DEX format spec, then each method's Dalvik bytecode decoded with every
+index resolved to a name (`invoke-direct {v1, v2}, Type;.method`, `const-string "…"`). On
+the Android API compiled to Dalvik (6,376 classes), 55,481 method bodies, 100%, no unknown
+opcode. A control-flow graph and pseudocode on top of the decoders are next.
 `sqlite` reads a database file read-only: schema, counts, indexes, triggers, a sample of
 one table on request. `map` decodes a source map and turns a bundled position back into a file,
 line and name.
