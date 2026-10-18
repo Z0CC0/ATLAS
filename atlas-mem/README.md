@@ -241,7 +241,11 @@ settings) and the Rust compiler and crates the panic paths keep. For a .NET asse
 each method as a named instruction listing (the opcode table from ECMA-335), with call,
 field and `newobj` tokens resolved to `Type::member` and `ldstr` strings shown; it reports
 how many bodies decoded fully and any unknown opcode (42,949 methods across five real
-assemblies, 100%, none unknown). Native and Dalvik decoders are next.
+assemblies, 100%, none unknown). `disasm` decodes the x86-64 instructions of a program's code sections (opcode maps,
+prefixes, ModR/M and SIB from the Intel SDM, so instruction length is exact), from the
+entry point by default, with a coverage number from a linear sweep (over 99% decoded on a
+C++, a Go and an ELF binary; the classic prologue and stack-canary read back correctly).
+ARM64 and Dalvik decoders are next.
 `sqlite` reads a database file read-only: schema, counts, indexes, triggers, a sample of
 one table on request. `map` decodes a source map and turns a bundled position back into a file,
 line and name.

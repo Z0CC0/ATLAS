@@ -69,10 +69,31 @@ more assemblies, 42,949 methods, 100%, no unknown opcode). A native method, a ru
 method or an abstract one has no byte stream and is said to have none. The exception-handler
 regions after a fat method body are not listed yet.
 
+## Native code: `disasm` (x86-64)
+
+`disasm <file>` decodes the x86-64 instructions of a program's code sections. The opcode
+maps, the prefixes, the ModR/M and SIB bytes are from the specification (Intel SDM Vol. 2,
+AMD64 Vol. 3), so the length of every instruction is computed exactly: get a length wrong
+by one byte and the whole stream after it turns to noise, so length is the thing the reader
+is built around. The listing starts at the entry point, where the bytes are sure to be
+real code (`--at <hexoffset>` for elsewhere, `--count` for how many); each line is an
+address, the mnemonic and its operands, the way `objdump` or a disassembler shows them.
+
+The coverage number is a linear sweep of the code sections: the share of instructions that
+decoded to a known opcode. A code section also holds data (jump tables, padding, constants)
+and x86 decodes almost any bytes as some instruction, so this number bounds the
+unknown-opcode rate rather than proving every boundary; the entry-point listing is where
+real code is read and checked. Measured on three real binaries (a C++ `node.exe`, a Go
+`git-lfs.exe`, an ELF addon): over 99% decoded, the classic prologue (`push rbp`,
+`mov rbp, rsp`, `sub rsp, …`) and the stack-canary pattern read back correctly.
+
+What is not done here: a value is not tracked, a call target is an offset not a symbol, the
+control-flow graph and pseudocode are the next slices. The SSE vector set beyond the scalar
+math is decoded for length, named approximately.
+
 ## Not yet
 
-Native code (x86-64, ARM64) and Android bytecode (Dalvik): the instruction decoders for
-those are being written from their specifications (Intel SDM, the Arm ARM, the Dalvik
-format), architecture by architecture, each with its coverage measured, and readable
-pseudocode on top. Until a decoder lands, the report for that kind ends where the headers
-end, and says it.
+ARM64 (A64) and Android bytecode (Dalvik): their decoders are being written from their
+specifications (the Arm Architecture Reference Manual, the Dalvik format), each with its
+coverage measured, and readable pseudocode on top. Until one lands, the report for that
+kind ends where the headers end, and says it.

@@ -33,6 +33,7 @@ import { basename, dirname, extname, join, posix, resolve } from 'node:path';
 import * as js from './artifact-js.mjs';
 import { readBinary } from './artifact-bin.mjs';
 import { format as cilFormat } from './artifact-cil.mjs';
+import { disasm as x86disasm } from './artifact-x86.mjs';
 import { observe } from './artifact-run.mjs';
 
 const VERSION = 1;
@@ -761,6 +762,54 @@ function cmdCil(path) {
   emit(rec, L.join('\n'));
 }
 
+// ---------------------------------------------------------------- native disassembly (x86-64)
+
+function codeSections(r) {
+  if (r.format === 'pe') return r.sections.filter((s) => s.flags.includes('exec') || s.name === '.text').map((s) => ({ name: s.name, off: s.raw, size: s.rawSize }));
+  if (r.format === 'elf') return r.sections.filter((s) => s.name === '.text' || s.name === '.plt' || s.name === '.init' || s.name === '.fini').map((s) => ({ name: s.name, off: s.off, size: s.size }));
+  if (r.format === 'mach-o' && !r.fat) return r.segments.filter((s) => s.sections && s.sections.includes('__text')).map((s) => ({ name: '__text', off: s.fileoff, size: s.filesize }));
+  return [];
+}
+
+function cmdDisasm(path) {
+  const abs = resolve(path);
+  if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
+  const buf = readFileSync(abs);
+  let r;
+  try { r = readBinary(buf); } catch (e) { fail(e.message, 'unsupported'); }
+  if (r.machine !== 'x86-64' && r.cpu !== 'x86-64') fail(`not x86-64 (${r.machine || r.cpu || r.format}); the ARM64 and Dalvik decoders are being written`, 'unsupported');
+  const secs = codeSections(r);
+  if (!secs.length) fail('no code section found', 'not_found');
+  // coverage across every code section (the quality number)
+  let good = 0, bad = 0;
+  for (const s of secs) { if (!s.off || !s.size) continue; const d = x86disasm(buf, s.off, Math.min(s.off + s.size, buf.length), 0, 1e9); good += d.good; bad += d.bad; }
+  const coverage = good + bad ? Math.round((good / (good + bad)) * 100) : null;
+  // a listing: from --at (hex file offset) or the first code section's start
+  // the file offset of the entry point, when it is in a code section: the one place sure to
+  // be real code, so the listing starts there unless --at is given
+  let entryOff = null;
+  if (r.format === 'pe' && r.entry) { const s = r.sections.find((x) => r.entry >= x.vaddr && r.entry < x.vaddr + Math.max(x.vsize, x.rawSize)); if (s) entryOff = s.raw + (r.entry - s.vaddr); }
+  else if (r.format === 'elf' && r.entry) { const s = r.sections.find((x) => r.entry >= x.addr && x.addr && r.entry < x.addr + x.size); if (s) entryOff = s.off + (r.entry - s.addr); }
+  const textSec = secs.find((s) => s.name === '.text' || s.name === '__text') || secs[0];
+  const at = flags.at ? parseInt(String(flags.at), 16) : (entryOff !== null ? entryOff : textSec.off);
+  const count = Math.max(1, Math.min(2000, Number(flags.count || 60)));
+  const secOf = secs.find((s) => at >= s.off && at < s.off + s.size) || textSec;
+  const d = x86disasm(buf, at, Math.min(secOf.off + secOf.size, buf.length), at - secOf.off, count);
+  const result = { format: r.format, arch: r.machine || r.cpu, sections: secs.map((s) => ({ name: s.name, bytes: s.size })), coverage: { instructions: good + bad, decoded: good, undecoded: bad, percent: coverage }, listingAt: at, listing: d.instructions };
+  const subject = { name: basename(abs), path: abs, format: 'disasm', bytes: buf.length, sha256: sha256(buf) };
+  const limitations = [
+    'instructions decoded from the bytes, not executed; what a value is, where a call goes, what a function does is not inferred here',
+    'the coverage is a linear sweep: a code section holds data too (jump tables, padding, constants) and x86 decodes almost any bytes as some instruction, so this number bounds the unknown-opcode rate, it is not proof that every boundary is a real instruction; the listing from the entry point is where real code is read',
+    'addresses are file offsets inside the section, not runtime virtual addresses; a call/jmp target is shown as its offset, not resolved to a symbol',
+  ];
+  const rec = record(subject, 'disasm', { at: flags.at || null, count }, result, { confidence: 'observed', coverage: { status: coverage === 100 ? 'complete' : 'partial', scope: `${secs.length} code section(s), ${good + bad} instructions swept, ${good} decoded (${coverage}%)` }, limitations });
+  const L = [`${subject.name}  ${result.arch}  ${secs.map((s) => `${s.name}(${s.bytes})`).join(' ')}  swept ${good + bad} instr, decoded ${coverage}%`];
+  L.push(`\n; from 0x${at.toString(16)} (${secOf.name})`);
+  for (const i of d.instructions) L.push(`  ${i.addr.toString(16).padStart(8, '0')}  ${i.bad ? '(data) ' + i.text : i.text}`);
+  L.push(`\nid ${rec.id}`);
+  emit(rec, L.join('\n'));
+}
+
 // ---------------------------------------------------------------- sqlite
 
 async function cmdSqlite(path) {
@@ -876,7 +925,7 @@ function cmdDetect(path) {
 // ---------------------------------------------------------------- main
 
 if (!command || !target || flags.help || (command === 'compare' && !positional[2])) {
-  process.stdout.write('usage: node artifact.mjs detect|app|bin|cil|sqlite|map|fuses <path> | compare <a> <b> | observe <folder|exe> --yes [--seconds 12] [--text] [--all] [--detail summary|full] [--page N --per 60] [--table T --limit 20] [--line L --col C]\n');
+  process.stdout.write('usage: node artifact.mjs detect|app|bin|cil|disasm|sqlite|map|fuses <path> | compare <a> <b> | observe <folder|exe> --yes [--seconds 12] [--text] [--all] [--detail summary|full] [--page N --per 60] [--table T --limit 20] [--line L --col C]\n');
   process.exit(command ? 2 : 0);
 }
 try {
@@ -887,6 +936,7 @@ try {
   else if (command === 'fuses') cmdFuses(target);
   else if (command === 'bin') cmdBin(target);
   else if (command === 'cil') cmdCil(target);
+  else if (command === 'disasm') cmdDisasm(target);
   else if (command === 'observe') await cmdObserve(target);
   else if (command === 'compare') await cmdCompare(target, positional[2]);
   else fail(`unknown command: ${command}`);

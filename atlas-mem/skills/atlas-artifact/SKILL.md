@@ -52,6 +52,8 @@ Everything below lives in the `artifact/` folder beside this file.
    .NET", "which Go modules", "is it signed", "is it hardened" → `binary.md`
    ".NET", "CIL", "IL", "disassemble this assembly", "what does this method do", a `.dll`
    whose code you want read → `binary.md` (the `cil` section)
+   "disassemble", "x86", "x86-64", "the instructions", "what does this function do", "the
+   assembly of this exe" → `binary.md` (the `disasm` section)
    an `.apk`, firmware, a `.wasm` → not read yet: say so in one line, and what `detect`
    reported.
 

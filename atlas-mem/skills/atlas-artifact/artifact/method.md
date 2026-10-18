@@ -12,6 +12,7 @@ node <plugin>/tools/artifact.mjs sqlite <file.db> [--table <name> --limit 20]
 node <plugin>/tools/artifact.mjs map    <file.map> [--line L --col C]
 node <plugin>/tools/artifact.mjs bin    <file.exe | .dll | .node | ELF | Mach-O> [--detail full]
 node <plugin>/tools/artifact.mjs cil    <file.dll | .exe> [--type <name>] [--method <name>] [--max 40]
+node <plugin>/tools/artifact.mjs disasm <file.exe | .dll | ELF | Mach-O> [--at <hexoff>] [--count 60]
 node <plugin>/tools/artifact.mjs fuses  <app.exe | installed folder>
 node <plugin>/tools/artifact.mjs compare <app A> <app B> [--all]
 node <plugin>/tools/artifact.mjs observe <installed folder | exe> --yes [--seconds 12]

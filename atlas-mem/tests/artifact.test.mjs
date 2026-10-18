@@ -448,6 +448,52 @@ test('cil decodes a real .NET assembly fully, or skips when none is installed', 
   assert.ok(r.json.limitations.some((l) => l.includes('not executed')));
 });
 
+test('the x86-64 decoder reads length and mnemonics for common instructions', async () => {
+  const x = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-x86.mjs')).href);
+  const cases = [
+    [[0x48, 0x89, 0xc8], 3, 'mov rax, rcx'],
+    [[0xc3], 1, 'ret'],
+    [[0x48, 0x83, 0xec, 0x28], 4, 'sub rsp, 0x28'],      // group /5, reg field suppressed
+    [[0x55], 1, 'push rbp'],
+    [[0x48, 0x8b, 0x05, 0x34, 0x59, 0x4e, 0x03], 7, 'mov rax, [rip+0x34e5934]'], // RIP-relative
+    [[0xe8, 0x10, 0x00, 0x00, 0x00], 5, null],            // call rel32
+    [[0x0f, 0x84, 0x79, 0x00, 0x00, 0x00], 6, null],      // je rel32
+    [[0xff, 0x15, 0x00, 0x10, 0x00, 0x00], 6, null],      // call [rip+...]  (group5 /2)
+    [[0x48, 0xb8, 0x32, 0xa2, 0xdf, 0x2d, 0x99, 0x2b, 0x00, 0x00], 10, null], // movabs rax, imm64
+    [[0x48, 0x8d, 0x4d, 0x10], 4, 'lea rcx, [rbp+0x10]'], // lea reg, mem
+    [[0x0f, 0xb6, 0xc0], 3, 'movzx eax, al'],             // two-byte, reg,rm
+  ];
+  for (const [bytes, len, text] of cases) {
+    const d = x.decodeOne(Buffer.from(bytes), 0, bytes.length);
+    assert.equal(d.bad, false, `${bytes.map((b) => b.toString(16)).join(' ')} -> ${d.text}`);
+    assert.equal(d.len, len, `len of ${bytes.map((b) => b.toString(16)).join(' ')}`);
+    if (text) assert.equal(d.text, text);
+  }
+  // a prefixed/REX sweep stays in sync: three instructions back to back
+  const seq = Buffer.from([0x55, 0x48, 0x89, 0xe5, 0xc3]); // push rbp; mov rbp, rsp; ret
+  const sw = x.disasm(seq, 0, seq.length);
+  assert.deepEqual(sw.instructions.map((i) => i.text), ['push rbp', 'mov rbp, rsp', 'ret']);
+  assert.equal(sw.bad, 0);
+});
+
+test('disasm decodes a real x86-64 binary from its entry point, or skips', () => {
+  const r = run('bin', process.execPath, '--compact');
+  const arch = r.json && r.json.result && (r.json.result.machine || r.json.result.cpu);
+  if (arch !== 'x86-64') return; // not an x86-64 host
+  const d = run('disasm', process.execPath, '--count', '80');
+  assert.equal(d.code, 0, d.out + d.err);
+  const res = d.json.result;
+  assert.equal(res.arch, 'x86-64');
+  assert.ok(res.coverage.percent >= 98, `linear-sweep decode rate ${res.coverage.percent}%`);
+  // the entry listing is real code: almost all decode, and prologue/ret mnemonics appear
+  const listing = res.listing;
+  const decoded = listing.filter((i) => !i.bad).length;
+  assert.ok(decoded / listing.length >= 0.9, `${decoded}/${listing.length} of the entry listing decoded`);
+  const mnems = new Set(listing.filter((i) => !i.bad).map((i) => i.mnem));
+  assert.ok([...mnems].some((m) => ['mov', 'push', 'call', 'sub', 'lea', 'jmp', 'ret', 'cmp'].includes(m)), [...mnems].join(','));
+  assert.ok(d.json.limitations.some((l) => l.includes('not executed')));
+});
+
 test('every record has the same spine', () => {
   const asar = path.join(tmp, 'demo.asar');
   for (const rec of [run('detect', asar).json, run('app', asar).json]) {
