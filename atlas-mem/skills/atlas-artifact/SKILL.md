@@ -56,7 +56,9 @@ Everything below lives in the `artifact/` folder beside this file.
    function do", "the assembly of this exe" → `binary.md` (the `disasm` section)
    an `.apk`, a `.dex`, "Android", "Dalvik", "smali", "what does this app's code do" →
    `binary.md` (the `dex` section)
-   firmware, a `.wasm` → not read yet: say so in one line, and what `detect` reported.
+   a `.wasm`, WebAssembly, "wat", a wasm module in a site or a plugin → `binary.md`
+   (the `wasm` section)
+   firmware → not read yet: say so in one line, and what `detect` reported.
 
 ## Boundaries
 

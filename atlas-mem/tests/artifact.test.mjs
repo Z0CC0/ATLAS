@@ -11,6 +11,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { structurize, dominates, domTree, rpo } from '../tools/artifact-struct.mjs';
 import { inferTypes, protoFor, signatureText } from '../tools/artifact-types.mjs';
+import { readWasm, liftWasm } from '../tools/artifact-wasm.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const tool = path.join(here, '..', 'tools', 'artifact.mjs');
@@ -803,6 +804,43 @@ test('an unknown call clears the volatile register types', () => {
   const ti = inferTypes(cfg, sym);
   assert.equal(ti.anchored, 1);
   assert.equal(ti.regTypes.rax, undefined, 'rax cleared by the later unknown call');
+});
+
+// A minimal Wasm module built by hand: one exported function add(i32,i32)->i32.
+const WASM_ADD = Buffer.from([
+  0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00, // magic, version 1
+  0x01, 0x07, 0x01, 0x60, 0x02, 0x7f, 0x7f, 0x01, 0x7f, // type: (i32,i32)->i32
+  0x03, 0x02, 0x01, 0x00, // function: one func, type 0
+  0x07, 0x07, 0x01, 0x03, 0x61, 0x64, 0x64, 0x00, 0x00, // export "add" func 0
+  0x0a, 0x09, 0x01, 0x07, 0x00, 0x20, 0x00, 0x20, 0x01, 0x6a, 0x0b, // code: local.get 0; local.get 1; i32.add; end
+]);
+
+test('a Wasm module parses to sections, types, exports and code', () => {
+  const m = readWasm(WASM_ADD);
+  assert.equal(m.version, 1);
+  assert.deepEqual(m.types[0], { params: ['i32', 'i32'], results: ['i32'] });
+  assert.equal(m.functions.length, 1);
+  assert.equal(m.exports[0].name, 'add');
+  assert.equal(m.funcNames[0], 'add');
+  assert.equal(m.code[0].ins.length, 4); // local.get, local.get, i32.add, end
+});
+
+test('the Wasm lift turns the stack machine back into an expression', () => {
+  const m = readWasm(WASM_ADD);
+  const pseudo = liftWasm(m.code[0].ins, m.funcNames);
+  assert.match(pseudo, /return \(local0 \+ local1\);/);
+});
+
+test('the wasm command runs end to end and reports complete coverage', () => {
+  const p = path.join(tmp, 'add.wasm');
+  fs.writeFileSync(p, WASM_ADD);
+  const r = run('wasm', p, '--pseudo', '--text');
+  assert.equal(r.code, 0);
+  assert.match(r.out, /func 0: add \(i32, i32\) -> i32/);
+  assert.match(r.out, /return \(local0 \+ local1\);/);
+  const j = run('wasm', p);
+  assert.equal(j.json.coverage.status, 'complete');
+  assert.equal(j.json.result.counts.functions, 1);
 });
 
 test.after(() => { try { fs.rmSync(tmp, { recursive: true, force: true }); } catch { /* windows */ } });

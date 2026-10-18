@@ -178,9 +178,23 @@ if/while structuring is not done.
 What is not done: the exception table and debug line info of a method, and if/while
 structuring of the pseudo-Java. A register's value is not tracked across blocks.
 
+## WebAssembly: `wasm`
+
+`wasm <file.wasm>` reads a module from its bytes per the WebAssembly core specification: the
+sections (type, import, function, table, memory, global, export, start, element, code,
+data), the function signatures, the imports and exports, and each function's code. `--func
+name` filters, `--max N` caps how many bodies are shown, `--text` prints them.
+
+`wasm --pseudo` lifts each function to structured pseudocode. Wasm is a stack machine with
+already-structured control flow (block / loop / if / else / end with labelled `br`), so the
+lift reads cleaner than a native one: the stack is turned back into expressions
+(`local.get`/`const`/arith fold into one line), a load/store becomes `mem[addr]`, a `call`
+uses the imported or exported name, and the blocks become real `if`/`loop` with indentation
+— no CFG recovery needed. A function with no export or import name shows as `funcN` (the
+custom "name" section is not applied); SIMD (v128) and the `0xFC`/`0xFD`/`0xFE`-prefixed
+instructions are listed but not folded into operators.
+
 ## Not yet
 
-The control-flow graph and readable pseudocode on top of the decoders: basic blocks from
-the branches, then expression reconstruction — easiest for CIL and Dalvik (stack- and
-register-based, already typed), harder for native. Firmware, pcap and WASM are read by
-header only for now.
+Expression reconstruction's last native frontier is user-struct and full type recovery (API
+prototypes already type the call sites). Firmware and pcap are read by header only for now.

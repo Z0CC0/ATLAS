@@ -42,6 +42,7 @@ import { buildCfg, formatCfg } from './artifact-cfg.mjs';
 import { liftFunction as liftX86Fn, liftBlock as liftX86Block } from './artifact-lift-x86.mjs';
 import { structurize } from './artifact-struct.mjs';
 import { inferTypes } from './artifact-types.mjs';
+import { readWasm, liftWasm } from './artifact-wasm.mjs';
 import { observe } from './artifact-run.mjs';
 
 const VERSION = 1;
@@ -885,6 +886,56 @@ function cmdDex(path) {
   emit(rec, L.join('\n'));
 }
 
+// ---------------------------------------------------------------- WebAssembly
+
+function cmdWasm(path) {
+  const abs = resolve(path);
+  if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
+  const buf = readFileSync(abs);
+  let m;
+  try { m = readWasm(buf); } catch (e) { fail(e.message, 'unsupported'); }
+  const max = Math.max(1, Math.min(200, Number(flags.max || 20)));
+  const want = flags.func ? String(flags.func).toLowerCase() : null;
+  const decoded = [];
+  for (let k = 0; k < m.code.length; k += 1) {
+    const funcIdx = m.importedFns + k;
+    const name = m.funcNames[funcIdx] || `func${funcIdx}`;
+    if (want && !name.toLowerCase().includes(want)) continue;
+    const typeIdx = m.functions[k];
+    const sig = m.types[typeIdx];
+    const c = m.code[k];
+    decoded.push({ index: funcIdx, name, params: sig ? sig.params : [], results: sig ? sig.results : [], locals: c.locals, instructions: c.ins.length, bad: c.ins.filter((i) => i.bad).length, ins: c.ins, pseudoFn: () => liftWasm(c.ins, m.funcNames) });
+    if (decoded.length >= max) break;
+  }
+  const bad = decoded.reduce((n, d) => n + d.bad, 0);
+  const result = {
+    version: m.version,
+    sections: m.sections.map((s) => ({ name: s.name, size: s.size })),
+    counts: { types: m.types.length, imports: m.imports.length, functions: m.functions.length, exports: m.exports.length, memories: m.memories.length, globals: m.globals.length, code: m.code.length },
+    imports: m.imports.slice(0, 40),
+    exports: m.exports.slice(0, 40),
+    memories: m.memories,
+    start: m.start,
+    functions: decoded.map((d) => ({ index: d.index, name: d.name, params: d.params, results: d.results, instructions: d.instructions, bad: d.bad })),
+  };
+  const subject = { name: basename(abs), path: abs, format: 'wasm', bytes: buf.length, sha256: sha256(buf) };
+  const limitations = [
+    'parsed from the module bytes per the WebAssembly core spec, not executed; a custom "name" section is not applied, so an unexported, unimported function shows as funcN',
+    'the lift turns the stack machine back into expressions and the block/loop/if into structured pseudocode; SIMD (v128) and the 0xFC/0xFD/0xFE-prefixed instructions are listed but not lifted to operators',
+  ];
+  if (bad) limitations.push(`${bad} instruction byte(s) not recognised and shown as .byte`);
+  const rec = record(subject, 'wasm', { func: flags.func || null, max }, result, { confidence: 'observed', coverage: { status: bad ? 'partial' : 'complete', scope: `${m.code.length} functions, ${decoded.length} disassembled` }, limitations });
+  const L = [`${subject.name}  wasm v${m.version}  ${m.types.length} types, ${m.imports.length} imports, ${m.functions.length} functions, ${m.exports.length} exports, ${m.memories.length} memory`];
+  for (const d of decoded) {
+    const sig = `(${d.params.join(', ')})${d.results.length ? ' -> ' + d.results.join(', ') : ''}`;
+    L.push(`\n// func ${d.index}: ${d.name} ${sig}  (${d.instructions} instructions)`);
+    if (flags.pseudo) L.push(d.pseudoFn());
+    else for (const i of d.ins) L.push(`  ${i.addr.toString(16).padStart(6, '0')}:  ${i.text}`);
+  }
+  L.push(`\nid ${rec.id}`);
+  emit(rec, L.join('\n'));
+}
+
 // ---------------------------------------------------------------- control-flow graph of a function
 
 function cmdCfg(path) {
@@ -1050,7 +1101,7 @@ function cmdDetect(path) {
   if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
   const st = statSync(abs);
   const format = st.isDirectory() ? detectDir(abs) : detectFile(abs);
-  const next = { asar: 'app', 'electron-app': 'app', 'electron-install': 'app', 'node-app': 'app', sqlite: 'sqlite', 'source-map': 'map', pe: 'bin', elf: 'bin', 'mach-o': 'bin', dex: 'dex', apk: 'dex' }[format] || null;
+  const next = { asar: 'app', 'electron-app': 'app', 'electron-install': 'app', 'node-app': 'app', sqlite: 'sqlite', 'source-map': 'map', pe: 'bin', elf: 'bin', 'mach-o': 'bin', dex: 'dex', apk: 'dex', wasm: 'wasm' }[format] || null;
   const subject = { name: basename(abs), path: abs, format, bytes: st.isDirectory() ? null : st.size, sha256: st.isDirectory() ? null : fileSha(abs) };
   const rec = record(subject, 'detect', {}, { format, next: next ? `node artifact.mjs ${next} "${abs}"` : null }, { coverage: { status: 'complete', scope: st.isDirectory() ? 'folder name and package.json' : 'the first 32 bytes and the extension' }, limitations: st.isDirectory() ? [] : ['a format is read from its magic bytes; a file with a wrong header is reported as unknown'] });
   emit(rec, `${format}  ${abs}${next ? `\nnext  ${rec.result.next}` : ''}`);
@@ -1059,7 +1110,7 @@ function cmdDetect(path) {
 // ---------------------------------------------------------------- main
 
 if (!command || !target || flags.help || (command === 'compare' && !positional[2])) {
-  process.stdout.write('usage: node artifact.mjs detect|app|bin|cil|disasm|cfg|dex|sqlite|map|fuses <path> | compare <a> <b> | observe <folder|exe> --yes [--seconds 12] [--text] [--all] [--detail summary|full] [--page N --per 60] [--table T --limit 20] [--line L --col C]\n');
+  process.stdout.write('usage: node artifact.mjs detect|app|bin|cil|disasm|cfg|dex|wasm|sqlite|map|fuses <path> | compare <a> <b> | observe <folder|exe> --yes [--seconds 12] [--text] [--all] [--detail summary|full] [--page N --per 60] [--table T --limit 20] [--line L --col C] [--func name] [--pseudo]\n');
   process.exit(command ? 2 : 0);
 }
 try {
@@ -1073,6 +1124,7 @@ try {
   else if (command === 'disasm') cmdDisasm(target);
   else if (command === 'cfg') cmdCfg(target);
   else if (command === 'dex') cmdDex(target);
+  else if (command === 'wasm') cmdWasm(target);
   else if (command === 'observe') await cmdObserve(target);
   else if (command === 'compare') await cmdCompare(target, positional[2]);
   else fail(`unknown command: ${command}`);
