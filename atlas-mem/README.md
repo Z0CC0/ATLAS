@@ -255,10 +255,12 @@ opcode. `cfg` recovers one function's control-flow graph from the disassembly (b
 direct edges, loops from back-edges) on x86-64 and arm64 — the skeleton before expressions
 and structuring. A PE's import address table is read, so a `call [rip+x]` to an import shows its
 `dll!function` in `disasm`, `cfg` and the pseudo-C (`rax = KERNEL32.MultiByteToWideChar(...)`).
-`cfg --pseudo` lifts the x86-64 CFG to low-level pseudo-C: intra-block expression folding
-(`eax = (-(ebp | 0xff))`) and branch conditions recovered from `cmp`/`test` + the jump
-(`if (esi == 0) goto …`), memory as `*(addr)`, registers as the variables. Full if/while
-structuring and type recovery are the remaining decompiler work.
+`cfg --pseudo` lifts the x86-64 CFG to structured pseudo-C: intra-block expression folding
+(`eax = (-(ebp | 0xff))`), branch conditions recovered from `cmp`/`test` + the jump, memory
+as `*(addr)`, registers as the variables; then structured over the dominator and post-
+dominator trees into `if/else` and `while`/`for (;;)` with `break`/`continue`, a labelled
+`goto` only where the flow is irreducible (`--goto` keeps the flat listing). Native type
+recovery is the remaining decompiler work.
 `dex --pseudo` lifts each Dalvik method to pseudo-Java (register forward substitution, `new Type(args)` from new-instance + `<init>`, calls folded through `move-result`): the android.jar stub reads back as `throw new RuntimeException("Stub!");`.
 `sqlite` reads a database file read-only: schema, counts, indexes, triggers, a sample of
 one table on request. `cil --pseudo` lifts a .NET method's CIL to readable pseudo-C# by simulating the stack (call arity read from the signature): e.g. `throw new ArgumentNullException(GetArgumentName(arg0));`; 7,176 core-library methods lift with no crash, straight-line with labels (no if/while structuring). `map` decodes a source map and turns a bundled position back into a file,

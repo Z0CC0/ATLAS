@@ -125,18 +125,23 @@ into later uses, so a `mov`/`add`/`neg` chain collapses into one statement — a
 the branch condition from the preceding `cmp`/`test` and the conditional-jump kind
 (`test esi, esi` + `je` becomes `if (esi == 0)`). A memory write is `*(addr) = …`, a call is
 `rax = sub_…(…)`, a return is `return rax;`. There is no type recovery and no cross-block
-value tracking, so registers are the variables and blocks keep `goto` labels: this is the
-honest middle ground, not clean C.
+value tracking, so registers are the variables.
+
+The blocks are then structured. Over the dominator and post-dominator trees (Cooper-Harvey-
+Kennedy iterative data flow) a two-way block becomes `if (…) { … } else { … }` merging at its
+immediate post-dominator, and a natural loop (a back-edge whose target dominates its source)
+becomes `while (…)` or `for (;;)` with `break`/`continue`. A labelled `goto` survives only
+where the flow is irreducible or leaves its region — the honest fallback, never a wrong
+nesting. `cfg --pseudo --goto` keeps the old flat listing with labels for comparison.
 
 Call targets are named. A PE's import address table (the slots a `call [rip+x]` lands on)
 is read, so an imported call shows its `dll!function` in the disassembly and `cfg`, and in
 the pseudo-C a call reads `rax = KERNEL32.MultiByteToWideChar(...)` instead of an offset.
 
 What `cfg` does not do: an indirect jump or call (through a register, a jump table, a
-virtual call) has no resolved target, so a block only it reaches is missing. The next slices turn it into readable code:
-data flow / SSA to rebuild expressions, then structuring (the gotos back into if/while/for),
-then — for native — approximate types. A value is still not tracked and a call target is an
-offset, not a symbol.
+virtual call) has no resolved target, so a block only it reaches is missing. The remaining
+decompiler work is native type recovery (register widths, signedness, pointers, struct
+fields), which stays a later slice; a value is still not tracked across blocks.
 
 ## Android: `dex`
 

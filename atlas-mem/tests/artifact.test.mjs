@@ -9,6 +9,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+import { structurize, dominates, domTree, rpo } from '../tools/artifact-struct.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const tool = path.join(here, '..', 'tools', 'artifact.mjs');
@@ -722,6 +723,45 @@ test('every record has the same spine', () => {
     assert.ok(['observed', 'derived', 'inferred'].includes(rec.confidence));
     assert.ok(['complete', 'partial', 'unknown'].includes(rec.coverage.status));
   }
+});
+
+test('structuring turns a diamond into if/else with a single merge', () => {
+  const cfg = { start: 0, blocks: [
+    { start: 0, insns: [], succ: [{ to: 16, cond: true }, { to: 8, fall: true }] },
+    { start: 8, insns: [], succ: [{ to: 24, fall: true }] },
+    { start: 16, insns: [], succ: [{ to: 24, fall: true }] },
+    { start: 24, insns: [], succ: [] },
+  ] };
+  const lift = (b) => ({ stmts: [`s_${b.start.toString(16)}();`], cond: b.start === 0 ? { text: 'x == 1' } : null });
+  const t = structurize(cfg, 0, lift);
+  assert.match(t, /if \(x == 1\) \{/);
+  assert.match(t, /\} else \{/);
+  assert.ok(t.indexOf('s_18();') > t.indexOf('} else {'), 'the merge block prints once after the if');
+  assert.equal((t.match(/s_18\(\);/g) || []).length, 1, 'merge emitted exactly once, not duplicated into both arms');
+  assert.ok(!/goto/.test(t), 'a reducible diamond needs no goto');
+});
+
+test('structuring recovers a loop with a break, no goto', () => {
+  const cfg = { start: 0, blocks: [
+    { start: 0, insns: [], succ: [{ to: 8, cond: true }, { to: 16, fall: true }] },
+    { start: 8, insns: [], succ: [{ to: 0, fall: true, loop: true }] },
+    { start: 16, insns: [], succ: [] },
+  ] };
+  const lift = (b) => ({ stmts: [`s_${b.start.toString(16)}();`], cond: b.start === 0 ? { text: 'i < n' } : null });
+  const t = structurize(cfg, 0, lift);
+  assert.match(t, /for \(;;\) \{|while \(/);
+  assert.match(t, /break;/);
+  assert.ok(!/goto/.test(t), 'a natural loop needs no goto');
+});
+
+test('dominators: entry dominates all, a branch does not dominate the merge', () => {
+  const succ = new Map([[0, [16, 8]], [8, [24]], [16, [24]], [24, []]]);
+  const pred = new Map([[0, []], [8, [0]], [16, [0]], [24, [8, 16]]]);
+  const order = rpo(0, succ);
+  const idom = domTree(0, succ, pred, order);
+  assert.ok(dominates(idom, 0, 24), 'entry dominates the merge');
+  assert.ok(!dominates(idom, 8, 24), 'one branch does not dominate the merge');
+  assert.equal(idom.get(24), 0, 'the merge is dominated immediately by the entry');
 });
 
 test.after(() => { try { fs.rmSync(tmp, { recursive: true, force: true }); } catch { /* windows */ } });

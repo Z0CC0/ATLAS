@@ -39,7 +39,8 @@ import { readDex, dexEntriesFromZip } from './artifact-dex.mjs';
 import { decodeOne as x86decode } from './artifact-x86.mjs';
 import { decodeOne as arm64decode } from './artifact-arm64.mjs';
 import { buildCfg, formatCfg } from './artifact-cfg.mjs';
-import { liftFunction as liftX86Fn } from './artifact-lift-x86.mjs';
+import { liftFunction as liftX86Fn, liftBlock as liftX86Block } from './artifact-lift-x86.mjs';
+import { structurize } from './artifact-struct.mjs';
 import { observe } from './artifact-run.mjs';
 
 const VERSION = 1;
@@ -911,7 +912,7 @@ function cmdCfg(path) {
   const subject = { name: basename(abs), path: abs, format: 'cfg', bytes: buf.length, sha256: sha256(buf) };
   const limitations = [
     'control flow recovered from direct branches only: an indirect jump or call (through a register, a jump table or a virtual call) has no resolved target, so a block it leads to may be missing',
-    'this is the control-flow skeleton, not pseudocode: expression reconstruction (data flow / SSA) and structuring into if/while/for are the next slices; a value is not tracked and a call target is an offset, not a symbol',
+    'without --pseudo this is the control-flow skeleton; with --pseudo (x86-64) the blocks are lifted and structured into if/else/while over the dominator and post-dominator trees, with a labelled goto only where the flow is irreducible or leaves a region; type recovery is a later slice',
     'the function\'s extent is followed from the entry by recursive descent up to the byte budget; data between blocks (jump tables, constants) is not code and is not followed',
   ];
   const rec = record(subject, 'cfg', { at: flags.at || null, budget }, result, { confidence: 'derived', coverage: { status: cfg.bad ? 'partial' : 'complete', scope: `${cfg.blocks.length} basic blocks, ${cfg.instructions} instructions, ${cfg.loops} loop edge(s), from 0x${at.toString(16)}` }, limitations });
@@ -919,7 +920,10 @@ function cmdCfg(path) {
   const peSec = r.format === 'pe' ? r.sections.find((s) => s.name === secOf.name) : null;
   const iatByRva = new Map((r.iat || []).map((e) => [e.rva, e.name]));
   const sym = (peSec && iatByRva.size) ? (ins) => { if (!/^(call|jmp)$/.test(ins.mnem || '')) return ''; const m = /\[rip([+-])0x([0-9a-f]+)\]/.exec(ins.text); if (!m) return ''; const disp = parseInt(m[2], 16) * (m[1] === '-' ? -1 : 1); return iatByRva.get(peSec.vaddr + (ins.addr - peSec.raw) + ins.len + disp) || ''; } : null;
-  const body = (flags.pseudo && ARCH === 'x86-64') ? liftX86Fn(cfg, 0, sym) : formatCfg(cfg, 0, sym);
+  let body;
+  if (flags.pseudo && ARCH === 'x86-64') {
+    body = flags.goto ? liftX86Fn(cfg, 0, sym) : structurize(cfg, 0, (b) => liftX86Block(b.insns, sym));
+  } else body = formatCfg(cfg, 0, sym);
   emit(rec, body + `\n\nid ${rec.id}`);
 }
 
