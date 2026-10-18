@@ -194,8 +194,10 @@ field's type is inferred: a pointer when the field's value is itself dereference
 otherwise an integer whose width is the access size recovered from the instruction (`mov eax,
 [rcx+0x24]` makes `field_24` 32-bit, `mov rdx, [rcx+0x28]` makes `field_28` 64-bit; the widest
 access wins). It is labelled approximate: the offsets are observed (a gap shows as the offset
-comment) and the base register may hold different objects at different points. This is the
-honest step toward the real frontier (points-to plus full type inference), not that frontier.
+comment) and the base register may hold different objects at different points. Arrays are
+noted too: an indexed access `[base+index*scale]` is reported as `base[]` with the element
+type from the scale and access width (`[r8+rcx*8]` → `int64_t r8[]`). This is the honest step
+toward the real frontier (points-to plus full type inference), not that frontier.
 
 What `cfg` does not do: an indirect jump or call (through a register, a jump table, a
 virtual call) has no resolved target, so a block only it reaches is missing. The field names

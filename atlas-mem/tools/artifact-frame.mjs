@@ -170,6 +170,39 @@ function synthStructs(body, widths) {
   return out;
 }
 
+const SCALE_TYPE = { 1: 'int8_t', 2: 'int16_t', 4: 'int32_t', 8: 'int64_t' };
+
+/**
+ * Recover the element type of arrays: a memory operand `[base+index*scale]` is an array
+ * subscript whose element size is the scale (and the access width, when a register operand
+ * gives it). Returns [{ base, elem }] per base indexed this way, element typed by the access
+ * width if known, else by the scale. A base also used as a pointer (its value dereferenced)
+ * is still reported — the stride is what was observed.
+ */
+function arrayElems(cfg) {
+  const seen = new Map(); // base -> { scale, bits }
+  for (const b of cfg.blocks) for (const ins of b.insns) {
+    const sp = (ins.text || '').indexOf(' ');
+    if (sp < 0) continue;
+    const ops = ins.text.slice(sp + 1).split(', ');
+    for (let i = 0; i < ops.length; i += 1) {
+      const m = /^\[([a-z][a-z0-9]*)\+([a-z][a-z0-9]*)\*(\d+)([+-]0x[0-9a-f]+)?\]$/.exec(ops[i]);
+      if (!m) continue;
+      const base = m[1]; const scale = Number(m[3]);
+      const other = ops[1 - i]; const ri = other && REGINFO[other];
+      const bits = ri ? ri.w : null;
+      const prev = seen.get(base);
+      if (!prev || scale > prev.scale) seen.set(base, { scale, bits });
+    }
+  }
+  const out = [];
+  for (const [base, { scale, bits }] of seen) {
+    const elem = bits ? (WTYPE[bits] || 'int64_t') : (SCALE_TYPE[scale] || 'int64_t');
+    out.push({ base, elem, scale });
+  }
+  return out;
+}
+
 /** Render the synthesised structs as C declarations, as comment-prefixed lines. */
 function renderStructs(structs) {
   const lines = [];
@@ -182,4 +215,4 @@ function renderStructs(structs) {
   return lines;
 }
 
-export { recoverFrame, eliminateDeadStores, structLayouts, synthStructs, renderStructs, fieldWidths };
+export { recoverFrame, eliminateDeadStores, structLayouts, synthStructs, renderStructs, fieldWidths, arrayElems };

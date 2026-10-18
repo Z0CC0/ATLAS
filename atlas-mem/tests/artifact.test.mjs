@@ -14,7 +14,7 @@ import { inferTypes, protoFor, signatureText } from '../tools/artifact-types.mjs
 import { readWasm, liftWasm } from '../tools/artifact-wasm.mjs';
 import { readEvm, lift as liftEvm, selectors as evmSelectors, decode as evmDecode } from '../tools/artifact-evm.mjs';
 import { readPcap, summarise as summarisePcap } from '../tools/artifact-pcap.mjs';
-import { recoverFrame, eliminateDeadStores, structLayouts, synthStructs, fieldWidths } from '../tools/artifact-frame.mjs';
+import { recoverFrame, eliminateDeadStores, structLayouts, synthStructs, fieldWidths, arrayElems } from '../tools/artifact-frame.mjs';
 import { liveness, defsUses, withAliases, valueFlow } from '../tools/artifact-dataflow.mjs';
 import { liftBlock as liftX86Block } from '../tools/artifact-lift-x86.mjs';
 
@@ -973,6 +973,18 @@ test('struct layout inference groups field offsets off a base, sorted, 2+ only',
   assert.ok(rcx, 'rcx is reported');
   assert.deepEqual(rcx.fields, ['+0x48', '+0x50'], 'offsets sorted');
   assert.ok(!lay.some((l) => l.base === 'rdx'), 'a single-field base is not reported');
+});
+
+test('array element type is recovered from the index scale and access width', () => {
+  const cfg = { blocks: [{ start: 0, insns: [
+    { text: 'mov rax, [r8+rcx*8]' },  // r8: 8-byte elements
+    { text: 'mov edx, [r9+rsi*4]' },  // r9: 4-byte elements
+  ] }] };
+  const a = arrayElems(cfg);
+  const r8 = a.find((x) => x.base === 'r8');
+  const r9 = a.find((x) => x.base === 'r9');
+  assert.equal(r8.elem, 'int64_t'); assert.equal(r8.scale, 8);
+  assert.equal(r9.elem, 'int32_t'); assert.equal(r9.scale, 4);
 });
 
 test('field widths come from the access size and type the struct members', () => {

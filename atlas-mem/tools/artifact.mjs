@@ -45,7 +45,7 @@ import { inferTypes } from './artifact-types.mjs';
 import { readWasm, liftWasm } from './artifact-wasm.mjs';
 import { readEvm, lift as liftEvm } from './artifact-evm.mjs';
 import { readPcap, summarise as summarisePcap } from './artifact-pcap.mjs';
-import { recoverFrame, eliminateDeadStores, structLayouts, synthStructs, renderStructs, fieldWidths } from './artifact-frame.mjs';
+import { recoverFrame, eliminateDeadStores, structLayouts, synthStructs, renderStructs, fieldWidths, arrayElems } from './artifact-frame.mjs';
 import { liveness, withAliases, valueFlow } from './artifact-dataflow.mjs';
 import { observe } from './artifact-run.mjs';
 
@@ -1064,8 +1064,9 @@ function cmdCfg(path) {
       body = body.replace(new RegExp(`(\\brax = )([\\w.]*\\b${s.name})\\(\\.\\.\\.\\)`, 'g'), `$1${retCast}$2(${argc})`);
     }
     const layouts = structLayouts(body);
+    const arrays = arrayElems(cfg);
     rec.result.layouts = layouts;
-    if (ti.signatures.length || Object.keys(ti.regTypes).length || fr.locals.length || layouts.length) {
+    if (ti.signatures.length || Object.keys(ti.regTypes).length || fr.locals.length || layouts.length || arrays.length) {
       const head = [];
       if (ti.signatures.length) { head.push('// resolved API prototypes (ground-truth types at these call sites):'); for (const s of ti.signatures) head.push(`//   ${s.text}`); }
       const regs = Object.entries(ti.regTypes).filter(([, t]) => t && t !== '?');
@@ -1078,6 +1079,8 @@ function cmdCfg(path) {
       rec.result.structs = structs;
       if (structs.length) head.push(...renderStructs(structs));
       else if (layouts.length) { head.push('// observed pointer layouts (field offsets accessed, not named members):'); for (const l of layouts) head.push(`//   ${l.base}: ${l.fields.join(', ')}`); }
+      rec.result.arrays = arrays;
+      if (arrays.length) { head.push('// observed arrays (element type from the index scale / access width):'); for (const a of arrays) head.push(`//   ${a.elem} ${a.base}[]  // stride ${a.scale}`); }
       body = head.join('\n') + '\n' + body;
     }
   } else body = formatCfg(cfg, 0, sym);
