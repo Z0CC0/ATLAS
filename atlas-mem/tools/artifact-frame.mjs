@@ -83,4 +83,28 @@ function eliminateDeadStores(body) {
   return lines.join('\n');
 }
 
-export { recoverFrame, eliminateDeadStores };
+/**
+ * Collect the observed layout of each pointer: the set of field offsets accessed off a base,
+ * read straight from the `base->field_<off>` accesses the lift produced. This is the observed
+ * layout, not a reconstructed struct with member types and names — honest about what it is.
+ * Returns [{ base, fields: ['+0x0','+0x8',…] }] for every base with two or more distinct
+ * fields (a single field is not a structure worth noting).
+ */
+function structLayouts(body) {
+  const byBase = new Map();
+  for (const m of body.matchAll(/([a-z_][a-z0-9_]*|\([^()]*\))->field_([0-9a-f]+|m[0-9a-f]+)\b/g)) {
+    const base = m[1];
+    const off = m[2].startsWith('m') ? -parseInt(m[2].slice(1), 16) : parseInt(m[2], 16);
+    if (!byBase.has(base)) byBase.set(base, new Set());
+    byBase.get(base).add(off);
+  }
+  const out = [];
+  for (const [base, offs] of byBase) {
+    if (offs.size < 2) continue;
+    const fields = [...offs].sort((a, b) => a - b).map((o) => (o < 0 ? '-0x' + (-o).toString(16) : '+0x' + o.toString(16)));
+    out.push({ base, fields });
+  }
+  return out;
+}
+
+export { recoverFrame, eliminateDeadStores, structLayouts };

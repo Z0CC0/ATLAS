@@ -14,7 +14,7 @@ import { inferTypes, protoFor, signatureText } from '../tools/artifact-types.mjs
 import { readWasm, liftWasm } from '../tools/artifact-wasm.mjs';
 import { readEvm, lift as liftEvm, selectors as evmSelectors, decode as evmDecode } from '../tools/artifact-evm.mjs';
 import { readPcap, summarise as summarisePcap } from '../tools/artifact-pcap.mjs';
-import { recoverFrame, eliminateDeadStores } from '../tools/artifact-frame.mjs';
+import { recoverFrame, eliminateDeadStores, structLayouts } from '../tools/artifact-frame.mjs';
 import { liveness, defsUses, withAliases, valueFlow } from '../tools/artifact-dataflow.mjs';
 import { liftBlock as liftX86Block } from '../tools/artifact-lift-x86.mjs';
 
@@ -958,6 +958,21 @@ test('dead-store elimination drops an unused pure spill, keeps live and side-eff
   assert.ok(!/rbx = /.test(out), 'the dead store is removed');
   assert.ok(/rax = \(rsi \+ 1\);/.test(out), 'the value read later as eax is kept');
   assert.ok(/rdx = alloc\(rcx\);/.test(out), 'a store with a call side effect is kept');
+});
+
+test('struct layout inference groups field offsets off a base, sorted, 2+ only', () => {
+  const body = [
+    'void func() {',
+    '  rax = rcx->field_50;',
+    '  rcx->field_48 = rax;',
+    '  if (rcx->field_48 == rdx->field_8) {}', // rdx has a single field -> not reported
+    '}',
+  ].join('\n');
+  const lay = structLayouts(body);
+  const rcx = lay.find((l) => l.base === 'rcx');
+  assert.ok(rcx, 'rcx is reported');
+  assert.deepEqual(rcx.fields, ['+0x48', '+0x50'], 'offsets sorted');
+  assert.ok(!lay.some((l) => l.base === 'rdx'), 'a single-field base is not reported');
 });
 
 test('frame recovery names stack slots and annotates the boilerplate', () => {

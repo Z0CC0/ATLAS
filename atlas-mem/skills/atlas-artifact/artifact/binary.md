@@ -188,10 +188,16 @@ inlined (so X is read nowhere else) when the right-hand side has no call, with r
 canonicalised so a value spilled as `rax` and read as `eax` is kept. This drops the leftover
 spill noise and the dead parts of the compiler's boilerplate.
 
+The observed layout of each pointer is summarised above the function: the field offsets seen
+off a base (`rcx: +0x48, +0x50`), read from the `base->field_…` accesses, for any base with
+two or more distinct fields. It is the observed layout, not a reconstructed struct with real
+member types and names.
+
 What `cfg` does not do: an indirect jump or call (through a register, a jump table, a
 virtual call) has no resolved target, so a block only it reaches is missing. The field names
-are offsets, not a reconstructed struct with real member types and names — that stays the
-frontier.
+are offsets and the layout is what was observed off a register (which may hold different
+objects at different points), not a reconstructed struct with real member types and names —
+that stays the frontier.
 
 ## Android: `dex`
 
