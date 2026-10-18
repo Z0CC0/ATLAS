@@ -797,6 +797,19 @@ test('type recovery anchors argument and return types at a resolved call', () =>
   assert.equal(ti.regTypes.r8, 'LPCCH', 'third arg typed into r8');
 });
 
+test('a typed return stored to a stack slot types that slot', () => {
+  const cfg = { start: 0, blocks: [
+    { start: 0, insns: [
+      { addr: 0, len: 6, text: 'call [rip+0x10]', mnem: 'call' },   // returns HANDLE
+      { addr: 6, len: 5, text: 'mov [rsp+0x30], rax', mnem: 'mov' }, // store to a local
+      { addr: 11, len: 1, text: 'ret', mnem: 'ret' },
+    ], succ: [] },
+  ] };
+  const sym = (ins) => (ins.mnem === 'call' ? 'KERNEL32!CreateFileA' : '');
+  const ti = inferTypes(cfg, sym);
+  assert.equal(ti.slotTypes.local_30, 'HANDLE', 'the slot takes the return type of CreateFile');
+});
+
 test('an unknown call clears the volatile register types', () => {
   const cfg = { start: 0, blocks: [
     { start: 0, insns: [

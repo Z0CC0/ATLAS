@@ -136,6 +136,8 @@ function inferTypes(cfg, sym) {
   const seen = new Set();
   let anchored = 0;
   const setType = (reg, t) => { const c = canon(reg); if (!c) return; if (t && t !== '?') regTypes.set(c, t); };
+  const slotTypes = new Map(); // stack-slot name (local_30 / arg_10) -> type, matching the frame pass
+  const slotName = (op) => { const m = /^\[(rsp|rbp)([+-])0x([0-9a-f]+)\]$/.exec(op || ''); if (!m) return null; const hex = m[3]; return (m[1] === 'rbp' && m[2] === '+') ? `arg_${hex}` : `local_${m[2] === '-' ? 'm' : ''}${hex}`; };
 
   let pendingCmp = null; // operands of the last cmp/test, for sign from the jump
   for (const b of cfg.blocks) {
@@ -155,7 +157,13 @@ function inferTypes(cfg, sym) {
         }
         pendingCmp = null; continue;
       }
-      if (mnem === 'mov' && ops.length === 2 && !ops[0].startsWith('[') && !ops[1].startsWith('[')) {
+      if (mnem === 'mov' && ops.length === 2 && ops[0].startsWith('[')) {
+        // store to memory: a typed register written to a stack slot types that slot
+        const sl = slotName(ops[0]); const t = regTypes.get(canon(ops[1])); if (sl && t) slotTypes.set(sl, t);
+      } else if (mnem === 'mov' && ops.length === 2 && ops[1].startsWith('[')) {
+        // load from memory: a typed stack slot types the destination register, else it is unknown
+        const sl = slotName(ops[1]); const t = sl && slotTypes.get(sl); if (t) setType(ops[0], t); else regTypes.delete(canon(ops[0]));
+      } else if (mnem === 'mov' && ops.length === 2) {
         const t = regTypes.get(canon(ops[1])); if (t) setType(ops[0], t); else regTypes.delete(canon(ops[0]));
       } else if ((mnem === 'movzx') && ops.length === 2) {
         setType(ops[0], 'uint' + (WIDTH[ops[1].startsWith('[') ? null : ops[1]] || '?'));
@@ -176,7 +184,9 @@ function inferTypes(cfg, sym) {
   }
   const out = {};
   for (const [r, t] of regTypes) out[r] = t;
-  return { regTypes: out, signatures, anchored };
+  const slots = {};
+  for (const [s, t] of slotTypes) slots[s] = t;
+  return { regTypes: out, slotTypes: slots, signatures, anchored };
 }
 
 export { inferTypes, protoFor, signatureText, PROTOS };

@@ -1068,7 +1068,10 @@ function cmdCfg(path) {
       if (ti.signatures.length) { head.push('// resolved API prototypes (ground-truth types at these call sites):'); for (const s of ti.signatures) head.push(`//   ${s.text}`); }
       const regs = Object.entries(ti.regTypes).filter(([, t]) => t && t !== '?');
       if (regs.length) { head.push('// register types still live at the function end (a later unknown call clears the volatiles):'); head.push('//   ' + regs.map(([r, t]) => `${t} ${r}`).join(', ')); }
-      if (fr.locals.length) { head.push(`// stack locals recovered: ${[...new Set(fr.locals)].join(', ')}`); }
+      const slots = Object.entries(ti.slotTypes || {});
+      if (slots.length) { head.push('// inferred variable types (from the API-typed value stored into each slot):'); head.push('//   ' + slots.map(([s, t]) => `${t} ${s}`).join('; ')); }
+      else if (fr.locals.length) { head.push(`// stack locals recovered: ${[...new Set(fr.locals)].join(', ')}`); }
+      rec.result.slotTypes = ti.slotTypes || {};
       body = head.join('\n') + '\n' + body;
     }
   } else body = formatCfg(cfg, 0, sym);

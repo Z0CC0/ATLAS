@@ -143,9 +143,13 @@ compact table of common Win32 / C-runtime / ntdll prototypes (from the public AP
 a specification) gives each `call dll!func` its parameter types in rcx/rdx/r8/r9 and its
 return type in rax under the Microsoft x64 convention. The call is annotated in place
 (`rax = (ULONG)ADVAPI32.EventRegister(/* LPCGUID, PENABLECALLBACK, PVOID, PREGHANDLE */)`),
-the prototypes are listed above the function, and a light forward pass carries a type along
-`mov` copies and marks sign from a signed vs unsigned jump. A type that is not anchored
-stays `?` — honest, not guessed. User structs and a fully-typed C are still the frontier.
+the prototypes are listed above the function, and a forward pass carries a type along `mov`
+copies (across blocks, since a non-volatile register survives a call) and marks sign from a
+signed vs unsigned jump. A typed value stored into a stack slot types that slot, so the
+locals get a declaration line (`HANDLE local_30`) when a typed value reaches them. A type
+that is not anchored stays `?` — honest, not guessed. User structs and a fully-typed C are
+still the frontier, and the prototype table is compact, so the typing is as wide as the
+table.
 
 The stack frame is recovered too (the first middle-end pass). A compiler keeps a function's
 locals at a fixed offset from the stack or frame pointer; each distinct slot is renamed to a
