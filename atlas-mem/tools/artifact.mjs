@@ -26,6 +26,7 @@
 import { createHash } from 'node:crypto';
 import { closeSync, existsSync, openSync, readdirSync, readFileSync, readSync, statSync } from 'node:fs';
 import { basename, dirname, extname, join, posix, resolve } from 'node:path';
+import * as js from './artifact-js.mjs';
 
 const VERSION = 1;
 const MAX_PARSE_BYTES = 4 * 1024 * 1024;   // one source file larger than this is listed, not scanned
@@ -233,7 +234,7 @@ function resolveModule(fs, fromPath, spec, known) {
 
 const BUILTINS = new Set(['fs', 'path', 'os', 'crypto', 'child_process', 'http', 'https', 'net', 'url', 'util', 'stream', 'events', 'zlib', 'buffer', 'process', 'worker_threads', 'module', 'assert', 'readline', 'tls', 'dns', 'dgram', 'cluster', 'vm', 'electron', 'sqlite', 'timers', 'string_decoder', 'querystring', 'perf_hooks', 'async_hooks', 'tty', 'v8', 'inspector']);
 
-function analyzeApp(fs, opts) {
+async function analyzeApp(fs, opts) {
   const all = fs.list();
   const known = new Set(all.map((f) => f.path));
   const pkgRaw = fs.read('package.json');
@@ -249,101 +250,126 @@ function analyzeApp(fs, opts) {
     electron: pkg.devDependencies?.electron || pkg.dependencies?.electron || null,
     files: { total: all.length, bytes: all.reduce((s, f) => s + f.size, 0), sources: sources.length, html: html.length, unpacked: all.filter((f) => f.unpacked).length },
     nativeAddons: all.filter((f) => f.path.endsWith('.node')).map((f) => f.path),
-    packages: {}, modules: [], edges: [], ipc: { handlers: [], senders: [], dynamic: [] }, bridge: [], windows: [], preferences: [], urls: {}, processes: [], shell: [], powers: [], eval: [], envSecrets: [], renderers: [],
+    packages: {}, modules: [], edges: [], ipc: { handlers: [], senders: [], dynamic: [], wrappers: [] }, bridge: [], windows: [], preferences: [], urls: {}, processes: [], shell: [], powers: [], eval: [], envSecrets: [], renderers: [],
+    reader: 'text',
   };
   const urlSeen = new Map();
   const texts = new Map();
-  let bytesScanned = 0, skipped = 0, minified = 0;
+  let bytesScanned = 0, skipped = 0, minified = 0, broken = 0;
   for (const f of sources) {
     const buf = fs.read(f.path);
     if (!buf) { skipped += 1; continue; }
     if (buf.length > MAX_PARSE_BYTES) { skipped += 1; out.modules.push({ path: f.path, bytes: buf.length, scanned: false }); continue; }
-    const text = buf.toString('utf8');
-    texts.set(f.path, text);
+    texts.set(f.path, buf.toString('utf8'));
     bytesScanned += buf.length;
-    const lines = text.split('\n').length;
-    const isMin = buf.length > 50 * 1024 && buf.length / lines > 400;
-    if (isMin) minified += 1;
-    const at = lineIndex(text);
-    const mod = { path: f.path, bytes: buf.length, lines, minified: isMin, scanned: true, imports: 0 };
-    for (const m of text.matchAll(RE.requires)) {
-      const spec = m[2] || m[4] || m[6];
-      if (!spec) continue;
-      const r = resolveModule(fs, f.path, spec, known);
-      mod.imports += 1;
-      if (r.kind === 'package' || r.kind === 'builtin') out.packages[r.name] = (out.packages[r.name] || 0) + 1;
-      else out.edges.push({ from: f.path, to: r.path, line: at(m.index), missing: r.kind === 'missing' });
+  }
+  const noteUrl = (u, file, line) => {
+    let host; try { host = new URL(u).host; } catch { return; }
+    if (!host || /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])/.test(host) && !opts.all) return;
+    const cur = urlSeen.get(host) || { count: 0, first: { file, line }, examples: new Set() };
+    cur.count += 1; if (cur.examples.size < 3) cur.examples.add(u.slice(0, 120));
+    urlSeen.set(host, cur);
+  };
+  const noteImport = (file, spec, line) => {
+    const r = resolveModule(fs, file, spec, known);
+    if (r.kind === 'package' || r.kind === 'builtin') out.packages[r.name] = (out.packages[r.name] || 0) + 1;
+    else out.edges.push({ from: file, to: r.path, line, missing: r.kind === 'missing' });
+  };
+
+  // ---- the real parse, when the grammars are here
+  await js.prepare([...texts.keys()]);
+  const parsed = [...texts.keys()].some((p) => js.ready(p));
+  if (parsed && !opts.text_only) {
+    out.reader = 'parse';
+    // pass one: every file alone, to learn what each exports and which functions wrap ipc
+    const first = new Map();
+    for (const [path, text] of texts) { const r = js.ready(path) ? js.scan(text, path) : null; if (r) first.set(path, r); }
+    const wrappers = new Map();
+    for (const [path, r] of first) for (const w of r.wrappers) wrappers.set(w.name, { ...w, file: path });
+    // pass two: with the constants a file imports from the files it names
+    for (const f of sources) {
+      const text = texts.get(f.path); if (text === undefined) continue;
+      const lines = text.split('\n').length;
+      const isMin = text.length > 50 * 1024 && text.length / lines > 400;
+      if (isMin) minified += 1;
+      const mod = { path: f.path, bytes: Buffer.byteLength(text), lines, minified: isMin, scanned: true, imports: 0 };
+      const pre = first.get(f.path);
+      let r = pre;
+      if (pre) {
+        const imported = { scalars: new Map(), objects: new Map() };
+        for (const b of pre.bindings) {
+          const target = resolveModule(fs, f.path, b.spec, known);
+          const ex = target.kind === 'file' ? first.get(target.path)?.constants.exported : null;
+          if (!ex) continue;
+          if (b.whole) { imported.objects.set(b.whole, ex.scalars); for (const [k, v] of ex.objects) imported.objects.set(`${b.whole}.${k}`, v); }
+          for (const n of b.names) { if (ex.scalars.has(n.imported)) imported.scalars.set(n.local, ex.scalars.get(n.imported)); if (ex.objects.has(n.imported)) imported.objects.set(n.local, ex.objects.get(n.imported)); }
+        }
+        r = js.scan(text, f.path, imported, wrappers) || pre;
+      }
+      if (!r) {
+        // no grammar for this extension: the text patterns
+        scanText(text, f.path, mod, out, noteUrl, noteImport);
+        out.modules.push(mod);
+        continue;
+      }
+      if (r.broken) broken += 1;
+      for (const i of r.imports) { mod.imports += 1; if (i.spec) noteImport(f.path, i.spec, i.line); else out.edges.push({ from: f.path, to: null, expr: i.expr, line: i.line, missing: false, dynamic: true }); }
+      for (const c of r.ipc) {
+        const rec = { channel: c.channel, via: c.via, file: f.path, line: c.line, confidence: c.confidence };
+        if (c.channel === null) out.ipc.dynamic.push({ file: f.path, line: c.line, via: c.via, expr: c.expr });
+        else if (c.side === 'main') out.ipc.handlers.push(rec);
+        else out.ipc.senders.push(rec);
+      }
+      for (const c of r.wrapperCalls) {
+        const rec = { channel: c.channel, via: c.via, file: f.path, line: c.line, confidence: c.confidence };
+        if (c.channel === null) out.ipc.dynamic.push({ file: f.path, line: c.line, via: c.via, expr: c.expr });
+        else if (c.side === 'main') out.ipc.handlers.push(rec);
+        else out.ipc.senders.push(rec);
+      }
+      for (const b of r.bridge) out.bridge.push({ key: b.key, expr: b.expr, file: f.path, line: b.line });
+      for (const w of r.windows) out.windows.push({ file: f.path, ...w });
+      for (const pr of r.prefs) out.preferences.push({ flag: pr.flag, file: f.path, line: pr.line });
+      for (const u of r.urls) noteUrl(u.url, f.path, u.line);
+      for (const pc of r.processes) out.processes.push({ command: pc.command, expr: pc.expr, confidence: pc.confidence, file: f.path, line: pc.line });
+      if (r.processes.length) mod.spawns = r.processes.length;
+      for (const s of r.shell) out.shell.push({ call: s.call, file: f.path, line: s.line });
+      for (const pw of r.powers) out.powers.push({ api: pw.api, file: f.path, line: pw.line });
+      for (const e of r.evals) out.eval.push({ file: f.path, line: e.line });
+      for (const e of r.envSecrets) out.envSecrets.push({ name: e.name, file: f.path, line: e.line });
+      out.modules.push(mod);
     }
-    for (const m of text.matchAll(RE.ipcMain)) out.ipc.handlers.push({ channel: m[3], via: 'ipcMain.' + m[1], file: f.path, line: at(m.index) });
-    for (const m of text.matchAll(RE.ipcRenderer)) out.ipc.senders.push({ channel: m[3], via: 'ipcRenderer.' + m[1], file: f.path, line: at(m.index) });
-    for (const m of text.matchAll(RE.webContentsSend)) out.ipc.senders.push({ channel: m[2], via: 'webContents.send', file: f.path, line: at(m.index) });
-    for (const m of text.matchAll(RE.ipcDynamic)) out.ipc.dynamic.push({ file: f.path, line: at(m.index), index: m.index });
-    for (const m of text.matchAll(RE.bridge)) out.bridge.push({ key: m[2], file: f.path, line: at(m.index) });
-    for (const m of text.matchAll(RE.window)) {
-      const block = text.slice(m.index, m.index + 2500);
-      const preload = RE.preload.exec(block); RE.preload.lastIndex = 0;
-      const prefs = [...block.matchAll(RE.pref)].map((p) => `${p[1]}:${p[2]}`);
-      out.windows.push({ file: f.path, line: at(m.index), preload: preload ? preload[1].trim().slice(0, 160) : null, preferences: prefs });
+    out.ipc.wrappers = [...wrappers.values()].map((w) => ({ name: w.name, side: w.side, ipc: w.ipc, method: w.method, file: w.file, line: w.line }));
+  } else {
+    for (const f of sources) {
+      const text = texts.get(f.path); if (text === undefined) continue;
+      const lines = text.split('\n').length;
+      const isMin = text.length > 50 * 1024 && text.length / lines > 400;
+      if (isMin) minified += 1;
+      const mod = { path: f.path, bytes: Buffer.byteLength(text), lines, minified: isMin, scanned: true, imports: 0 };
+      scanText(text, f.path, mod, out, noteUrl, noteImport);
+      out.modules.push(mod);
     }
-    for (const m of text.matchAll(RE.pref)) if (m[2] === (m[1] === 'contextIsolation' || m[1] === 'webSecurity' || m[1] === 'sandbox' ? 'false' : 'true')) out.preferences.push({ flag: `${m[1]}:${m[2]}`, file: f.path, line: at(m.index) });
-    for (const m of text.matchAll(RE.url)) {
-      const u = m[0].replace(/[.,;:]+$/, '');
-      let host; try { host = new URL(u).host; } catch { continue; }
-      if (!host || /^(localhost|127\.0\.0\.1|0\.0\.0\.0|\[::1\])/.test(host) && !opts.all) { urlSeen.set('local:' + host, (urlSeen.get('local:' + host) || 0) + 1); continue; }
-      const key = host;
-      const cur = urlSeen.get(key) || { count: 0, first: { file: f.path, line: at(m.index) }, examples: new Set() };
-      cur.count += 1; if (cur.examples.size < 3) cur.examples.add(u.slice(0, 120));
-      urlSeen.set(key, cur);
-    }
-    for (const m of text.matchAll(RE.child)) out.processes.push({ command: m[2], file: f.path, line: at(m.index) });
-    const childCount = [...text.matchAll(RE.childAny)].length;
-    if (childCount) mod.spawns = childCount;
-    for (const m of text.matchAll(RE.shell)) out.shell.push({ call: 'shell.' + m[1], file: f.path, line: at(m.index) });
-    for (const m of text.matchAll(RE.powers)) out.powers.push({ api: m[1], file: f.path, line: at(m.index) });
-    for (const m of text.matchAll(RE.eval)) out.eval.push({ file: f.path, line: at(m.index) });
-    for (const m of text.matchAll(RE.envSecret)) out.envSecrets.push({ name: m[1], file: f.path, line: at(m.index) });
-    out.modules.push(mod);
+    textWrappers(texts, out);
   }
   for (const f of html) {
     const text = fs.read(f.path)?.toString('utf8') || '';
     const scripts = [...text.matchAll(RE.scriptSrc)].map((m) => m[2]);
     out.renderers.push({ path: f.path, scripts });
   }
-  // handlers registered through the app's own wrapper: a function whose body calls
-  // ipcMain.handle/on with a variable is the wrapper; every call to it with a string
-  // literal is a handler, read as derived, not observed
-  const wrappers = new Set();
-  for (const d of out.ipc.dynamic) {
-    const text = texts.get(d.file);
-    if (!text) continue;
-    const idx = d.index;
-    const before = text.slice(Math.max(0, idx - 600), idx);
-    const m = [...before.matchAll(/(?:function\s+([A-Za-z_$][\w$]*)\s*\(|(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>|([A-Za-z_$][\w$]*)\s*[:=]\s*(?:async\s*)?function\s*\()/g)].pop();
-    const name = m && (m[1] || m[2] || m[3]);
-    if (name && !['function', 'if', 'for', 'while'].includes(name)) wrappers.add(name);
-  }
-  out.ipc.wrappers = [...wrappers];
-  if (wrappers.size) {
-    const re = new RegExp(`(?<![\\w$.])(${[...wrappers].join('|')})\\s*\\(\\s*(['"\`])([^'"\`\\n]{1,120})\\2`, 'g');
-    for (const [path, text] of texts) {
-      const at = lineIndex(text);
-      for (const m of text.matchAll(re)) out.ipc.handlers.push({ channel: m[3], via: `wrapper ${m[1]}`, file: path, line: at(m.index), confidence: 'derived' });
-    }
-  }
-  out.urls = Object.fromEntries([...urlSeen.entries()].filter(([k]) => !k.startsWith('local:')).map(([k, v]) => [k, { count: v.count, first: v.first, examples: [...v.examples] }]));
+  out.urls = Object.fromEntries([...urlSeen.entries()].map(([k, v]) => [k, { count: v.count, first: v.first, examples: [...v.examples] }]));
   // reachability from the entry, over the resolved edges
   const reach = new Set();
   if (entry && known.has(entry)) {
     const stack = [entry];
     const byFrom = new Map();
-    for (const e of out.edges) { if (!byFrom.has(e.from)) byFrom.set(e.from, []); byFrom.get(e.from).push(e.to); }
+    for (const e of out.edges) { if (!e.to) continue; if (!byFrom.has(e.from)) byFrom.set(e.from, []); byFrom.get(e.from).push(e.to); }
     while (stack.length) { const p = stack.pop(); if (reach.has(p)) continue; reach.add(p); for (const t of byFrom.get(p) || []) stack.push(t); }
   }
   for (const m of out.modules) m.reachedFromEntry = entry ? reach.has(m.path) : null;
   // the pairing, in both directions: what a renderer sends must be handled in main, what
   // main pushes must be listened for in a renderer
   const handled = new Set(out.ipc.handlers.map((h) => h.channel));
-  const toMain = new Set(out.ipc.senders.filter((s) => /^ipcRenderer\.(invoke|send|sendSync|postMessage|sendTo)$/.test(s.via)).map((s) => s.channel));
+  const toMain = new Set(out.ipc.senders.filter((s) => /^(ipcRenderer\.(invoke|send|sendSync|postMessage|sendTo)|wrapper )/.test(s.via) && !/^ipcRenderer\.(on|once)/.test(s.via)).map((s) => s.channel));
   const listened = new Set(out.ipc.senders.filter((s) => /^ipcRenderer\.(on|once)$/.test(s.via)).map((s) => s.channel));
   const pushed = new Set(out.ipc.senders.filter((s) => s.via === 'webContents.send').map((s) => s.channel));
   out.ipc.sentNeverHandled = [...toMain].filter((c) => !handled.has(c));
@@ -355,10 +381,60 @@ function analyzeApp(fs, opts) {
   if (!opts.all) limitations.push('node_modules listed and counted, not scanned (--all scans them)');
   if (skipped) limitations.push(`${skipped} source file(s) not scanned (unreadable or above ${MAX_PARSE_BYTES / 1024 / 1024} MB)`);
   if (minified) limitations.push(`${minified} file(s) look minified or bundled: names inside them are the bundler's, imports are what the bundle kept`);
-  if (out.ipc.dynamic.length) limitations.push(`${out.ipc.dynamic.length} IPC call(s) with a channel that is not a string literal${out.ipc.wrappers.length ? `; ${out.ipc.wrappers.length} of them read as a wrapper (${out.ipc.wrappers.join(', ')}) and its callers counted as handlers, derived not observed` : ': channel unknown'}`);
-  limitations.push('read as text with patterns, not executed: a call built at run time, a string assembled from parts, or code loaded from outside the archive is not seen');
-  const coverage = { status: skipped || out.ipc.dynamic.length ? 'partial' : 'complete', scope: `${sources.length} source files and ${html.length} html files ${opts.all ? 'including' : 'outside'} node_modules, ${(bytesScanned / 1024 / 1024).toFixed(1)} MB scanned` };
+  if (broken) limitations.push(`${broken} file(s) did not parse cleanly (syntax the grammar does not know, or not JavaScript): read with the tree where it held`);
+  if (out.ipc.dynamic.length) limitations.push(`${out.ipc.dynamic.length} IPC call(s) whose channel could not be resolved to a string (listed under ipc.dynamic with the expression)`);
+  if (out.reader === 'text') limitations.push('read with text patterns, not a parse: the grammar was not available; a channel held in a constant or built from parts is not resolved');
+  if (!out.ipc.senders.some((s) => s.via.startsWith('ipcRenderer.')) && out.ipc.handlers.length) limitations.push('no renderer-side IPC in the archive: the renderer is loaded from elsewhere (a URL, another folder) or bundled under names this reading does not match; the pairing counts only what is here');
+  limitations.push('read, not executed: a value computed at run time, a string from the network or a file, or code loaded from outside the archive is not seen');
+  const coverage = { status: skipped || out.ipc.dynamic.length || broken ? 'partial' : 'complete', scope: `${sources.length} source files and ${html.length} html files ${opts.all ? 'including' : 'outside'} node_modules, ${(bytesScanned / 1024 / 1024).toFixed(1)} MB read as ${out.reader === 'parse' ? 'syntax trees' : 'text'}` };
   return { out, limitations, coverage };
+}
+
+/** The text patterns: what runs when a file has no grammar. */
+function scanText(text, path, mod, out, noteUrl, noteImport) {
+  const at = lineIndex(text);
+  for (const m of text.matchAll(RE.requires)) { const spec = m[2] || m[4] || m[6]; if (!spec) continue; mod.imports += 1; noteImport(path, spec, at(m.index)); }
+  for (const m of text.matchAll(RE.ipcMain)) out.ipc.handlers.push({ channel: m[3], via: 'ipcMain.' + m[1], file: path, line: at(m.index), confidence: 'observed' });
+  for (const m of text.matchAll(RE.ipcRenderer)) out.ipc.senders.push({ channel: m[3], via: 'ipcRenderer.' + m[1], file: path, line: at(m.index), confidence: 'observed' });
+  for (const m of text.matchAll(RE.webContentsSend)) out.ipc.senders.push({ channel: m[2], via: 'webContents.send', file: path, line: at(m.index), confidence: 'observed' });
+  for (const m of text.matchAll(RE.ipcDynamic)) out.ipc.dynamic.push({ file: path, line: at(m.index), index: m.index });
+  for (const m of text.matchAll(RE.bridge)) out.bridge.push({ key: m[2], file: path, line: at(m.index) });
+  for (const m of text.matchAll(RE.window)) {
+    const block = text.slice(m.index, m.index + 2500);
+    const preload = RE.preload.exec(block); RE.preload.lastIndex = 0;
+    const prefs = [...block.matchAll(RE.pref)].map((p) => `${p[1]}:${p[2]}`);
+    out.windows.push({ file: path, line: at(m.index), preload: preload ? preload[1].trim().slice(0, 160) : null, preferences: prefs });
+  }
+  for (const m of text.matchAll(RE.pref)) if (m[2] === (m[1] === 'contextIsolation' || m[1] === 'webSecurity' || m[1] === 'sandbox' ? 'false' : 'true')) out.preferences.push({ flag: `${m[1]}:${m[2]}`, file: path, line: at(m.index) });
+  for (const m of text.matchAll(RE.url)) noteUrl(m[0].replace(/[.,;:]+$/, ''), path, at(m.index));
+  for (const m of text.matchAll(RE.child)) out.processes.push({ command: m[2], file: path, line: at(m.index), confidence: 'observed' });
+  const childCount = [...text.matchAll(RE.childAny)].length;
+  if (childCount) mod.spawns = childCount;
+  for (const m of text.matchAll(RE.shell)) out.shell.push({ call: 'shell.' + m[1], file: path, line: at(m.index) });
+  for (const m of text.matchAll(RE.powers)) out.powers.push({ api: m[1], file: path, line: at(m.index) });
+  for (const m of text.matchAll(RE.eval)) out.eval.push({ file: path, line: at(m.index) });
+  for (const m of text.matchAll(RE.envSecret)) out.envSecrets.push({ name: m[1], file: path, line: at(m.index) });
+}
+
+/** Text-pattern reading of wrappers: a function whose body calls ipcMain with a variable. */
+function textWrappers(texts, out) {
+  const wrappers = new Set();
+  for (const d of out.ipc.dynamic) {
+    const text = texts.get(d.file);
+    if (!text || d.index === undefined) continue;
+    const before = text.slice(Math.max(0, d.index - 600), d.index);
+    const m = [...before.matchAll(/(?:function\s+([A-Za-z_$][\w$]*)\s*\(|(?:const|let|var)\s+([A-Za-z_$][\w$]*)\s*=\s*(?:async\s*)?(?:\([^)]*\)|[A-Za-z_$][\w$]*)\s*=>|([A-Za-z_$][\w$]*)\s*[:=]\s*(?:async\s*)?function\s*\()/g)].pop();
+    const name = m && (m[1] || m[2] || m[3]);
+    if (name && !['function', 'if', 'for', 'while'].includes(name)) wrappers.add(name);
+  }
+  out.ipc.wrappers = [...wrappers].map((name) => ({ name, side: 'main' }));
+  if (wrappers.size) {
+    const re = new RegExp(`(?<![\\w$.])(${[...wrappers].join('|')})\\s*\\(\\s*(['"\`])([^'"\`\\n]{1,120})\\2`, 'g');
+    for (const [path, text] of texts) {
+      const at = lineIndex(text);
+      for (const m of text.matchAll(re)) out.ipc.handlers.push({ channel: m[3], via: `wrapper ${m[1]}`, file: path, line: at(m.index), confidence: 'derived' });
+    }
+  }
 }
 
 function appText(rec) {
@@ -374,11 +450,12 @@ function appText(rec) {
   for (const p of r.preferences) L.push(`weak preference ${p.flag}  ${p.file}:${p.line}`);
   const hosts = Object.entries(r.urls).sort((a, b) => b[1].count - a[1].count);
   L.push(`hosts ${hosts.length}: ${hosts.slice(0, 12).map(([h, v]) => `${h} (${v.count})`).join(', ')}`);
-  if (r.processes.length) L.push(`processes: ${r.processes.slice(0, 8).map((p) => `${p.command} @ ${p.file}:${p.line}`).join('; ')}`);
+  if (r.processes.length) L.push(`processes: ${r.processes.slice(0, 8).map((p) => `${p.command ?? "(" + p.expr + ")"} @ ${p.file}:${p.line}`).join('; ')}`);
   if (r.shell.length) L.push(`shell: ${r.shell.map((s) => `${s.call} @ ${s.file}:${s.line}`).join('; ')}`);
   if (r.powers.length) L.push(`powers: ${[...new Set(r.powers.map((p) => p.api))].join(', ')}`);
   if (r.eval.length) L.push(`eval/new Function: ${r.eval.map((e) => `${e.file}:${e.line}`).join(', ')}`);
   if (r.envSecrets.length) L.push(`env secrets read: ${[...new Set(r.envSecrets.map((e) => e.name))].join(', ')}`);
+  if (r.ipc.wrappers && r.ipc.wrappers.length) L.push(`wrappers: ${r.ipc.wrappers.map((w) => `${w.name} (${w.side}${w.file ? ', ' + w.file + ':' + w.line : ''})`).join(', ')}`);
   L.push(`coverage ${rec.coverage.status}: ${rec.coverage.scope}`);
   for (const l of rec.limitations) L.push(`limit  ${l}`);
   L.push(`id ${rec.id}`);
@@ -387,13 +464,13 @@ function appText(rec) {
 
 function page(list, n, per) { const start = (n - 1) * per; return { page: n, per, total: list.length, items: list.slice(start, start + per) }; }
 
-function cmdApp(path) {
+async function cmdApp(path) {
   const abs = resolve(path);
   if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
   const fs = openSubject(abs);
   if (!fs) fail(`not an application archive or folder: ${abs}`, 'unsupported');
   const detail = flags.detail || 'summary';
-  const { out, limitations, coverage } = analyzeApp(fs, { all: Boolean(flags.all) });
+  const { out, limitations, coverage } = await analyzeApp(fs, { all: Boolean(flags.all), text_only: Boolean(flags['text-only']) });
   fs.close();
   const st = statSync(fs.root);
   const subject = { name: basename(fs.root), path: fs.root, format: fs.kind === 'asar' ? 'asar' : detectDir(fs.root), bytes: st.isDirectory() ? out.files.bytes : st.size, sha256: st.isDirectory() ? null : fileSha(fs.root) };
@@ -526,7 +603,7 @@ if (!command || !target || flags.help) {
 }
 try {
   if (command === 'detect') cmdDetect(target);
-  else if (command === 'app') cmdApp(target);
+  else if (command === 'app') await cmdApp(target);
   else if (command === 'sqlite') await cmdSqlite(target);
   else if (command === 'map') cmdMap(target);
   else fail(`unknown command: ${command}`);

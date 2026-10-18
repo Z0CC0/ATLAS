@@ -207,14 +207,17 @@ the machine.
 ## Inside a shipped artifact: `atlas-artifact`
 
 `tools/artifact.mjs` reads an installed program the way a person would open the box: the
-`.asar` (or the folder under `resources/`) as bytes, every module outside `node_modules`,
+`.asar` (or the folder under `resources/`) as bytes, every module outside `node_modules`
+parsed into a syntax tree with the grammars in `tools/wasm/` (`tools/artifact-js.mjs`),
 and reports what the entry reaches, the IPC channels in both directions with their pairing
 (a channel sent and never handled, a channel pushed and never listened for), the
 `contextBridge` keys, every `BrowserWindow` with its preload and the preferences that
 matter, the hosts in URL literals, the processes it starts by name, the system APIs it
-touches, `eval`, the secret-shaped environment variables it reads, the native addons. A
-wrapper the app wrote around `ipcMain.handle` is recognised and its callers counted,
-marked `derived`. `sqlite` reads a database file read-only: schema, counts, indexes,
+touches, `eval`, the secret-shaped environment variables it reads, the native addons. A channel
+held in a constant, an object of channels, a template, a compiled enum or another file of
+the archive is resolved and marked `derived`; a wrapper the app wrote around
+`ipcMain.handle`, `ipcRenderer.invoke` or `webContents.send` is recognised from its body
+and its callers counted (`derived` for a plain call, `inferred` through an object). `sqlite` reads a database file read-only: schema, counts, indexes,
 triggers, a sample of one table on request. `map` decodes a source map and turns a bundled
 position back into a file, line and name.
 
@@ -226,9 +229,12 @@ time is an `unknown` in the report, not a missing fact. `--text` prints twenty r
 lines; the JSON is read by page. Nothing is executed, nothing is written, no network.
 Binaries (`.exe`, ELF, Mach-O, APK, firmware) are recognised by `detect` and not read.
 
-On the THE ATLAS installer's own archive (180 MB, 7,790 files): 0.25 s, 14 modules, 60
-handlers of which 49 through the app's wrapper, 67 channels, every renderer call paired,
-26 hosts, 8 processes started by name.
+Measured on five installed applications (2026-10-18), text patterns against the parse:
+the author's own app (180 MB, 7,790 files) 0.9 s, 60 handlers of which 49 through its
+wrapper, 67 channels, every renderer call paired; a bundled app with Electron on a
+namespace: 0 → 3 handlers; an app whose channels are a compiled enum: 0 → 8 handlers, 12 →
+3 unknown; one app with channels built from `this` fields at run time: 23 unknown, stated
+as such.
 
 ---
 

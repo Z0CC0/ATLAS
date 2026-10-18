@@ -109,7 +109,7 @@ test('app reads an asar: entry, modules, ipc in both directions, bridge, window,
   assert.equal(res.ipc.handlers.find((h) => h.channel === 'demo:read').confidence, 'derived');
   assert.deepEqual(res.ipc.sentNeverHandled, ['demo:nobody']);
   assert.deepEqual(res.ipc.pushedNeverListened, []);
-  assert.deepEqual(res.ipc.wrappers, ['handle']);
+  assert.deepEqual(res.ipc.wrappers.map((w) => w.name), ['handle']);
   assert.ok(!res.ipc.handlers.some((h) => h.channel === 'dep:hidden'), 'node_modules is not scanned by default');
   assert.deepEqual(res.bridge.map((b) => b.key), ['demoApi']);
   assert.equal(res.windows.length, 1);
@@ -188,6 +188,43 @@ test('map decodes mappings and looks a position up', () => {
   const r2 = run('map', map, '--line', '1', '--col', '9');
   assert.equal(r2.json.result.lookup.original.name, 'foo');
   assert.ok(r.json.limitations.some((l) => l.includes("bundler's claim")));
+});
+
+test('channels held in constants, enums, templates and other files are resolved as derived', () => {
+  const files = {
+    'package.json': JSON.stringify({ name: 'c', main: 'main.js' }),
+    'channels.js': "const CH = Object.freeze({ read: 'c:read', write: 'c:write' });\nconst PREFIX = 'c:';\nmodule.exports = { CH, PREFIX };",
+    'enum.js': "var Kind;\n(function (Kind) { Kind['Start'] = 'k:start'; Kind.Stop = 'k:stop'; })(Kind || (Kind = {}));\nmodule.exports = { Kind };",
+    'main.js': [
+      "const electron = require('electron');",
+      "const { CH, PREFIX } = require('./channels');",
+      "const { Kind } = require('./enum');",
+      "const LOCAL = 'c:local';",
+      "function push(win, channel, data) { win.webContents.send(channel, data); }",
+      "electron.ipcMain.handle(CH.read, () => 1);",
+      "electron.ipcMain.on(PREFIX + 'join', () => 2);",
+      "electron.ipcMain.on(`${PREFIX}leave`, () => 3);",
+      "electron.ipcMain.on(LOCAL, () => 4);",
+      "electron.ipcMain.on(Kind.Start, () => 5);",
+      "electron.ipcMain.on(someVariable, () => 6);",
+      "push(null, 'c:tick', 1);",
+    ].join('\n'),
+    'preload.js': "const { ipcRenderer } = require('electron');\nipcRenderer.on('c:tick', () => {});\nipcRenderer.invoke('c:read');",
+  };
+  const dir = path.join(tmp, 'consts');
+  for (const [p, c] of Object.entries(files)) { fs.mkdirSync(path.dirname(path.join(dir, p)), { recursive: true }); fs.writeFileSync(path.join(dir, p), c); }
+  const r = run('app', dir, '--detail', 'full');
+  assert.equal(r.code, 0, r.out + r.err);
+  const res = r.json.result;
+  assert.equal(res.reader, 'parse');
+  const handlers = Object.fromEntries(res.ipc.handlers.map((h) => [h.channel, h.confidence]));
+  assert.deepEqual(handlers, { 'c:read': 'derived', 'c:join': 'derived', 'c:leave': 'derived', 'c:local': 'derived', 'k:start': 'derived' });
+  assert.equal(res.ipc.dynamic.length, 1);
+  assert.equal(res.ipc.dynamic[0].expr, 'someVariable');
+  assert.deepEqual(res.ipc.wrappers.map((w) => [w.name, w.side]), [['push', 'push']]);
+  assert.ok(res.ipc.senders.some((s) => s.via === 'webContents.send' && s.channel === 'c:tick' && s.confidence === 'derived'));
+  assert.deepEqual(res.ipc.pushedNeverListened, []);
+  assert.deepEqual(res.ipc.sentNeverHandled, []);
 });
 
 test('every record has the same spine', () => {

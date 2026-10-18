@@ -25,13 +25,29 @@ program) and reads every JavaScript and HTML file outside `node_modules`:
   name says key, token, secret or password.
 - **Native code.** Every `.node` addon inside or beside the archive (`app.asar.unpacked`).
 
+## How it reads
+
+Each file is parsed into a syntax tree (the grammars the memory section already ships),
+not searched as text. So a channel is found when it is a literal in place (`observed`),
+and also when it is held in a constant, taken from an object of channels, built from two
+literals or a template, defined as a compiled enum, or imported from another file of the
+archive (`derived`). A bundle that keeps Electron on a namespace (`electron.ipcMain`) is
+read the same. A wrapper the app wrote around `ipcMain.handle`, `ipcRenderer.invoke` or
+`webContents.send` is recognised from its body (a function or a method whose parameter is
+the channel); a plain call to it is a handler or a sender, `derived`; a call through an
+object (`this.send(...)`) is `inferred`, and a wrapper with a generic name (`on`, `send`)
+is not trusted that way. When no grammar is available the text patterns run instead and
+the record says `reader: text`.
+
 ## What it cannot see
 
-The reading is textual. A channel name built from a variable, a URL assembled from parts,
-a module loaded from a path computed at run time, code fetched from the network, a
-minified bundle's original names: all gaps, each counted in `limitations` and listed under
-`unknown` in the report. `node_modules` is counted and not scanned unless `--all` is asked;
-a dependency that opens a channel or a host is then found, at the cost of a longer run.
+A channel built at run time from a value no file holds, a URL assembled from parts the
+parser cannot join, a module loaded from a path computed at run time, code fetched from
+the network, a minified bundle's original names, a renderer loaded from outside the
+archive: all gaps, each counted in `limitations` and listed under `unknown` in the report
+with the expression as written. `node_modules` is counted and not scanned unless `--all`
+is asked; a dependency that opens a channel or a host is then found, at the cost of a
+longer run.
 
 ## Comparing with the source
 

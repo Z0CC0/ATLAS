@@ -423,4 +423,25 @@ function analyze(source, file) {
   }
 }
 
-export { GRAMMAR_BY_EXT, grammarOf, load, ready, definitions, references, analyze };
+/**
+ * Parse once and hand the root node to `fn`; the tree is freed afterwards whatever `fn`
+ * does. Returns what `fn` returns, or null when the file has no loaded grammar. For callers
+ * that need their own walk (the artifact reader) rather than the definitions above.
+ */
+function withTree(source, file, fn) {
+  if (!ready(file)) return null;
+  const parser = new runtime.Parser();
+  let tree = null;
+  try {
+    parser.setLanguage(languages.get(grammarOf(file)));
+    tree = parser.parse(source);
+    return tree ? fn(tree.rootNode, grammarOf(file)) : null;
+  } catch {
+    return null;
+  } finally {
+    if (tree) tree.delete();
+    parser.delete();
+  }
+}
+
+export { GRAMMAR_BY_EXT, grammarOf, load, ready, definitions, references, analyze, withTree };
