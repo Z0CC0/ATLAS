@@ -14,7 +14,7 @@ import { inferTypes, protoFor, signatureText } from '../tools/artifact-types.mjs
 import { readWasm, liftWasm } from '../tools/artifact-wasm.mjs';
 import { readEvm, lift as liftEvm, selectors as evmSelectors, decode as evmDecode } from '../tools/artifact-evm.mjs';
 import { readPcap, summarise as summarisePcap } from '../tools/artifact-pcap.mjs';
-import { recoverFrame, eliminateDeadStores, structLayouts, synthStructs, fieldWidths, arrayElems } from '../tools/artifact-frame.mjs';
+import { recoverFrame, eliminateDeadStores, structLayouts, synthStructs, fieldWidths, arrayElems, fnPtrFields } from '../tools/artifact-frame.mjs';
 import { liveness, defsUses, withAliases, valueFlow } from '../tools/artifact-dataflow.mjs';
 import { liftBlock as liftX86Block } from '../tools/artifact-lift-x86.mjs';
 
@@ -973,6 +973,22 @@ test('struct layout inference groups field offsets off a base, sorted, 2+ only',
   assert.ok(rcx, 'rcx is reported');
   assert.deepEqual(rcx.fields, ['+0x48', '+0x50'], 'offsets sorted');
   assert.ok(!lay.some((l) => l.base === 'rdx'), 'a single-field base is not reported');
+});
+
+test('a field called indirectly is typed as a function pointer', () => {
+  const cfg = { blocks: [{ start: 0, insns: [
+    { mnem: 'mov', text: 'mov rax, [rcx+0x10]' },
+    { mnem: 'call', text: 'call [rcx+0x10]' },   // indirect call through field 0x10
+    { mnem: 'mov', text: 'mov rdx, [rcx+0x18]' },
+  ] }] };
+  const fp = fnPtrFields(cfg);
+  assert.ok(fp.has('rcx|10'), 'the called field is detected');
+  assert.ok(!fp.has('rcx|18'));
+  const body = 'void func() {\n  rax = rcx->field_10;\n  rdx = rcx->field_18;\n}';
+  const s = synthStructs(body, new Map(), fp);
+  const rcx = s.find((x) => x.base === 'rcx');
+  assert.equal(rcx.members.find((m) => m.field === 'field_10').fn, true);
+  assert.equal(rcx.members.find((m) => m.field === 'field_18').fn, false);
 });
 
 test('array element type is recovered from the index scale and access width', () => {

@@ -149,20 +149,21 @@ function fieldWidths(cfg) {
  *
  * Returns [{ base, name, members: [{ off, type, field }] }] for each base with 2+ fields.
  */
-function synthStructs(body, widths) {
+function synthStructs(body, widths, fnptrs) {
   const out = [];
   for (const { base, fields } of structLayouts(body)) {
     const B = escapeRe(base);
     const members = fields.map((f) => {
       const suffix = f.replace('+0x', '').replace('-0x', 'm');
       const field = 'field_' + suffix;
+      const fn = fnptrs && fnptrs.has(`${base}|${suffix}`);
       // pointer if the loaded field is dereferenced, indexed, or used as a store target
       const deref = new RegExp(`${B}->${field}(->|\\[)`).test(body)
         || new RegExp(`\\*\\(?${B}->${field}\\b`).test(body)
         || new RegExp(`${escapeRe(`(${base}->${field})`)}\\[`).test(body);
       const bits = widths && widths.get(`${base}|${suffix}`);
       const type = deref ? 'void*' : (bits ? WTYPE[bits] : 'int64_t');
-      return { off: f, type, field, bits: bits || null };
+      return { off: f, type, field, bits: bits || null, fn: !!fn };
     });
     const name = base.replace(/[^a-z0-9]/gi, '') + '_t';
     out.push({ base, name, members });
@@ -203,16 +204,33 @@ function arrayElems(cfg) {
   return out;
 }
 
+/**
+ * Fields that are function pointers: a `call`/`jmp` through a memory operand `[base+disp]`
+ * means the value at that field is a code address that was called. This is observed, not
+ * guessed. Returns a Set of `base|suffix` keys.
+ */
+function fnPtrFields(cfg) {
+  const set = new Set();
+  for (const b of cfg.blocks) for (const ins of b.insns) {
+    if (ins.mnem !== 'call' && ins.mnem !== 'jmp') continue;
+    const sp = (ins.text || '').indexOf(' ');
+    if (sp < 0) continue;
+    const m = /^\[([a-z][a-z0-9]*)([+-]0x[0-9a-f]+)?\]$/.exec(ins.text.slice(sp + 1).trim());
+    if (m && m[1] !== 'rip') set.add(`${m[1]}|${offSuffix(m[2])}`);
+  }
+  return set;
+}
+
 /** Render the synthesised structs as C declarations, as comment-prefixed lines. */
 function renderStructs(structs) {
   const lines = [];
   for (const s of structs) {
     lines.push(`// reconstructed struct for ${s.base} (approximate: offsets observed, widths/types inferred from use)`);
     lines.push(`struct ${s.name} {`);
-    for (const m of s.members) lines.push(`  ${m.type} ${m.field};  // ${m.off}`);
+    for (const m of s.members) lines.push(m.fn ? `  void (*${m.field})();  // ${m.off}, called indirectly` : `  ${m.type} ${m.field};  // ${m.off}`);
     lines.push('};');
   }
   return lines;
 }
 
-export { recoverFrame, eliminateDeadStores, structLayouts, synthStructs, renderStructs, fieldWidths, arrayElems };
+export { recoverFrame, eliminateDeadStores, structLayouts, synthStructs, renderStructs, fieldWidths, arrayElems, fnPtrFields };

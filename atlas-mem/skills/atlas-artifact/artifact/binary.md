@@ -196,8 +196,10 @@ otherwise an integer whose width is the access size recovered from the instructi
 access wins). It is labelled approximate: the offsets are observed (a gap shows as the offset
 comment) and the base register may hold different objects at different points. Arrays are
 noted too: an indexed access `[base+index*scale]` is reported as `base[]` with the element
-type from the scale and access width (`[r8+rcx*8]` → `int64_t r8[]`). This is the honest step
-toward the real frontier (points-to plus full type inference), not that frontier.
+type from the scale and access width (`[r8+rcx*8]` → `int64_t r8[]`). A field called
+indirectly (`call [base+disp]`) is typed as a function pointer (`void (*field_N)()`), an
+observed fact, not a guess — useful for vtables and callbacks. This is the honest step toward
+the real frontier (points-to plus full type inference), not that frontier.
 
 What `cfg` does not do: an indirect jump or call (through a register, a jump table, a
 virtual call) has no resolved target, so a block only it reaches is missing. The field names
