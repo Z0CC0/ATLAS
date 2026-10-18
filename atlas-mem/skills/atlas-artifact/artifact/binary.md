@@ -154,9 +154,17 @@ function's locals, and the compiler boilerplate is annotated rather than left as
 stack-protector cookie (`// stack canary: set` / `: check`) and the frame set-up / tear-down.
 The pass renames and comments, it never deletes a statement.
 
+Values flow across blocks (the second middle-end pass). A backward liveness data-flow
+(live-in = use ∪ (live-out − def), to a fixpoint over the CFG) finds which registers each
+block actually leaves live; the lift then keeps only the live writes at a block's end and
+drops the dead ones, so the spill noise is gone. A value used only inside a memory address is
+substituted into that address, so no bare register is left without a visible definition. The
+pass is conservative: an unmodelled instruction marks its registers used and nothing defined,
+so a write is dropped only when the register is provably dead.
+
 What `cfg` does not do: an indirect jump or call (through a register, a jump table, a
-virtual call) has no resolved target, so a block only it reaches is missing; a value is not
-yet tracked across blocks (cross-block data flow is the next middle-end pass).
+virtual call) has no resolved target, so a block only it reaches is missing; a merge of two
+different values is not yet a phi node, and user structs are not recovered.
 
 ## Android: `dex`
 

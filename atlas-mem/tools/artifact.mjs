@@ -46,6 +46,7 @@ import { readWasm, liftWasm } from './artifact-wasm.mjs';
 import { readEvm, lift as liftEvm } from './artifact-evm.mjs';
 import { readPcap, summarise as summarisePcap } from './artifact-pcap.mjs';
 import { recoverFrame } from './artifact-frame.mjs';
+import { liveness, withAliases } from './artifact-dataflow.mjs';
 import { observe } from './artifact-run.mjs';
 
 const VERSION = 1;
@@ -1045,7 +1046,9 @@ function cmdCfg(path) {
   const sym = (peSec && iatByRva.size) ? (ins) => { if (!/^(call|jmp)$/.test(ins.mnem || '')) return ''; const m = /\[rip([+-])0x([0-9a-f]+)\]/.exec(ins.text); if (!m) return ''; const disp = parseInt(m[2], 16) * (m[1] === '-' ? -1 : 1); return iatByRva.get(peSec.vaddr + (ins.addr - peSec.raw) + ins.len + disp) || ''; } : null;
   let body;
   if (flags.pseudo && ARCH === 'x86-64') {
-    body = flags.goto ? liftX86Fn(cfg, 0, sym) : structurize(cfg, 0, (b) => liftX86Block(b.insns, sym));
+    const live = liveness(cfg);
+    const liveAt = (b) => withAliases(live.get(b.start) || new Set());
+    body = flags.goto ? liftX86Fn(cfg, 0, sym) : structurize(cfg, 0, (b) => liftX86Block(b.insns, sym, liveAt(b)));
     const fr = recoverFrame(body);
     body = fr.body;
     rec.result.locals = fr.locals;

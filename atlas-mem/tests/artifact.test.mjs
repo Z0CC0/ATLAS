@@ -15,6 +15,7 @@ import { readWasm, liftWasm } from '../tools/artifact-wasm.mjs';
 import { readEvm, lift as liftEvm, selectors as evmSelectors, decode as evmDecode } from '../tools/artifact-evm.mjs';
 import { readPcap, summarise as summarisePcap } from '../tools/artifact-pcap.mjs';
 import { recoverFrame } from '../tools/artifact-frame.mjs';
+import { liveness, defsUses, withAliases } from '../tools/artifact-dataflow.mjs';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const tool = path.join(here, '..', 'tools', 'artifact.mjs');
@@ -936,6 +937,36 @@ test('frame recovery names stack slots and annotates the boilerplate', () => {
   assert.ok(locals.includes('local_50'), 'local_50 recovered');
   assert.ok(locals.includes('arg_10'), 'rbp+ slot recovered as an argument');
   assert.ok(!/\*\(rsp\+0x50\)/.test(out), 'no raw stack ref left for the named slot');
+});
+
+test('instruction def/use is read for the common forms', () => {
+  assert.deepEqual([...defsUses({ text: 'mov rbx, [rdx]' }).def], ['rbx']);
+  assert.ok(defsUses({ text: 'mov rbx, [rdx]' }).use.has('rdx'));
+  const add = defsUses({ text: 'add rax, rcx' }); // read-modify-write: rax both
+  assert.ok(add.def.has('rax') && add.use.has('rax') && add.use.has('rcx'));
+  const call = defsUses({ text: 'call 0x1000' });
+  assert.ok(call.def.has('rax') && call.use.has('rcx'), 'a call defines rax and uses the arg regs');
+});
+
+test('liveness keeps a register read downstream and drops a dead one', () => {
+  const cfg = { start: 0, blocks: [
+    { start: 0, insns: [
+      { addr: 0, len: 3, text: 'mov rbx, [rdx]', mnem: 'mov' },
+      { addr: 3, len: 3, text: 'mov rdi, [rcx]', mnem: 'mov' }, // rdi never read again: dead
+      { addr: 6, len: 2, text: 'jne 0xa', mnem: 'jne' },
+    ], succ: [{ to: 10, cond: true }, { to: 8, fall: true }] },
+    { start: 8, insns: [{ addr: 8, len: 1, text: 'ret', mnem: 'ret' }], succ: [] },
+    { start: 10, insns: [
+      { addr: 10, len: 3, text: 'mov rax, rbx', mnem: 'mov' }, // reads rbx
+      { addr: 13, len: 1, text: 'ret', mnem: 'ret' },
+    ], succ: [] },
+  ] };
+  const live = liveness(cfg);
+  assert.ok(live.get(0).has('rbx'), 'rbx is live out of the entry (read in a successor)');
+  assert.ok(!live.get(0).has('rdi'), 'rdi is dead and not live out');
+  // alias expansion covers the sub-registers for the raw-name lookup
+  const ali = withAliases(live.get(0));
+  assert.ok(ali.has('ebx') && ali.has('bl'));
 });
 
 test.after(() => { try { fs.rmSync(tmp, { recursive: true, force: true }); } catch { /* windows */ } });
