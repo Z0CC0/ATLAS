@@ -45,7 +45,7 @@ import { inferTypes } from './artifact-types.mjs';
 import { readWasm, liftWasm } from './artifact-wasm.mjs';
 import { readEvm, lift as liftEvm } from './artifact-evm.mjs';
 import { readPcap, summarise as summarisePcap } from './artifact-pcap.mjs';
-import { recoverFrame, eliminateDeadStores, structLayouts } from './artifact-frame.mjs';
+import { recoverFrame, eliminateDeadStores, structLayouts, synthStructs, renderStructs } from './artifact-frame.mjs';
 import { liveness, withAliases, valueFlow } from './artifact-dataflow.mjs';
 import { observe } from './artifact-run.mjs';
 
@@ -1074,7 +1074,10 @@ function cmdCfg(path) {
       if (slots.length) { head.push('// inferred variable types (from the API-typed value stored into each slot):'); head.push('//   ' + slots.map(([s, t]) => `${t} ${s}`).join('; ')); }
       else if (fr.locals.length) { head.push(`// stack locals recovered: ${[...new Set(fr.locals)].join(', ')}`); }
       rec.result.slotTypes = ti.slotTypes || {};
-      if (layouts.length) { head.push('// observed pointer layouts (field offsets accessed, not named members):'); for (const l of layouts) head.push(`//   ${l.base}: ${l.fields.join(', ')}`); }
+      const structs = synthStructs(body);
+      rec.result.structs = structs;
+      if (structs.length) head.push(...renderStructs(structs));
+      else if (layouts.length) { head.push('// observed pointer layouts (field offsets accessed, not named members):'); for (const l of layouts) head.push(`//   ${l.base}: ${l.fields.join(', ')}`); }
       body = head.join('\n') + '\n' + body;
     }
   } else body = formatCfg(cfg, 0, sym);

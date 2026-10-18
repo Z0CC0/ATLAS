@@ -14,7 +14,7 @@ import { inferTypes, protoFor, signatureText } from '../tools/artifact-types.mjs
 import { readWasm, liftWasm } from '../tools/artifact-wasm.mjs';
 import { readEvm, lift as liftEvm, selectors as evmSelectors, decode as evmDecode } from '../tools/artifact-evm.mjs';
 import { readPcap, summarise as summarisePcap } from '../tools/artifact-pcap.mjs';
-import { recoverFrame, eliminateDeadStores, structLayouts } from '../tools/artifact-frame.mjs';
+import { recoverFrame, eliminateDeadStores, structLayouts, synthStructs } from '../tools/artifact-frame.mjs';
 import { liveness, defsUses, withAliases, valueFlow } from '../tools/artifact-dataflow.mjs';
 import { liftBlock as liftX86Block } from '../tools/artifact-lift-x86.mjs';
 
@@ -973,6 +973,24 @@ test('struct layout inference groups field offsets off a base, sorted, 2+ only',
   assert.ok(rcx, 'rcx is reported');
   assert.deepEqual(rcx.fields, ['+0x48', '+0x50'], 'offsets sorted');
   assert.ok(!lay.some((l) => l.base === 'rdx'), 'a single-field base is not reported');
+});
+
+test('struct synthesis types a dereferenced field as a pointer, a plain one as an integer', () => {
+  const body = [
+    'void func() {',
+    '  rax = rcx->field_8->field_0;', // field_8 dereferenced -> pointer
+    '  rbx = rcx->field_10;',          // plain -> integer
+    '  rdx = (rcx->field_8)[rsi];',    // indexed -> pointer (reinforces)
+    '}',
+  ].join('\n');
+  const s = synthStructs(body);
+  const rcx = s.find((x) => x.base === 'rcx');
+  assert.ok(rcx, 'a struct for rcx is synthesised');
+  assert.equal(rcx.name, 'rcx_t');
+  const f8 = rcx.members.find((m) => m.field === 'field_8');
+  const f10 = rcx.members.find((m) => m.field === 'field_10');
+  assert.equal(f8.type, 'void*', 'a dereferenced field is a pointer');
+  assert.equal(f10.type, 'int64_t', 'a plain field is an integer');
 });
 
 test('frame recovery names stack slots and annotates the boilerplate', () => {

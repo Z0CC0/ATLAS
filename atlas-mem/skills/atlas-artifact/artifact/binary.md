@@ -188,10 +188,13 @@ inlined (so X is read nowhere else) when the right-hand side has no call, with r
 canonicalised so a value spilled as `rax` and read as `eax` is kept. This drops the leftover
 spill noise and the dead parts of the compiler's boilerplate.
 
-The observed layout of each pointer is summarised above the function: the field offsets seen
-off a base (`rcx: +0x48, +0x50`), read from the `base->field_…` accesses, for any base with
-two or more distinct fields. It is the observed layout, not a reconstructed struct with real
-member types and names.
+For each pointer with two or more distinct fields, a `struct` declaration is synthesised above
+the function from the `base->field_…` accesses — a first sketch of struct reconstruction. Each
+field's type is inferred from use: a pointer when the field's value is itself dereferenced or
+indexed, otherwise a 64-bit integer. It is labelled approximate: the offsets are observed (a
+gap shows as the offset comment), the widths are assumed pointer-sized, and the base register
+may hold different objects at different points. This is the honest first step toward the real
+frontier, not that frontier.
 
 What `cfg` does not do: an indirect jump or call (through a register, a jump table, a
 virtual call) has no resolved target, so a block only it reaches is missing. The field names

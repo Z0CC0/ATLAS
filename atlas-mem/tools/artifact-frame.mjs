@@ -107,4 +107,47 @@ function structLayouts(body) {
   return out;
 }
 
-export { recoverFrame, eliminateDeadStores, structLayouts };
+const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/**
+ * A first sketch of real struct reconstruction: from the offsets observed off a pointer,
+ * synthesise a C `struct` declaration, giving each field a type inferred from how it is used —
+ * a pointer if the field's value is itself dereferenced or indexed, otherwise a 64-bit
+ * integer. This is deliberately labelled approximate: the offsets are observed (gaps are left
+ * as the offset comments), the widths are assumed pointer-sized, and the base register may
+ * hold different objects at different points. It is the honest first step toward the real
+ * frontier (points-to plus full type inference), not that frontier itself.
+ *
+ * Returns [{ base, name, members: [{ off, type, field }] }] for each base with 2+ fields.
+ */
+function synthStructs(body) {
+  const out = [];
+  for (const { base, fields } of structLayouts(body)) {
+    const B = escapeRe(base);
+    const members = fields.map((f) => {
+      const field = 'field_' + f.replace('+0x', '').replace('-0x', 'm');
+      // pointer if the loaded field is dereferenced, indexed, or used as a store target
+      const deref = new RegExp(`${B}->${field}(->|\\[)`).test(body)
+        || new RegExp(`\\*\\(?${B}->${field}\\b`).test(body)
+        || new RegExp(`${escapeRe(`(${base}->${field})`)}\\[`).test(body);
+      return { off: f, type: deref ? 'void*' : 'int64_t', field };
+    });
+    const name = base.replace(/[^a-z0-9]/gi, '') + '_t';
+    out.push({ base, name, members });
+  }
+  return out;
+}
+
+/** Render the synthesised structs as C declarations, as comment-prefixed lines. */
+function renderStructs(structs) {
+  const lines = [];
+  for (const s of structs) {
+    lines.push(`// reconstructed struct for ${s.base} (approximate: offsets observed, widths/types inferred from use)`);
+    lines.push(`struct ${s.name} {`);
+    for (const m of s.members) lines.push(`  ${m.type} ${m.field};  // ${m.off}`);
+    lines.push('};');
+  }
+  return lines;
+}
+
+export { recoverFrame, eliminateDeadStores, structLayouts, synthStructs, renderStructs };
