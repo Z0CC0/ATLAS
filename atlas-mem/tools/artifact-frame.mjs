@@ -107,7 +107,36 @@ function structLayouts(body) {
   return out;
 }
 
+import { REGINFO } from './artifact-lift-x86.mjs';
+
 const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+const WTYPE = { 8: 'int8_t', 16: 'int16_t', 32: 'int32_t', 64: 'int64_t' };
+const offSuffix = (disp) => (disp ? disp.replace('+0x', '').replace('-0x', 'm') : '0');
+
+/**
+ * Recover each field's access width from the raw instructions: a memory operand `[base+disp]`
+ * paired with a register operand takes that register's width. Returns Map(`base|suffix` ->
+ * bits), where suffix matches the `field_<suffix>` name the lift produced.
+ */
+function fieldWidths(cfg) {
+  const w = new Map();
+  for (const b of cfg.blocks) for (const ins of b.insns) {
+    const sp = (ins.text || '').indexOf(' ');
+    if (sp < 0) continue;
+    const ops = ins.text.slice(sp + 1).split(', ');
+    if (ops.length !== 2) continue;
+    for (let i = 0; i < 2; i += 1) {
+      const memTok = ops[i], regTok = ops[1 - i];
+      const m = /^\[([a-z][a-z0-9]*)([+-]0x[0-9a-f]+)?\]$/.exec(memTok); // base (+disp), no index
+      const ri = REGINFO[regTok];
+      if (!m || !ri) continue;
+      const key = `${m[1]}|${offSuffix(m[2])}`;
+      if (!w.has(key) || ri.w > w.get(key)) w.set(key, ri.w); // widest access wins
+    }
+  }
+  return w;
+}
 
 /**
  * A first sketch of real struct reconstruction: from the offsets observed off a pointer,
@@ -120,17 +149,20 @@ const escapeRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
  *
  * Returns [{ base, name, members: [{ off, type, field }] }] for each base with 2+ fields.
  */
-function synthStructs(body) {
+function synthStructs(body, widths) {
   const out = [];
   for (const { base, fields } of structLayouts(body)) {
     const B = escapeRe(base);
     const members = fields.map((f) => {
-      const field = 'field_' + f.replace('+0x', '').replace('-0x', 'm');
+      const suffix = f.replace('+0x', '').replace('-0x', 'm');
+      const field = 'field_' + suffix;
       // pointer if the loaded field is dereferenced, indexed, or used as a store target
       const deref = new RegExp(`${B}->${field}(->|\\[)`).test(body)
         || new RegExp(`\\*\\(?${B}->${field}\\b`).test(body)
         || new RegExp(`${escapeRe(`(${base}->${field})`)}\\[`).test(body);
-      return { off: f, type: deref ? 'void*' : 'int64_t', field };
+      const bits = widths && widths.get(`${base}|${suffix}`);
+      const type = deref ? 'void*' : (bits ? WTYPE[bits] : 'int64_t');
+      return { off: f, type, field, bits: bits || null };
     });
     const name = base.replace(/[^a-z0-9]/gi, '') + '_t';
     out.push({ base, name, members });
@@ -150,4 +182,4 @@ function renderStructs(structs) {
   return lines;
 }
 
-export { recoverFrame, eliminateDeadStores, structLayouts, synthStructs, renderStructs };
+export { recoverFrame, eliminateDeadStores, structLayouts, synthStructs, renderStructs, fieldWidths };

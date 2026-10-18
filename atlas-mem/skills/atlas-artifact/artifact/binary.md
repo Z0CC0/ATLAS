@@ -190,11 +190,12 @@ spill noise and the dead parts of the compiler's boilerplate.
 
 For each pointer with two or more distinct fields, a `struct` declaration is synthesised above
 the function from the `base->field_…` accesses — a first sketch of struct reconstruction. Each
-field's type is inferred from use: a pointer when the field's value is itself dereferenced or
-indexed, otherwise a 64-bit integer. It is labelled approximate: the offsets are observed (a
-gap shows as the offset comment), the widths are assumed pointer-sized, and the base register
-may hold different objects at different points. This is the honest first step toward the real
-frontier, not that frontier.
+field's type is inferred: a pointer when the field's value is itself dereferenced or indexed,
+otherwise an integer whose width is the access size recovered from the instruction (`mov eax,
+[rcx+0x24]` makes `field_24` 32-bit, `mov rdx, [rcx+0x28]` makes `field_28` 64-bit; the widest
+access wins). It is labelled approximate: the offsets are observed (a gap shows as the offset
+comment) and the base register may hold different objects at different points. This is the
+honest step toward the real frontier (points-to plus full type inference), not that frontier.
 
 What `cfg` does not do: an indirect jump or call (through a register, a jump table, a
 virtual call) has no resolved target, so a block only it reaches is missing. The field names

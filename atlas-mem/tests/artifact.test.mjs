@@ -14,7 +14,7 @@ import { inferTypes, protoFor, signatureText } from '../tools/artifact-types.mjs
 import { readWasm, liftWasm } from '../tools/artifact-wasm.mjs';
 import { readEvm, lift as liftEvm, selectors as evmSelectors, decode as evmDecode } from '../tools/artifact-evm.mjs';
 import { readPcap, summarise as summarisePcap } from '../tools/artifact-pcap.mjs';
-import { recoverFrame, eliminateDeadStores, structLayouts, synthStructs } from '../tools/artifact-frame.mjs';
+import { recoverFrame, eliminateDeadStores, structLayouts, synthStructs, fieldWidths } from '../tools/artifact-frame.mjs';
 import { liveness, defsUses, withAliases, valueFlow } from '../tools/artifact-dataflow.mjs';
 import { liftBlock as liftX86Block } from '../tools/artifact-lift-x86.mjs';
 
@@ -973,6 +973,22 @@ test('struct layout inference groups field offsets off a base, sorted, 2+ only',
   assert.ok(rcx, 'rcx is reported');
   assert.deepEqual(rcx.fields, ['+0x48', '+0x50'], 'offsets sorted');
   assert.ok(!lay.some((l) => l.base === 'rdx'), 'a single-field base is not reported');
+});
+
+test('field widths come from the access size and type the struct members', () => {
+  const cfg = { blocks: [{ start: 0, insns: [
+    { text: 'mov eax, [rcx+0x24]' },   // 32-bit access of field 0x24
+    { text: 'mov rdx, [rcx+0x28]' },   // 64-bit access of field 0x28
+    { text: 'movzx ecx, [rcx+0x24]' }, // another 32-bit of 0x24 (widest wins, stays 32)
+  ] }] };
+  const w = fieldWidths(cfg);
+  assert.equal(w.get('rcx|24'), 32);
+  assert.equal(w.get('rcx|28'), 64);
+  const body = 'void func() {\n  rax = rcx->field_24;\n  rdx = rcx->field_28;\n}';
+  const s = synthStructs(body, w);
+  const rcx = s.find((x) => x.base === 'rcx');
+  assert.equal(rcx.members.find((m) => m.field === 'field_24').type, 'int32_t');
+  assert.equal(rcx.members.find((m) => m.field === 'field_28').type, 'int64_t');
 });
 
 test('struct synthesis types a dereferenced field as a pointer, a plain one as an integer', () => {
