@@ -587,6 +587,35 @@ test('dex decodes a real DEX fully when one is present, else skips', () => {
   assert.ok(r.json.result.decoded.some((m) => m.instructions && m.instructions.some((i) => /invoke/.test(i.op))));
 });
 
+test('the CIL lift rebuilds pseudo-C# from the stack machine', async () => {
+  const cil = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-cil.mjs')).href);
+  // return (arg0 + 5);
+  let p = cil.lift([{ il: 0, op: 'ldarg.0' }, { il: 1, op: 'ldc.i4.5' }, { il: 2, op: 'add' }, { il: 3, op: 'ret' }], {});
+  assert.deepEqual(p.map((s) => s.text), ['return (arg0 + 5);']);
+  // an instance call with a receiver, arity from the signature
+  const sig = (tok) => (tok === 1 ? { hasThis: true, paramCount: 0, retVoid: false } : { hasThis: false, paramCount: 1, retVoid: false });
+  p = cil.lift([{ il: 0, op: 'ldarg.0' }, { il: 1, op: 'callvirt', operand: { token: 1, name: 'Foo::Bar' } }, { il: 6, op: 'ret' }], { sig });
+  assert.deepEqual(p.map((s) => s.text), ['return arg0.Bar();']);
+  // a constructor: pops its args, pushes the object
+  p = cil.lift([{ il: 0, op: 'ldstr', operand: { value: 'x' } }, { il: 5, op: 'newobj', operand: { token: 2, name: 'Ex::.ctor' } }, { il: 10, op: 'throw' }], { sig });
+  assert.deepEqual(p.map((s) => s.text), ['throw new Ex("x");']);
+  // a branch becomes a label and a conditional goto; the field store reads back
+  p = cil.lift([{ il: 0, op: 'ldarg.0' }, { il: 1, op: 'brtrue.s', operand: { target: 8 } }, { il: 3, op: 'ldarg.1' }, { il: 4, op: 'stsfld', operand: { name: 'field X.n' } }, { il: 8, op: 'ret' }], {});
+  assert.deepEqual(p.map((s) => s.text), ['if (arg0) goto IL_0008;', 'X.n = arg1;', 'IL_0008:', 'return;']);
+});
+
+test('cil --pseudo lifts a real assembly without crashing, when one is installed', () => {
+  const dotnet = 'C:/Program Files/dotnet/shared/Microsoft.NETCore.App';
+  let dll = null;
+  try { for (const v of fs.readdirSync(dotnet)) { const p = path.join(dotnet, v, 'System.Private.CoreLib.dll'); if (fs.existsSync(p)) { dll = p; break; } } } catch { /* no dotnet */ }
+  if (!dll) return;
+  const r = run('cil', dll, '--method', 'ThrowArgumentNullException', '--max', '1', '--pseudo');
+  assert.equal(r.code, 0, r.out + r.err);
+  const m = r.json.result.methods.find((x) => x.pseudo);
+  assert.ok(m && m.pseudo.length >= 1, 'a method came back with pseudocode');
+  assert.ok(m.pseudo.some((s) => /throw new .*ArgumentNullException/.test(s.text)), m.pseudo.map((s) => s.text).join(' | '));
+});
+
 test('every record has the same spine', () => {
   const asar = path.join(tmp, 'demo.asar');
   for (const rec of [run('detect', asar).json, run('app', asar).json]) {

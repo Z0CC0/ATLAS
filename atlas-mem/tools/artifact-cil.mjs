@@ -118,4 +118,78 @@ function format(ins) {
   return `IL_${ins.il.toString(16).padStart(4, '0')}:  ${ins.op}${arg ? '  ' + arg : ''}`;
 }
 
-export { decode, format, OP, FE };
+/**
+ * Lift a decoded CIL method to readable pseudo-C#. CIL is a stack machine, so the lift
+ * simulates the evaluation stack: each value pushed becomes an expression string, each pop
+ * consumes one, and a side effect (a store, a void call, a branch, a return) becomes a
+ * statement. Branch targets get a label and a `goto`; full if/while structuring is not done
+ * here (that is a decompiler's job), so the output is straight-line pseudocode with labels.
+ * `env.sig(token)` gives a call's { hasThis, paramCount, retVoid } so arguments pop
+ * correctly; without it calls would desync the stack.
+ */
+function lift(instructions, env) {
+  env = env || {}; const sig = env.sig || (() => ({ hasThis: false, paramCount: 0, retVoid: false }));
+  const targets = new Set();
+  for (const ins of instructions) { const o = ins.operand; if (o && o.target !== undefined) targets.add(o.target); if (Array.isArray(o)) for (const t of o) targets.add(t); }
+  const out = []; let stack = []; let tmp = 0;
+  const L = (il) => `IL_${il.toString(16).padStart(4, '0')}`;
+  const push = (e) => stack.push(e);
+  const pop = () => (stack.length ? stack.pop() : '?');
+  const emit = (il, text) => out.push({ il, text });
+  const BIN = { add: '+', sub: '-', mul: '*', div: '/', rem: '%', and: '&', or: '|', xor: '^', shl: '<<', shr: '>>', 'shr.un': '>>', 'div.un': '/', 'rem.un': '%' };
+  const CMP = { ceq: '==', cgt: '>', clt: '<', 'cgt.un': '>', 'clt.un': '<', beq: '==', 'bne.un': '!=', bge: '>=', bgt: '>', ble: '<=', blt: '<', 'bge.un': '>=', 'bgt.un': '>', 'ble.un': '<=', 'blt.un': '<' };
+  const member = (name) => (name && name.includes('::') ? name.split('::')[1] : name);
+  const typeOf = (name) => (name && name.includes('::') ? name.split('::')[0] : name);
+  const fieldName = (name) => String(name || '').replace(/^field\s+/, '');
+  for (const ins of instructions) {
+    const il = ins.il, op = ins.op, o = ins.operand;
+    if (targets.has(il)) { // a branch lands here: materialise anything still on the stack
+      if (stack.length) { const spilled = stack.map((e, i) => { const t = `t${tmp++}`; emit(il, `${t} = ${e};`); return t; }); stack = spilled; }
+      emit(il, `${L(il)}:`);
+    }
+    if (op === 'nop' || op === 'volatile.' || op === 'readonly.' || op === 'constrained.' || op === 'unaligned.' || op === 'tail.' || op === 'no.') continue;
+    if (/^ldarg/.test(op)) { push('arg' + (op.includes('.') && /\d/.test(op) ? op.split('.').pop() : (typeof o === 'number' ? o : 0))); continue; }
+    if (/^ldloc/.test(op)) { push('loc' + (op.includes('.') && /\d/.test(op) ? op.split('.').pop() : (typeof o === 'number' ? o : 0))); continue; }
+    if (/^stloc/.test(op)) { const n = op.includes('.') && /\d/.test(op) ? op.split('.').pop() : o; emit(il, `loc${n} = ${pop()};`); continue; }
+    if (/^starg/.test(op)) { emit(il, `arg${o} = ${pop()};`); continue; }
+    if (op === 'ldnull') { push('null'); continue; }
+    if (op === 'ldstr') { push(JSON.stringify((o && o.value) || '')); continue; }
+    if (/^ldc\./.test(op)) { push(op.endsWith('.m1') ? '-1' : (op.includes('.') && /\d$/.test(op) && typeof o !== 'number' ? op.split('.').pop() : String(o))); continue; }
+    if (op === 'dup') { const e = pop(); push(e); push(e); continue; }
+    if (op === 'pop') { emit(il, `${pop()};`); continue; }
+    if (op === 'ldfld') { const obj = pop(); push(`${obj}.${fieldName(o && o.name)}`); continue; }
+    if (op === 'ldsfld') { push(fieldName(o && o.name)); continue; }
+    if (op === 'ldflda' || op === 'ldsflda') { push(`&${fieldName(o && o.name)}`); continue; }
+    if (op === 'stfld') { const v = pop(), obj = pop(); emit(il, `${obj}.${fieldName(o && o.name)} = ${v};`); continue; }
+    if (op === 'stsfld') { emit(il, `${fieldName(o && o.name)} = ${pop()};`); continue; }
+    if (BIN[op]) { const b = pop(), a = pop(); push(`(${a} ${BIN[op]} ${b})`); continue; }
+    if (op === 'neg') { push(`(-${pop()})`); continue; }
+    if (op === 'not') { push(`(~${pop()})`); continue; }
+    if (op === 'ceq' || op === 'cgt' || op === 'clt' || op === 'cgt.un' || op === 'clt.un') { const b = pop(), a = pop(); push(`(${a} ${CMP[op]} ${b})`); continue; }
+    if (/^conv\./.test(op)) { push(`(${op.replace('conv.', '')})${pop()}`); continue; }
+    if (op === 'ldlen') { push(`${pop()}.Length`); continue; }
+    if (/^ldelem/.test(op)) { const i = pop(), a = pop(); push(`${a}[${i}]`); continue; }
+    if (/^stelem/.test(op)) { const v = pop(), i = pop(), a = pop(); emit(il, `${a}[${i}] = ${v};`); continue; }
+    if (op === 'newarr') { push(`new ${o && o.name}[${pop()}]`); continue; }
+    if (op === 'isinst') { push(`(${pop()} as ${o && o.name})`); continue; }
+    if (op === 'castclass') { push(`((${o && o.name})${pop()})`); continue; }
+    if (op === 'box' || op === 'unbox' || op === 'unbox.any' || op === 'ldobj' || op === 'stobj') { continue; }
+    if (op === 'ldtoken') { push(`typeof(${o && o.name})`); continue; }
+    if (op === 'newobj') { const s = sig(o && o.token); const n = s.paramCount; const args = []; for (let k = 0; k < n; k += 1) args.unshift(pop()); push(`new ${typeOf(o && o.name)}(${args.join(', ')})`); continue; }
+    if (op === 'call' || op === 'callvirt' || op === 'calli') { const s = sig(o && o.token); const n = s.paramCount + (s.hasThis ? 1 : 0); const args = []; for (let k = 0; k < n; k += 1) args.unshift(pop()); let expr; if (s.hasThis && args.length) expr = `${args[0]}.${member(o && o.name)}(${args.slice(1).join(', ')})`; else expr = `${(o && o.name) || 'call'}(${args.join(', ')})`; if (s.retVoid) emit(il, `${expr};`); else push(expr); continue; }
+    if (op === 'ret') { emit(il, stack.length ? `return ${pop()};` : 'return;'); continue; }
+    if (op === 'throw') { emit(il, `throw ${pop()};`); continue; }
+    if (op === 'rethrow') { emit(il, 'throw;'); continue; }
+    if (op === 'br' || op === 'br.s' || op === 'leave' || op === 'leave.s') { emit(il, `goto ${L(o.target)};`); continue; }
+    if (op === 'brtrue' || op === 'brtrue.s') { emit(il, `if (${pop()}) goto ${L(o.target)};`); continue; }
+    if (op === 'brfalse' || op === 'brfalse.s') { emit(il, `if (!(${pop()})) goto ${L(o.target)};`); continue; }
+    if (/^(beq|bne|bge|bgt|ble|blt)/.test(op)) { const b = pop(), a = pop(); const cmp = CMP[op] || CMP[op.replace(/\.s$/, '')] || '?'; emit(il, `if (${a} ${cmp} ${b}) goto ${L(o.target)};`); continue; }
+    if (op === 'switch') { const v = pop(); emit(il, `switch (${v}) -> ${(o || []).map(L).join(', ')};`); continue; }
+    if (op === 'endfinally' || op === 'endfilter') { emit(il, '// end handler'); continue; }
+    // anything not modelled: keep the mnemonic as a comment, do not corrupt the stack
+    emit(il, `// ${format(ins)}`);
+  }
+  return out;
+}
+
+export { decode, format, lift, OP, FE };

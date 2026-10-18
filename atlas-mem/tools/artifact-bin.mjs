@@ -244,6 +244,15 @@ function readClr(b, off, toOff, limitations, clrOpts) {
     if ((len & 0x80) === 0) o += 1; else if ((len & 0xc0) === 0x80) { len = ((len & 0x3f) << 8) | u8(b, o + 1); o += 2; } else { len = ((len & 0x1f) << 24) | (u8(b, o + 1) << 16) | (u8(b, o + 2) << 8) | u8(b, o + 3); o += 4; }
     return len === 0 ? '' : b.toString('utf16le', o, o + len - 1);
   };
+  // a method's signature, for the lift: how many arguments a call pops (params + a receiver
+  // when the method has `this`), and whether it returns void. Read from the #Blob heap.
+  const blobHeap = streams['#Blob'];
+  const cblob = (p) => { const x = b[p.o]; if ((x & 0x80) === 0) { p.o += 1; return x; } if ((x & 0xc0) === 0x80) { const v = ((x & 0x3f) << 8) | b[p.o + 1]; p.o += 2; return v; } const v = ((x & 0x1f) << 24) | (b[p.o + 1] << 16) | (b[p.o + 2] << 8) | b[p.o + 3]; p.o += 4; return v; };
+  const sigInfo = (blobIdx) => {
+    if (!blobHeap || !blobIdx || blobIdx >= blobHeap.size) return { hasThis: false, paramCount: 0, retVoid: false };
+    try { const p = { o: blobHeap.off + blobIdx }; cblob(p); const flags = b[p.o++]; const hasThis = Boolean(flags & 0x20); if (flags & 0x10) cblob(p); const pc = cblob(p); const retVoid = b[p.o] === 0x01; return { hasThis, paramCount: pc, retVoid }; } catch { return { hasThis: false, paramCount: 0, retVoid: false }; }
+  };
+  const methodSig = (token) => { const tbl = token >>> 24, row = token & 0xffffff; if (!row) return { hasThis: false, paramCount: 0, retVoid: false }; if (tbl === 0x06) return sigInfo(cell(0x06, row, 4)); if (tbl === 0x0a) return sigInfo(cell(0x0a, row, 2)); if (tbl === 0x2b) { const v = cell(0x2b, row, 0); return (v & 1) ? sigInfo(cell(0x0a, v >> 1, 2)) : sigInfo(cell(0x06, v >> 1, 4)); } return { hasThis: false, paramCount: 0, retVoid: false }; };
   // P/Invoke
   const pinvoke = [];
   for (let r = 1; r <= (rows[0x1c] || 0) && r <= 5000; r += 1) {
@@ -293,7 +302,9 @@ function readClr(b, off, toOff, limitations, clrOpts) {
       attempted += 1;
       const d = cil.decode(b, codeStart, codeSize, { token: resolveToken, string: readUserString });
       if (d.complete) full += 1; else if (d.stoppedAt) unknown.add(d.stoppedAt);
-      decoded.push({ method: nm, rva, codeSize, maxStack, localVarSigTok: localTok, count: d.instructions.length, complete: d.complete, stoppedAt: d.stoppedAt, instructions: d.instructions });
+      const entry = { method: nm, rva, codeSize, maxStack, localVarSigTok: localTok, count: d.instructions.length, complete: d.complete, stoppedAt: d.stoppedAt, instructions: d.instructions };
+      if (clrOpts.pseudo) entry.pseudo = cil.lift(d.instructions, { sig: methodSig });
+      decoded.push(entry);
     }
     result.decoded = decoded;
     result.cilCoverage = { attempted, fullyDecoded: full, percent: attempted ? Math.round((full / attempted) * 100) : null, unknownOpcodes: [...unknown], truncated: Boolean(decoded.truncated) };

@@ -253,7 +253,7 @@ index resolved to a name (`invoke-direct {v1, v2}, Type;.method`, `const-string 
 the Android API compiled to Dalvik (6,376 classes), 55,481 method bodies, 100%, no unknown
 opcode. A control-flow graph and pseudocode on top of the decoders are next.
 `sqlite` reads a database file read-only: schema, counts, indexes, triggers, a sample of
-one table on request. `map` decodes a source map and turns a bundled position back into a file,
+one table on request. `cil --pseudo` lifts a .NET method's CIL to readable pseudo-C# by simulating the stack (call arity read from the signature): e.g. `throw new ArgumentNullException(GetArgumentName(arg0));`; 7,176 core-library methods lift with no crash, straight-line with labels (no if/while structuring). `map` decodes a source map and turns a bundled position back into a file,
 line and name.
 
 Every answer is one record: an id derived from the record, the subject with its sha256,

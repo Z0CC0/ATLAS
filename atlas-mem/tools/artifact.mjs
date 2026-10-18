@@ -745,7 +745,7 @@ function cmdCil(path) {
     return true; // a plain run decodes the first --max methods
   };
   let r;
-  try { r = readBinary(buf, { clr: { decodeMethods: want, max: Number(flags.max || 40) } }); } catch (e) { fail(e.message, 'unsupported'); }
+  try { r = readBinary(buf, { clr: { decodeMethods: want, max: Number(flags.max || 40), pseudo: Boolean(flags.pseudo) } }); } catch (e) { fail(e.message, 'unsupported'); }
   if (!r.dotnet) fail('not a .NET assembly (no CLR metadata)', 'unsupported');
   const d = r.dotnet;
   const cov = d.cilCoverage || { attempted: 0, fullyDecoded: 0, percent: null, unknownOpcodes: [] };
@@ -754,13 +754,14 @@ function cmdCil(path) {
   if (cov.truncated) limitations.push(`more methods match than the --max limit (${flags.max || 40}); raise --max or narrow with --type/--method`);
   const subject = { name: basename(abs), path: abs, format: 'cil', bytes: buf.length, sha256: sha256(buf) };
   const bodies = (d.decoded || []).filter((m) => m.instructions);
-  const result = { assembly: d.assembly, runtimeVersion: d.runtimeVersion, coverage: cov, methods: (d.decoded || []).map((m) => m.instructions ? { method: m.method, codeSize: m.codeSize, maxStack: m.maxStack, count: m.count, complete: m.complete, stoppedAt: m.stoppedAt, instructions: m.instructions } : { method: m.method, note: m.note }) };
+  const result = { assembly: d.assembly, runtimeVersion: d.runtimeVersion, coverage: cov, methods: (d.decoded || []).map((m) => m.instructions ? { method: m.method, codeSize: m.codeSize, maxStack: m.maxStack, count: m.count, complete: m.complete, stoppedAt: m.stoppedAt, instructions: flags.pseudo ? undefined : m.instructions, pseudo: m.pseudo } : { method: m.method, note: m.note }) };
   const rec = record(subject, 'cil', { type: flags.type || null, method: flags.method || null, max: Number(flags.max || 40) }, result, { confidence: 'observed', coverage: { status: cov.unknownOpcodes.length ? 'partial' : 'complete', scope: `${cov.attempted} method bodies decoded, ${cov.fullyDecoded} fully (${cov.percent}%)` }, limitations });
   const L = [`${subject.name}  ${d.assembly ? d.assembly.name + ' ' + d.assembly.version : d.module}  ${d.runtimeVersion}  methods decoded ${cov.attempted}, fully ${cov.fullyDecoded} (${cov.percent}%)`];
   for (const m of (d.decoded || [])) {
     if (!m.instructions) { L.push(`\n// ${m.method} — ${m.note}`); continue; }
     L.push(`\n.method ${m.method}  (IL ${m.codeSize} bytes, maxstack ${m.maxStack}${m.complete ? '' : `, STOPPED at ${m.stoppedAt}`})`);
-    for (const ins of m.instructions) L.push('  ' + cilFormat(ins));
+    if (flags.pseudo && m.pseudo) for (const s of m.pseudo) L.push(/:$/.test(s.text) ? s.text : '  ' + s.text);
+    else for (const ins of m.instructions) L.push('  ' + cilFormat(ins));
   }
   L.push(`\nid ${rec.id}`);
   emit(rec, L.join('\n'));
