@@ -1124,6 +1124,22 @@ test('points-to merges accesses to one object across registers, and splits disti
   assert.deepEqual(a3.members.map((m) => m.field), ['field_20', 'field_28']);
 });
 
+test('ARM64 points-to merges an object across registers and keeps arguments separate', () => {
+  const cfg = { start: 0, blocks: [{ start: 0, insns: [
+    { text: 'mov x9, x0', mnem: 'mov', addr: 0 },
+    { text: 'ldr x10, [x0, 0x8]', mnem: 'ldr', addr: 4 },
+    { text: 'ldr x11, [x9, 0x10]', mnem: 'ldr', addr: 8 }, // via x9 (= x0): same object
+    { text: 'ldr x12, [x1, 0x0]', mnem: 'ldr', addr: 12 },
+    { text: 'str x12, [x1, 0x8]', mnem: 'str', addr: 16 },
+    { text: 'ret', mnem: 'ret', addr: 20 },
+  ], succ: [] }] };
+  const pt = pointsTo(cfg, 'arm64');
+  const a0 = pt.structs.find((s) => s.origin === 'arg0');
+  const a1 = pt.structs.find((s) => s.origin === 'arg1');
+  assert.deepEqual(a0.members.map((m) => m.field), ['field_8', 'field_10'], 'arg0 merged across x0 and x9');
+  assert.deepEqual(a1.members.map((m) => m.field), ['field_0', 'field_8'], 'arg1 is a separate object');
+});
+
 test('a field called indirectly is typed as a function pointer', () => {
   const cfg = { blocks: [{ start: 0, insns: [
     { mnem: 'mov', text: 'mov rax, [rcx+0x10]' },

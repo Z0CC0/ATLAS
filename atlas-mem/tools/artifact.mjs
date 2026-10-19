@@ -1084,7 +1084,13 @@ function cmdCfg(path) {
     body = structurize(cfg, 0, (b) => liftArm64Block(b.insns, sym, liveAt(b)));
     const fr = recoverFrame(body);
     body = eliminateDeadStores(fr.body);
-    if (fr.locals.length) body = `// stack locals recovered: ${[...new Set(fr.locals)].join(', ')}\n` + body;
+    const head = [];
+    const pt = pointsTo(cfg, 'arm64');
+    if (pt.structs.length) head.push(...renderPointsTo(pt.structs));
+    if (pt.arrays.length) { head.push('// observed arrays (element type from the access width):'); for (const a of pt.arrays) head.push(`//   ${a.elem} ${a.origin}[]`); }
+    if (fr.locals.length) head.push(`// stack locals recovered: ${[...new Set(fr.locals)].join(', ')}`);
+    rec.result.structs = pt.structs;
+    if (head.length) body = head.join('\n') + '\n' + body;
   } else body = formatCfg(cfg, 0, sym);
   emit(rec, body + `\n\nid ${rec.id}`);
 }

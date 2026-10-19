@@ -52,14 +52,66 @@ function transfer(org, ins) {
   } else if (dst && !dst.startsWith('[') && REGINFO[dst]) set(dst, null); // any other write clears the origin
 }
 
+/** x86: list the memory accesses in one instruction, each attributed to its base's origin. */
+function scanX86(ins, org) {
+  const { mnem, ops } = parse(ins.text || ''); const out = [];
+  for (let i = 0; i < ops.length; i += 1) {
+    const t = ops[i];
+    const mi = MEMIDX.exec(t);
+    if (mi) { const o = REGINFO[mi[1]] && org.get(REGINFO[mi[1]].c); if (o) { const other = ops[1 - i]; const ri = other && REGINFO[other]; out.push({ origin: o, indexed: true, scale: Number(mi[3]), bits: ri ? ri.w : null }); } continue; }
+    const m = MEM.exec(t);
+    if (m && m[1] !== 'rip') { const o = REGINFO[m[1]] && org.get(REGINFO[m[1]].c); if (!o) continue; const other = ops[1 - i]; const ri = other && REGINFO[other]; out.push({ origin: o, off: m[2] ? parseInt(m[2].replace('+', ''), 16) : 0, bits: ri ? ri.w : null, call: (mnem === 'call' || mnem === 'jmp') && i === 0 }); }
+  }
+  return out;
+}
+
+// ---------------------------------------------------------------- ARM64 model
+
+const ARGREG_ARM = { x0: 'arg0', x1: 'arg1', x2: 'arg2', x3: 'arg3', x4: 'arg4', x5: 'arg5', x6: 'arg6', x7: 'arg7' };
+const canonArm = (r) => (/^w(\d+)$/.test(r) ? 'x' + r.slice(1) : r);
+function splitBr(s) { const out = []; let d = 0, cur = ''; for (const ch of s) { if (ch === '[') d += 1; else if (ch === ']') d -= 1; if (ch === ',' && d === 0) { out.push(cur.trim()); cur = ''; } else cur += ch; } if (cur.trim()) out.push(cur.trim()); return out; }
+function parseArm(text) { const sp = (text || '').indexOf(' '); return { mnem: sp < 0 ? (text || '') : text.slice(0, sp), ops: sp < 0 ? [] : splitBr(text.slice(sp + 1)) }; }
+const widthOf = (r) => (/^x\d+$/.test(r) ? 64 : /^w\d+$/.test(r) ? 32 : null);
+const ARM_MEM = /^\[(x\d+|sp)(?:, (-?0x[0-9a-f]+))?\]!?$/;
+
+function transferArm(org, ins) {
+  const { mnem, ops } = parseArm(ins.text || '');
+  const [dst, src] = ops;
+  const isR = (r) => /^(x\d+|w\d+)$/.test(r || '');
+  const set = (r, t) => { if (isR(r)) { if (t) org.set(canonArm(r), t); else org.delete(canonArm(r)); } };
+  const get = (r) => org.get(canonArm(r));
+  if (mnem === 'mov') { if (isR(dst)) { if (isR(src)) set(dst, get(src)); else set(dst, null); } }
+  else if (/^ldr/.test(mnem)) { const mr = ARM_MEM.exec(src || ''); if (isR(dst)) { if (mr && mr[1] !== 'sp') { const o = get(mr[1]); set(dst, o ? `${o}.f${suffix(mr[2])}` : null); } else set(dst, null); } }
+  else if (mnem === 'adrp' || mnem === 'adr') { set(dst, 'global_' + (src || '').replace(/[^\w]/g, '')); }
+  else if (mnem === 'add' || mnem === 'sub') { if (isR(dst) && isR(src) && ops[2] && /^-?0x/.test(ops[2])) set(dst, get(src)); else if (isR(dst)) set(dst, null); }
+  else if (mnem === 'bl' || mnem === 'blr') { for (let i = 0; i <= 18; i += 1) org.delete('x' + i); org.delete('x30'); org.set('x0', 'ret_' + (ins.addr != null ? ins.addr.toString(16) : 'x')); }
+  else if (isR(dst) && !/^(cmp|cmn|tst|str|stp|b|cbz|cbnz|tbz|tbnz|ret)/.test(mnem)) set(dst, null);
+}
+
+/** ARM64: list the memory accesses in one instruction. */
+function scanArm(ins, org) {
+  const { mnem, ops } = parseArm(ins.text || ''); const out = [];
+  const regOp = ops.find((o) => /^(x\d+|w\d+)$/.test(o));
+  const bits = regOp ? widthOf(regOp) : null;
+  for (const t of ops) {
+    const m = ARM_MEM.exec(t); if (!m || m[1] === 'sp') continue;
+    const o = org.get(canonArm(m[1])); if (!o) continue;
+    out.push({ origin: o, off: m[2] ? parseInt(m[2].replace(/-?0x/, ''), 16) * (m[2][0] === '-' ? -1 : 1) : 0, bits });
+  }
+  return out;
+}
+
 /** Points-to over the CFG: origins at entry, a forward fixpoint, then attribute accesses. */
-function pointsTo(cfg) {
+function pointsTo(cfg, arch) {
+  const model = arch === 'arm64'
+    ? { argreg: ARGREG_ARM, transfer: transferArm, scan: scanArm }
+    : { argreg: ARGREG, transfer, scan: scanX86 };
   const blocks = cfg.blocks;
   const byId = new Map(blocks.map((b) => [b.start, b]));
   const preds = new Map(blocks.map((b) => [b.start, []]));
   for (const b of blocks) for (const s of b.succ) if (byId.has(s.to)) preds.get(s.to).push(b.start);
 
-  const seed = new Map(Object.entries(ARGREG).map(([r, t]) => [r, t])); // arg regs at entry
+  const seed = new Map(Object.entries(model.argreg).map(([r, t]) => [r, t])); // arg regs at entry
   const IN = new Map(); const OUT = new Map();
   const meet = (start) => {
     const ps = preds.get(start) || [];
@@ -75,7 +127,7 @@ function pointsTo(cfg) {
     for (const b of blocks) {
       const inp = meet(b.start);
       const o = new Map(inp);
-      for (const ins of b.insns) transfer(o, ins);
+      for (const ins of b.insns) model.transfer(o, ins);
       const prev = OUT.get(b.start);
       IN.set(b.start, inp);
       if (!prev || prev.size !== o.size || [...o].some(([k, v]) => prev.get(k) !== v)) { OUT.set(b.start, o); changed = true; }
@@ -91,25 +143,15 @@ function pointsTo(cfg) {
   for (const b of blocks) {
     const org = new Map(IN.get(b.start) || seed);
     for (const ins of b.insns) {
-      const { mnem, ops } = parse(ins.text);
-      for (let i = 0; i < ops.length; i += 1) {
-        const t = ops[i];
-        const mi = MEMIDX.exec(t);
-        if (mi) { const o = REGINFO[mi[1]] && org.get(REGINFO[mi[1]].c); if (o) { usedBase.add(o); const other = ops[1 - i]; const ri = other && REGINFO[other]; arrays.set(o, { scale: Number(mi[3]), bits: ri ? ri.w : null }); } continue; }
-        const m = MEM.exec(t);
-        if (m && m[1] !== 'rip') {
-          const o = REGINFO[m[1]] && org.get(REGINFO[m[1]].c);
-          if (!o) continue;
-          usedBase.add(o);
-          const off = m[2] ? parseInt(m[2].replace('+', ''), 16) : 0;
-          const other = ops[1 - i]; const ri = other && REGINFO[other];
-          const cur = field(o).get(off) || { bits: null };
-          if (ri && (!cur.bits || ri.w > cur.bits)) cur.bits = ri.w;
-          field(o).set(off, cur);
-          if ((mnem === 'call' || mnem === 'jmp') && i === 0) { if (!fnset.has(o)) fnset.set(o, new Set()); fnset.get(o).add(off); }
-        }
+      for (const a of model.scan(ins, org)) {
+        usedBase.add(a.origin);
+        if (a.indexed) { arrays.set(a.origin, { scale: a.scale, bits: a.bits }); continue; }
+        const cur = field(a.origin).get(a.off) || { bits: null };
+        if (a.bits && (!cur.bits || a.bits > cur.bits)) cur.bits = a.bits;
+        field(a.origin).set(a.off, cur);
+        if (a.call) { if (!fnset.has(a.origin)) fnset.set(a.origin, new Set()); fnset.get(a.origin).add(a.off); }
       }
-      transfer(org, ins); // advance the origins for the next instruction
+      model.transfer(org, ins); // advance the origins for the next instruction
     }
   }
 

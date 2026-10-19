@@ -124,10 +124,11 @@ on ARM64 (A64): the ARM64 lift folds the three-operand RISC the same way (a regi
 its last expression, `cmp`/`tst` is a `subs`/`ands` into the zero register, the condition
 comes from `b.<cond>`/`cbz`/`cbnz`/`tbz`/`tbnz`, `sp` is the frame base, loads and stores read
 as array/field access). ARM64 also gets the liveness pass (dead register spills dropped),
-dead-store elimination and stack-frame recovery (`*(sp + 0x30)` → `local_30`); API-anchored
-type recovery and points-to struct recovery are still x86-only, so an ARM64 function recovers
-control flow, expressions, clean data flow and its locals but not its API types or structs
-yet. The rest of this section describes x86-64.
+dead-store elimination, stack-frame recovery (`*(sp + 0x30)` → `local_30`) and the points-to
+struct recovery (objects merged by origin across registers, args `x0`..`x7`); only the
+API-anchored type recovery is still x86-only, so an ARM64 function recovers control flow,
+expressions, clean data flow, locals and structs but not its API argument types yet. The rest
+of this section describes x86-64.
 Within a block
 it folds expressions — a register holds the expression last assigned to it, substituted
 into later uses, so a `mov`/`add`/`neg` chain collapses into one statement — and it recovers
