@@ -86,6 +86,20 @@ const PROTOS = {
   STRNCMP: { ret: 'int', args: ['const char*', 'const char*', 'size_t'] },
   STRCPY: { ret: 'char*', args: ['char*', 'const char*'] },
   STRCAT: { ret: 'char*', args: ['char*', 'const char*'] },
+  STRCHR: { ret: 'char*', args: ['const char*', 'int'] },
+  STRDUP: { ret: 'char*', args: ['const char*'] },
+  PUTS: { ret: 'int', args: ['const char*'] },
+  PUTCHAR: { ret: 'int', args: ['int'] },
+  PRINTF: { ret: 'int', args: ['const char*'] },
+  FPRINTF: { ret: 'int', args: ['FILE*', 'const char*'] },
+  SPRINTF: { ret: 'int', args: ['char*', 'const char*'] },
+  SNPRINTF: { ret: 'int', args: ['char*', 'size_t', 'const char*'] },
+  FOPEN: { ret: 'FILE*', args: ['const char*', 'const char*'] },
+  FCLOSE: { ret: 'int', args: ['FILE*'] },
+  FWRITE: { ret: 'size_t', args: ['const void*', 'size_t', 'size_t', 'FILE*'] },
+  FREAD: { ret: 'size_t', args: ['void*', 'size_t', 'size_t', 'FILE*'] },
+  EXIT: { ret: 'void', args: ['int'] },
+  ABORT: { ret: 'void', args: [] },
   MEMCPY_S: { ret: 'errno_t', args: ['void*', 'size_t', 'const void*', 'size_t'] },
   _ERRNO: { ret: 'int*', args: [] },
   // ntdll
@@ -107,10 +121,10 @@ const PROTOS = {
 /** Look up a prototype for a resolved `dll!function` name (A/W suffix tolerant). */
 function protoFor(name) {
   if (!name) return null;
-  let fn = name.includes('!') ? name.split('!')[1] : name;
-  fn = fn.replace(/@.*/, '').toUpperCase();
-  if (PROTOS[fn]) return { name: name.split('!').pop(), proto: PROTOS[fn] };
-  if (/[AW]$/.test(fn) && PROTOS[fn.slice(0, -1)]) return { name: name.split('!').pop(), proto: PROTOS[fn.slice(0, -1)] };
+  const bare = (name.includes('!') ? name.split('!')[1] : name).replace(/@.*/, '');
+  const fn = bare.toUpperCase();
+  if (PROTOS[fn]) return { name: bare, proto: PROTOS[fn] };
+  if (/[AW]$/.test(fn) && PROTOS[fn.slice(0, -1)]) return { name: bare.slice(0, -1), proto: PROTOS[fn.slice(0, -1)] };
   return null;
 }
 
@@ -189,4 +203,43 @@ function inferTypes(cfg, sym) {
   return { regTypes: out, slotTypes: slots, signatures, anchored };
 }
 
-export { inferTypes, protoFor, signatureText, PROTOS };
+// ---------------------------------------------------------------- ARM64 type recovery
+
+function splitBrA(s) { const out = []; let d = 0, cur = ''; for (const ch of s) { if (ch === '[') d += 1; else if (ch === ']') d -= 1; if (ch === ',' && d === 0) { out.push(cur.trim()); cur = ''; } else cur += ch; } if (cur.trim()) out.push(cur.trim()); return out; }
+function parseArmT(text) { const sp = (text || '').indexOf(' '); return { mnem: sp < 0 ? (text || '') : text.slice(0, sp), ops: sp < 0 ? [] : splitBrA(text.slice(sp + 1)) }; }
+const canonA = (r) => (/^w(\d+)$/.test(r) ? 'x' + r.slice(1) : r);
+
+/**
+ * API-anchored type recovery for ARM64 (A64 ABI: integer/pointer args in x0..x7, return in
+ * x0). A `bl`/`blr` to a resolved import (name@plt / name@stub / dll!name) types the argument
+ * registers and the return from the shipped prototype table; an unknown call clears x0..x18;
+ * a value stored into an sp slot types that slot. Returns the same shape as the x86 pass.
+ */
+function inferTypesArm(cfg, sym) {
+  const ARG = ['x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7']; const RET = 'x0';
+  const regTypes = new Map(); const slotTypes = new Map(); const signatures = []; const seen = new Set(); let anchored = 0;
+  const setType = (r, t) => { if (t && t !== '?' && /^(x\d+|w\d+)$/.test(r)) regTypes.set(canonA(r), t); };
+  const slotName = (op) => { const m = /^\[sp(?:, (-?0x[0-9a-f]+))?\]!?$/.exec(op || ''); if (!m) return null; const d = m[1]; return 'local_' + (d ? (d[0] === '-' ? 'm' + d.replace('-0x', '') : d.replace('0x', '')) : '0'); };
+  for (const b of cfg.blocks) for (const ins of b.insns) {
+    const { mnem, ops } = parseArmT(ins.text || '');
+    if (mnem === 'bl' || mnem === 'blr') {
+      const hit = protoFor(sym && sym(ins));
+      if (hit) {
+        if (!seen.has(ins.addr)) { signatures.push({ at: ins.addr, name: hit.name, text: signatureText(hit.name, hit.proto), args: hit.proto.args, ret: hit.proto.ret }); seen.add(ins.addr); anchored += 1; }
+        hit.proto.args.forEach((t, i) => { if (i < ARG.length) setType(ARG[i], t); });
+        setType(RET, hit.proto.ret === 'void' ? '?' : hit.proto.ret);
+      } else { for (let i = 0; i <= 18; i += 1) regTypes.delete('x' + i); }
+    } else if (mnem === 'mov' && /^(x\d+|w\d+)$/.test(ops[1] || '')) {
+      const t = regTypes.get(canonA(ops[1])); if (t) setType(ops[0], t); else regTypes.delete(canonA(ops[0]));
+    } else if (/^str/.test(mnem)) {
+      const sl = slotName(ops[1]); const t = regTypes.get(canonA(ops[0])); if (sl && t) slotTypes.set(sl, t);
+    } else if (/^ldr/.test(mnem)) {
+      const sl = slotName(ops[1]); const t = sl && slotTypes.get(sl); if (t) setType(ops[0], t); else if (/^(x\d+|w\d+)$/.test(ops[0] || '')) regTypes.delete(canonA(ops[0]));
+    }
+  }
+  const out = {}; for (const [r, t] of regTypes) out[r] = t;
+  const slots = {}; for (const [s, t] of slotTypes) slots[s] = t;
+  return { regTypes: out, slotTypes: slots, signatures, anchored };
+}
+
+export { inferTypes, inferTypesArm, protoFor, signatureText, PROTOS };

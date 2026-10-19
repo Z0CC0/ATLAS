@@ -11,7 +11,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { structurize, dominates, domTree, rpo } from '../tools/artifact-struct.mjs';
 import { liftBlock as liftArm64Block } from '../tools/artifact-lift-arm64.mjs';
-import { inferTypes, protoFor, signatureText } from '../tools/artifact-types.mjs';
+import { inferTypes, inferTypesArm, protoFor, signatureText } from '../tools/artifact-types.mjs';
 import { readWasm, liftWasm } from '../tools/artifact-wasm.mjs';
 import { readEvm, lift as liftEvm, selectors as evmSelectors, decode as evmDecode } from '../tools/artifact-evm.mjs';
 import { readPcap, summarise as summarisePcap } from '../tools/artifact-pcap.mjs';
@@ -928,6 +928,19 @@ test('type recovery anchors argument and return types at a resolved call', () =>
   assert.equal(ti.regTypes.rax, 'int', 'return typed into rax');
   assert.equal(ti.regTypes.rcx, 'UINT', 'first arg typed into rcx');
   assert.equal(ti.regTypes.r8, 'LPCCH', 'third arg typed into r8');
+});
+
+test('ARM64 type recovery anchors arg/return types from a PLT call and types an sp slot', () => {
+  const cfg = { blocks: [{ start: 0, insns: [
+    { text: 'bl .+0x40', mnem: 'bl', addr: 0 },        // resolves to memcpy@plt
+    { text: 'str x0, [sp, 0x18]', mnem: 'str', addr: 4 }, // store the return into a local
+  ] }] };
+  const sym = (ins) => (ins.mnem === 'bl' ? 'memcpy@plt' : '');
+  const ti = inferTypesArm(cfg, sym);
+  assert.equal(ti.signatures[0].text, 'void* memcpy(void*, const void*, size_t)');
+  assert.equal(ti.regTypes.x0, 'void*');
+  assert.equal(ti.regTypes.x2, 'size_t', 'the third A64 argument register is typed');
+  assert.equal(ti.slotTypes.local_18, 'void*', 'the return stored into the slot types it');
 });
 
 test('a typed return stored to a stack slot types that slot', () => {

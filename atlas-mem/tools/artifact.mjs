@@ -42,7 +42,7 @@ import { buildCfg, formatCfg } from './artifact-cfg.mjs';
 import { liftFunction as liftX86Fn, liftBlock as liftX86Block } from './artifact-lift-x86.mjs';
 import { structurize } from './artifact-struct.mjs';
 import { liftBlock as liftArm64Block } from './artifact-lift-arm64.mjs';
-import { inferTypes } from './artifact-types.mjs';
+import { inferTypes, inferTypesArm } from './artifact-types.mjs';
 import { readWasm, liftWasm } from './artifact-wasm.mjs';
 import { readEvm, lift as liftEvm } from './artifact-evm.mjs';
 import { readPcap, summarise as summarisePcap } from './artifact-pcap.mjs';
@@ -1085,6 +1085,11 @@ function cmdCfg(path) {
     const fr = recoverFrame(body);
     body = eliminateDeadStores(fr.body);
     const head = [];
+    const ti = inferTypesArm(cfg, sym);
+    rec.result.signatures = ti.signatures.map((s) => s.text);
+    rec.result.types = ti.regTypes;
+    for (const s of ti.signatures) { const retCast = s.ret && s.ret !== 'void' ? `(${s.ret})` : ''; body = body.replace(new RegExp(`(\\bx0 = )([\\w.@]*\\b${s.name})(@(?:plt|stub))?\\(\\.\\.\\.\\)`), `$1${retCast}$2$3(/* ${s.args.join(', ') || 'void'} */)`); }
+    if (ti.signatures.length) { head.push('// resolved API prototypes (ground-truth types at these call sites):'); for (const s of ti.signatures) head.push(`//   ${s.text}`); }
     const pt = pointsTo(cfg, 'arm64');
     if (pt.structs.length) head.push(...renderPointsTo(pt.structs));
     if (pt.arrays.length) { head.push('// observed arrays (element type from the access width):'); for (const a of pt.arrays) head.push(`//   ${a.elem} ${a.origin}[]`); }

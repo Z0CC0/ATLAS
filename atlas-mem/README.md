@@ -255,7 +255,7 @@ opcode. `cfg` recovers one function's control-flow graph from the disassembly (b
 direct edges, loops from back-edges) on x86-64 and arm64 — the skeleton before expressions
 and structuring. A PE's import address table is read, so a `call [rip+x]` to an import shows its
 `dll!function` in `disasm`, `cfg` and the pseudo-C (`rax = KERNEL32.MultiByteToWideChar(...)`).
-`cfg --pseudo` lifts the CFG to structured pseudo-C — x86-64 and ARM64 (A64); the ARM64 lift recovers control flow and expressions (the x86-only middle-end of frame/types/structs is not applied to it yet). On x86-64: intra-block expression folding
+`cfg --pseudo` lifts the CFG to structured pseudo-C — x86-64 and ARM64 (A64), both with the full middle-end (liveness, dead-store elimination, stack-frame recovery, API-anchored types, points-to struct recovery). On x86-64: intra-block expression folding
 (`eax = (-(ebp | 0xff))`), branch conditions recovered from `cmp`/`test` + the jump, memory
 as `*(addr)`, registers as the variables; then structured over the dominator and post-
 dominator trees into `if/else` and `while`/`for (;;)` with `break`/`continue`, a labelled
