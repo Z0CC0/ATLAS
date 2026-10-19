@@ -123,9 +123,10 @@ successors (`-> if-taken L_… | fall L_…`, `(loop)` on a back-edge).
 on ARM64 (A64): the ARM64 lift folds the three-operand RISC the same way (a register holds
 its last expression, `cmp`/`tst` is a `subs`/`ands` into the zero register, the condition
 comes from `b.<cond>`/`cbz`/`cbnz`/`tbz`/`tbnz`, `sp` is the frame base, loads and stores read
-as array/field access); the x86-only middle-end below (liveness, stack frame, types, points-
-to) is not applied to ARM64 yet, so an ARM64 function recovers its control flow and
-expressions but not its frame, types or structs. The rest of this section describes x86-64.
+as array/field access). ARM64 also gets the liveness pass (dead register spills dropped) and
+dead-store elimination; stack-frame recovery, type recovery and points-to are still x86-only,
+so an ARM64 function recovers control flow, expressions and clean data flow but not its frame,
+API types or structs yet. The rest of this section describes x86-64.
 Within a block
 it folds expressions — a register holds the expression last assigned to it, substituted
 into later uses, so a `mov`/`add`/`neg` chain collapses into one statement — and it recovers

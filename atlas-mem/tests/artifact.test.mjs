@@ -751,6 +751,22 @@ test('the ARM64 lift folds expressions, loads, stores, calls and recovers a cond
   assert.equal(s.cond.text, 'x0 != 0');
 });
 
+test('ARM64 liveness drops a dead spill and keeps the return value', async () => {
+  const df = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-dataflow.mjs')).href);
+  const fr = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-frame.mjs')).href);
+  const cfg = { start: 0, blocks: [
+    { start: 0, insns: [{ text: 'ldr x9, [x0, 0x8]', mnem: 'ldr' }, { text: 'ldr x10, [x0, 0x10]', mnem: 'ldr' }, { text: 'cbz x10, .+0x8', mnem: 'cbz' }], succ: [{ to: 8, cond: true }, { to: 4, fall: true }] },
+    { start: 4, insns: [{ text: 'add x0, x10, 0x1', mnem: 'add' }, { text: 'ret', mnem: 'ret' }], succ: [] },
+    { start: 8, insns: [{ text: 'mov x0, 0x0', mnem: 'mov' }, { text: 'ret', mnem: 'ret' }], succ: [] },
+  ] };
+  const live = df.liveness(cfg, 'arm64');
+  assert.ok(live.get(0).has('x10') && !live.get(0).has('x9'), 'x10 live, x9 dead');
+  const body = fr.eliminateDeadStores(structurize(cfg, 0, (b) => liftArm64Block(b.insns, null, df.withAliases(live.get(b.start) || new Set(), 'arm64'))));
+  assert.ok(!/x9 = /.test(body), 'the dead x9 spill is removed');
+  assert.match(body, /x0 = 0x0;/, 'the return value of the then-arm is kept');
+  assert.match(body, /x0 = \(x10 \+ 0x1\);/, 'the return value of the else-arm is kept');
+});
+
 test('ARM64 blocks structure into if/else through the shared structurizer', () => {
   const cfg = { start: 0, blocks: [
     { start: 0, insns: [{ text: 'cmp x0, 0x0', mnem: 'cmp' }, { text: 'b.eq .+0x8', mnem: 'b.eq' }], succ: [{ to: 8, cond: true }, { to: 4, fall: true }] },

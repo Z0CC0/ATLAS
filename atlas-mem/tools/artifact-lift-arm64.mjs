@@ -34,8 +34,8 @@ function splitOps(s) {
 }
 function parse(text) { const sp = text.indexOf(' '); return { mnem: sp < 0 ? text : text.slice(0, sp), ops: sp < 0 ? [] : splitOps(text.slice(sp + 1)) }; }
 
-function liftBlock(insns, sym) {
-  const env = new Map(); // canonical reg -> expression
+function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
+  const env = new Map(inEnv || []); // canonical reg -> expression (seeded from a predecessor)
   const stmts = [];
   let cmp = null;
   const rd = (r) => { if (r === 'xzr' || r === 'wzr') return '0'; const c = canon(r); return env.has(c) ? env.get(c) : r; };
@@ -98,7 +98,8 @@ function liftBlock(insns, sym) {
   }
 
   // spill the registers this block defined to a non-trivial expression (no cross-block liveness yet)
-  for (const [r, e] of env) if (e !== r && !FRAME(r)) stmts.push(`${r} = ${e};`);
+  const endsRet = insns.length && /^(ret|eret)\b/.test(insns[insns.length - 1].text || ''); // keep the return value visible
+  for (const [r, e] of env) if (e !== r && !FRAME(r) && (!liveOut || liveOut.has(r) || (endsRet && r === 'x0')) && !(noSpill && noSpill.has(r))) stmts.push(`${r} = ${e};`);
 
   const term = insns[insns.length - 1]; let cond = null;
   if (term) {

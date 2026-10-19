@@ -1077,10 +1077,12 @@ function cmdCfg(path) {
       body = head.join('\n') + '\n' + body;
     }
   } else if (flags.pseudo && ARCH === 'arm64') {
-    // ARM64 pseudo-C: structured lift. The x86-only middle-end (liveness, frame, types,
-    // points-to) is not applied here yet, so blocks spill their values and there is no
-    // stack-frame or struct recovery; the control flow and expressions are recovered.
-    body = structurize(cfg, 0, (b) => liftArm64Block(b.insns, sym));
+    // ARM64 pseudo-C: structured lift with liveness-driven spill removal and dead-store
+    // elimination. Frame recovery, type recovery and points-to are still x86-only.
+    const live = liveness(cfg, 'arm64');
+    const liveAt = (b) => withAliases(live.get(b.start) || new Set(), 'arm64');
+    body = structurize(cfg, 0, (b) => liftArm64Block(b.insns, sym, liveAt(b)));
+    body = eliminateDeadStores(body);
   } else body = formatCfg(cfg, 0, sym);
   emit(rec, body + `\n\nid ${rec.id}`);
 }

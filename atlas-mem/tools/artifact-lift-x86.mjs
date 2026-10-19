@@ -99,7 +99,8 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
   }
 
   // materialise the live, non-trivial registers so a successor that reads them has a definition
-  for (const [c, e] of env) if (e.expr !== c && (!liveOut || liveOut.has(c)) && !(noSpill && noSpill.has(c))) stmts.push(`${c} = ${e.expr};`);
+  const endsRet = insns.length && /^(ret|retf)\b/.test(insns[insns.length - 1].text || ''); // keep the return value visible
+  for (const [c, e] of env) if (e.expr !== c && (!liveOut || liveOut.has(c) || (endsRet && c === 'rax')) && !(noSpill && noSpill.has(c))) stmts.push(`${c} = ${e.expr};`);
 
   const term = insns[insns.length - 1]; let cond = null;
   if (term && /^j/.test(term.mnem) && term.mnem !== 'jmp') {

@@ -51,6 +51,7 @@ for (const [q, d, w, b] of [
   ['rsi', 'esi', 'si', 'sil'], ['rdi', 'edi', 'di', 'dil'], ['rbp', 'ebp', 'bp', 'bpl'], ['rsp', 'esp', 'sp', 'spl'],
 ]) { for (const r of [q, d, w, b]) CANON[r] = q; }
 for (let i = 8; i <= 15; i += 1) { const q = 'r' + i; for (const r of [q, q + 'd', q + 'w', q + 'b']) CANON[r] = q; }
+for (let i = 0; i <= 30; i += 1) { CANON['w' + i] = 'x' + i; } // ARM64: wN is the low half of xN
 const canonId = (t) => CANON[t] || t;
 
 /**
@@ -73,7 +74,8 @@ function eliminateDeadStores(body) {
       if (m) {
         const lhs = canonId(m[1]); const rhs = m[2];
         const pure = !/[a-z_][a-z0-9_]*\s*\(/.test(rhs); // no function call on the rhs
-        if (pure && count[lhs] === 1) { removed = true; continue; } // defined, read nowhere: dead
+        const isRet = lhs === 'rax' || lhs === 'x0'; // the ABI return register: a `return;` hides its use
+        if (pure && !isRet && count[lhs] === 1) { removed = true; continue; } // defined, read nowhere: dead
       }
       keep.push(line);
     }

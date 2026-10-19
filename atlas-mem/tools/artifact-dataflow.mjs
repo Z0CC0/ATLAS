@@ -71,11 +71,50 @@ function defsUses(ins) {
 }
 function rax() { return 'rax'; }
 
+// ---------------------------------------------------------------- ARM64 register model
+
+const canonArm = (r) => (/^w(\d+)$/.test(r) ? 'x' + r.slice(1) : (r === 'wsp' ? 'sp' : r));
+const isGprArm = (r) => /^(x\d+|w\d+|sp|wsp)$/.test(r); // xzr/wzr excluded on purpose
+function splitBr(s) { const out = []; let d = 0, cur = ''; for (const ch of s) { if (ch === '[') d += 1; else if (ch === ']') d -= 1; if (ch === ',' && d === 0) { out.push(cur.trim()); cur = ''; } else cur += ch; } if (cur.trim()) out.push(cur.trim()); return out; }
+function parseArm(text) { const sp = text.indexOf(' '); return { mnem: sp < 0 ? text : text.slice(0, sp), ops: sp < 0 ? [] : splitBr(text.slice(sp + 1)) }; }
+function regsOfArm(op) { const out = []; const inner = op && op.startsWith('[') ? op.slice(1, -1).replace(/\]!?$/, '') : op; if (!inner) return out; for (const m of inner.matchAll(/\b(x\d+|w\d+|sp|wsp)\b/g)) out.push(canonArm(m[1])); return out; }
+const ARM_DATA = new Set(['add', 'sub', 'and', 'orr', 'eor', 'lsl', 'lsr', 'asr', 'mul', 'udiv', 'sdiv', 'neg', 'mvn', 'lslv', 'lsrv', 'asrv', 'csel', 'csinc', 'csinv', 'csneg', 'cset', 'csetm', 'madd', 'msub', 'bic', 'orn', 'rev', 'rev16', 'clz', 'rbit', 'extr', 'sbfm', 'ubfm', 'bfm', 'sxtw', 'uxtw']);
+
+/** Definitions and uses of one ARM64 instruction, as sets of canonical registers. */
+function defsUsesArm(ins) {
+  const { mnem, ops } = parseArm(ins.text || '');
+  const def = new Set(), use = new Set();
+  const useOp = (t) => { for (const r of regsOfArm(t)) use.add(r); };
+  const defReg = (t) => { if (/^(x\d+|w\d+)$/.test(t || '')) def.add(canonArm(t)); };
+  const b = mnem.replace(/s$/, '');
+  if (mnem === 'mov' || mnem === 'movz' || mnem === 'movn' || mnem === 'adrp' || mnem === 'adr') { defReg(ops[0]); if (ops[1]) useOp(ops[1]); }
+  else if (mnem === 'movk') { defReg(ops[0]); useOp(ops[0]); }
+  else if (mnem === 'cmp' || mnem === 'cmn' || mnem === 'tst') { useOp(ops[0]); useOp(ops[1]); }
+  else if ((mnem === 'subs' || mnem === 'adds' || mnem === 'ands') && (ops[0] === 'xzr' || ops[0] === 'wzr')) { useOp(ops[1]); useOp(ops[2]); }
+  else if (/^ldr/.test(mnem)) { defReg(ops[0]); useOp(ops[1]); }
+  else if (/^str/.test(mnem)) { useOp(ops[0]); useOp(ops[1]); }
+  else if (mnem === 'ldp') { defReg(ops[0]); defReg(ops[1]); useOp(ops[2]); }
+  else if (mnem === 'stp') { useOp(ops[0]); useOp(ops[1]); useOp(ops[2]); }
+  else if (mnem === 'bl' || mnem === 'blr') { if (mnem === 'blr') useOp(ops[0]); for (let i = 0; i <= 7; i += 1) use.add('x' + i); for (let i = 0; i <= 18; i += 1) def.add('x' + i); def.add('x30'); }
+  else if (mnem === 'ret') { use.add('x0'); use.add('x30'); }
+  else if (mnem === 'cbz' || mnem === 'cbnz' || mnem === 'tbz' || mnem === 'tbnz') { useOp(ops[0]); }
+  else if (/^b(\.|r$|$)/.test(mnem) || mnem === 'nop' || mnem === 'eret') { /* no register effect tracked */ }
+  else if (ARM_DATA.has(b) || ARM_DATA.has(mnem)) { defReg(ops[0]); for (let i = 1; i < ops.length; i += 1) useOp(ops[i]); }
+  else { for (const o of ops) useOp(o); } // conservative: read everything, define nothing
+  return { def, use };
+}
+
+const ARM_FRAME = new Set(['sp']);
+const archModel = (arch) => (arch === 'arm64'
+  ? { du: defsUsesArm, canon: canonArm, frame: ARM_FRAME, aliasOf: (c) => (/^x\d+$/.test(c) ? [c, c.replace('x', 'w')] : [c]) }
+  : { du: defsUses, canon, frame: new Set(['rsp', 'rbp']), aliasOf: (c) => (ALIAS[c] || [c]) });
+
 /** Block-level use/def: a register used before it is defined in the block is a block use. */
-function blockUseDef(insns) {
+function blockUseDef(insns, du0) {
+  const du0fn = du0 || defsUses;
   const use = new Set(), def = new Set();
   for (const ins of insns) {
-    const du = defsUses(ins);
+    const du = du0fn(ins);
     for (const u of du.use) if (!def.has(u)) use.add(u);
     for (const d of du.def) def.add(d);
   }
@@ -83,10 +122,11 @@ function blockUseDef(insns) {
 }
 
 /** Backward liveness fixpoint. Returns Map(block.start -> Set of canonical regs live out). */
-function liveness(cfg) {
+function liveness(cfg, arch) {
+  const model = archModel(arch);
   const blocks = cfg.blocks;
   const byId = new Map(blocks.map((b) => [b.start, b]));
-  const ud = new Map(blocks.map((b) => [b.start, blockUseDef(b.insns)]));
+  const ud = new Map(blocks.map((b) => [b.start, blockUseDef(b.insns, model.du)]));
   const liveIn = new Map(blocks.map((b) => [b.start, new Set()]));
   const liveOut = new Map(blocks.map((b) => [b.start, new Set()]));
   let changed = true; let guard = 0;
@@ -107,9 +147,10 @@ function liveness(cfg) {
 }
 
 /** Expand a set of canonical regs to include every sub-register name, for a raw-name lookup. */
-function withAliases(canonSet) {
+function withAliases(canonSet, arch) {
+  const aliasOf = archModel(arch).aliasOf;
   const out = new Set();
-  for (const c of canonSet) { out.add(c); for (const a of (ALIAS[c] || [])) out.add(a); }
+  for (const c of canonSet) { out.add(c); for (const a of aliasOf(c)) out.add(a); }
   return out;
 }
 
