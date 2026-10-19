@@ -41,6 +41,7 @@ import { decodeOne as arm64decode } from './artifact-arm64.mjs';
 import { buildCfg, formatCfg } from './artifact-cfg.mjs';
 import { liftFunction as liftX86Fn, liftBlock as liftX86Block } from './artifact-lift-x86.mjs';
 import { structurize } from './artifact-struct.mjs';
+import { liftBlock as liftArm64Block } from './artifact-lift-arm64.mjs';
 import { inferTypes } from './artifact-types.mjs';
 import { readWasm, liftWasm } from './artifact-wasm.mjs';
 import { readEvm, lift as liftEvm } from './artifact-evm.mjs';
@@ -1075,6 +1076,11 @@ function cmdCfg(path) {
       if (arrays.length) { head.push('// observed arrays (element type from the index scale / access width):'); for (const a of arrays) head.push(`//   ${a.elem} ${a.base}[]  // stride ${a.scale}`); }
       body = head.join('\n') + '\n' + body;
     }
+  } else if (flags.pseudo && ARCH === 'arm64') {
+    // ARM64 pseudo-C: structured lift. The x86-only middle-end (liveness, frame, types,
+    // points-to) is not applied here yet, so blocks spill their values and there is no
+    // stack-frame or struct recovery; the control flow and expressions are recovered.
+    body = structurize(cfg, 0, (b) => liftArm64Block(b.insns, sym));
   } else body = formatCfg(cfg, 0, sym);
   emit(rec, body + `\n\nid ${rec.id}`);
 }

@@ -10,6 +10,7 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { structurize, dominates, domTree, rpo } from '../tools/artifact-struct.mjs';
+import { liftBlock as liftArm64Block } from '../tools/artifact-lift-arm64.mjs';
 import { inferTypes, protoFor, signatureText } from '../tools/artifact-types.mjs';
 import { readWasm, liftWasm } from '../tools/artifact-wasm.mjs';
 import { readEvm, lift as liftEvm, selectors as evmSelectors, decode as evmDecode } from '../tools/artifact-evm.mjs';
@@ -729,6 +730,37 @@ test('cfg recovers a function from a real binary, or skips', () => {
   assert.ok(c.json.result.blockCount >= 1);
   assert.ok(c.json.result.instructions >= 1);
   assert.ok(c.json.limitations.some((l) => l.includes('indirect')));
+});
+
+test('the ARM64 lift folds expressions, loads, stores, calls and recovers a condition', () => {
+  const r = liftArm64Block([
+    { text: 'ldr x0, [x1, 0x10]' },   // x0 = x1->field_10
+    { text: 'add x0, x0, 0x1' },      // x0 = (… + 0x1)
+    { text: 'cmp x0, x2' },           // flags from x0 - x2
+    { text: 'b.eq .+0x8' },
+  ]);
+  assert.equal(r.cond.text, '(x1->field_10 + 0x1) == x2');
+  const s = liftArm64Block([
+    { text: 'mov x8, 0x0' },
+    { text: 'str x8, [x19, 0x8]' },   // x19->field_8 = 0
+    { text: 'bl .+0x40' },            // x0 = call
+    { text: 'cbnz x0, .+0xc' },
+  ]);
+  assert.ok(s.stmts.includes('x19->field_8 = 0x0;'), s.stmts.join(' | '));
+  assert.ok(s.stmts.some((x) => /^x0 = /.test(x)), 'the call result is a statement');
+  assert.equal(s.cond.text, 'x0 != 0');
+});
+
+test('ARM64 blocks structure into if/else through the shared structurizer', () => {
+  const cfg = { start: 0, blocks: [
+    { start: 0, insns: [{ text: 'cmp x0, 0x0', mnem: 'cmp' }, { text: 'b.eq .+0x8', mnem: 'b.eq' }], succ: [{ to: 8, cond: true }, { to: 4, fall: true }] },
+    { start: 4, insns: [{ text: 'mov x0, 0x1', mnem: 'mov' }, { text: 'ret', mnem: 'ret' }], succ: [] },
+    { start: 8, insns: [{ text: 'mov x0, 0x2', mnem: 'mov' }, { text: 'ret', mnem: 'ret' }], succ: [] },
+  ] };
+  const out = structurize(cfg, 0, (b) => liftArm64Block(b.insns, null));
+  assert.match(out, /if \(x0 == 0x0\) \{/);
+  assert.match(out, /\} else \{/);
+  assert.ok(!/goto/.test(out), 'a reducible arm64 diamond needs no goto');
 });
 
 test('the x86 lift folds expressions and recovers a branch condition', async () => {
