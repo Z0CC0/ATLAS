@@ -1067,6 +1067,14 @@ test('the pcap command runs end to end and detect routes to it', () => {
   assert.equal(run('detect', p).json.result.format, 'pcap');
 });
 
+test('frame recovery names ARM64 sp-relative slots too', () => {
+  const body = ['void func() {', '  x8 = *(sp + 0x10);', '  *(sp + 0x8) = x0;', '}'].join('\n');
+  const { body: out, locals } = recoverFrame(body);
+  assert.match(out, /x8 = local_10;/);
+  assert.match(out, /local_8 = x0;/);
+  assert.ok(locals.includes('local_10') && locals.includes('local_8'));
+});
+
 test('dead-store elimination drops an unused pure spill, keeps live and side-effecting ones', () => {
   const body = [
     'void func() {',

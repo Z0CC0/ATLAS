@@ -24,8 +24,9 @@ function recoverFrame(body) {
     const name = (base === 'rbp' && sign === '+') ? `arg_${hex}` : `local_${sign === '-' ? 'm' : ''}${hex}`;
     slots.set(key, name); order.push(name); return name;
   };
-  // 1) name every simple stack/frame slot: *(rsp+0x30), *(rbp-0x8)
+  // 1) name every simple stack/frame slot: *(rsp+0x30), *(rbp-0x8) on x86, *(sp + 0x30) on ARM64
   body = body.replace(/\*\((rsp|rbp)([+-])(0x[0-9a-f]+)\)/g, (_, base, sign, off) => nameFor(base, sign, off));
+  body = body.replace(/\*\(sp ([+-]) (0x[0-9a-f]+)\)/g, (_, sign, off) => nameFor('sp', sign, off));
 
   // 2) annotate the boilerplate, line by line, without removing anything
   const lines = body.split('\n').map((line) => {

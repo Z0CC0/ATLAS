@@ -1082,7 +1082,9 @@ function cmdCfg(path) {
     const live = liveness(cfg, 'arm64');
     const liveAt = (b) => withAliases(live.get(b.start) || new Set(), 'arm64');
     body = structurize(cfg, 0, (b) => liftArm64Block(b.insns, sym, liveAt(b)));
-    body = eliminateDeadStores(body);
+    const fr = recoverFrame(body);
+    body = eliminateDeadStores(fr.body);
+    if (fr.locals.length) body = `// stack locals recovered: ${[...new Set(fr.locals)].join(', ')}\n` + body;
   } else body = formatCfg(cfg, 0, sym);
   emit(rec, body + `\n\nid ${rec.id}`);
 }
