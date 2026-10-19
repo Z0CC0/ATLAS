@@ -437,7 +437,7 @@ function readMachO(b, depth) {
   const is64 = magic === 0xcffaedfe;
   const r32 = (o) => b.readUInt32LE(o), r64 = (o) => Number(b.readBigUInt64LE(o));
   const cpu = r32(4), filetype = r32(12), ncmds = r32(16), flags = r32(24);
-  const segments = []; const dylibs = []; let id = null; const rpaths = []; let uuid = null, build = null, entry = null, signed = false, symtab = null;
+  const segments = []; const dylibs = []; let id = null; const rpaths = []; let uuid = null, build = null, entry = null, signed = false, symtab = null, dysym = null, stubsSec = null;
   let o = is64 ? 32 : 28;
   const limitations = [];
   for (let i = 0; i < ncmds && i < 1024; i += 1) {
@@ -445,7 +445,7 @@ function readMachO(b, depth) {
     const cmd = r32(o), size = r32(o + 4);
     if (size < 8) break;
     const str = (rel) => cstr(b, o + r32(o + rel), 1024);
-    if (cmd === 0x19 || cmd === 0x1) { const segname = fixed(b, o + 8, 16); const nsects = r32(o + (is64 ? 64 : 48)); const sects = []; let so = o + (is64 ? 72 : 56); for (let k = 0; k < nsects && k < 256; k += 1) { sects.push(fixed(b, so, 16)); so += is64 ? 80 : 68; } segments.push({ name: segname, vmaddr: is64 ? r64(o + 24) : r32(o + 24), vmsize: is64 ? r64(o + 32) : r32(o + 28), fileoff: is64 ? r64(o + 40) : r32(o + 32), filesize: is64 ? r64(o + 48) : r32(o + 36), maxprot: r32(o + (is64 ? 56 : 40)), initprot: r32(o + (is64 ? 60 : 44)), sections: sects }); }
+    if (cmd === 0x19 || cmd === 0x1) { const segname = fixed(b, o + 8, 16); const nsects = r32(o + (is64 ? 64 : 48)); const sects = []; let so = o + (is64 ? 72 : 56); for (let k = 0; k < nsects && k < 256; k += 1) { const sn = fixed(b, so, 16); sects.push(sn); if (is64 && sn === '__stubs') stubsSec = { addr: r64(so + 32), size: r64(so + 40), first: r32(so + 68), stub: r32(so + 72) }; so += is64 ? 80 : 68; } segments.push({ name: segname, vmaddr: is64 ? r64(o + 24) : r32(o + 24), vmsize: is64 ? r64(o + 32) : r32(o + 28), fileoff: is64 ? r64(o + 40) : r32(o + 32), filesize: is64 ? r64(o + 48) : r32(o + 36), maxprot: r32(o + (is64 ? 56 : 40)), initprot: r32(o + (is64 ? 60 : 44)), sections: sects }); }
     else if (cmd === 0xc || cmd === 0x18 || cmd === 0x1f || cmd === 0x20) dylibs.push({ name: str(8), weak: cmd === 0x18, reexport: cmd === 0x1f, version: ver32(r32(o + 16)) });
     else if (cmd === 0xd) id = { name: str(8), version: ver32(r32(o + 16)) };
     else if (cmd === 0x8000001c) rpaths.push(str(8));
@@ -455,6 +455,7 @@ function readMachO(b, depth) {
     else if (cmd === 0x80000028) entry = r64(o + 8);
     else if (cmd === 0x1d) signed = true;
     else if (cmd === 0x2) symtab = { symoff: r32(o + 8), nsyms: r32(o + 12), stroff: r32(o + 16), strsize: r32(o + 20) };
+    else if (cmd === 0xb) dysym = { indirectsymoff: r32(o + 56), nindirectsyms: r32(o + 60) };
     o += size;
   }
   const imported = [], exported = [];
@@ -469,7 +470,19 @@ function readMachO(b, depth) {
       if (kind === 0 && (ntype & 0x01)) imported.push(name); else if ((ntype & 0x01) && kind === 0xe) exported.push(name);
     }
   } else limitations.push('no symbol table: imports and exports not listed');
-  return { format: 'mach-o', fat: false, class: is64 ? 64 : 32, cpu: MACHO_CPU[cpu] || cpu, filetype: MACHO_FILETYPES[filetype] || filetype, flags: { pie: Boolean(flags & 0x200000), twoLevel: Boolean(flags & 0x80), noHeapExec: Boolean(flags & 0x1000000) }, id, dylibs, rpaths, uuid, build, entry, signed, segments, imported: imported.slice(0, 3000), exported: exported.slice(0, 3000), counts: { imported: imported.length, exported: exported.length, dylibs: dylibs.length }, limitations };
+  // lazy-binding stubs: __stubs[j] -> indirect symbol table[reserved1+j] -> symtab name
+  const stubs = [];
+  if (is64 && stubsSec && stubsSec.stub && dysym && symtab) {
+    const nStub = Math.floor(stubsSec.size / stubsSec.stub);
+    for (let j = 0; j < nStub && j < 20000; j += 1) {
+      const io = dysym.indirectsymoff + (stubsSec.first + j) * 4; if (io + 4 > b.length) break;
+      const symIdx = r32(io); if (symIdx & 0xc0000000) continue; // ABS or LOCAL: no name
+      const no = symtab.symoff + symIdx * 16; if (no + 4 > b.length) continue;
+      const name = cstr(b, symtab.stroff + r32(no), 512);
+      if (name) stubs.push({ addr: stubsSec.addr + j * stubsSec.stub, name });
+    }
+  }
+  return { format: 'mach-o', fat: false, class: is64 ? 64 : 32, cpu: MACHO_CPU[cpu] || cpu, filetype: MACHO_FILETYPES[filetype] || filetype, flags: { pie: Boolean(flags & 0x200000), twoLevel: Boolean(flags & 0x80), noHeapExec: Boolean(flags & 0x1000000) }, id, dylibs, rpaths, uuid, build, entry, signed, segments, imported: imported.slice(0, 3000), exported: exported.slice(0, 3000), stubs, counts: { imported: imported.length, exported: exported.length, dylibs: dylibs.length, stubs: stubs.length }, limitations };
 }
 
 // ---------------------------------------------------------------- what Go and Rust leave behind
@@ -551,12 +564,14 @@ function buildSym(r) {
   const iat = new Map((r.iat || []).map((e) => [e.rva, e.name]));
   const exp = new Map((((r.exports && r.exports.addrs) || [])).map((e) => [e.rva, e.name]));
   const plt = new Map((r.plt || []).map((e) => [e.addr, e.name]));
+  const stub = new Map((r.stubs || []).map((e) => [e.addr, e.name]));
   const off2addr = (off) => {
     if (fmt === 'pe') { for (const s of r.sections) { const sz = Math.max(s.vsize || 0, s.rawSize || 0); if (off >= s.raw && off < s.raw + sz) return s.vaddr + (off - s.raw); } return null; }
     if (fmt === 'elf') { for (const s of (r.segments || [])) { if (s.type === 'LOAD' && off >= s.off && off < s.off + s.filesz) return s.vaddr + (off - s.off); } return null; }
+    if (fmt === 'mach-o') { for (const s of (r.segments || [])) { if (off >= s.fileoff && off < s.fileoff + s.filesize) return s.vmaddr + (off - s.fileoff); } return null; }
     return null;
   };
-  const has = iat.size || exp.size || plt.size;
+  const has = iat.size || exp.size || plt.size || stub.size;
   return (ins) => {
     if (!has || !/^(call|jmp)$/.test(ins.mnem || '')) return '';
     if (fmt === 'pe' && iat.size) {
@@ -569,6 +584,7 @@ function buildSym(r) {
       if (a != null) {
         if (fmt === 'pe') { const n = exp.get(a); if (n) return `${(r.exports && r.exports.name) || 'this'}!${n}`; }
         else if (fmt === 'elf') { const n = plt.get(a); if (n) return `${n}@plt`; }
+        else if (fmt === 'mach-o') { const n = stub.get(a); if (n) return `${n}@stub`; }
       }
     }
     return '';

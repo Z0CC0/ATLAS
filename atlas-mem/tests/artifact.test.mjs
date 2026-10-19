@@ -15,7 +15,27 @@ import { readWasm, liftWasm } from '../tools/artifact-wasm.mjs';
 import { readEvm, lift as liftEvm, selectors as evmSelectors, decode as evmDecode } from '../tools/artifact-evm.mjs';
 import { readPcap, summarise as summarisePcap } from '../tools/artifact-pcap.mjs';
 import { pointsTo } from '../tools/artifact-pointsto.mjs';
-import { readElf, buildSym } from '../tools/artifact-bin.mjs';
+import { readElf, readMachO, buildSym } from '../tools/artifact-bin.mjs';
+
+// A minimal real Mach-O64 (x86-64) with one lazy-binding stub for "_puts".
+function makeMachoWithStub() {
+  const buf = Buffer.alloc(0x140);
+  const SEG = 0x20, DYS = 0xB8, SYM = 0x108, NLIST = 0x120, STR = 0x130, IND = 0x138, STUBOFF = 0x13C;
+  const STUBVA = 0x100000000 + STUBOFF;
+  buf.writeUInt32LE(0xfeedfacf, 0); buf.writeUInt32LE(0x01000007, 4); buf.writeUInt32LE(0, 8);
+  buf.writeUInt32LE(2, 12); buf.writeUInt32LE(3, 16); buf.writeUInt32LE(0x100, 20); buf.writeUInt32LE(0, 24);
+  buf.writeUInt32LE(0x19, SEG); buf.writeUInt32LE(152, SEG + 4); buf.write('__TEXT', SEG + 8, 'latin1');
+  buf.writeBigUInt64LE(0x100000000n, SEG + 24); buf.writeBigUInt64LE(0x2000n, SEG + 32);
+  buf.writeBigUInt64LE(0n, SEG + 40); buf.writeBigUInt64LE(BigInt(buf.length), SEG + 48);
+  buf.writeUInt32LE(7, SEG + 56); buf.writeUInt32LE(5, SEG + 60); buf.writeUInt32LE(1, SEG + 64);
+  const S = SEG + 72; buf.write('__stubs', S, 'latin1'); buf.write('__TEXT', S + 16, 'latin1');
+  buf.writeBigUInt64LE(BigInt(STUBVA), S + 32); buf.writeBigUInt64LE(2n, S + 40);
+  buf.writeUInt32LE(STUBOFF, S + 48); buf.writeUInt32LE(0, S + 68); buf.writeUInt32LE(2, S + 72);
+  buf.writeUInt32LE(0xb, DYS); buf.writeUInt32LE(80, DYS + 4); buf.writeUInt32LE(IND, DYS + 56); buf.writeUInt32LE(1, DYS + 60);
+  buf.writeUInt32LE(0x2, SYM); buf.writeUInt32LE(24, SYM + 4); buf.writeUInt32LE(NLIST, SYM + 8); buf.writeUInt32LE(1, SYM + 12); buf.writeUInt32LE(STR, SYM + 16); buf.writeUInt32LE(7, SYM + 20);
+  buf.writeUInt32LE(1, NLIST); buf.write('\0_puts\0', STR, 'latin1'); buf.writeUInt32LE(0, IND);
+  return buf;
+}
 
 // A minimal real ELF64 with one PLT slot for "puts", built by hand.
 function makeElfWithPlt() {
@@ -53,6 +73,14 @@ test('ELF PLT is read and a direct call to a stub resolves to name@plt', () => {
   // a direct call whose target file offset is 0x140 (ins.addr 0x40 + displacement 0x100)
   assert.equal(sym({ addr: 0x40, len: 5, mnem: 'call', text: 'call 0x100' }), 'puts@plt');
   assert.equal(sym({ addr: 0x40, len: 5, mnem: 'call', text: 'call 0x200' }), '', 'an unrelated target stays unresolved');
+});
+
+test('Mach-O stubs are read and a direct call to a stub resolves to name@stub', () => {
+  const r = readMachO(makeMachoWithStub());
+  assert.deepEqual(r.stubs, [{ addr: 0x10000013C, name: '_puts' }], 'the __stubs slot maps to its symbol');
+  const sym = buildSym(r);
+  // a call at file offset 0x100 with displacement 0x3c targets the stub at 0x13c
+  assert.equal(sym({ addr: 0x100, len: 5, mnem: 'call', text: 'call 0x3c' }), '_puts@stub');
 });
 
 test('a PE direct call to a named export resolves to module!name', () => {

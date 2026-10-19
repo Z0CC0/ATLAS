@@ -138,8 +138,9 @@ Call targets are named across the three formats. A PE import through the address
 slots a `call [rip+x]` lands on) shows its `dll!function`, and in the pseudo-C reads
 `rax = KERNEL32.MultiByteToWideChar(...)`. A PE direct call to one of the file's own exports
 shows `module!export`. An ELF direct call to a procedure-linkage-table stub shows `name@plt`,
-read from `.rela.plt` and `.dynsym` (with `.plt.sec` handled for CET builds). What is not an
-import, export or PLT stub stays an offset.
+read from `.rela.plt` and `.dynsym` (with `.plt.sec` handled for CET builds). A Mach-O direct
+call to a lazy-binding stub shows `name@stub`, read from `__stubs` through the indirect symbol
+table into the symbol table. What is not an import, export or stub stays an offset.
 
 Types are recovered where they can be anchored. A resolved import call is ground truth: a
 compact table of common Win32 / C-runtime / ntdll prototypes (from the public API headers,
