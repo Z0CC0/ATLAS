@@ -134,9 +134,12 @@ becomes `while (…)` or `for (;;)` with `break`/`continue`. A labelled `goto` s
 where the flow is irreducible or leaves its region — the honest fallback, never a wrong
 nesting. `cfg --pseudo --goto` keeps the old flat listing with labels for comparison.
 
-Call targets are named. A PE's import address table (the slots a `call [rip+x]` lands on)
-is read, so an imported call shows its `dll!function` in the disassembly and `cfg`, and in
-the pseudo-C a call reads `rax = KERNEL32.MultiByteToWideChar(...)` instead of an offset.
+Call targets are named across the three formats. A PE import through the address table (the
+slots a `call [rip+x]` lands on) shows its `dll!function`, and in the pseudo-C reads
+`rax = KERNEL32.MultiByteToWideChar(...)`. A PE direct call to one of the file's own exports
+shows `module!export`. An ELF direct call to a procedure-linkage-table stub shows `name@plt`,
+read from `.rela.plt` and `.dynsym` (with `.plt.sec` handled for CET builds). What is not an
+import, export or PLT stub stays an offset.
 
 Types are recovered where they can be anchored. A resolved import call is ground truth: a
 compact table of common Win32 / C-runtime / ntdll prototypes (from the public API headers,

@@ -15,6 +15,52 @@ import { readWasm, liftWasm } from '../tools/artifact-wasm.mjs';
 import { readEvm, lift as liftEvm, selectors as evmSelectors, decode as evmDecode } from '../tools/artifact-evm.mjs';
 import { readPcap, summarise as summarisePcap } from '../tools/artifact-pcap.mjs';
 import { pointsTo } from '../tools/artifact-pointsto.mjs';
+import { readElf, buildSym } from '../tools/artifact-bin.mjs';
+
+// A minimal real ELF64 with one PLT slot for "puts", built by hand.
+function makeElfWithPlt() {
+  const buf = Buffer.alloc(0x340);
+  const PH = 0x40, DYN = 0xB0, DSTR = 0xE0, DSYM = 0xE8, RELA = 0x118, PLT = 0x130, SHSTR = 0x150, SH = 0x1C0;
+  buf.write('\0puts\0', DSTR, 'latin1');
+  buf.writeUInt32LE(1, DSYM + 24); buf[DSYM + 24 + 4] = 0x12; buf.writeUInt16LE(0, DSYM + 24 + 6);
+  buf.writeBigUInt64LE(0x3000n, RELA); buf.writeUInt32LE(7, RELA + 8); buf.writeUInt32LE(1, RELA + 12);
+  const shstr = '\0' + '.dynstr\0.dynsym\0.rela.plt\0.plt\0.shstrtab\0';
+  buf.write(shstr, SHSTR, 'latin1');
+  const nameOff = (s) => shstr.indexOf('\0' + s + '\0') + 1;
+  buf.write('\x7fELF', 0, 'latin1'); buf[4] = 2; buf[5] = 1; buf[6] = 1;
+  buf.writeUInt16LE(2, 16); buf.writeUInt16LE(62, 18); buf.writeUInt32LE(1, 20);
+  buf.writeBigUInt64LE(BigInt(PH), 32); buf.writeBigUInt64LE(BigInt(SH), 40);
+  buf.writeUInt16LE(64, 52); buf.writeUInt16LE(56, 54); buf.writeUInt16LE(2, 56);
+  buf.writeUInt16LE(64, 58); buf.writeUInt16LE(6, 60); buf.writeUInt16LE(5, 62);
+  buf.writeUInt32LE(1, PH); buf.writeUInt32LE(5, PH + 4);
+  buf.writeBigUInt64LE(BigInt(buf.length), PH + 32); buf.writeBigUInt64LE(BigInt(buf.length), PH + 40);
+  buf.writeUInt32LE(2, PH + 56); buf.writeUInt32LE(6, PH + 56 + 4);
+  buf.writeBigUInt64LE(BigInt(DYN), PH + 56 + 8); buf.writeBigUInt64LE(BigInt(DYN), PH + 56 + 16);
+  buf.writeBigUInt64LE(0x30n, PH + 56 + 32); buf.writeBigUInt64LE(0x30n, PH + 56 + 40);
+  buf.writeBigUInt64LE(5n, DYN); buf.writeBigUInt64LE(BigInt(DSTR), DYN + 8);
+  buf.writeBigUInt64LE(10n, DYN + 16); buf.writeBigUInt64LE(6n, DYN + 24); buf.writeBigUInt64LE(0n, DYN + 32);
+  const sh = (i, name, type, off, size, opt = {}) => { const o = SH + i * 64; buf.writeUInt32LE(nameOff(name), o); buf.writeUInt32LE(type, o + 4); buf.writeBigUInt64LE(BigInt(opt.addr || off), o + 16); buf.writeBigUInt64LE(BigInt(off), o + 24); buf.writeBigUInt64LE(BigInt(size), o + 32); buf.writeUInt32LE(opt.link || 0, o + 40); buf.writeBigUInt64LE(BigInt(opt.entsize || 0), o + 56); };
+  sh(1, '.dynstr', 3, DSTR, 6); sh(2, '.dynsym', 11, DSYM, 48, { link: 1, entsize: 24 });
+  sh(3, '.rela.plt', 4, RELA, 24, { entsize: 24 }); sh(4, '.plt', 1, PLT, 32, { addr: PLT });
+  sh(5, '.shstrtab', 3, SHSTR, shstr.length);
+  return buf;
+}
+
+test('ELF PLT is read and a direct call to a stub resolves to name@plt', () => {
+  const r = readElf(makeElfWithPlt());
+  assert.deepEqual(r.plt, [{ addr: 0x140, name: 'puts' }], 'the PLT stub maps to its symbol');
+  const sym = buildSym(r);
+  // a direct call whose target file offset is 0x140 (ins.addr 0x40 + displacement 0x100)
+  assert.equal(sym({ addr: 0x40, len: 5, mnem: 'call', text: 'call 0x100' }), 'puts@plt');
+  assert.equal(sym({ addr: 0x40, len: 5, mnem: 'call', text: 'call 0x200' }), '', 'an unrelated target stays unresolved');
+});
+
+test('a PE direct call to a named export resolves to module!name', () => {
+  const r = { format: 'pe', sections: [{ vaddr: 0x1000, raw: 0x400, rawSize: 0x200, vsize: 0x200 }], iat: [], exports: { name: 'lib.dll', addrs: [{ rva: 0x1100, name: 'Foo' }] } };
+  const sym = buildSym(r);
+  // export rva 0x1100 -> file offset 0x500; a call at 0x400 with displacement 0x100 hits it
+  assert.equal(sym({ addr: 0x400, len: 5, mnem: 'call', text: 'call 0x100' }), 'lib.dll!Foo');
+});
 import { recoverFrame, eliminateDeadStores, structLayouts, synthStructs, fieldWidths, arrayElems, fnPtrFields } from '../tools/artifact-frame.mjs';
 import { liveness, defsUses, withAliases, valueFlow } from '../tools/artifact-dataflow.mjs';
 import { liftBlock as liftX86Block } from '../tools/artifact-lift-x86.mjs';

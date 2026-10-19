@@ -84,9 +84,15 @@ function readPe(b, opts) {
     const e = toOff(exp.rva);
     if (e !== null && e + 40 <= b.length) {
       const nameOff = toOff(u32(b, e + 12)), nNames = u32(b, e + 24), namesRva = toOff(u32(b, e + 32));
+      const eatRva = toOff(u32(b, e + 28)), ordsRva = toOff(u32(b, e + 36)); // address table and name-ordinal table
       const names = [];
-      if (namesRva !== null) for (let i = 0; i < Math.min(nNames, 20000); i += 1) { const o = toOff(u32(b, namesRva + i * 4)); if (o !== null) names.push(cstr(b, o, 512)); }
-      exportsOut = { name: nameOff !== null ? cstr(b, nameOff, 256) : null, functions: u32(b, e + 20), named: nNames, names: names.slice(0, 2000) };
+      const addrs = []; // { rva, name } for each named export, so a call to its address resolves
+      if (namesRva !== null) for (let i = 0; i < Math.min(nNames, 20000); i += 1) {
+        const o = toOff(u32(b, namesRva + i * 4)); if (o === null) continue;
+        const nm = cstr(b, o, 512); names.push(nm);
+        if (eatRva !== null && ordsRva !== null && ordsRva + i * 2 + 2 <= b.length) { const ord = b.readUInt16LE(ordsRva + i * 2); if (eatRva + ord * 4 + 4 <= b.length) { const fnRva = u32(b, eatRva + ord * 4); if (fnRva && addrs.length < 20000) addrs.push({ rva: fnRva, name: nm }); } }
+      }
+      exportsOut = { name: nameOff !== null ? cstr(b, nameOff, 256) : null, functions: u32(b, e + 20), named: nNames, names: names.slice(0, 2000), addrs };
       if (nNames > 2000) limitations.push(`exports: ${nNames} names, the first 2,000 listed`);
     }
   }
@@ -381,9 +387,34 @@ function readElf(b) {
       if (symSize === null && name === '' ) break;
     }
   }
+  // PLT resolution: map each PLT stub address to its imported symbol, via .rela.plt + .dynsym.
+  // In code a `call <stub>` targets the .plt (or .plt.sec on CET builds) entry for that slot.
+  const plt = [], got = [];
+  const relPlt = sections.find((s) => s.name === '.rela.plt') || sections.find((s) => s.name === '.rel.plt');
+  const pltSecS = sections.find((s) => s.name === '.plt.sec');
+  const pltS = sections.find((s) => s.name === '.plt');
+  if (relPlt && symOff !== null && dynStrOff !== null) {
+    const isRela = relPlt.name === '.rela.plt';
+    const entSz = isRela ? (is64 ? 24 : 12) : (is64 ? 16 : 8);
+    const nrel = entSz ? Math.floor(relPlt.size / entSz) : 0;
+    const stubBase = pltSecS ? pltSecS.addr : (pltS ? pltS.addr : null);
+    const stubSize = pltSecS ? (nrel ? Math.max(16, Math.round(pltSecS.size / nrel)) : 16)
+      : (pltS && nrel ? Math.max(16, Math.round(pltS.size / (nrel + 1))) : 16);
+    const plt0 = !pltSecS; // a classic .plt has a resolver trampoline at index 0
+    for (let k = 0; k < nrel && k < 20000; k += 1) {
+      const ro = relPlt.off + k * entSz; if (ro + entSz > b.length) break;
+      const rOffset = addr(ro);
+      const symIdx = is64 ? r32(ro + 12) : (r32(ro + 4) >>> 8);
+      const so = symOff + symIdx * symEnt; if (so + 4 > b.length) continue;
+      const ni = r32(so); if (!ni) continue;
+      const name = cstr(b, dynStrOff + ni, 512); if (!name) continue;
+      got.push({ va: rOffset, name });
+      if (stubBase !== null) plt.push({ addr: stubBase + (plt0 ? k + 1 : k) * stubSize, name });
+    }
+  }
   const stack = segments.find((s) => s.type === 'GNU_STACK');
   const hardening = { pie: type === 3, nx: stack ? !stack.flags.includes('x') : null, relro: segments.some((s) => s.type === 'GNU_RELRO') ? 'partial-or-full' : false, canary: imported.some((s) => s.startsWith('__stack_chk_fail')), fortify: imported.some((s) => /_chk$/.test(s)), stripped: !sections.some((s) => s.name === '.symtab'), writableExec: segments.filter((s) => s.type === 'LOAD' && s.flags.includes('w') && s.flags.includes('x')).length };
-  return { format: 'elf', class: is64 ? 64 : 32, type: ELF_TYPES[type] || type, machine: ELF_MACHINES[machine] || machine, entry, interpreter, soname, needed, rpath, runpath, segments, sections: sections.map((s) => ({ name: s.name, off: s.off, size: s.size, addr: s.addr })), imported: imported.slice(0, 3000), exported: exported.slice(0, 3000), counts: { imported: imported.length, exported: exported.length, sections: sections.length }, hardening, limitations };
+  return { format: 'elf', class: is64 ? 64 : 32, type: ELF_TYPES[type] || type, machine: ELF_MACHINES[machine] || machine, entry, interpreter, soname, needed, rpath, runpath, segments, sections: sections.map((s) => ({ name: s.name, off: s.off, size: s.size, addr: s.addr })), imported: imported.slice(0, 3000), exported: exported.slice(0, 3000), plt, got, counts: { imported: imported.length, exported: exported.length, sections: sections.length, plt: plt.length }, hardening, limitations };
 }
 
 // ---------------------------------------------------------------- Mach-O
@@ -510,4 +541,38 @@ function readBinary(b, opts) {
   throw new Error('not a PE, ELF or Mach-O file');
 }
 
-export { readBinary, readPe, readElf, readMachO, readGo, readRust, readClr, interestingStrings };
+/**
+ * A symbol resolver for a disassembled instruction (addr = file offset, len, mnem, text).
+ * Resolves a PE import through the IAT (`call [rip+x]`), a PE direct call/jmp to a named
+ * export, and an ELF direct call/jmp to a PLT stub (`name@plt`). Returns '' when unresolved.
+ */
+function buildSym(r) {
+  const fmt = r.format;
+  const iat = new Map((r.iat || []).map((e) => [e.rva, e.name]));
+  const exp = new Map((((r.exports && r.exports.addrs) || [])).map((e) => [e.rva, e.name]));
+  const plt = new Map((r.plt || []).map((e) => [e.addr, e.name]));
+  const off2addr = (off) => {
+    if (fmt === 'pe') { for (const s of r.sections) { const sz = Math.max(s.vsize || 0, s.rawSize || 0); if (off >= s.raw && off < s.raw + sz) return s.vaddr + (off - s.raw); } return null; }
+    if (fmt === 'elf') { for (const s of (r.segments || [])) { if (s.type === 'LOAD' && off >= s.off && off < s.off + s.filesz) return s.vaddr + (off - s.off); } return null; }
+    return null;
+  };
+  const has = iat.size || exp.size || plt.size;
+  return (ins) => {
+    if (!has || !/^(call|jmp)$/.test(ins.mnem || '')) return '';
+    if (fmt === 'pe' && iat.size) {
+      const m = /\[rip([+-])0x([0-9a-f]+)\]/.exec(ins.text || '');
+      if (m) { const disp = parseInt(m[2], 16) * (m[1] === '-' ? -1 : 1); const ir = off2addr(ins.addr); if (ir != null) { const n = iat.get(ir + ins.len + disp); if (n) return n; } }
+    }
+    const dm = /^\S+\s+(-?)0x([0-9a-f]+)$/.exec(ins.text || ''); // a direct self-relative call/jmp
+    if (dm) {
+      const v = parseInt(dm[2], 16) * (dm[1] ? -1 : 1); const a = off2addr(ins.addr + v);
+      if (a != null) {
+        if (fmt === 'pe') { const n = exp.get(a); if (n) return `${(r.exports && r.exports.name) || 'this'}!${n}`; }
+        else if (fmt === 'elf') { const n = plt.get(a); if (n) return `${n}@plt`; }
+      }
+    }
+    return '';
+  };
+}
+
+export { readBinary, readPe, readElf, readMachO, readGo, readRust, readClr, interestingStrings, buildSym };

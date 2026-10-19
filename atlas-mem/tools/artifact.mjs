@@ -31,7 +31,7 @@ import { createHash } from 'node:crypto';
 import { closeSync, existsSync, openSync, readdirSync, readFileSync, readSync, statSync } from 'node:fs';
 import { basename, dirname, extname, join, posix, resolve } from 'node:path';
 import * as js from './artifact-js.mjs';
-import { readBinary } from './artifact-bin.mjs';
+import { readBinary, buildSym } from './artifact-bin.mjs';
 import { format as cilFormat } from './artifact-cil.mjs';
 import { disasm as x86disasm } from './artifact-x86.mjs';
 import { disasm as arm64disasm } from './artifact-arm64.mjs';
@@ -672,7 +672,7 @@ function cmdBin(path) {
   delete r.limitations;
   const subject = { name: basename(abs), path: abs, format: r.format, bytes: buf.length, sha256: sha256(buf) };
   const full = flags.detail === 'full';
-  const result = full ? r : { ...r, sections: r.sections ? r.sections.map((s) => ({ name: s.name, size: s.rawSize ?? s.size ?? s.filesize, flags: s.flags })) : undefined, imports: r.imports ? r.imports.map((i) => ({ dll: i.dll, count: i.count, names: i.names.slice(0, 40) })) : undefined, exports: r.exports ? { ...r.exports, names: r.exports.names.slice(0, 60) } : r.exports, imported: r.imported ? r.imported.slice(0, 80) : undefined, exported: r.exported ? r.exported.slice(0, 80) : undefined, dotnet: r.dotnet ? { ...r.dotnet, types: r.dotnet.types.slice(0, 60), userStrings: r.dotnet.userStrings.slice(0, 60), pinvoke: r.dotnet.pinvoke.slice(0, 60) } : r.dotnet, segments: r.segments ? r.segments.map((s) => ({ ...s, sections: undefined })) : undefined };
+  const result = full ? r : { ...r, sections: r.sections ? r.sections.map((s) => ({ name: s.name, size: s.rawSize ?? s.size ?? s.filesize, flags: s.flags })) : undefined, imports: r.imports ? r.imports.map((i) => ({ dll: i.dll, count: i.count, names: i.names.slice(0, 40) })) : undefined, exports: r.exports ? { ...r.exports, names: r.exports.names.slice(0, 60), addrs: undefined } : r.exports, imported: r.imported ? r.imported.slice(0, 80) : undefined, exported: r.exported ? r.exported.slice(0, 80) : undefined, dotnet: r.dotnet ? { ...r.dotnet, types: r.dotnet.types.slice(0, 60), userStrings: r.dotnet.userStrings.slice(0, 60), pinvoke: r.dotnet.pinvoke.slice(0, 60) } : r.dotnet, segments: r.segments ? r.segments.map((s) => ({ ...s, sections: undefined })) : undefined };
   const rec = record(subject, 'bin', { detail: full ? 'full' : 'summary' }, result, { limitations, coverage: { status: 'complete', scope: `${r.format} headers, sections, imports and exports${r.dotnet ? ', .NET metadata tables' : ''}${r.go ? ', Go build info' : ''}${r.rust ? ', Rust crate paths' : ''}, strings` } });
   emit(rec, binText({ ...rec, result: r }));
 }
@@ -830,21 +830,13 @@ function cmdDisasm(path) {
     ARCH === 'x86-64'
       ? 'the coverage is a linear sweep: a code section holds data too (jump tables, padding, constants) and x86 decodes almost any bytes as some instruction, so this number bounds the unknown-opcode rate, it is not proof that every boundary is a real instruction; the listing from the entry point is where real code is read'
       : 'arm64 is fixed-width (every instruction 4 bytes, so no length error and no desync); the coverage is the share of words that are an allocated encoding, and the scalar-FP / SIMD group is recognised as a class but named coarsely',
-    'addresses are file offsets inside the section, not runtime virtual addresses; a call/jmp target is shown as its offset, not resolved to a symbol',
+    'addresses are file offsets inside the section, not runtime virtual addresses; a call/jmp resolves to a symbol when it lands on a PE import (IAT), a PE export, or an ELF PLT stub, otherwise it is shown as its offset',
   ];
   const rec = record(subject, 'disasm', { at: flags.at || null, count }, result, { confidence: 'observed', coverage: { status: coverage === 100 ? 'complete' : 'partial', scope: `${secs.length} code section(s), ${swept} instructions swept, ${good} named (${coverage}% allocated)` }, limitations });
   const L = [`${subject.name}  ${ARCH}  ${secs.map((s) => `${s.name}(${s.size})`).join(' ')}  swept ${swept} instr, ${ARCH === 'x86-64' ? 'decoded' : 'allocated'} ${coverage}%${coarseN ? `, ${coarseN} fp/simd coarse` : ''}`];
-  // symbol names for imported calls: a `call [rip+x]` lands on an IAT slot -> dll!function
-  const peSec = r.format === 'pe' ? r.sections.find((s) => s.name === secOf.name) : null;
-  const iatByRva = new Map((r.iat || []).map((e) => [e.rva, e.name]));
-  const symFor = (i) => {
-    if (!peSec || !iatByRva.size || !/^(call|jmp)$/.test(i.mnem || '')) return '';
-    const m = /\[rip([+-])0x([0-9a-f]+)\]/.exec(i.text); if (!m) return '';
-    const disp = parseInt(m[2], 16) * (m[1] === '-' ? -1 : 1);
-    const instrRva = peSec.vaddr + (secOf.off + i.addr - peSec.raw);
-    const name = iatByRva.get(instrRva + i.bytes + disp);
-    return name ? `  ; ${name}` : '';
-  };
+  // symbol names for calls: PE import (IAT), PE export, or ELF PLT stub
+  const sym = buildSym(r);
+  const symFor = (i) => { const n = sym({ addr: secOf.off + i.addr, len: i.bytes, mnem: i.mnem, text: i.text }); return n ? `  ; ${n}` : ''; };
   L.push(`\n; from 0x${at.toString(16)} (${secOf.name})`);
   for (const i of d.instructions) L.push(`  ${i.addr.toString(16).padStart(8, '0')}  ${i.bad ? '(data) ' + i.text : i.coarse ? '~ ' + i.text : i.text}${symFor(i)}`);
   L.push(`\nid ${rec.id}`);
@@ -1042,9 +1034,7 @@ function cmdCfg(path) {
   ];
   const rec = record(subject, 'cfg', { at: flags.at || null, budget }, result, { confidence: 'derived', coverage: { status: cfg.bad ? 'partial' : 'complete', scope: `${cfg.blocks.length} basic blocks, ${cfg.instructions} instructions, ${cfg.loops} loop edge(s), from 0x${at.toString(16)}` }, limitations });
   // import symbol names for call targets, when this is a PE
-  const peSec = r.format === 'pe' ? r.sections.find((s) => s.name === secOf.name) : null;
-  const iatByRva = new Map((r.iat || []).map((e) => [e.rva, e.name]));
-  const sym = (peSec && iatByRva.size) ? (ins) => { if (!/^(call|jmp)$/.test(ins.mnem || '')) return ''; const m = /\[rip([+-])0x([0-9a-f]+)\]/.exec(ins.text); if (!m) return ''; const disp = parseInt(m[2], 16) * (m[1] === '-' ? -1 : 1); return iatByRva.get(peSec.vaddr + (ins.addr - peSec.raw) + ins.len + disp) || ''; } : null;
+  const sym = buildSym(r); // PE import (IAT) / PE export / ELF PLT stub
   let body;
   if (flags.pseudo && ARCH === 'x86-64') {
     const live = liveness(cfg);
