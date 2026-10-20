@@ -119,6 +119,11 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
     if (mnem === 'inc' || mnem === 'dec') { const d = ops[0]; const e = `(${val(d)} ${mnem === 'inc' ? '+' : '-'} 1)`; if (isMem(d)) stmts.push(`${deref(d)} = ${e};`); else wr(d, e); continue; }
     if (mnem === 'neg') { wr(ops[0], `(-${val(ops[0])})`); continue; }
     if (mnem === 'not') { wr(ops[0], `(~${val(ops[0])})`); continue; }
+    // rotate: no C operator, render as the named intrinsic (count defaults to 1 when implicit)
+    if ((mnem === 'rol' || mnem === 'ror') && ops.length >= 1) { const d = ops[0]; wr(d, `${mnem === 'rol' ? 'rotl' : 'rotr'}(${val(d)}, ${ops[1] != null ? val(ops[1]) : '1'})`); continue; }
+    if (mnem === 'bswap' && ops.length === 1) { wr(ops[0], `bswap(${val(ops[0])})`); continue; }
+    // bit scan / population count: destination takes the named intrinsic of the source
+    if (/^(popcnt|lzcnt|tzcnt|bsr|bsf)$/.test(mnem) && ops.length === 2) { wr(ops[0], `${mnem}(${val(ops[1])})`); continue; }
     if (mnem === 'cmp') { cmp = { a: val(ops[0]), b: val(ops[1]), test: false }; continue; }
     if (mnem === 'test') { cmp = { a: val(ops[0]), b: val(ops[1]), test: true }; continue; }
     if (mnem === 'push' || mnem === 'pop' || mnem === 'leave' || mnem === 'cdqe' || mnem === 'cqo') continue;

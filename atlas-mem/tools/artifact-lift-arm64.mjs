@@ -132,6 +132,12 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
     }
     if (mnem === 'neg') { wr(ops[0], `(-${val(ops[1])})`); continue; }
     if (mnem === 'mvn') { wr(ops[0], `(~${val(ops[1])})`); continue; }
+    // byte/bit reverse, count leading zeros/signs, reverse bits: named intrinsic of the source
+    if (mnem === 'rev') { wr(ops[0], `bswap(${val(ops[1])})`); continue; }
+    if (/^(rev16|rev32|clz|cls|rbit)$/.test(mnem) && ops.length === 2) { wr(ops[0], `${mnem}(${val(ops[1])})`); continue; }
+    // rotate-right (and its extract alias): no C operator, render as the intrinsic
+    if (mnem === 'ror' && ops.length === 3) { wr(ops[0], `rotr(${val(ops[1])}, ${val(ops[2])})`); continue; }
+    if (mnem === 'extr' && ops.length === 4) { wr(ops[0], `extr(${val(ops[1])}, ${val(ops[2])}, ${val(ops[3])})`); continue; }
     stmts.push(`// ${ins.text}`);
   }
 

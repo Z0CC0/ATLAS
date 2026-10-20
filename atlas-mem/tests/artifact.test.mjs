@@ -766,6 +766,12 @@ test('the ARM64 lift renders conditional-select and multiply-accumulate', () => 
   assert.ok(msub.stmts.includes('x0 = (x3 - (x1 * x2));'), msub.stmts.join(' | '));
   const mneg = liftArm64Block([{ text: 'mneg x0, x1, x2' }], null, new Set(['x0']));
   assert.ok(mneg.stmts.includes('x0 = (-(x1 * x2));'), mneg.stmts.join(' | '));
+  const rev = liftArm64Block([{ text: 'rev x0, x1' }], null, new Set(['x0']));
+  assert.ok(rev.stmts.includes('x0 = bswap(x1);'), rev.stmts.join(' | '));
+  const clz = liftArm64Block([{ text: 'clz w0, w1' }], null, new Set(['x0']));
+  assert.ok(clz.stmts.includes('x0 = clz(w1);'), clz.stmts.join(' | '));
+  const ror = liftArm64Block([{ text: 'ror x0, x1, 0x8' }], null, new Set(['x0']));
+  assert.ok(ror.stmts.includes('x0 = rotr(x1, 0x8);'), ror.stmts.join(' | '));
 });
 
 test('ARM64 liveness drops a dead spill and keeps the return value', async () => {
@@ -835,6 +841,19 @@ test('the lift renders setcc, cmov and div from the flags', async () => {
   const div = lx.liftBlock([mk('mov eax, edi'), mk('div ecx')], null, new Set(['rax', 'rdx']));
   assert.ok(div.stmts.includes('rax = (edi / ecx);'), div.stmts.join(' | '));
   assert.ok(div.stmts.includes('rdx = (edi % ecx);'));
+});
+
+test('the lift renders rotate, byte-swap, bit-scan and popcount as intrinsics', async () => {
+  const lx = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-lift-x86.mjs')).href);
+  const mk = (t) => ({ mnem: t.split(' ')[0], text: t, addr: 0 });
+  const rol = lx.liftBlock([mk('rol eax, 0x7')], null, new Set(['rax']));
+  assert.ok(rol.stmts.includes('rax = rotl(eax, 0x7);'), rol.stmts.join(' | '));
+  const bswap = lx.liftBlock([mk('bswap eax')], null, new Set(['rax']));
+  assert.ok(bswap.stmts.includes('rax = bswap(eax);'), bswap.stmts.join(' | '));
+  const pop = lx.liftBlock([mk('popcnt rax, rbx')], null, new Set(['rax']));
+  assert.ok(pop.stmts.includes('rax = popcnt(rbx);'), pop.stmts.join(' | '));
+  const bsf = lx.liftBlock([mk('bsf rdx, rsi')], null, new Set(['rdx']));
+  assert.ok(bsf.stmts.includes('rdx = bsf(rsi);'), bsf.stmts.join(' | '));
 });
 
 test('the lift renders array and field access from the address shape', async () => {
