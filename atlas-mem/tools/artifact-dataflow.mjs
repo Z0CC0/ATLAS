@@ -173,7 +173,9 @@ const FRAMEREG = new Set(['rsp', 'rbp', 'esp', 'ebp', 'sp', 'bp', 'spl', 'bpl'])
  *
  * Returns { inEnv: Map(start -> envMap), noSpill: Map(start -> Set rawReg) }.
  */
-function valueFlow(cfg, lift) {
+function valueFlow(cfg, lift, arch) {
+  const model = archModel(arch);
+  const EXP = (v) => (typeof v === 'string' ? v : (v && v.expr)); // value is a string (arm64) or {expr,w} (x86)
   const blocks = cfg.blocks;
   const order = []; { // reverse-postorder over successors from the entry
     const seen = new Set(); const post = [];
@@ -185,10 +187,10 @@ function valueFlow(cfg, lift) {
   const byId = new Map(blocks.map((b) => [b.start, b]));
   const preds = new Map(blocks.map((b) => [b.start, []]));
   for (const b of blocks) for (const s of b.succ) if (byId.has(s.to)) preds.get(s.to).push(b.start);
-  const useOf = new Map(blocks.map((b) => [b.start, blockUseDef(b.insns).use])); // canonical regs read by the block
+  const useOf = new Map(blocks.map((b) => [b.start, blockUseDef(b.insns, model.du).use])); // canonical regs read by the block
 
-  // keep only short, non-frame expressions in the forwarded environment (values are {expr,w})
-  const capped = (m) => { const o = new Map(); for (const [k, v] of m) if (v && typeof v.expr === 'string' && v.expr.length <= CAP && !FRAMEREG.has(k)) o.set(k, v); return o; };
+  // keep only short, non-frame expressions in the forwarded environment
+  const capped = (m) => { const o = new Map(); for (const [k, v] of m) { const s = EXP(v); if (typeof s === 'string' && s.length <= CAP && !model.frame.has(k)) o.set(k, v); } return o; };
   const outEnv = new Map(); const inEnv = new Map();
 
   // entry env: only when there is exactly one predecessor (no merge, no phi), and only for
@@ -202,7 +204,7 @@ function valueFlow(cfg, lift) {
     if (ps.length !== 1 || !outEnv.has(ps[0]) || succCount(ps[0]) !== 1) return new Map();
     const use = useOf.get(start) || new Set();
     const res = new Map();
-    for (const [r, e] of outEnv.get(ps[0])) if (use.has(canon(r))) res.set(r, e);
+    for (const [r, e] of outEnv.get(ps[0])) if (use.has(model.canon(r))) res.set(r, e);
     return res;
   };
 
@@ -215,7 +217,7 @@ function valueFlow(cfg, lift) {
       const prev = outEnv.get(start);
       const oe = capped(lift(b.insns, ie).outEnv);
       inEnv.set(start, ie);
-      if (!prev || prev.size !== oe.size || [...oe].some(([k, v]) => (prev.get(k) || {}).expr !== v.expr)) { outEnv.set(start, oe); changed = true; }
+      if (!prev || prev.size !== oe.size || [...oe].some(([k, v]) => EXP(prev.get(k)) !== EXP(v))) { outEnv.set(start, oe); changed = true; }
     }
   }
 
@@ -227,7 +229,7 @@ function valueFlow(cfg, lift) {
     // suppress a spill only if there is exactly one successor and it inherits this value
     if (succ.length === 1 && (preds.get(succ[0].to) || []).length === 1) {
       const sie = inEnv.get(succ[0].to) || new Map();
-      for (const [r, e] of oe) if (e.expr !== r && (sie.get(r) || {}).expr === e.expr) ns.add(r);
+      for (const [r, e] of oe) if (EXP(e) !== r && EXP(sie.get(r)) === EXP(e)) ns.add(r);
     }
     noSpill.set(b.start, ns);
   }

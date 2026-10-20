@@ -1088,7 +1088,8 @@ function cmdCfg(path) {
     // elimination. Frame recovery, type recovery and points-to are still x86-only.
     const live = liveness(cfg, 'arm64');
     const liveAt = (b) => withAliases(live.get(b.start) || new Set(), 'arm64');
-    body = structurize(cfg, 0, (b) => liftArm64Block(b.insns, sym, liveAt(b)));
+    const vf = valueFlow(cfg, (ins, ie) => liftArm64Block(ins, sym, null, ie), 'arm64');
+    body = structurize(cfg, 0, (b) => liftArm64Block(b.insns, sym, liveAt(b), vf.inEnv.get(b.start), vf.noSpill.get(b.start)));
     const fr = recoverFrame(body);
     body = eliminateDeadStores(fr.body);
     const head = [];
