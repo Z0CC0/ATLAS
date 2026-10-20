@@ -774,6 +774,19 @@ test('the ARM64 lift renders conditional-select and multiply-accumulate', () => 
   assert.ok(ror.stmts.includes('x0 = rotr(x1, 0x8);'), ror.stmts.join(' | '));
 });
 
+test('the ARM64 lift renders scalar floating-point and its conversions and compare', () => {
+  const fmul = liftArm64Block([{ text: 'fmul d0, d1, d2' }], null, new Set());
+  assert.ok(fmul.stmts.includes('d0 = (d1 * d2);'), fmul.stmts.join(' | '));
+  const fmadd = liftArm64Block([{ text: 'fmadd d0, d1, d2, d3' }], null, new Set());
+  assert.ok(fmadd.stmts.includes('d0 = (d3 + (d1 * d2));'), fmadd.stmts.join(' | '));
+  const fsqrt = liftArm64Block([{ text: 'fsqrt d0, d1' }], null, new Set());
+  assert.ok(fsqrt.stmts.includes('d0 = sqrt(d1);'), fsqrt.stmts.join(' | '));
+  const cvt = liftArm64Block([{ text: 'fcvtzs w0, d0' }], null, new Set(['x0']));
+  assert.ok(cvt.stmts.includes('x0 = fcvtzs(d0);'), 'a general-register destination is tracked: ' + cvt.stmts.join(' | '));
+  const fcmp = liftArm64Block([{ text: 'fcmp d0, d1' }, { text: 'b.lt .+0x8' }], null, new Set());
+  assert.equal(fcmp.cond.text, 'd0 < d1');
+});
+
 test('ARM64 liveness drops a dead spill and keeps the return value', async () => {
   const df = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-dataflow.mjs')).href);
   const fr = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-frame.mjs')).href);

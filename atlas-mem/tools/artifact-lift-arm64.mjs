@@ -138,6 +138,21 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
     // rotate-right (and its extract alias): no C operator, render as the intrinsic
     if (mnem === 'ror' && ops.length === 3) { wr(ops[0], `rotr(${val(ops[1])}, ${val(ops[2])})`); continue; }
     if (mnem === 'extr' && ops.length === 4) { wr(ops[0], `extr(${val(ops[1])}, ${val(ops[2])}, ${val(ops[3])})`); continue; }
+    // scalar floating-point: FP registers are rendered, not folded (like the x86 SSE moves);
+    // a general-register destination (e.g. fcvtzs x0, d0) is still tracked in the env
+    {
+      const put = (d, e) => { if (isGpr(d)) wr(d, e); else stmts.push(`${d} = ${e};`); };
+      const FBIN = { fadd: '+', fsub: '-', fmul: '*', fdiv: '/' };
+      if (FBIN[mnem] && ops.length === 3) { put(ops[0], `(${val(ops[1])} ${FBIN[mnem]} ${val(ops[2])})`); continue; }
+      if (mnem === 'fnmul' && ops.length === 3) { put(ops[0], `(-(${val(ops[1])} * ${val(ops[2])}))`); continue; }
+      if (/^fn?m(add|sub)$/.test(mnem) && ops.length === 4) { const p = `(${val(ops[1])} * ${val(ops[2])})`; const b = /sub/.test(mnem) ? `(${val(ops[3])} - ${p})` : `(${val(ops[3])} + ${p})`; put(ops[0], /^fn/.test(mnem) ? `(-${b})` : b); continue; }
+      if (mnem === 'fneg') { put(ops[0], `(-${val(ops[1])})`); continue; }
+      if (mnem === 'fabs') { put(ops[0], `fabs(${val(ops[1])})`); continue; }
+      if (mnem === 'fsqrt') { put(ops[0], `sqrt(${val(ops[1])})`); continue; }
+      if (mnem === 'fmov' && ops.length === 2) { put(ops[0], val(ops[1])); continue; }
+      if (/^(fcvt|fcvtz[su]|fcvta[su]|fcvtm[su]|fcvtp[su]|fcvtn[su]|scvtf|ucvtf|frint[a-z]+)/.test(mnem) && ops.length >= 2) { put(ops[0], `${mnem}(${val(ops[1])})`); continue; }
+      if (mnem === 'fcmp' || mnem === 'fcmpe') { cmp = { a: val(ops[0]), b: /^#?0\.0$/.test(ops[1]) ? '0' : val(ops[1]), test: false }; continue; }
+    }
     stmts.push(`// ${ins.text}`);
   }
 
