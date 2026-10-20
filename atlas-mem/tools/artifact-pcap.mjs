@@ -109,7 +109,7 @@ function decodeFrame(b, linktype) {
     o += 40;
   } else { f.l3 = ethertype ? 'ethertype/0x' + ethertype.toString(16) : null; return f; }
 
-  if (f.proto === 'tcp' && b.length >= o + 14) { f.l4 = 'tcp'; f.sport = (b[o] << 8) | b[o + 1]; f.dport = (b[o + 2] << 8) | b[o + 3]; const dataOff = (b[o + 12] >> 4) * 4; f.payload = b.subarray(o + dataOff); }
+  if (f.proto === 'tcp' && b.length >= o + 14) { f.l4 = 'tcp'; f.sport = (b[o] << 8) | b[o + 1]; f.dport = (b[o + 2] << 8) | b[o + 3]; f.seq = ((b[o + 4] << 24) | (b[o + 5] << 16) | (b[o + 6] << 8) | b[o + 7]) >>> 0; const dataOff = (b[o + 12] >> 4) * 4; f.payload = b.subarray(o + dataOff); }
   else if (f.proto === 'tcp' && b.length >= o + 4) { f.l4 = 'tcp'; f.sport = (b[o] << 8) | b[o + 1]; f.dport = (b[o + 2] << 8) | b[o + 3]; }
   else if (f.proto === 'udp' && b.length >= o + 8) { f.l4 = 'udp'; f.sport = (b[o] << 8) | b[o + 1]; f.dport = (b[o + 2] << 8) | b[o + 3]; f.payload = b.subarray(o + 8); }
   else if (f.proto === 'udp' && b.length >= o + 4) { f.l4 = 'udp'; f.sport = (b[o] << 8) | b[o + 1]; f.dport = (b[o + 2] << 8) | b[o + 3]; }
@@ -169,6 +169,37 @@ function readNg(buf) {
 const PORTS = { 20: 'ftp-data', 21: 'ftp', 22: 'ssh', 23: 'telnet', 25: 'smtp', 53: 'dns', 67: 'dhcp', 68: 'dhcp', 69: 'tftp', 80: 'http', 110: 'pop3', 123: 'ntp', 143: 'imap', 161: 'snmp', 179: 'bgp', 389: 'ldap', 443: 'https', 445: 'smb', 465: 'smtps', 514: 'syslog', 587: 'smtp', 636: 'ldaps', 853: 'dns-tls', 993: 'imaps', 995: 'pop3s', 1433: 'mssql', 1883: 'mqtt', 3306: 'mysql', 3389: 'rdp', 5432: 'postgres', 5672: 'amqp', 6379: 'redis', 8080: 'http-alt', 8443: 'https-alt', 9200: 'elasticsearch', 27017: 'mongodb' };
 const service = (sp, dp) => { const s = PORTS[dp] || PORTS[sp]; return s ? ', ' + s : ''; };
 
+// Reassemble TCP streams per direction so an application message split across segments — a
+// full HTTP request with its headers, a TLS ClientHello spanning packets — can be read. We
+// order a flow's segments by sequence number, drop overlaps, stop at a gap or a sequence
+// wrap, cap the bytes per flow, then run the L7 decoders on the reconstructed stream.
+const FLOW_CAP = 65536;
+function reassemble(cap) {
+  const flows = new Map();
+  for (const p of cap.packets) {
+    if (p.l4 !== 'tcp' || !p.payload || !p.payload.length) continue;
+    const key = `${p.src}:${p.sport} -> ${p.dst}:${p.dport}`;
+    let f = flows.get(key); if (!f) { f = { key, sport: p.sport, dport: p.dport, segs: [], bytes: 0 }; flows.set(key, f); }
+    if (f.bytes < FLOW_CAP) { f.segs.push({ seq: p.seq >>> 0, data: p.payload }); f.bytes += p.payload.length; }
+  }
+  const out = [];
+  for (const f of flows.values()) {
+    if (f.segs.length < 2) continue; // a single segment is already read per-packet
+    f.segs.sort((a, b) => a.seq - b.seq);
+    const base = f.segs[0].seq; const chunks = []; let end = 0;
+    for (const s of f.segs) {
+      const off = (s.seq - base) >>> 0;
+      if (off > end + FLOW_CAP) break; // gap too large or a sequence wrap: stop here
+      if (off >= end) { chunks.push(s.data); end = off + s.data.length; }
+      else if (off + s.data.length > end) { chunks.push(s.data.subarray(end - off)); end = off + s.data.length; } // trim the overlap
+    }
+    const stream = Buffer.concat(chunks);
+    const app = decodeL7({ l4: 'tcp', payload: stream, sport: f.sport, dport: f.dport });
+    if (app) out.push({ flow: f.key, proto: app.proto, summary: app.summary, bytes: stream.length, segments: f.segs.length });
+  }
+  return out.sort((a, b) => b.bytes - a.bytes).slice(0, 20);
+}
+
 /** Build the protocol counts and the conversation list. */
 function summarise(cap) {
   const proto = {}; const conv = new Map(); const apps = new Map();
@@ -185,7 +216,8 @@ function summarise(cap) {
   }
   const conversations = [...conv.entries()].sort((x, y) => y[1] - x[1]).slice(0, 20).map(([k, n]) => ({ flow: k, packets: n }));
   const applications = [...apps.entries()].sort((x, y) => y[1] - x[1]).slice(0, 30).map(([k, n]) => ({ detail: k, packets: n }));
-  return { protocols: proto, conversations, applications };
+  const streams = reassemble(cap);
+  return { protocols: proto, conversations, applications, streams };
 }
 
 function readPcap(buf) {
@@ -196,4 +228,4 @@ function readPcap(buf) {
   throw new Error('not a pcap or pcapng file');
 }
 
-export { readPcap, decodeFrame, summarise, LINKTYPE, IPPROTO };
+export { readPcap, decodeFrame, summarise, reassemble, LINKTYPE, IPPROTO };

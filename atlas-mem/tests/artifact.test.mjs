@@ -1283,6 +1283,20 @@ test('pcap reads the application layer: HTTP, DNS and the TLS ClientHello SNI', 
   assert.deepEqual(tls.app, { proto: 'tls', summary: 'ClientHello SNI=example.org' });
 });
 
+test('pcap reassembles a TCP stream split across segments (HTTP Host, TLS SNI)', async () => {
+  const pc = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-pcap.mjs')).href);
+  const eth = () => { const h = Buffer.alloc(14); h[12] = 0x08; h[13] = 0x00; return h; };
+  const ip = (p) => { const h = Buffer.alloc(20); h[0] = 0x45; h[9] = p; h[12] = 10; h[15] = 1; h[16] = 10; h[19] = 2; return h; };
+  const tcp = (sp, dp, seq) => { const h = Buffer.alloc(20); h.writeUInt16BE(sp, 0); h.writeUInt16BE(dp, 2); h.writeUInt32BE(seq >>> 0, 4); h[12] = 0x50; return h; };
+  const mk = (sp, dp, seq, pl) => pc.decodeFrame(Buffer.concat([eth(), ip(6), tcp(sp, dp, seq), Buffer.from(pl)]), 'ethernet');
+  const p1 = mk(50000, 80, 1000, 'GET /big HTTP/1.1\r\n');
+  const p2 = mk(50000, 80, 1000 + p1.payload.length, 'Host: split.example.com\r\n\r\n');
+  const st = pc.reassemble({ packets: [p2, p1] }); // out of order on purpose
+  assert.equal(st.length, 1);
+  assert.equal(st[0].summary, 'GET split.example.com/big'); // the Host header lived in the second segment
+  assert.equal(st[0].segments, 2);
+});
+
 test('the pcap command runs end to end and detect routes to it', () => {
   const p = path.join(tmp, 'cap.pcap');
   fs.writeFileSync(p, makePcap());

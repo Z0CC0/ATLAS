@@ -995,18 +995,20 @@ function cmdPcap(path) {
     protocols: sum.protocols,
     conversations: sum.conversations,
     applications: sum.applications,
+    streams: sum.streams,
     packets: cap.packets.slice(0, max).map((p) => ({ l3: p.l3, proto: p.proto || null, src: p.src || null, dst: p.dst || null, sport: p.sport ?? null, dport: p.dport ?? null, l7: p.l7 || null, bytes: p.origlen ?? p.caplen ?? null })),
   };
   const subject = { name: basename(abs), path: abs, format: cap.format, bytes: buf.length, sha256: sha256(buf) };
   const limitations = [
     'decoded from the capture per the file format, not replayed; the stack decoded is Ethernet / IPv4 / IPv6 / TCP / UDP / ICMP, with the application layer read best-effort for HTTP/1.x, DNS and the TLS ClientHello SNI — other deeper protocols are not parsed',
-    'payload bytes are not reassembled across packets; the application layer is read from a single packet, and a conversation is counted by packet, not by reconstructed stream',
+    'TCP streams are reassembled per direction by sequence number (up to 64 KB per flow, stopping at a gap or sequence wrap) so a message split across segments is read; a flow with a missing segment in the middle yields only what precedes the gap',
   ];
-  const rec = record(subject, 'pcap', { max }, result, { confidence: 'observed', coverage: { status: 'complete', scope: `${cap.packets.length} packets, ${sum.conversations.length} conversations, ${sum.applications.length} application records` }, limitations });
+  const rec = record(subject, 'pcap', { max }, result, { confidence: 'observed', coverage: { status: 'complete', scope: `${cap.packets.length} packets, ${sum.conversations.length} conversations, ${sum.applications.length} application records, ${sum.streams.length} reassembled streams` }, limitations });
   const L = [`${subject.name}  ${cap.format} (${cap.endian}-endian), link ${cap.linktype}  ${cap.packets.length} packets`];
   L.push(`\nprotocols: ${Object.entries(sum.protocols).map(([k, v]) => `${k} ${v}`).join(', ') || '(none decoded)'}`);
   if (sum.conversations.length) { L.push('\ntop conversations:'); for (const c of sum.conversations.slice(0, 20)) L.push(`  ${c.packets.toString().padStart(6)}  ${c.flow}`); }
   if (sum.applications.length) { L.push('\napplication layer (http / dns / tls):'); for (const a of sum.applications.slice(0, 20)) L.push(`  ${a.packets.toString().padStart(6)}  ${a.detail}`); }
+  if (sum.streams.length) { L.push('\nreassembled TCP streams (application message across segments):'); for (const s of sum.streams) L.push(`  ${s.bytes.toString().padStart(7)}B  ${s.segments} seg  ${s.flow}  ${s.proto}: ${s.summary}`); }
   L.push(`\nid ${rec.id}`);
   emit(rec, L.join('\n'));
 }

@@ -291,16 +291,18 @@ database, which is not shipped; the hashes are reported as-is.
 header, then every packet record. It decodes the common stack — Ethernet (with VLAN tags),
 IPv4 / IPv6, TCP / UDP / ICMP — and summarises the protocol counts and the conversations
 (source and destination address and port, ordered by packet count). It also reads the
-application layer best-effort from a single packet: an HTTP/1.x request (method + Host +
-path) or status line, a DNS question (kind, type, name), and the TLS ClientHello SNI — listed
-under `applications`. `--max N` caps how many individual packets the JSON lists. The payload
-bytes are not reassembled across packets, so a body split over segments is not recovered, and
-a conversation is counted by packet, not by reconstructed stream. Useful for reversing a wire
-protocol from a capture without a live tap.
+application layer best-effort: an HTTP/1.x request (method + Host + path) or status line, a
+DNS question (kind, type, name), and the TLS ClientHello SNI — per packet under `applications`
+and, for a message split across segments, from the reassembled stream under `streams`. TCP
+streams are reassembled per direction by sequence number (up to 64 KB per flow, stopping at a
+gap or sequence wrap), so a request whose Host header or a ClientHello whose SNI falls in a
+later segment is still read. `--max N` caps how many individual packets the JSON lists.
+A conversation is still counted by packet. Useful for reversing a wire protocol from a
+capture without a live tap.
 
 ## Not yet
 
 Expression reconstruction's last native frontier is user-struct and full type recovery (API
-prototypes already type the call sites). Firmware is read by header only; cross-packet
-payload reassembly (a full HTTP body, a TLS record spanning segments) on top of `pcap` is a
-later slice.
+prototypes already type the call sites). Firmware is read by header only. On `pcap` the
+application layer covers HTTP/1.x, DNS and the TLS ClientHello; other L7 protocols, and a
+flow with a missing middle segment, are not reconstructed.
