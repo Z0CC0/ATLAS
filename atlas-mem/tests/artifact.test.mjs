@@ -1390,6 +1390,18 @@ test('the DWARF reader recovers subprogram names and PC ranges from .debug_info'
   assert.deepEqual(r.functions, [{ name: 'main', low: 0x1000, high: 0x1020 }]);
 });
 
+test('the PDB reader parses CodeView S_PUB32 symbol records', async () => {
+  const pdb = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-pdb.mjs')).href);
+  // one S_PUB32 (kind 0x110e): flags(4)=function, offset(4)=0x40, seg(2)=1, name "add\0"
+  const body = Buffer.concat([Buffer.from([2, 0, 0, 0]), Buffer.from([0x40, 0, 0, 0]), Buffer.from([1, 0]), Buffer.from('add\0', 'latin1')]);
+  const len = 2 + body.length; // kind + body
+  const rec = Buffer.concat([Buffer.from([len & 0xff, len >> 8, 0x0e, 0x11]), body]);
+  const pad = Buffer.alloc((4 - ((2 + len) % 4)) % 4);
+  const syms = pdb.symbols(Buffer.concat([rec, pad]));
+  assert.equal(syms.length, 1);
+  assert.deepEqual({ name: syms[0].name, seg: syms[0].seg, offset: syms[0].offset, func: syms[0].func }, { name: 'add', seg: 1, offset: 0x40, func: true });
+});
+
 test('the pcap command runs end to end and detect routes to it', () => {
   const p = path.join(tmp, 'cap.pcap');
   fs.writeFileSync(p, makePcap());

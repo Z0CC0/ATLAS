@@ -58,6 +58,7 @@ Everything below lives in the `artifact/` folder beside this file.
    `binary.md` (the `dex` section)
    a `.class`, Java bytecode, JVM, "decompile this class" → `binary.md` (the `jvm` section)
    a `.pyc`, Python bytecode, "disassemble this pyc" → `binary.md` (the `pyc` section)
+   a `.pdb`, Windows debug symbols, "function names for this exe" → `binary.md` (the `pdb` section)
    a `.wasm`, WebAssembly, "wat", a wasm module in a site or a plugin → `binary.md`
    (the `wasm` section)
    EVM bytecode, a smart contract, Ethereum, Solidity bytecode, a `.evm`, "what functions

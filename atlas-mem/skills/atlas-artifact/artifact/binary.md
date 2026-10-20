@@ -313,6 +313,15 @@ constant `PUSH` gives the jump target. A computed jump target comes off the stac
 time and is left as the expression. The names behind the selector hashes need a signature
 database, which is not shipped; the hashes are reported as-is.
 
+## Windows debug symbols: `pdb`
+
+`pdb <file.pdb>` reads a Microsoft PDB: the MSF container and stream directory, the DBI stream
+header, and the CodeView symbol records in the symbol-record stream. It lists the named
+functions (S_PUB32 public symbols and S_GPROC32/S_LPROC32 procedures) with their section:offset
+and, when the section-headers substream is present, their RVA — so a stripped-looking `exe`
+regains real names from its sibling `.pdb`. `--method NAME` filters, `--max N` caps. The type
+stream (TPI) and line information are not reconstructed.
+
 ## Network captures: `pcap`
 
 `pcap <file>` reads a libpcap or pcapng capture: the link type and byte order from the

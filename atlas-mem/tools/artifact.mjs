@@ -39,6 +39,7 @@ import { readDex, dexEntriesFromZip } from './artifact-dex.mjs';
 import { readClass as readJvmClass, decode as jvmDecode, lift as jvmLift } from './artifact-jvm.mjs';
 import { readPyc, disasm as pycDisasm, functions as pycFunctions } from './artifact-pyc.mjs';
 import { readDwarf } from './artifact-dwarf.mjs';
+import { readPdb } from './artifact-pdb.mjs';
 import { decodeOne as x86decode } from './artifact-x86.mjs';
 import { decodeOne as arm64decode } from './artifact-arm64.mjs';
 import { buildCfg, formatCfg } from './artifact-cfg.mjs';
@@ -116,6 +117,7 @@ function detectFile(path) {
   if (n >= 4 && b.toString('latin1', 0, 4) === 'dex\n') return 'dex';
   if (n >= 8 && b.readUInt32BE(0) === 0xcafebabe && b.readUInt16BE(6) >= 45 && b.readUInt16BE(6) < 256) return 'jvm'; // major version >=45; distinguishes from a Mach-O fat binary (same magic)
   if (n >= 4 && b[2] === 0x0d && b[3] === 0x0a && extname(path).toLowerCase() === '.pyc') return 'pyc';
+  if (n >= 24 && b.toString('latin1', 0, 24) === 'Microsoft C/C++ MSF 7.00') return 'pdb';
   if (n >= 4 && b[0] === 0x50 && b[1] === 0x4b && /\.apk$/i.test(path)) return 'apk';
   if (n >= 16 && asarHeader(path, true)) return 'asar';
   if (n >= 4) for (const [name, test] of MAGIC) { try { if (test(b)) return name; } catch { /* short */ } }
@@ -757,6 +759,23 @@ async function cmdObserve(path) {
 
 // ---------------------------------------------------------------- a .NET method body as instructions
 
+function cmdPdb(path) {
+  const abs = resolve(path);
+  if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
+  const buf = readFileSync(abs);
+  let r; try { r = readPdb(buf); } catch (e) { fail(e.message, 'unsupported'); }
+  const filter = flags.method ? String(flags.method).toLowerCase() : null;
+  const fns = r.functions.filter((f) => !filter || f.name.toLowerCase().includes(filter)).sort((a, b) => (a.rva || 0) - (b.rva || 0)).slice(0, Number(flags.max || 500));
+  const subject = { name: basename(abs), path: abs, format: 'pdb', bytes: buf.length, sha256: sha256(buf) };
+  const result = { streams: r.streamCount, symbols: r.symbolCount, functionCount: r.functions.length, hasSections: r.hasSections, functions: fns };
+  const limitations = ['function names and section:offset read from the CodeView symbol records; RVA is resolved from the section headers when present', 'the type stream (TPI/IPM) and line information are not reconstructed'];
+  const rec = record(subject, 'pdb', { method: flags.method || null, max: Number(flags.max || 500) }, result, { confidence: 'observed', coverage: { status: 'complete', scope: `${r.streamCount} MSF streams, ${r.symbolCount} symbols, ${r.functions.length} functions` }, limitations });
+  const L = [`${subject.name}  PDB  ${r.streamCount} streams, ${r.functions.length} functions (${r.symbolCount} symbols)${r.hasSections ? '' : ', no section map (RVA unresolved)'}`];
+  for (const f of fns.slice(0, 80)) L.push(`  ${f.rva != null ? '0x' + (f.rva >>> 0).toString(16).padStart(6) : `${f.seg}:${f.offset}`}  ${f.name}`);
+  L.push(`\nid ${rec.id}`);
+  emit(rec, L.join('\n'));
+}
+
 function cmdPyc(path) {
   const abs = resolve(path);
   if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
@@ -1299,6 +1318,7 @@ try {
   else if (command === 'dex') cmdDex(target);
   else if (command === 'jvm' || command === 'class') cmdJvm(target);
   else if (command === 'pyc') cmdPyc(target);
+  else if (command === 'pdb') cmdPdb(target);
   else if (command === 'wasm') cmdWasm(target);
   else if (command === 'evm') cmdEvm(target);
   else if (command === 'pcap') cmdPcap(target);
