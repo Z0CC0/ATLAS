@@ -932,6 +932,21 @@ test('the x86 decoder names SSE opcodes from the mandatory prefix', async () => 
   assert.equal(dec([0x66, 0x0f, 0xd7, 0xc0]), 'pmovmskb eax, xmm0');     // GP stays 32-bit under 0x66
 });
 
+test('the x86 decoder decodes VEX/AVX and the three-byte 0F38/0F3A maps', async () => {
+  const x = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-x86.mjs')).href);
+  const dec = (bytes) => { const b = Buffer.from(bytes); return x.decodeOne(b, 0, b.length).text; };
+  assert.equal(dec([0xc5, 0xf0, 0x58, 0xc2]), 'vaddps xmm0, xmm1, xmm2');        // 2-byte VEX, 3-operand NDS
+  assert.equal(dec([0xc5, 0xf5, 0x58, 0xc2]), 'vaddpd ymm0, ymm1, ymm2');        // L=1 -> ymm
+  assert.equal(dec([0xc5, 0xf3, 0x59, 0xc2]), 'vmulsd xmm0, xmm1, xmm2');        // F2 scalar
+  assert.equal(dec([0xc5, 0xf8, 0x51, 0xc1]), 'vsqrtps xmm0, xmm1');             // 2-operand (no NDS)
+  assert.equal(dec([0xc4, 0xe1, 0x75, 0xfe, 0xc2]), 'vpaddd ymm0, ymm1, ymm2');  // 3-byte VEX, 0F map
+  assert.equal(dec([0xc4, 0xe2, 0x71, 0xa8, 0xc2]), 'vfmadd213ps xmm0, xmm1, xmm2'); // FMA, 0F38
+  assert.equal(dec([0xc4, 0xe2, 0xf1, 0xb8, 0xc2]), 'vfmadd231pd xmm0, xmm1, xmm2'); // REX.W -> pd
+  assert.equal(dec([0x66, 0x0f, 0x38, 0x00, 0xc1]), 'pshufb xmm0, xmm1');        // legacy 0F38
+  assert.equal(dec([0x66, 0x0f, 0x3a, 0x08, 0xc1, 0x02]), 'roundps xmm0, xmm1, 0x2'); // legacy 0F3A + imm
+  assert.equal(dec([0x66, 0x0f, 0x38, 0xdc, 0xc1]), 'aesenc xmm0, xmm1');
+});
+
 test('the arm64 decoder decodes the scalar floating-point group', async () => {
   const a = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-arm64.mjs')).href);
   const W = (f) => { let w = 0; for (const [hi, lo, v] of f) w = (w | ((v & ((1 << (hi - lo + 1)) - 1)) << lo)) >>> 0; return w >>> 0; };

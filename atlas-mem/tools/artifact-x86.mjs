@@ -133,6 +133,77 @@ function sseName(op, pfx, reg) {
   return e[pfx] || e[0] || null;
 }
 
+// three-byte 0F38 / 0F3A opcode -> mnemonic (SSSE3 / SSE4 / AES / PCLMUL / FMA). Used for the
+// legacy encodings and, with a 'v' prefix, for the VEX/EVEX (AVX) ones.
+const M38 = {
+  0x00: 'pshufb', 0x01: 'phaddw', 0x02: 'phaddd', 0x03: 'phaddsw', 0x04: 'pmaddubsw', 0x05: 'phsubw', 0x06: 'phsubd', 0x07: 'phsubsw',
+  0x08: 'psignb', 0x09: 'psignw', 0x0a: 'psignd', 0x0b: 'pmulhrsw', 0x0c: 'vpermilps', 0x0d: 'vpermilpd', 0x0e: 'vtestps', 0x0f: 'vtestpd',
+  0x10: 'pblendvb', 0x13: 'vcvtph2ps', 0x14: 'blendvps', 0x15: 'blendvpd', 0x16: 'vpermps', 0x17: 'ptest',
+  0x18: 'vbroadcastss', 0x19: 'vbroadcastsd', 0x1a: 'vbroadcastf128', 0x1c: 'pabsb', 0x1d: 'pabsw', 0x1e: 'pabsd',
+  0x20: 'pmovsxbw', 0x21: 'pmovsxbd', 0x22: 'pmovsxbq', 0x23: 'pmovsxwd', 0x24: 'pmovsxwq', 0x25: 'pmovsxdq', 0x28: 'pmuldq', 0x29: 'pcmpeqq', 0x2a: 'movntdqa', 0x2b: 'packusdw',
+  0x2c: 'vmaskmovps', 0x2d: 'vmaskmovpd', 0x30: 'pmovzxbw', 0x31: 'pmovzxbd', 0x32: 'pmovzxbq', 0x33: 'pmovzxwd', 0x34: 'pmovzxwq', 0x35: 'pmovzxdq', 0x36: 'vpermd', 0x37: 'pcmpgtq',
+  0x38: 'pminsb', 0x39: 'pminsd', 0x3a: 'pminuw', 0x3b: 'pminud', 0x3c: 'pmaxsb', 0x3d: 'pmaxsd', 0x3e: 'pmaxuw', 0x3f: 'pmaxud',
+  0x40: 'pmulld', 0x41: 'phminposuw', 0x45: 'vpsrlvd', 0x46: 'vpsravd', 0x47: 'vpsllvd', 0x58: 'vpbroadcastd', 0x59: 'vpbroadcastq', 0x5a: 'vbroadcasti128',
+  0x78: 'vpbroadcastb', 0x79: 'vpbroadcastw', 0x8c: 'vpmaskmovd', 0x8e: 'vpmaskmovd',
+  0x96: 'vfmaddsub132', 0x97: 'vfmsubadd132', 0x98: 'vfmadd132', 0x99: 'vfmadd132', 0x9a: 'vfmsub132', 0x9b: 'vfmsub132', 0x9c: 'vfnmadd132', 0x9d: 'vfnmadd132', 0x9e: 'vfnmsub132', 0x9f: 'vfnmsub132',
+  0xa6: 'vfmaddsub213', 0xa7: 'vfmsubadd213', 0xa8: 'vfmadd213', 0xa9: 'vfmadd213', 0xaa: 'vfmsub213', 0xab: 'vfmsub213', 0xac: 'vfnmadd213', 0xad: 'vfnmadd213', 0xae: 'vfnmsub213', 0xaf: 'vfnmsub213',
+  0xb6: 'vfmaddsub231', 0xb7: 'vfmsubadd231', 0xb8: 'vfmadd231', 0xb9: 'vfmadd231', 0xba: 'vfmsub231', 0xbb: 'vfmsub231', 0xbc: 'vfnmadd231', 0xbd: 'vfnmadd231', 0xbe: 'vfnmsub231', 0xbf: 'vfnmsub231',
+  0xdb: 'aesimc', 0xdc: 'aesenc', 0xdd: 'aesenclast', 0xde: 'aesdec', 0xdf: 'aesdeclast', 0xcf: 'gf2p8mulb', 0xf0: 'movbe', 0xf1: 'movbe', 0xf5: 'wrussd', 0xf6: 'adcx', 0xf7: 'bextr',
+};
+const M3A = {
+  0x00: 'vpermq', 0x01: 'vpermpd', 0x02: 'vpblendd', 0x04: 'vpermilps', 0x05: 'vpermilpd', 0x06: 'vperm2f128', 0x08: 'roundps', 0x09: 'roundpd', 0x0a: 'roundss', 0x0b: 'roundsd',
+  0x0c: 'blendps', 0x0d: 'blendpd', 0x0e: 'pblendw', 0x0f: 'palignr', 0x14: 'pextrb', 0x15: 'pextrw', 0x16: 'pextrd', 0x17: 'extractps', 0x18: 'vinsertf128', 0x19: 'vextractf128',
+  0x20: 'pinsrb', 0x21: 'insertps', 0x22: 'pinsrd', 0x38: 'vinserti128', 0x39: 'vextracti128', 0x40: 'dpps', 0x41: 'dppd', 0x42: 'mpsadbw', 0x44: 'pclmulqdq', 0x46: 'vperm2i128',
+  0x60: 'pcmpestrm', 0x61: 'pcmpestri', 0x62: 'pcmpistrm', 0x63: 'pcmpistri', 0xdf: 'aeskeygenassist', 0xce: 'gf2p8affineqb',
+};
+// the width suffix an FMA / packed-float three-byte op takes from its mandatory prefix 66 and REX.W
+const fmaSuffix = (op, p66, Wv) => (op >= 0x96 && op <= 0xbf) ? (Wv ? 'pd' : 'ps') : '';
+
+// AVX register width from the VEX/EVEX L (and L') field
+const vwide = (ll) => (ll === 2 ? 'zmm' : ll === 1 ? 'ymm' : 'xmm');
+// base SSE/AVX ops that take two operands (dst, rm) — no NDS source in vvvv
+const VEX2OP = /^v(mov[a-z]+|sqrt|rcp|rsqrt|cvt|round|ptest|testp|pabs|pmov[sz]x|pmovmskb|movmskp|broadcast|zeroupper|zeroall|comis|ucomis|pshuf|ldmxcsr|stmxcsr)/;
+
+/** Decode a VEX- or EVEX-prefixed (AVX) instruction. Returns a fin()-shaped result. */
+function decodeVex(buf, pos, end, seg) {
+  const start = pos; const b0 = buf[pos];
+  let map = 1, R = 0, X = 0, B = 0, Wv = 0, vvvv = 0, ll = 0, pp = 0, evex = false;
+  if (b0 === 0xc5) { // 2-byte VEX
+    if (pos + 2 > end) return { len: end - start, bad: true, text: 'vex (truncated)' };
+    const b1 = buf[pos + 1]; pos += 2; R = (b1 >> 7) & 1 ? 0 : 1; vvvv = (~(b1 >> 3)) & 0xf; ll = (b1 >> 2) & 1; pp = b1 & 3;
+  } else if (b0 === 0xc4) { // 3-byte VEX
+    if (pos + 3 > end) return { len: end - start, bad: true, text: 'vex (truncated)' };
+    const b1 = buf[pos + 1], b2 = buf[pos + 2]; pos += 3;
+    R = (b1 >> 7) & 1 ? 0 : 1; X = (b1 >> 6) & 1 ? 0 : 1; B = (b1 >> 5) & 1 ? 0 : 1; map = b1 & 0x1f;
+    Wv = (b2 >> 7) & 1; vvvv = (~(b2 >> 3)) & 0xf; ll = (b2 >> 2) & 1; pp = b2 & 3;
+  } else { // EVEX (0x62), 4-byte: decode length, name, width; masking shown as {k}
+    if (pos + 4 > end) return { len: end - start, bad: true, text: 'evex (truncated)' };
+    const p0 = buf[pos + 1], p1 = buf[pos + 2], p2 = buf[pos + 3]; pos += 4; evex = true;
+    R = (p0 >> 7) & 1 ? 0 : 1; X = (p0 >> 6) & 1 ? 0 : 1; B = (p0 >> 5) & 1 ? 0 : 1; map = p0 & 3;
+    Wv = (p1 >> 7) & 1; vvvv = (~(p1 >> 3)) & 0xf; pp = p1 & 3; ll = ((p2 >> 5) & 1) ? 2 : ((p2 >> 6) & 1 ? 1 : 0);
+  }
+  if (pos >= end) return { len: end - start, bad: true, text: 'vex (truncated)' };
+  const op = buf[pos]; pos += 1;
+  const reg = vwide(ll);
+  let base;
+  if (map === 1) base = sseName(op, pp, (buf[pos] >> 3) & 7);
+  else if (map === 2) base = M38[op];
+  else if (map === 3) base = M3A[op];
+  if (!base) return { len: pos - start, bad: true, text: `(unknown vex ${map}:${op.toString(16)})` };
+  let mnem = (base.startsWith('v') ? base : 'v' + base) + fmaSuffix(op, pp === 1, Wv);
+  const ib = map === 3 || (map === 1 && [0x70, 0xc2, 0xc4, 0xc5, 0xc6].includes(op));
+  const mr = decodeModRM(buf, pos, end, { W: Wv, Rx: R, Xx: X, Bx: B, hasRex: true, opsize: 4, p67: false, xmm: true });
+  if (mr.bad) return { len: pos - start, bad: true, text: `${mnem} (bad modrm)` };
+  pos = mr.pos + (ib ? 1 : 0);
+  if (pos > end) return { len: end - start, bad: true, text: 'truncated imm' };
+  const rename = (s) => s.replace(/xmm(\d+)/g, `${reg}$1`);
+  const rs = rename(mr.reg_s), rm = rename(mr.rm), vr = `${reg}${vvvv}`;
+  const immStr = ib ? ', ' + hex(buf[mr.pos]) : '';
+  const twoOp = VEX2OP.test(mnem) || base.startsWith('mov');
+  const ops = twoOp ? `${rs}, ${rm}${immStr}` : `${rs}, ${vr}, ${rm}${immStr}`;
+  return fin(start, pos, mnem, ops, null, seg);
+}
+
 // group mnemonics by the ModR/M reg field
 const G1 = ['add', 'or', 'adc', 'sbb', 'and', 'sub', 'xor', 'cmp'];
 const G2 = ['rol', 'ror', 'rcl', 'rcr', 'shl', 'shr', 'sal', 'sar'];
@@ -157,6 +228,8 @@ function decodeOne(buf, pos, end) {
     else break;
   }
   if (pos >= end) return { len: pos - start || 1, bad: true, text: '(truncated)' };
+  // VEX (0xC5/0xC4) and EVEX (0x62) take the place of REX: AVX encoding (64-bit mode)
+  if (buf[pos] === 0xc5 || buf[pos] === 0xc4 || buf[pos] === 0x62) { const r = decodeVex(buf, pos, end, seg); r.len += pos - start; return r; }
   if (buf[pos] >= 0x40 && buf[pos] <= 0x4f) { rex = buf[pos]; hasRex = true; pos += 1; }
   if (pos >= end) return { len: pos - start, bad: true, text: '(truncated)' };
   const W = (rex >> 3) & 1, Rx = (rex >> 2) & 1, Xx = (rex >> 1) & 1, Bx = rex & 1;
@@ -176,7 +249,10 @@ function decodeOne(buf, pos, end) {
       if (mr.bad) return { len: pos - start, bad: true, text: `0f${op.toString(16)} ${op3.toString(16)} (bad modrm)` };
       pos = mr.pos + (ib ? 1 : 0);
       if (pos > end) return { len: end - start, bad: true, text: 'truncated imm' };
-      return fin(start, pos, `0f${op.toString(16)}_${op3.toString(16).padStart(2, "0")}`, `${mr.reg_s}, ${mr.rm}`, repPrefix, seg);
+      const tbName = (op === 0x38 ? M38[op3] : M3A[op3]);
+      const nm = tbName ? tbName + fmaSuffix(op3, p66, W) : `0f${op.toString(16)}_${op3.toString(16).padStart(2, '0')}`;
+      const im = ib ? ', ' + hex(buf[mr.pos]) : '';
+      return fin(start, pos, nm, `${mr.reg_s}, ${mr.rm}${im}`, repPrefix, seg);
     }
     ent = OF[op];
   } else ent = OP[op];

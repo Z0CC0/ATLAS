@@ -149,6 +149,12 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
         const args = (ops.length >= 3 || nonDestr ? ops.slice(1) : ops).map(val).join(', ');
         put(ops[0], `${mnem}(${args})`); continue;
       }
+      // any remaining VEX-encoded AVX data op (FMA, v-scalar, vperm…): a named intrinsic of its
+      // source operands (AVX is non-destructive, so the destination is not among the sources)
+      if (/^v[a-z]/.test(mnem) && ops.length >= 2 && ops.length <= 4) {
+        const args = ops.slice(1).map(val).join(', ');
+        put(ops[0], `${mnem}(${args})`); continue;
+      }
     }
     if (mnem === 'lea') { const [dst, m] = ops; wr(dst, `&(${subAddr(m.slice(1, -1))})`); continue; }
     if ((mnem === 'xor' || mnem === 'sub') && ops.length === 2 && ops[0] === ops[1] && !isMem(ops[0])) { wr(ops[0], '0'); continue; } // zeroing idiom
