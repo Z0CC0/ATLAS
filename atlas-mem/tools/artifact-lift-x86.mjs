@@ -127,6 +127,18 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
       else { stmts.push(`// ${ins.text}`); continue; }
       wr('rcx', '0'); kill('rdi'); kill('rsi'); continue;
     }
+    // scalar SSE floating-point: arithmetic, min/max, sqrt, compare and the int<->float
+    // conversions. xmm registers are rendered, not env-tracked; a general-register
+    // destination (e.g. cvtsd2si eax, xmm0) is tracked, like the arm64 FP lift
+    {
+      const put = (d, e) => { if (REGINFO[d]) wr(d, e); else if (isMem(d)) stmts.push(`${deref(d)} = ${e};`); else stmts.push(`${d} = ${e};`); };
+      const FOP = { addss: '+', addsd: '+', subss: '-', subsd: '-', mulss: '*', mulsd: '*', divss: '/', divsd: '/' };
+      if (FOP[mnem] && ops.length === 2) { put(ops[0], `(${val(ops[0])} ${FOP[mnem]} ${val(ops[1])})`); continue; }
+      if (/^(minss|minsd|maxss|maxsd)$/.test(mnem) && ops.length === 2) { put(ops[0], `${/^max/.test(mnem) ? 'fmax' : 'fmin'}(${val(ops[0])}, ${val(ops[1])})`); continue; }
+      if (/^sqrts[sd]$/.test(mnem) && ops.length === 2) { put(ops[0], `sqrt(${val(ops[1])})`); continue; }
+      if (/^cvtt?[a-z0-9]+2[a-z0-9]+$/.test(mnem) && ops.length === 2) { put(ops[0], `${mnem}(${val(ops[1])})`); continue; }
+      if (/^u?comis[sd]$/.test(mnem) && ops.length === 2) { cmp = { a: val(ops[0]), b: val(ops[1]), test: false }; continue; }
+    }
     if (mnem === 'lea') { const [dst, m] = ops; wr(dst, `&(${subAddr(m.slice(1, -1))})`); continue; }
     if ((mnem === 'xor' || mnem === 'sub') && ops.length === 2 && ops[0] === ops[1] && !isMem(ops[0])) { wr(ops[0], '0'); continue; } // zeroing idiom
     if (BIN[mnem] && ops.length >= 2) { const [dst, src] = ops; const e = `(${val(dst)} ${BIN[mnem]} ${val(src)})`; if (isMem(dst)) stmts.push(`${deref(dst)} = ${e};`); else wr(dst, e); continue; }

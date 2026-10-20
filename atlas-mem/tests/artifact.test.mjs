@@ -893,6 +893,19 @@ test('the lift strips the lock prefix and models atomic read-modify-write', asyn
   assert.ok(cas.stmts.includes('atomic_compare_exchange(&rsi->field_8, &rax, rcx);'), cas.stmts.join(' | '));
 });
 
+test('the lift renders scalar SSE floating-point, conversions and compare', async () => {
+  const lx = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-lift-x86.mjs')).href);
+  const mk = (t) => ({ mnem: t.split(' ')[0], text: t, addr: 0 });
+  const mul = lx.liftBlock([mk('mulsd xmm0, xmm1')], null, new Set());
+  assert.ok(mul.stmts.includes('xmm0 = (xmm0 * xmm1);'), mul.stmts.join(' | '));
+  const sqrt = lx.liftBlock([mk('sqrtsd xmm0, xmm1')], null, new Set());
+  assert.ok(sqrt.stmts.includes('xmm0 = sqrt(xmm1);'), sqrt.stmts.join(' | '));
+  const cvt = lx.liftBlock([mk('cvttsd2si eax, xmm0')], null, new Set(['rax']));
+  assert.ok(cvt.stmts.includes('rax = cvttsd2si(xmm0);'), 'a general-register destination is tracked: ' + cvt.stmts.join(' | '));
+  const cmp = lx.liftBlock([mk('comisd xmm0, xmm1'), mk('ja 0x10')], null, new Set());
+  assert.equal(cmp.cond.text, 'xmm0 > xmm1');
+});
+
 test('the lift renders array and field access from the address shape', async () => {
   const lx = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-lift-x86.mjs')).href);
   const load = lx.liftBlock([{ mnem: 'mov', text: 'mov rax, [r8+rcx*8]' }], null, new Set(['rax']));
