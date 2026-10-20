@@ -167,13 +167,84 @@ function dpReg(w) {
 }
 
 /** Decode one 32-bit word. Always 4 bytes. */
+// scalar floating-point and Advanced SIMD (vector). Scalar FP is decoded in full; the vector
+// classes decode the register arrangement and a confident common-opcode subset, with a coarse
+// fallback for the rest (the sweep metric still counts those as coarse, not named).
+const FTY = ['s', 'd', '?', 'h']; // ftype 00=single, 01=double, 11=half
+function fpSimd(w) {
+  const b2824 = bits(w, 28, 24), ftype = bits(w, 23, 22), Rn = bits(w, 9, 5), Rd = bits(w, 4, 0);
+  const F = (n) => (FTY[ftype] || 's') + n;
+  // floating-point data-processing, 3 source: fmadd / fmsub / fnmadd / fnmsub
+  if (b2824 === 0b11111) {
+    const o1 = bit(w, 21), o0 = bit(w, 15), Rm = bits(w, 20, 16), Ra = bits(w, 14, 10);
+    return ok(['fmadd', 'fmsub', 'fnmadd', 'fnmsub'][(o1 << 1) | o0], `${F(Rd)}, ${F(Rn)}, ${F(Rm)}, ${F(Ra)}`);
+  }
+  if (b2824 === 0b11110 && bit(w, 21) === 1) {
+    if (bits(w, 15, 10) === 0b000000) { // convert float <-> integer
+      const sf = bit(w, 31), rmode = bits(w, 20, 19), opc = bits(w, 18, 16), key = (rmode << 3) | opc;
+      const map = { 2: 'scvtf', 3: 'ucvtf', 6: 'fmov', 7: 'fmov', 0: 'fcvtns', 1: 'fcvtnu', 8: 'fcvtps', 9: 'fcvtpu', 16: 'fcvtms', 17: 'fcvtmu', 24: 'fcvtzs', 25: 'fcvtzu', 28: 'fcvtas', 29: 'fcvtau' };
+      const mn = map[key]; if (!mn) return coarse('fp-cvt');
+      if (mn === 'scvtf' || mn === 'ucvtf') return ok(mn, `${F(Rd)}, ${X(Rn, sf, false)}`);
+      if (mn === 'fmov') return opc === 6 ? ok('fmov', `${X(Rd, sf, false)}, ${F(Rn)}`) : ok('fmov', `${F(Rd)}, ${X(Rn, sf, false)}`);
+      return ok(mn, `${X(Rd, sf, false)}, ${F(Rn)}`); // float -> integer
+    }
+    if (bits(w, 11, 10) === 0b10) { // 2-source
+      const Rm = bits(w, 20, 16), mn = ['fmul', 'fdiv', 'fadd', 'fsub', 'fmax', 'fmin', 'fmaxnm', 'fminnm', 'fnmul'][bits(w, 15, 12)];
+      return mn ? ok(mn, `${F(Rd)}, ${F(Rn)}, ${F(Rm)}`) : coarse('fp-2src');
+    }
+    if (bits(w, 14, 10) === 0b10000) { // 1-source
+      const opc = bits(w, 20, 15), simple = { 0: 'fmov', 1: 'fabs', 2: 'fneg', 3: 'fsqrt' }[opc];
+      if (simple) return ok(simple, `${F(Rd)}, ${F(Rn)}`);
+      if (opc === 4 || opc === 5 || opc === 7) return ok('fcvt', `${FTY[opc === 4 ? 0 : opc === 5 ? 1 : 3]}${Rd}, ${F(Rn)}`);
+      if (opc >= 8 && opc <= 15) return ok('frint' + 'npmzaxi'[opc - 8], `${F(Rd)}, ${F(Rn)}`);
+      return coarse('fp-1src');
+    }
+    if (bits(w, 13, 10) === 0b1000) { // compare
+      const Rm = bits(w, 20, 16), o2 = bits(w, 4, 0), e = (o2 & 0x10) ? 'fcmpe' : 'fcmp';
+      return (o2 & 0x08) ? ok(e, `${F(Rn)}, #0.0`) : ok(e, `${F(Rn)}, ${F(Rm)}`);
+    }
+    if (bits(w, 11, 10) === 0b11) return ok('fcsel', `${F(Rd)}, ${F(Rn)}, ${F(bits(w, 20, 16))}, ${CONDS[bits(w, 15, 12)]}`);
+    if (bits(w, 11, 10) === 0b01) return coarse('fccmp');
+    if (bits(w, 12, 10) === 0b100) return ok('fmov', `${F(Rd)}, #imm8_${bits(w, 20, 13)}`); // immediate
+    return coarse('fp-scalar');
+  }
+  // Advanced SIMD vector: three-same and two-register-misc, with the register arrangement
+  if (bits(w, 28, 24) === 0b01110 || bits(w, 28, 24) === 0b01111) {
+    const Q = bit(w, 30), U = bit(w, 29), size = bits(w, 23, 22);
+    const V = (n, sz) => `v${n}.${(Q ? 16 : 8) >> sz}${['b', 'h', 's', 'd'][sz]}`;
+    if (bits(w, 28, 24) === 0b01110 && bit(w, 21) === 1 && bit(w, 10) === 1) { // three same
+      const opcode = bits(w, 15, 11), Rm = bits(w, 20, 16);
+      const vd = V(Rd, size), vn = V(Rn, size), vm = V(Rm, size);
+      if (opcode >= 0x18) { // floating-point three-same (element from the size<0> bit)
+        const fsz = size & 1, fe = fsz ? 'd' : 's', lanes = fsz ? (Q ? 2 : 1) : (Q ? 4 : 2);
+        const fa = (n) => `v${n}.${lanes}${fe}`;
+        const fp = opcode === 0x1a ? (U ? null : (fsz ? 'fsub' : 'fadd')) : opcode === 0x1b ? (U ? 'fmul' : 'fmulx') : opcode === 0x19 ? (U ? null : (fsz ? 'fmls' : 'fmla')) : opcode === 0x1f ? (U ? 'fdiv' : null) : opcode === 0x1c ? (U ? null : 'fcmeq') : null;
+        return fp ? ok(fp, `${fa(Rd)}, ${fa(Rn)}, ${fa(Rm)}`) : coarse('simd-fp');
+      }
+      const TS = { 0x10: ['add', 'sub'], 0x11: ['cmtst', 'cmeq'], 0x13: ['mul', 'pmul'], 0x12: ['mla', 'mls'], 0x0c: ['smax', 'umax'], 0x0d: ['smin', 'umin'], 0x0e: ['sabd', 'uabd'], 0x06: ['cmgt', 'cmhi'], 0x07: ['cmge', 'cmhs'], 0x01: ['sqadd', 'uqadd'], 0x05: ['sqsub', 'uqsub'], 0x08: ['sshl', 'ushl'] };
+      if (opcode === 0x03) { const log = U ? ['eor', 'bsl', 'bit', 'bif'][size] : ['and', 'bic', 'orr', 'orn'][size]; return ok(log, `${V(Rd, 0)}, ${V(Rn, 0)}, ${V(Rm, 0)}`); }
+      const m = TS[opcode] && TS[opcode][U];
+      return m ? ok(m, `${vd}, ${vn}, ${vm}`) : coarse('simd-3same');
+    }
+    if (bits(w, 28, 24) === 0b01110 && bit(w, 21) === 1 && bits(w, 20, 17) === 0b1000 && bits(w, 11, 10) === 0b10) { // two-register misc
+      const opcode = bits(w, 16, 12), vd = V(Rd, size), vn = V(Rn, size);
+      const M0 = { 0x0b: 'abs', 0x08: 'cmgt', 0x09: 'cmeq', 0x0a: 'cmlt', 0x05: 'cnt', 0x04: 'cls', 0x1a: 'fcvtns' };
+      const M1 = { 0x0b: 'neg', 0x05: 'not', 0x08: 'cmge', 0x09: 'cmle', 0x07: 'rbit' };
+      const mn = (U ? M1 : M0)[opcode];
+      return mn ? ok(mn, `${vd}, ${vn}`) : coarse('simd-misc');
+    }
+    return coarse('simd');
+  }
+  return coarse('fp/simd');
+}
+
 function decodeOne(w) {
   const op1 = bits(w, 28, 25);
   if ((op1 & 0b1110) === 0b1000) return dpImm(w);
   if ((op1 & 0b1110) === 0b1010) return branchSys(w);
   if ((op1 & 0b0101) === 0b0100) return loadStore(w);
   if ((op1 & 0b0111) === 0b0101) return dpReg(w);
-  if ((op1 & 0b0111) === 0b0111) return coarse('fp/simd');
+  if ((op1 & 0b0111) === 0b0111) return fpSimd(w);
   return bad(w);
 }
 

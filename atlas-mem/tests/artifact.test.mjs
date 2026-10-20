@@ -932,6 +932,18 @@ test('the x86 decoder names SSE opcodes from the mandatory prefix', async () => 
   assert.equal(dec([0x66, 0x0f, 0xd7, 0xc0]), 'pmovmskb eax, xmm0');     // GP stays 32-bit under 0x66
 });
 
+test('the arm64 decoder decodes the scalar floating-point group', async () => {
+  const a = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-arm64.mjs')).href);
+  const W = (f) => { let w = 0; for (const [hi, lo, v] of f) w = (w | ((v & ((1 << (hi - lo + 1)) - 1)) << lo)) >>> 0; return w >>> 0; };
+  const dec = (f) => a.decodeOne(W(f)).text;
+  assert.equal(dec([[31, 24, 0b00011110], [23, 22, 0], [21, 21, 1], [20, 16, 2], [15, 12, 0b0010], [11, 10, 0b10], [9, 5, 1], [4, 0, 0]]), 'fadd s0, s1, s2');
+  assert.equal(dec([[31, 24, 0b00011110], [23, 22, 1], [21, 21, 1], [20, 16, 2], [15, 12, 0b0000], [11, 10, 0b10], [9, 5, 1], [4, 0, 0]]), 'fmul d0, d1, d2');
+  assert.equal(dec([[31, 24, 0b00011110], [23, 22, 1], [21, 21, 1], [20, 15, 0b000011], [14, 10, 0b10000], [9, 5, 1], [4, 0, 0]]), 'fsqrt d0, d1');
+  assert.equal(dec([[31, 24, 0b00011110], [23, 22, 0], [21, 21, 1], [20, 16, 1], [15, 10, 0b001000], [9, 5, 0], [4, 0, 0]]), 'fcmp s0, s1');
+  assert.equal(dec([[31, 31, 1], [28, 24, 0b11110], [23, 22, 1], [21, 21, 1], [20, 19, 0], [18, 16, 2], [9, 5, 1], [4, 0, 0]]), 'scvtf d0, x1');
+  assert.equal(dec([[31, 24, 0b00011111], [23, 22, 1], [21, 21, 0], [20, 16, 2], [15, 15, 0], [14, 10, 3], [9, 5, 1], [4, 0, 0]]), 'fmadd d0, d1, d2, d3');
+});
+
 test('the lift renders array and field access from the address shape', async () => {
   const lx = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-lift-x86.mjs')).href);
   const load = lx.liftBlock([{ mnem: 'mov', text: 'mov rax, [r8+rcx*8]' }], null, new Set(['rax']));
