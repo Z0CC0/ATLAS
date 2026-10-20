@@ -798,6 +798,18 @@ test('the x86 lift folds expressions and recovers a branch condition', async () 
   assert.equal(r2.cond.text, 'rsi != 0');
 });
 
+test('the lift renders SSE data moves as assignments', async () => {
+  const lx = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-lift-x86.mjs')).href);
+  const r = lx.liftBlock([
+    { mnem: 'movups', text: 'movups xmm0, [rdi]' },
+    { mnem: 'movaps', text: 'movaps [rsi], xmm0' },
+    { mnem: 'movq', text: 'movq rax, xmm0' },
+  ], null, new Set(['rax']));
+  assert.ok(r.stmts.includes('xmm0 = *rdi;'), r.stmts.join(' | '));
+  assert.ok(r.stmts.includes('*rsi = xmm0;'));
+  assert.ok(r.stmts.includes('rax = xmm0;'), 'movq to a general register is tracked');
+});
+
 test('the lift renders array and field access from the address shape', async () => {
   const lx = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-lift-x86.mjs')).href);
   const load = lx.liftBlock([{ mnem: 'mov', text: 'mov rax, [r8+rcx*8]' }], null, new Set(['rax']));

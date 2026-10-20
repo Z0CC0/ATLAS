@@ -84,6 +84,12 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
     if (mnem === 'mov' || mnem === 'movzx' || mnem === 'movsx' || mnem === 'movsxd') {
       const [dst, src] = ops; if (isMem(dst)) stmts.push(`${deref(dst)} = ${val(src)};`); else wr(dst, val(src)); continue;
     }
+    // SSE/AVX data moves: a move, so render it as one (xmm registers are not env-tracked)
+    if (/^(movups|movaps|movdqu|movdqa|movss|movsd|movq|movd|vmovups|vmovaps|vmovdqu|vmovdqa)$/.test(mnem) && ops.length === 2) {
+      const [dst, src] = ops; const sv = isMem(src) ? deref(src) : (REGINFO[src] ? rd(src) : src);
+      if (isMem(dst)) stmts.push(`${deref(dst)} = ${sv};`); else if (REGINFO[dst]) wr(dst, sv); else stmts.push(`${dst} = ${sv};`);
+      continue;
+    }
     if (mnem === 'lea') { const [dst, m] = ops; wr(dst, `&(${subAddr(m.slice(1, -1))})`); continue; }
     if ((mnem === 'xor' || mnem === 'sub') && ops.length === 2 && ops[0] === ops[1] && !isMem(ops[0])) { wr(ops[0], '0'); continue; } // zeroing idiom
     if (BIN[mnem] && ops.length >= 2) { const [dst, src] = ops; const e = `(${val(dst)} ${BIN[mnem]} ${val(src)})`; if (isMem(dst)) stmts.push(`${deref(dst)} = ${e};`); else wr(dst, e); continue; }
