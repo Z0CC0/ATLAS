@@ -103,7 +103,14 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
       if (mnem === 'cset') wr(ops[0], `(${c} ? 1 : 0)`); else wr(ops[0], `(${c} ? ${val(ops[1])} : ${val(ops[2])})`);
       continue;
     }
-    if (mnem === 'bl' || mnem === 'blr') { const named = sym && sym(ins); const t = named || (mnem === 'blr' ? `(*${val(ops[0])})` : 'sub_' + (ops[0] || 'fn').replace(/[^\w]/g, '_')); stmts.push(`x0 = ${t}(...);`); for (let i = 0; i <= 17; i += 1) env.delete('x' + i); continue; }
+    if (mnem === 'bl' || mnem === 'blr') {
+      const named = sym && sym(ins);
+      let t;
+      if (named) t = named;
+      else if (mnem === 'blr') t = `(*${val(ops[0])})`;
+      else { const m = /([+-])0x([0-9a-f]+)/.exec(ops[0] || ''); t = (m && ins.addr != null) ? 'sub_0x' + ((ins.addr + parseInt(m[2], 16) * (m[1] === '-' ? -1 : 1)) >>> 0).toString(16) : 'sub_' + (ops[0] || 'fn').replace(/[^\w]/g, '_'); }
+      stmts.push(`x0 = ${t}(...);`); for (let i = 0; i <= 17; i += 1) env.delete('x' + i); continue;
+    }
     if (mnem === 'neg') { wr(ops[0], `(-${val(ops[1])})`); continue; }
     if (mnem === 'mvn') { wr(ops[0], `(~${val(ops[1])})`); continue; }
     stmts.push(`// ${ins.text}`);
