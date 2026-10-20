@@ -57,6 +57,14 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
     return text;
   };
   const val = (t) => { if (t == null) return '?'; if (isMem(t)) return deref(t); if (t === 'xzr' || t === 'wzr') return '0'; if (isGpr(t)) return rd(t); return t; };
+  // the two slots of an ldp/stp: the pair is at [base+off] and [base+off+8]
+  const pairSlots = (t) => {
+    const inner = t.replace(/^\[/, '').replace(/\]!?$/, ''); const parts = splitOps(inner);
+    const base = parts[0]; const p1 = parts[1];
+    const n = p1 && /^-?0x/.test(p1) ? parseInt(p1.replace(/^-?0x/, ''), 16) * (p1[0] === '-' ? -1 : 1) : 0;
+    const o2 = n + 8; const tok2 = o2 === 0 ? `[${base}]` : `[${base}, ${o2 < 0 ? '-0x' + (-o2).toString(16) : '0x' + o2.toString(16)}]`;
+    return [deref(t.replace(/!$/, '')), deref(tok2)];
+  };
 
   for (let k = 0; k < insns.length; k += 1) {
     const ins = insns[k]; const { mnem, ops } = parse(ins.text || '');
@@ -79,13 +87,17 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
     if (BIN[base] && ops.length >= 3) {
       const [d, n, m] = ops; let rhs = val(m);
       if (ops[3] && /(lsl|lsr|asr) (\d+)/.test(ops[3])) { const s = /(lsl|lsr|asr) (\d+)/.exec(ops[3]); rhs = `(${rhs} ${s[1] === 'lsl' ? '<<' : '>>'} ${s[2]})`; }
-      wr(d, `(${val(n)} ${BIN[base]} ${rhs})`); continue;
+      const a = val(n);
+      if ((base === 'orr' || base === 'eor') && a === '0') { wr(d, rhs); continue; } // 0 | x  /  0 ^ x  ->  x
+      if ((base === 'orr' || base === 'eor') && rhs === '0') { wr(d, a); continue; }
+      if (base === 'and' && (a === '0' || rhs === '0')) { wr(d, '0'); continue; } // x & 0 -> 0
+      wr(d, `(${a} ${BIN[base]} ${rhs})`); continue;
     }
     if (base === 'add' || base === 'sub') { wr(ops[0], `(${val(ops[1])} ${base === 'add' ? '+' : '-'} ${val(ops[2])})`); continue; }
     if (/^ldr/.test(mnem)) { wr(ops[0], deref(ops[1])); continue; }
     if (/^str/.test(mnem)) { stmts.push(`${deref(ops[1])} = ${val(ops[0])};`); continue; }
-    if (mnem === 'ldp') { const m = deref(ops[2]); wr(ops[0], m); wr(ops[1], m.includes('[') ? m : `${m} /*+8*/`); continue; }
-    if (mnem === 'stp') { const inner = ops[2]; stmts.push(`${deref(inner)} = ${val(ops[0])};`); stmts.push(`*(${subReg(inner.replace(/^\[/, '').replace(/\]!?$/, ''))} + 8) = ${val(ops[1])};`); continue; }
+    if (mnem === 'ldp') { const [a, b2] = pairSlots(ops[2]); wr(ops[0], a); wr(ops[1], b2); continue; }
+    if (mnem === 'stp') { const [a, b2] = pairSlots(ops[2]); stmts.push(`${a} = ${val(ops[0])};`); stmts.push(`${b2} = ${val(ops[1])};`); continue; }
     if (mnem === 'csel' || mnem === 'csinc' || mnem === 'csinv' || mnem === 'csneg' || mnem === 'cset' || mnem === 'csetm') {
       const cc = ops[ops.length - 1]; const c = cmp && CC[cc] ? CC[cc](cmp.a, cmp.b) : `cc_${cc}`;
       if (mnem === 'cset') wr(ops[0], `(${c} ? 1 : 0)`); else wr(ops[0], `(${c} ? ${val(ops[1])} : ${val(ops[2])})`);

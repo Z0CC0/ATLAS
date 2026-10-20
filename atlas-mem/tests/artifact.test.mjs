@@ -591,6 +591,8 @@ test('the ARM64 decoder reads fixed-width words into mnemonics and operands', as
     [0xd63f0000, 'blr', 'blr x0'],
     [0x9b007c00, 'mul', null],                          // madd with Ra=31 -> mul
     [0xaa0103e0, 'mov', 'mov x0, x1'],                  // orr xzr alias
+    [0x320003e0, 'orr', 'orr w0, wzr, 0x1'],            // logical immediate expanded (DecodeBitMasks)
+    [0xb900001f, 'str', 'str wzr, [x0]'],               // store of the zero register (Rt=31 -> wzr, not w31)
   ];
   for (const [w, mn, text] of cases) {
     const d = a.decodeOne(w >>> 0);

@@ -15,6 +15,26 @@ const sext = (v, n) => (v & (1 << (n - 1)) ? v - 2 ** n : v);
 const hex = (n) => (n < 0 ? '-0x' + (-n).toString(16) : '0x' + n.toString(16));
 const rrel = (n) => (n < 0 ? '.-0x' + (-n).toString(16) : '.+0x' + n.toString(16));
 
+// ARM ARM DecodeBitMasks: expand a logical-immediate (N, imms, immr) to its value (BigInt),
+// or null for the reserved encodings. Used by the logical (immediate) instructions.
+function decodeBitmask(sf, N, immr, imms) {
+  const bits = sf ? 64 : 32;
+  const x = (N << 6) | ((~imms) & 0x3f);
+  const len = 31 - Math.clz32(x);
+  if (len < 1 || (1 << len) > bits) return null;
+  const size = 1 << len;
+  const S = imms & (size - 1), R = immr & (size - 1);
+  if (S === size - 1) return null; // reserved
+  const sizeB = BigInt(size);
+  const welem = (1n << BigInt(S + 1)) - 1n;
+  const mask = (1n << sizeB) - 1n;
+  const r = BigInt(R % size);
+  const elem = ((welem >> r) | (welem << (sizeB - r))) & mask; // ROR(welem, R) within `size`
+  let out = 0n;
+  for (let i = 0; i < bits; i += size) out |= elem << BigInt(i);
+  return out & ((1n << BigInt(bits)) - 1n);
+}
+
 // register names. n=31 is the zero register, or SP/WSP in the few instructions that allow it.
 const X = (n, sf, sp) => (n === 31 ? (sp ? (sf ? 'sp' : 'wsp') : (sf ? 'xzr' : 'wzr')) : (sf ? 'x' : 'w') + n);
 const ok = (mnem, ops) => ({ mnem, text: ops ? `${mnem} ${ops}` : mnem, bad: false });
@@ -35,9 +55,11 @@ function dpImm(w) {
     if (op === 0 && S === 0 && imm === 0 && (Rd === 31 || Rn === 31)) return ok('mov', `${X(Rd, sf, true)}, ${X(Rn, sf, true)}`);
     return ok((op ? 'sub' : 'add') + (S ? 's' : ''), `${X(Rd, sf, !S)}, ${X(Rn, sf, true)}, ${hex(imm)}`);
   }
-  if (op0 === 4) { // logical (immediate) — the bitmask value is not expanded here
-    const opc = bits(w, 30, 29), immr = bits(w, 21, 16), imms = bits(w, 15, 10), Rn = bits(w, 9, 5), Rd = bits(w, 4, 0);
-    return ok(['and', 'orr', 'eor', 'ands'][opc], `${X(Rd, sf, opc !== 3)}, ${X(Rn, sf, false)}, #bitmask(${immr},${imms})`);
+  if (op0 === 4) { // logical (immediate)
+    const opc = bits(w, 30, 29), N = bit(w, 22), immr = bits(w, 21, 16), imms = bits(w, 15, 10), Rn = bits(w, 9, 5), Rd = bits(w, 4, 0);
+    const v = decodeBitmask(sf, N, immr, imms);
+    const imm = v === null ? '#bitmask' : '0x' + v.toString(16); // the real logical immediate value
+    return ok(['and', 'orr', 'eor', 'ands'][opc], `${X(Rd, sf, opc !== 3)}, ${X(Rn, sf, false)}, ${imm}`);
   }
   if (op0 === 5) { // move wide (immediate)
     const opc = bits(w, 30, 29), hw = bits(w, 22, 21), imm16 = bits(w, 20, 5), Rd = bits(w, 4, 0);
@@ -75,7 +97,7 @@ function ldstName(size, opc, V) {
   const suf = ['b', 'h', '', ''][size];
   return opc === 0 ? 'str' + suf : opc === 1 ? 'ldr' + suf : 'ldrs' + suf;
 }
-function regT(Rt, size, V) { if (V) return (['b', 'h', 's', 'd'][size] || 'q') + Rt; return (size === 3 ? 'x' : 'w') + Rt; }
+function regT(Rt, size, V) { if (V) return (['b', 'h', 's', 'd'][size] || 'q') + Rt; if (Rt === 31) return size === 3 ? 'xzr' : 'wzr'; return (size === 3 ? 'x' : 'w') + Rt; }
 
 function loadStore(w) {
   if (bits(w, 29, 27) === 0b111 && bits(w, 25, 24) === 0b01) { // register unsigned immediate
