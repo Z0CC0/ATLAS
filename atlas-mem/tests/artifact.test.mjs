@@ -984,6 +984,10 @@ test('the arm64 decoder decodes the Advanced SIMD vector classes', async () => {
   assert.equal(dec([[30, 30, 1], [28, 19, 0b0111100000], [18, 16, 0], [15, 12, 0b1110], [10, 10, 1], [9, 5, 0], [4, 0, 0]]), 'movi v0.16b, #0x0'); // modified immediate
   assert.equal(dec([[30, 30, 1], [28, 23, 0b011110], [22, 19, 0b0100], [18, 16, 0b011], [15, 11, 0x0a], [10, 10, 1], [9, 5, 1], [4, 0, 0]]), 'shl v0.4s, v1.4s, #3'); // shift by immediate
   assert.equal(dec([[30, 30, 1], [29, 23, 0b0011000], [22, 22, 1], [21, 16, 0], [15, 12, 0x8], [11, 10, 2], [9, 5, 1], [4, 0, 0]]), 'ld2 {v0.4s, v1.4s}, [x1]'); // load multiple structures
+  assert.equal(dec([[31, 30, 1], [28, 24, 0b11110], [23, 22, 3], [21, 21, 1], [20, 16, 2], [15, 11, 0x10], [10, 10, 1], [9, 5, 1], [4, 0, 0]]), 'add d0, d1, d2'); // scalar advanced SIMD
+  assert.equal(dec([[30, 30, 1], [29, 24, 0b001110], [21, 21, 0], [20, 16, 2], [15, 15, 0], [14, 13, 0], [12, 12, 0], [11, 10, 0], [9, 5, 1], [4, 0, 0]]), 'tbl v0.16b, {v1.16b}, v2.16b'); // table lookup
+  assert.equal(dec([[31, 24, 0b10011011], [23, 21, 1], [20, 16, 2], [15, 15, 0], [14, 10, 31], [9, 5, 1], [4, 0, 0]]), 'smull x0, w1, w2'); // 64-bit widening multiply (dp 3-source)
+  assert.equal(dec([[31, 24, 0b10011011], [23, 21, 6], [20, 16, 2], [9, 5, 1], [4, 0, 0]]), 'umulh x0, x1, x2');
 });
 
 test('the lift renders array and field access from the address shape', async () => {

@@ -184,6 +184,10 @@ function dpReg(w) {
   if (b2824 === 0b11011) { // 3-source
     const op31 = bits(w, 23, 21), Rm = bits(w, 20, 16), o0 = bit(w, 15), Ra = bits(w, 14, 10), Rn = bits(w, 9, 5), Rd = bits(w, 4, 0);
     if (op31 === 0) { if (Ra === 31 && o0 === 0) return ok('mul', `${X(Rd, sf, false)}, ${X(Rn, sf, false)}, ${X(Rm, sf, false)}`); return ok(o0 ? 'msub' : 'madd', `${X(Rd, sf, false)}, ${X(Rn, sf, false)}, ${X(Rm, sf, false)}, ${X(Ra, sf, false)}`); }
+    if (op31 === 1) return Ra === 31 && !o0 ? ok('smull', `x${Rd}, w${Rn}, w${Rm}`) : ok(o0 ? 'smsubl' : 'smaddl', `x${Rd}, w${Rn}, w${Rm}, x${Ra}`);
+    if (op31 === 2) return ok('smulh', `x${Rd}, x${Rn}, x${Rm}`);
+    if (op31 === 5) return Ra === 31 && !o0 ? ok('umull', `x${Rd}, w${Rn}, w${Rm}`) : ok(o0 ? 'umsubl' : 'umaddl', `x${Rd}, w${Rn}, w${Rm}, x${Ra}`);
+    if (op31 === 6) return ok('umulh', `x${Rd}, x${Rn}, x${Rm}`);
     return coarse('dp3');
   }
   return coarse('dp-reg');
@@ -202,7 +206,7 @@ function fpSimd(w) {
     const o1 = bit(w, 21), o0 = bit(w, 15), Rm = bits(w, 20, 16), Ra = bits(w, 14, 10);
     return ok(['fmadd', 'fmsub', 'fnmadd', 'fnmsub'][(o1 << 1) | o0], `${F(Rd)}, ${F(Rn)}, ${F(Rm)}, ${F(Ra)}`);
   }
-  if (b2824 === 0b11110 && bit(w, 21) === 1) {
+  if (b2824 === 0b11110 && bit(w, 21) === 1 && bit(w, 30) === 0) {
     if (bits(w, 15, 10) === 0b000000) { // convert float <-> integer
       const sf = bit(w, 31), rmode = bits(w, 20, 19), opc = bits(w, 18, 16), key = (rmode << 3) | opc;
       const map = { 2: 'scvtf', 3: 'ucvtf', 6: 'fmov', 7: 'fmov', 0: 'fcvtns', 1: 'fcvtnu', 8: 'fcvtps', 9: 'fcvtpu', 16: 'fcvtms', 17: 'fcvtmu', 24: 'fcvtzs', 25: 'fcvtzu', 28: 'fcvtas', 29: 'fcvtau' };
@@ -230,6 +234,30 @@ function fpSimd(w) {
     if (bits(w, 11, 10) === 0b01) return coarse('fccmp');
     if (bits(w, 12, 10) === 0b100) return ok('fmov', `${F(Rd)}, #imm8_${bits(w, 20, 13)}`); // immediate
     return coarse('fp-scalar');
+  }
+  // scalar Advanced SIMD (bits[31:30]=01, one lane): three-same, two-reg-misc, pairwise. The
+  // operand is a scalar of the element size (b/h/s/d).
+  if (b2824 === 0b11110 && bit(w, 30) === 1) {
+    const U = bit(w, 29), size = bits(w, 23, 22), EL = ['b', 'h', 's', 'd'], S = (n) => `${EL[size]}${n}`;
+    if (bit(w, 21) === 1 && bit(w, 10) === 1) { // scalar three-same
+      const opcode = bits(w, 15, 11), Rm = bits(w, 20, 16);
+      if (opcode >= 0x18) { const o1 = bit(w, 23); const fe = (o1 ? 'd' : 's'); const fp = opcode === 0x1a ? (U ? 'fabd' : null) : opcode === 0x1b ? (U ? 'fmul' : 'fmulx') : opcode === 0x1c ? (U ? 'fcmge' : 'fcmeq') : opcode === 0x1d ? (U ? 'facge' : null) : opcode === 0x1f ? (U ? 'frsqrts' : 'frecps') : null; return fp ? ok(fp, `${fe}${Rd}, ${fe}${Rn}, ${fe}${Rm}`) : coarse('simd-sc3'); }
+      const TS = { 0x01: ['sqadd', 'uqadd'], 0x05: ['sqsub', 'uqsub'], 0x06: ['cmgt', 'cmhi'], 0x07: ['cmge', 'cmhs'], 0x08: ['sshl', 'ushl'], 0x09: ['sqshl', 'uqshl'], 0x0a: ['srshl', 'urshl'], 0x0b: ['sqrshl', 'uqrshl'], 0x10: ['add', 'sub'], 0x11: ['cmtst', 'cmeq'], 0x16: ['sqdmulh', 'sqrdmulh'] }[opcode];
+      const m = TS && TS[U]; return m ? ok(m, `${S(Rd)}, ${S(Rn)}, ${S(Rm)}`) : coarse('simd-sc3');
+    }
+    if (bit(w, 21) === 1 && bit(w, 11) === 1 && bit(w, 10) === 0 && bits(w, 20, 17) === 0) { // scalar two-reg misc
+      const opcode = bits(w, 16, 12);
+      const M = { 0x08: ['cmgt', 'cmge'], 0x09: ['cmeq', 'cmle'], 0x0a: ['cmlt', null], 0x0b: ['abs', 'neg'], 0x1a: ['fcvtns', 'fcvtnu'], 0x1b: ['fcvtms', 'fcvtmu'], 0x1c: ['fcvtas', 'fcvtau'], 0x1d: ['scvtf', 'ucvtf'] }[opcode];
+      const m = M && M[U]; return m ? ok(m, `${S(Rd)}, ${S(Rn)}${(opcode >= 8 && opcode <= 0xa) ? ', #0' : ''}`) : coarse('simd-scmisc');
+    }
+    return coarse('simd-scalar');
+  }
+  // SIMD table lookup: tbl / tbx
+  if (bits(w, 31, 31) === 0 && bits(w, 29, 24) === 0b001110 && bit(w, 21) === 0 && bit(w, 15) === 0 && bits(w, 11, 10) === 0b00) {
+    const Q = bit(w, 30), Rm = bits(w, 20, 16), len = bits(w, 14, 13), op = bit(w, 12), Rn2 = bits(w, 9, 5), Rd2 = bits(w, 4, 0);
+    const arr = Q ? '16b' : '8b';
+    const list = Array.from({ length: len + 1 }, (_, i) => `v${(Rn2 + i) % 32}.16b`).join(', ');
+    return ok(op ? 'tbx' : 'tbl', `v${Rd2}.${arr}, {${list}}, v${Rm}.${arr}`);
   }
   // Advanced SIMD vector, decoded by class (Arm ARM C7.2). The register arrangement comes from
   // the size field and Q; a confident mnemonic table per class, coarse for the exotic rest.
