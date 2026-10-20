@@ -268,6 +268,18 @@ labelled goto with `--goto`. `--method NAME` filters, `--max N` caps the methods
 constant-pool index is resolved to its name or string. Not done: a call's arity is unknown, so
 arguments show as `(...)`; the StackMapTable, exception tables and generics signatures are not used.
 
+## Python: `pyc`
+
+`pyc <file.pyc>` reads a CPython `.pyc`: the magic (which gives the Python version), then the
+marshalled top-level code object and every nested one (functions, comprehensions). It
+disassembles the wordcode and resolves each argument — `LOAD_CONST` to the constant,
+`LOAD_NAME`/`LOAD_GLOBAL` to the name, `LOAD_FAST`/`STORE_FAST` to the local, `COMPARE_OP` and
+`BINARY_OP` to the operator, the jumps to an absolute offset. `--method NAME` filters,
+`--max N` caps the code objects. Opcode numbers change between Python versions; this reader
+knows the maps for 3.11 / 3.12 / 3.13 and labels an unknown version's opcodes as `<op N>`.
+Inline cache slots are skipped; the line table, exception table and the marshalled objects'
+live values are not reconstructed.
+
 ## WebAssembly: `wasm`
 
 `wasm <file.wasm>` reads a module from its bytes per the WebAssembly core specification: the

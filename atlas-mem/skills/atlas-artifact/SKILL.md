@@ -57,6 +57,7 @@ Everything below lives in the `artifact/` folder beside this file.
    an `.apk`, a `.dex`, "Android", "Dalvik", "smali", "what does this app's code do" →
    `binary.md` (the `dex` section)
    a `.class`, Java bytecode, JVM, "decompile this class" → `binary.md` (the `jvm` section)
+   a `.pyc`, Python bytecode, "disassemble this pyc" → `binary.md` (the `pyc` section)
    a `.wasm`, WebAssembly, "wat", a wasm module in a site or a plugin → `binary.md`
    (the `wasm` section)
    EVM bytecode, a smart contract, Ethereum, Solidity bytecode, a `.evm`, "what functions

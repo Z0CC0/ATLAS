@@ -37,6 +37,7 @@ import { disasm as x86disasm } from './artifact-x86.mjs';
 import { disasm as arm64disasm } from './artifact-arm64.mjs';
 import { readDex, dexEntriesFromZip } from './artifact-dex.mjs';
 import { readClass as readJvmClass, decode as jvmDecode, lift as jvmLift } from './artifact-jvm.mjs';
+import { readPyc, disasm as pycDisasm, functions as pycFunctions } from './artifact-pyc.mjs';
 import { decodeOne as x86decode } from './artifact-x86.mjs';
 import { decodeOne as arm64decode } from './artifact-arm64.mjs';
 import { buildCfg, formatCfg } from './artifact-cfg.mjs';
@@ -113,6 +114,7 @@ function detectFile(path) {
   const b = head.subarray(0, n);
   if (n >= 4 && b.toString('latin1', 0, 4) === 'dex\n') return 'dex';
   if (n >= 8 && b.readUInt32BE(0) === 0xcafebabe && b.readUInt16BE(6) >= 45 && b.readUInt16BE(6) < 256) return 'jvm'; // major version >=45; distinguishes from a Mach-O fat binary (same magic)
+  if (n >= 4 && b[2] === 0x0d && b[3] === 0x0a && extname(path).toLowerCase() === '.pyc') return 'pyc';
   if (n >= 4 && b[0] === 0x50 && b[1] === 0x4b && /\.apk$/i.test(path)) return 'apk';
   if (n >= 16 && asarHeader(path, true)) return 'asar';
   if (n >= 4) for (const [name, test] of MAGIC) { try { if (test(b)) return name; } catch { /* short */ } }
@@ -751,6 +753,28 @@ async function cmdObserve(path) {
 
 // ---------------------------------------------------------------- a .NET method body as instructions
 
+function cmdPyc(path) {
+  const abs = resolve(path);
+  if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
+  const buf = readFileSync(abs);
+  let r; try { r = readPyc(buf); } catch (e) { fail(e.message, 'unsupported'); }
+  const methodFilter = flags.method ? String(flags.method).toLowerCase() : null;
+  const fns = pycFunctions(r.top).filter((f) => !methodFilter || (f.c.name || '').toLowerCase().includes(methodFilter)).slice(0, Number(flags.max || 50));
+  const subject = { name: basename(abs), path: abs, format: 'pyc', bytes: buf.length, sha256: sha256(buf) };
+  const out = fns.map((f) => ({ name: f.c.qualname || f.c.name, args: f.c.argcount, firstLine: f.c.firstlineno, instructions: pycDisasm(f.c, r.version) }));
+  const result = { magic: r.magicHex, pythonVersion: r.version, functions: out.map((f) => ({ name: f.name, args: f.args, firstLine: f.firstLine, count: f.instructions.length })) };
+  const limitations = ['disassembled from the marshalled code object, not executed or unmarshalled into live Python', 'opcode numbers are version-specific; this reader knows the maps for Python 3.11/3.12/3.13 and labels an unknown version\'s opcodes as <op N>', 'inline cache slots are skipped; the line table and exception table are not decoded'];
+  if (!r.version) limitations.push(`magic ${r.magicHex} is not a version this reader maps; opcode names may be wrong`);
+  const rec = record(subject, 'pyc', { method: flags.method || null, max: Number(flags.max || 50) }, result, { confidence: 'observed', coverage: { status: r.version ? 'complete' : 'partial', scope: `Python ${r.version || '(unknown)'}, ${out.length} code objects` }, limitations });
+  const L = [`${subject.name}  Python ${r.version || '?'} (magic ${r.magicHex})  ${out.length} code objects`];
+  for (const f of out) {
+    L.push(`\n# ${f.name}  (args ${f.args}, line ${f.firstLine})`);
+    for (const ins of f.instructions) L.push(`  ${ins.off.toString().padStart(5)}  ${ins.text}`);
+  }
+  L.push(`\nid ${rec.id}`);
+  emit(rec, L.join('\n'));
+}
+
 function cmdJvm(path) {
   const abs = resolve(path);
   if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
@@ -1270,6 +1294,7 @@ try {
   else if (command === 'cfg') cmdCfg(target);
   else if (command === 'dex') cmdDex(target);
   else if (command === 'jvm' || command === 'class') cmdJvm(target);
+  else if (command === 'pyc') cmdPyc(target);
   else if (command === 'wasm') cmdWasm(target);
   else if (command === 'evm') cmdEvm(target);
   else if (command === 'pcap') cmdPcap(target);

@@ -1349,6 +1349,18 @@ test('the JVM lift turns bytecode into pseudo-Java expressions and an if/else', 
   assert.equal(inc[0].text, 'v3 += 1;');
 });
 
+test('the pyc disassembler resolves consts, names and locals from the opmap', async () => {
+  const py = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-pyc.mjs')).href);
+  // 3.12 bytecode: LOAD_FAST 0; LOAD_FAST 1; BINARY_OP 0 (+); RETURN_VALUE
+  const code = String.fromCharCode(124, 0, 124, 1, 122, 0, 83, 0);
+  const c = { isCode: true, codeObj: code, consts: [], names: [], localsplus: ['a', 'b'] };
+  const d = py.disasm(c, '3.12').map((i) => i.text);
+  assert.deepEqual(d, ['LOAD_FAST a', 'LOAD_FAST b', 'BINARY_OP +', 'RETURN_VALUE']);
+  // 3.13 RETURN_CONST is opcode 103, and the CACHE (0) slots are skipped
+  const c13 = { isCode: true, codeObj: String.fromCharCode(83, 0, 103, 0), consts: ['x', 'y'], names: [], localsplus: [] };
+  assert.deepEqual(py.disasm(c13, '3.13').map((i) => i.text), ['LOAD_CONST "x"', 'RETURN_CONST "x"']);
+});
+
 test('the pcap command runs end to end and detect routes to it', () => {
   const p = path.join(tmp, 'cap.pcap');
   fs.writeFileSync(p, makePcap());
