@@ -256,19 +256,21 @@ function structureLinear(entries) {
     if (/^(return\b|throw\b)/.test(t)) { cur.stmts.push(t); cur.term = { kind: 'ret' }; }
     else if ((m = /^goto (\w+);$/.exec(t))) cur.term = { kind: 'goto', target: offOf(m[1]), label: m[1] };
     else if ((m = /^if \((.*)\) goto (\w+);$/.exec(t))) cur.term = { kind: 'if', cond: m[1], target: offOf(m[2]), label: m[2] };
-    else if (/^switch/.test(t)) { cur.stmts.push(t); cur.term = { kind: 'ret' }; } // switch left inline, no structured edges
+    else if (/^switch/.test(t)) { cur.stmts.push(t); cur.term = { kind: 'switch', targets: [...t.matchAll(/\b[A-Za-z]+_([0-9a-f]+)\b/g)].map((mm) => parseInt(mm[1], 16)) }; } // keep the switch line + its case blocks reachable
     else { cur.stmts.push(t); continue; }
     // a terminator closed the block; the next entry (if not a label) starts a fresh block
     const next = entries[i + 1];
     if (next && !isLabel(next.text)) open(next.off != null ? next.off : cur.start + 1);
     else cur = cur && cur.term ? null : cur;
   }
+  if (!blocks.length) return []; // nothing to structure (empty method)
   const ids = new Set(blocks.map((b) => b.start));
   // wire edges
   for (let i = 0; i < blocks.length; i += 1) {
     const b = blocks[i]; const term = b.term;
     const fallNext = () => { const f = b.fallTo != null ? b.fallTo : (blocks[i + 1] && blocks[i + 1].start); if (f != null && ids.has(f)) b.succ.push({ to: f, fall: true }); };
     if (term && term.kind === 'ret') { /* no successors */ }
+    else if (term && term.kind === 'switch') { for (const tgt of term.targets) if (ids.has(tgt)) b.succ.push({ to: tgt }); } // keep every case block reachable
     else if (term && term.kind === 'goto') { if (ids.has(term.target)) b.succ.push({ to: term.target }); else b.stmts.push(`goto ${term.label};`); } // unresolved target: keep the goto
     else if (term && term.kind === 'if') {
       if (ids.has(term.target)) { b.succ.push({ to: term.target, cond: true }); b.cond = { text: term.cond }; fallNext(); }
@@ -291,7 +293,7 @@ function structureLinear(entries) {
   }
   // drop any label line no surviving goto still targets
   const referenced = new Set();
-  for (const l of out) { const m = /\bgoto (\w+);/.exec(l); if (m) referenced.add(m[1]); }
+  for (const l of out) { const m = /\bgoto (\w+);/.exec(l); if (m) referenced.add(m[1]); if (/^\s*switch/.test(l)) for (const mm of l.matchAll(/\b([A-Za-z]+_[0-9a-f]+)\b/g)) referenced.add(mm[1]); }
   return out.filter((l) => { const m = /^(\w+):$/.exec(l.trim()); return !m || referenced.has(m[1]); });
 }
 
