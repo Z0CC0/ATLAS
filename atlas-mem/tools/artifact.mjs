@@ -38,6 +38,7 @@ import { disasm as arm64disasm } from './artifact-arm64.mjs';
 import { readDex, dexEntriesFromZip } from './artifact-dex.mjs';
 import { readClass as readJvmClass, decode as jvmDecode, lift as jvmLift } from './artifact-jvm.mjs';
 import { readPyc, disasm as pycDisasm, functions as pycFunctions } from './artifact-pyc.mjs';
+import { readDwarf } from './artifact-dwarf.mjs';
 import { decodeOne as x86decode } from './artifact-x86.mjs';
 import { decodeOne as arm64decode } from './artifact-arm64.mjs';
 import { buildCfg, formatCfg } from './artifact-cfg.mjs';
@@ -673,13 +674,16 @@ function cmdBin(path) {
   let r;
   try { r = readBinary(buf); } catch (e) { fail(e.message, 'unsupported'); }
   const limitations = [...(r.limitations || []), 'headers and tables read as the loader reads them; code not disassembled, nothing run: what a function does is not known from this'];
+  if (r.format === 'elf' && r.sections) { try { const d = readDwarf(buf, r.sections); if (d && d.functions.length) { r.dwarf = { producer: (d.units[0] || {}).producer || null, unit: (d.units[0] || {}).name || null, functionCount: d.functions.length, functions: d.functions.slice(0, 200).map((f) => ({ name: f.name, low: f.low, high: f.high })) }; limitations.push('DWARF: function names and PC ranges from .debug_info; the line-number program and types are not reconstructed'); } } catch { /* malformed DWARF: skip */ } }
   if (r.go && r.go.limitations) limitations.push(...r.go.limitations);
   delete r.limitations;
   const subject = { name: basename(abs), path: abs, format: r.format, bytes: buf.length, sha256: sha256(buf) };
   const full = flags.detail === 'full';
   const result = full ? r : { ...r, sections: r.sections ? r.sections.map((s) => ({ name: s.name, size: s.rawSize ?? s.size ?? s.filesize, flags: s.flags })) : undefined, imports: r.imports ? r.imports.map((i) => ({ dll: i.dll, count: i.count, names: i.names.slice(0, 40) })) : undefined, exports: r.exports ? { ...r.exports, names: r.exports.names.slice(0, 60), addrs: undefined } : r.exports, imported: r.imported ? r.imported.slice(0, 80) : undefined, exported: r.exported ? r.exported.slice(0, 80) : undefined, dotnet: r.dotnet ? { ...r.dotnet, types: r.dotnet.types.slice(0, 60), userStrings: r.dotnet.userStrings.slice(0, 60), pinvoke: r.dotnet.pinvoke.slice(0, 60) } : r.dotnet, segments: r.segments ? r.segments.map((s) => ({ ...s, sections: undefined })) : undefined };
-  const rec = record(subject, 'bin', { detail: full ? 'full' : 'summary' }, result, { limitations, coverage: { status: 'complete', scope: `${r.format} headers, sections, imports and exports${r.dotnet ? ', .NET metadata tables' : ''}${r.go ? ', Go build info' : ''}${r.rust ? ', Rust crate paths' : ''}, strings` } });
-  emit(rec, binText({ ...rec, result: r }));
+  const rec = record(subject, 'bin', { detail: full ? 'full' : 'summary' }, result, { limitations, coverage: { status: 'complete', scope: `${r.format} headers, sections, imports and exports${r.dotnet ? ', .NET metadata tables' : ''}${r.go ? ', Go build info' : ''}${r.rust ? ', Rust crate paths' : ''}${r.dwarf ? ', DWARF function names' : ''}, strings` } });
+  let text = binText({ ...rec, result: r });
+  if (r.dwarf) { text += `\n\nDWARF — ${r.dwarf.functionCount} functions${r.dwarf.producer ? ', built by ' + r.dwarf.producer : ''}${r.dwarf.unit ? ' (' + r.dwarf.unit + ')' : ''}:`; for (const f of r.dwarf.functions.slice(0, 40)) text += `\n  0x${(f.low >>> 0).toString(16)}${f.high != null ? '-0x' + (f.high >>> 0).toString(16) : ''}  ${f.name}`; }
+  emit(rec, text);
 }
 
 // ---------------------------------------------------------------- observe: the program alive for a few seconds

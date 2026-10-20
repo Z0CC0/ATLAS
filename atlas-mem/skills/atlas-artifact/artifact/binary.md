@@ -25,6 +25,11 @@ strings, and the entry method. The types and strings are paged (sixty in the sum
 all with `--detail full`). The bodies of the methods are not decoded here; that is a
 later reader.
 
+When an ELF carries DWARF debug info (`.debug_info` + `.debug_abbrev`, i.e. built with `-g`
+and not stripped), `bin` lists the real function names and their PC ranges, and the producer
+(compiler) — a `DWARF` section after the headers. The line-number program and the type graph
+are not reconstructed.
+
 ## Linux: ELF
 
 Class, type (a shared object is also what a PIE executable looks like), machine, the

@@ -1371,6 +1371,25 @@ test('the WASM decoder decodes the SIMD (0xFD) prefix without desync', async () 
   assert.ok(!ins.some((i) => i.bad), 'no .byte desync markers');
 });
 
+test('the DWARF reader recovers subprogram names and PC ranges from .debug_info', async () => {
+  const dw = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-dwarf.mjs')).href);
+  const abbrev = Buffer.from([
+    1, 0x11, 1, 0x25, 0x08, 0x03, 0x08, 0, 0, // CU: producer(string), name(string)
+    2, 0x2e, 0, 0x03, 0x08, 0x11, 0x01, 0x12, 0x06, 0, 0, // subprogram: name(string), low_pc(addr), high_pc(data4)
+    0,
+  ]);
+  const dies = Buffer.concat([
+    Buffer.from([1]), Buffer.from('clang\0t.c\0', 'latin1'),
+    Buffer.from([2]), Buffer.from('main\0', 'latin1'), Buffer.from([0x00, 0x10, 0, 0, 0, 0, 0, 0]), Buffer.from([0x20, 0, 0, 0]),
+    Buffer.from([0]),
+  ]);
+  const head = Buffer.alloc(11); head.writeUInt16LE(4, 4); head.writeUInt32LE(0, 6); head[10] = 8; head.writeUInt32LE(7 + dies.length, 0); // version 4, addr_size 8, unit_length
+  const info = Buffer.concat([head, dies]);
+  const r = dw.parseInfo({ '.debug_info': info, '.debug_abbrev': abbrev });
+  assert.equal(r.units[0].producer, 'clang');
+  assert.deepEqual(r.functions, [{ name: 'main', low: 0x1000, high: 0x1020 }]);
+});
+
 test('the pcap command runs end to end and detect routes to it', () => {
   const p = path.join(tmp, 'cap.pcap');
   fs.writeFileSync(p, makePcap());
