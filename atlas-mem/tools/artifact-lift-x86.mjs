@@ -84,7 +84,9 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
   };
 
   for (let k = 0; k < insns.length; k += 1) {
-    const ins = insns[k]; const { mnem, ops } = parse(ins.text);
+    const ins = insns[k]; let { mnem, ops } = parse(ins.text);
+    // the lock prefix makes the op atomic but does not change the value computed: lift the inner op
+    if (mnem === 'lock') ({ mnem, ops } = parse(ins.text.slice(5)));
     const last = k === insns.length - 1;
     if (mnem === 'nop' || mnem === 'endbr64' || mnem === 'int3') continue;
     if (/^j/.test(mnem) && last) break;
@@ -121,6 +123,7 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
       else if (/^stos/.test(s)) stmts.push(`memset(rdi, ${val(s === 'stosb' ? 'al' : s === 'stosw' ? 'ax' : s === 'stosd' ? 'eax' : 'rax')}, rcx${w});`);
       else if (/^cmps/.test(s)) stmts.push(`memcmp(rdi, rsi, rcx${w});`);
       else if (/^scas/.test(s)) stmts.push(`memchr(rdi, ${val(s === 'scasb' ? 'al' : s === 'scasd' ? 'eax' : 'rax')}, rcx);`);
+      else if (/^retf?$/.test(s)) break; // repz ret: a branch-target padding idiom, just a return
       else { stmts.push(`// ${ins.text}`); continue; }
       wr('rcx', '0'); kill('rdi'); kill('rsi'); continue;
     }
@@ -140,6 +143,12 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
     if (mnem === 'push' || mnem === 'pop' || mnem === 'leave' || mnem === 'cdqe' || mnem === 'cqo') continue;
     if (mnem === 'call') { const named = sym && sym(ins); const t = named ? named.replace(/!/g, '.') : 'sub_' + (ops[0] || 'fn').replace(/[^\w]/g, '_'); stmts.push(`rax = ${t}(...);`); for (const r of VOLATILE) env.delete(r); continue; }
     if (mnem === 'xchg') { const [a, b] = ops; const va = val(a), vb = val(b); if (!isMem(a)) wr(a, vb); if (!isMem(b)) wr(b, va); continue; }
+    // address of a (possibly memory) operand, folding &*x back to x
+    const addrOf = (t) => { const d = isMem(t) ? deref(t) : t; return d.startsWith('*') ? d.slice(1) : `&${d}`; };
+    // atomic fetch-and-add: the register takes the old memory value, memory takes the sum
+    if (mnem === 'xadd') { const [m, r] = ops; stmts.push(`${r} = atomic_fetch_add(${addrOf(m)}, ${val(r)});`); if (!isMem(r)) kill(r); continue; }
+    // atomic compare-and-swap: if rax == *m then *m = reg, else rax = *m
+    if (mnem === 'cmpxchg') { const [m, r] = ops; stmts.push(`atomic_compare_exchange(${addrOf(m)}, &rax, ${val(r)});`); kill('rax'); continue; }
     stmts.push(`// ${ins.text}`);
   }
 

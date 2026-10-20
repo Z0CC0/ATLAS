@@ -869,6 +869,17 @@ test('the lift renders repeated string ops as memcpy/memset/memcmp', async () =>
   assert.ok(cmp.stmts.includes('memcmp(rdi, rsi, rcx);'), cmp.stmts.join(' | '));
 });
 
+test('the lift strips the lock prefix and models atomic read-modify-write', async () => {
+  const lx = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-lift-x86.mjs')).href);
+  const two = (t) => ({ mnem: 'lock', text: t, addr: 0 });
+  const add = lx.liftBlock([two('lock add [rax], 0x1')], null, new Set());
+  assert.ok(add.stmts.includes('*rax = (*rax + 0x1);'), add.stmts.join(' | '));
+  const xadd = lx.liftBlock([two('lock xadd [rdi], rbx')], null, new Set());
+  assert.ok(xadd.stmts.includes('rbx = atomic_fetch_add(rdi, rbx);'), xadd.stmts.join(' | '));
+  const cas = lx.liftBlock([two('lock cmpxchg [rsi+0x8], rcx')], null, new Set());
+  assert.ok(cas.stmts.includes('atomic_compare_exchange(&rsi->field_8, &rax, rcx);'), cas.stmts.join(' | '));
+});
+
 test('the lift renders array and field access from the address shape', async () => {
   const lx = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-lift-x86.mjs')).href);
   const load = lx.liftBlock([{ mnem: 'mov', text: 'mov rax, [r8+rcx*8]' }], null, new Set(['rax']));
