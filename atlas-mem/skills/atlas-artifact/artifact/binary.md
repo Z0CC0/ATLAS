@@ -150,6 +150,13 @@ becomes `while (…)` or `for (;;)` with `break`/`continue`. A labelled `goto` s
 where the flow is irreducible or leaves its region — the honest fallback, never a wrong
 nesting. `cfg --pseudo --goto` keeps the old flat listing with labels for comparison.
 
+A `cfg` of an x86-64 function that ends a block in an indirect `jmp` also tries to recover the
+switch jump table behind it — the MSVC absolute-pointer table (`jmp [base+idx*8]`) or the
+GCC/Clang PIC offset table (`movsxd off,[base+idx*4]; add; jmp`). When the table base, the
+bound and every entry read cleanly from the image and land inside the code, the resolved case
+targets are listed as a note; otherwise the block is left as-is (the CFG is never mutated on a
+guess).
+
 Call targets are named across the three formats. A PE import through the address table (the
 slots a `call [rip+x]` lands on) shows its `dll!function`, and in the pseudo-C reads
 `rax = KERNEL32.MultiByteToWideChar(...)`. A PE direct call to one of the file's own exports

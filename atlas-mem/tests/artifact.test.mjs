@@ -1402,6 +1402,32 @@ test('the PDB reader parses CodeView S_PUB32 symbol records', async () => {
   assert.deepEqual({ name: syms[0].name, seg: syms[0].seg, offset: syms[0].offset, func: syms[0].func }, { name: 'add', seg: 1, offset: 0x40, func: true });
 });
 
+test('the jump-table resolver recovers switch targets for both compiler idioms', async () => {
+  const jt = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-jumptable.mjs')).href);
+  // GCC/Clang PIC: lea rdx,[rip+0x100] (table at 0x1107) ; movsxd rax,[rdx+rax*4] ; add rdx,rax ; jmp rdx
+  const relTable = { 0x1107: 0x10, 0x110b: 0x20, 0x110f: 0x30 }; // 4-byte offsets relative to the table
+  const relCtx = { codeLo: 0x1000, codeHi: 0x2000, readI32: (va) => (va in relTable ? relTable[va] : 0x100000), readU64: () => null };
+  const relIns = [
+    { addr: 0x1000, len: 7, text: 'lea rdx, [rip+0x100]' },
+    { addr: 0x1007, len: 4, text: 'movsxd rax, [rdx+rax*4]' },
+    { addr: 0x100b, len: 3, text: 'add rdx, rax' },
+    { addr: 0x100e, len: 2, text: 'jmp rdx' },
+  ];
+  const rel = jt.resolveJumpTable(relIns, relCtx, 0x100e);
+  assert.equal(rel.kind, 'rel32');
+  assert.deepEqual(rel.targets, [0x1117, 0x1127, 0x1137]); // tableVA + offset
+  // MSVC absolute: lea rbx,[rip+0x200] (table at 0x1207) ; jmp [rbx+rcx*8]
+  const absTable = { 0x1207: 0x1500, 0x120f: 0x1600 };
+  const absCtx = { codeLo: 0x1000, codeHi: 0x2000, readI32: () => null, readU64: (va) => (va in absTable ? absTable[va] : 0x999999) };
+  const absIns = [
+    { addr: 0x1000, len: 7, text: 'lea rbx, [rip+0x200]' },
+    { addr: 0x1007, len: 3, text: 'jmp [rbx+rcx*8]' },
+  ];
+  const abs = jt.resolveJumpTable(absIns, absCtx, 0x1007);
+  assert.equal(abs.kind, 'abs64');
+  assert.deepEqual(abs.targets, [0x1500, 0x1600]);
+});
+
 test('the pcap command runs end to end and detect routes to it', () => {
   const p = path.join(tmp, 'cap.pcap');
   fs.writeFileSync(p, makePcap());

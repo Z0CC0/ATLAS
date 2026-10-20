@@ -40,6 +40,7 @@ import { readClass as readJvmClass, decode as jvmDecode, lift as jvmLift } from 
 import { readPyc, disasm as pycDisasm, functions as pycFunctions } from './artifact-pyc.mjs';
 import { readDwarf } from './artifact-dwarf.mjs';
 import { readPdb } from './artifact-pdb.mjs';
+import { resolveJumpTable } from './artifact-jumptable.mjs';
 import { decodeOne as x86decode } from './artifact-x86.mjs';
 import { decodeOne as arm64decode } from './artifact-arm64.mjs';
 import { buildCfg, formatCfg } from './artifact-cfg.mjs';
@@ -1112,7 +1113,27 @@ function cmdCfg(path) {
     ? (pos) => { const d = x86decode(buf, pos, end); return d ? { addr: pos, len: d.len, text: d.text, mnem: d.mnem, bad: d.bad } : null; }
     : (pos) => { if (pos + 4 > end) return null; const d = arm64decode(buf.readUInt32LE(pos)); return { addr: pos, len: 4, text: d.text, mnem: d.mnem, bad: d.bad }; };
   const cfg = buildCfg(decodeAt, at, end, ARCH, budget);
-  const result = { arch: ARCH, functionAt: at, blocks: cfg.blocks.map((b) => ({ start: b.start, instructions: b.insns.length, successors: b.succ })), blockCount: cfg.blocks.length, instructions: cfg.instructions, loopEdges: cfg.loops };
+  // recover switch jump tables behind an indirect jmp (x86-64): a safe annotation, the CFG is
+  // not mutated — if the table is not read with full certainty the block is left as-is
+  const switches = [];
+  if (ARCH === 'x86-64') {
+    const isPE = r.format === 'pe';
+    const secStart = (s) => (isPE ? s.raw : s.off); const secAddr = (s) => (isPE ? s.vaddr : s.addr); const secLen = (s) => (isPE ? Math.max(s.vsize || 0, s.rawSize || 0) : s.size);
+    const vaOf = (off) => { const s = r.sections.find((x) => off >= secStart(x) && off < secStart(x) + (isPE ? x.rawSize : x.size)); return s && secAddr(s) ? secAddr(s) + (off - secStart(s)) : null; };
+    const offOf = (va) => { const s = r.sections.find((x) => secAddr(x) && va >= secAddr(x) && va < secAddr(x) + secLen(x)); return s ? secStart(s) + (va - secAddr(s)) : null; };
+    const readI32 = (va) => { const o = offOf(va); return o != null && o + 4 <= buf.length ? buf.readInt32LE(o) : null; };
+    const readU64 = (va) => { const o = offOf(va); return o != null && o + 8 <= buf.length ? Number(buf.readBigUInt64LE(o)) : null; };
+    const codeLo = secAddr(secOf), codeHi = secAddr(secOf) + secLen(secOf);
+    for (const b of cfg.blocks) {
+      const last = b.insns[b.insns.length - 1]; if (!last) continue;
+      if (!/^jmp\s+(\w+$|(qword\s+)?\[)/.test(last.text)) continue;
+      const vinsns = b.insns.map((i) => ({ addr: vaOf(i.addr), len: i.len, text: i.text }));
+      if (vinsns.some((i) => i.addr == null)) continue;
+      const res = resolveJumpTable(vinsns, { readI32, readU64, codeLo, codeHi }, vaOf(last.addr));
+      if (res) switches.push({ block: b.start, kind: res.kind, tableVA: res.tableVA, cases: res.count, targets: res.targets.map((t) => offOf(t)).filter((x) => x != null) });
+    }
+  }
+  const result = { arch: ARCH, functionAt: at, blocks: cfg.blocks.map((b) => ({ start: b.start, instructions: b.insns.length, successors: b.succ })), blockCount: cfg.blocks.length, instructions: cfg.instructions, loopEdges: cfg.loops, switches };
   const subject = { name: basename(abs), path: abs, format: 'cfg', bytes: buf.length, sha256: sha256(buf) };
   const limitations = [
     'control flow recovered from direct branches only: an indirect jump or call (through a register, a jump table or a virtual call) has no resolved target, so a block it leads to may be missing',
@@ -1184,6 +1205,7 @@ function cmdCfg(path) {
     rec.result.structs = pt.structs;
     if (head.length) body = head.join('\n') + '\n' + body;
   } else body = formatCfg(cfg, 0, sym);
+  if (switches.length) { body += '\n\n// recovered switch jump tables (indirect jmp resolved from the table in the image):'; for (const s of switches) body += `\n//   block L_${s.block.toString(16)}: ${s.kind} table at 0x${(s.tableVA >>> 0).toString(16)}, ${s.cases} cases -> ${s.targets.map((t) => 'L_' + t.toString(16)).join(', ')}`; }
   emit(rec, body + `\n\nid ${rec.id}`);
 }
 
