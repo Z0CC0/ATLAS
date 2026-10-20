@@ -100,6 +100,28 @@ const PROTOS = {
   FREAD: { ret: 'size_t', args: ['void*', 'size_t', 'size_t', 'FILE*'] },
   EXIT: { ret: 'void', args: ['int'] },
   ABORT: { ret: 'void', args: [] },
+  STRSTR: { ret: 'char*', args: ['const char*', 'const char*'] },
+  STRNCPY: { ret: 'char*', args: ['char*', 'const char*', 'size_t'] },
+  STRRCHR: { ret: 'char*', args: ['const char*', 'int'] },
+  STRTOL: { ret: 'long', args: ['const char*', 'char**', 'int'] },
+  FPUTC: { ret: 'int', args: ['int', 'FILE*'] },
+  FPUTS: { ret: 'int', args: ['const char*', 'FILE*'] },
+  FGETS: { ret: 'char*', args: ['char*', 'int', 'FILE*'] },
+  FFLUSH: { ret: 'int', args: ['FILE*'] },
+  // ctype
+  TOLOWER: { ret: 'int', args: ['int'] }, TOUPPER: { ret: 'int', args: ['int'] },
+  ISDIGIT: { ret: 'int', args: ['int'] }, ISALPHA: { ret: 'int', args: ['int'] }, ISSPACE: { ret: 'int', args: ['int'] },
+  ISUPPER: { ret: 'int', args: ['int'] }, ISLOWER: { ret: 'int', args: ['int'] }, ISXDIGIT: { ret: 'int', args: ['int'] },
+  // math
+  SQRT: { ret: 'double', args: ['double'] }, FABS: { ret: 'double', args: ['double'] }, POW: { ret: 'double', args: ['double', 'double'] },
+  FLOOR: { ret: 'double', args: ['double'] }, CEIL: { ret: 'double', args: ['double'] }, SCALBN: { ret: 'double', args: ['double', 'int'] },
+  ISNAN: { ret: 'int', args: ['double'] }, ISINF: { ret: 'int', args: ['double'] },
+  // pthread
+  PTHREAD_CREATE: { ret: 'int', args: ['pthread_t*', 'const pthread_attr_t*', 'void*(*)(void*)', 'void*'] },
+  PTHREAD_MUTEX_LOCK: { ret: 'int', args: ['pthread_mutex_t*'] }, PTHREAD_MUTEX_UNLOCK: { ret: 'int', args: ['pthread_mutex_t*'] },
+  PTHREAD_ONCE: { ret: 'int', args: ['pthread_once_t*', 'void(*)(void)'] },
+  PTHREAD_KEY_CREATE: { ret: 'int', args: ['pthread_key_t*', 'void(*)(void*)'] },
+  PTHREAD_GETSPECIFIC: { ret: 'void*', args: ['pthread_key_t'] }, PTHREAD_SETSPECIFIC: { ret: 'int', args: ['pthread_key_t', 'const void*'] },
   MEMCPY_S: { ret: 'errno_t', args: ['void*', 'size_t', 'const void*', 'size_t'] },
   _ERRNO: { ret: 'int*', args: [] },
   // ntdll

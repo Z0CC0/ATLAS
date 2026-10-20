@@ -937,6 +937,11 @@ test('prototype lookup is A/W-suffix tolerant and yields a C signature', () => {
   assert.ok(w && w.proto.ret === 'HMODULE');
   assert.equal(signatureText('CloseHandle', protoFor('KERNEL32!CloseHandle').proto), 'BOOL CloseHandle(HANDLE)');
   assert.equal(protoFor('MYAPP!private_helper'), null);
+  // libc/libm/pthread via the ELF @plt form
+  assert.equal(protoFor('malloc@plt').proto.ret, 'void*');
+  assert.deepEqual(protoFor('pthread_mutex_lock@plt').proto, { ret: 'int', args: ['pthread_mutex_t*'] });
+  assert.equal(protoFor('sqrt@plt').proto.ret, 'double');
+  assert.equal(protoFor('tolower@plt').proto.args[0], 'int');
 });
 
 test('type recovery anchors argument and return types at a resolved call', () => {
