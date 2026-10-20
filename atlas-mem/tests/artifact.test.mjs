@@ -1334,6 +1334,21 @@ test('pcap reassembles a TCP stream split across segments (HTTP Host, TLS SNI)',
   assert.equal(st[0].segments, 2);
 });
 
+test('the JVM lift turns bytecode into pseudo-Java expressions and an if/else', async () => {
+  const j = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-jvm.mjs')).href);
+  // int add(int,int) { return a + b; } -> iload_1 iload_2 iadd ireturn
+  const add = j.lift(j.decode(Buffer.from([0x1b, 0x1c, 0x60, 0xac]), []));
+  assert.equal(add.map((s) => s.text).join(' '), 'return (v1 + v2);');
+  // int max(int,int){ if(a>b) return a; return b; } -> iload_1 iload_2 if_icmple 7 ; iload_1 ireturn ; iload_2 ireturn
+  const max = j.lift(j.decode(Buffer.from([0x1b, 0x1c, 0xa4, 0x00, 0x05, 0x1b, 0xac, 0x1c, 0xac]), []));
+  const st = structureLinear(max.map((e) => ({ off: e.off, text: e.text })));
+  assert.ok(st.join('\n').includes('if (v1 <= v2)'), st.join(' | '));
+  assert.ok(st.join('\n').includes('return v2;') && st.join('\n').includes('return v1;'), 'both branches present: ' + st.join(' | '));
+  // iinc decodes two one-byte operands
+  const inc = j.lift(j.decode(Buffer.from([0x84, 0x03, 0x01]), []));
+  assert.equal(inc[0].text, 'v3 += 1;');
+});
+
 test('the pcap command runs end to end and detect routes to it', () => {
   const p = path.join(tmp, 'cap.pcap');
   fs.writeFileSync(p, makePcap());

@@ -257,6 +257,17 @@ if/while structuring is not done.
 What is not done: the exception table and debug line info of a method, and if/while
 structuring of the pseudo-Java. A register's value is not tracked across blocks.
 
+## Java: `jvm`
+
+`jvm <file.class>` (alias `class`) reads a Java `.class`: the constant pool, this/super class
+and interfaces, fields, and each method's Code attribute. It decodes the JVM bytecode and,
+with `--pseudo`, lifts the operand stack back to pseudo-Java expressions — loads/stores as
+`vN`, arithmetic as operators, `getfield`/`putfield` as `obj.field`, `invoke*` as calls,
+`if*`/`goto`/`switch` as structured control flow through the shared structurizer (default) or a
+labelled goto with `--goto`. `--method NAME` filters, `--max N` caps the methods decoded. A
+constant-pool index is resolved to its name or string. Not done: a call's arity is unknown, so
+arguments show as `(...)`; the StackMapTable, exception tables and generics signatures are not used.
+
 ## WebAssembly: `wasm`
 
 `wasm <file.wasm>` reads a module from its bytes per the WebAssembly core specification: the

@@ -36,6 +36,7 @@ import { format as cilFormat } from './artifact-cil.mjs';
 import { disasm as x86disasm } from './artifact-x86.mjs';
 import { disasm as arm64disasm } from './artifact-arm64.mjs';
 import { readDex, dexEntriesFromZip } from './artifact-dex.mjs';
+import { readClass as readJvmClass, decode as jvmDecode, lift as jvmLift } from './artifact-jvm.mjs';
 import { decodeOne as x86decode } from './artifact-x86.mjs';
 import { decodeOne as arm64decode } from './artifact-arm64.mjs';
 import { buildCfg, formatCfg } from './artifact-cfg.mjs';
@@ -111,6 +112,7 @@ function detectFile(path) {
   closeSync(fd);
   const b = head.subarray(0, n);
   if (n >= 4 && b.toString('latin1', 0, 4) === 'dex\n') return 'dex';
+  if (n >= 8 && b.readUInt32BE(0) === 0xcafebabe && b.readUInt16BE(6) >= 45 && b.readUInt16BE(6) < 256) return 'jvm'; // major version >=45; distinguishes from a Mach-O fat binary (same magic)
   if (n >= 4 && b[0] === 0x50 && b[1] === 0x4b && /\.apk$/i.test(path)) return 'apk';
   if (n >= 16 && asarHeader(path, true)) return 'asar';
   if (n >= 4) for (const [name, test] of MAGIC) { try { if (test(b)) return name; } catch { /* short */ } }
@@ -749,6 +751,32 @@ async function cmdObserve(path) {
 
 // ---------------------------------------------------------------- a .NET method body as instructions
 
+function cmdJvm(path) {
+  const abs = resolve(path);
+  if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
+  const buf = readFileSync(abs);
+  let c; try { c = readJvmClass(buf); } catch (e) { fail(e.message, 'unsupported'); }
+  const methodFilter = flags.method ? String(flags.method).toLowerCase() : null;
+  const methods = c.methods.filter((m) => m.code && (!methodFilter || m.name.toLowerCase().includes(methodFilter))).slice(0, Number(flags.max || 40));
+  const out = methods.map((m) => {
+    const insns = jvmDecode(m.code.bytes, c.cp);
+    return { method: `${m.name}${m.desc}`, maxStack: m.code.maxStack, maxLocals: m.code.maxLocals, count: insns.length, instructions: flags.pseudo ? undefined : insns, pseudo: flags.pseudo ? jvmLift(insns) : undefined };
+  });
+  const subject = { name: basename(abs), path: abs, format: 'jvm', bytes: buf.length, sha256: sha256(buf) };
+  const result = { class: c.thisClass, super: c.superClass, interfaces: c.interfaces, majorVersion: c.major, fields: c.fields.map((f) => `${f.name} ${f.desc}`), methods: out };
+  const limitations = ['bytecode read from the Code attribute, not executed; a constant-pool index is resolved to a name/string', 'the lift does not know a call\'s arity, so arguments are shown as (...); the StackMapTable and exception tables are not used'];
+  const rec = record(subject, 'jvm', { method: flags.method || null, max: Number(flags.max || 40), pseudo: Boolean(flags.pseudo) }, result, { confidence: 'observed', coverage: { status: 'complete', scope: `${c.methods.length} methods, ${methods.length} decoded` }, limitations });
+  const L = [`${subject.name}  class ${c.thisClass}${c.superClass && c.superClass !== 'java.lang.Object' ? ' extends ' + c.superClass : ''}  (major ${c.major}, ${c.methods.length} methods)`];
+  for (const m of out) {
+    L.push(`\n.method ${m.method}  (maxstack ${m.maxStack}, locals ${m.maxLocals})`);
+    if (flags.pseudo && !flags.goto) for (const s of structureLinear(m.pseudo.map((e) => ({ off: e.off, text: e.text })))) L.push('  ' + s);
+    else if (flags.pseudo) for (const s of m.pseudo) L.push(/:$/.test(s.text) ? s.text : '  ' + s.text);
+    else for (const ins of m.instructions) L.push(`  ${ins.off.toString().padStart(4)}  ${ins.text}`);
+  }
+  L.push(`\nid ${rec.id}`);
+  emit(rec, L.join('\n'));
+}
+
 function cmdCil(path) {
   const abs = resolve(path);
   if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
@@ -1241,6 +1269,7 @@ try {
   else if (command === 'disasm') cmdDisasm(target);
   else if (command === 'cfg') cmdCfg(target);
   else if (command === 'dex') cmdDex(target);
+  else if (command === 'jvm' || command === 'class') cmdJvm(target);
   else if (command === 'wasm') cmdWasm(target);
   else if (command === 'evm') cmdEvm(target);
   else if (command === 'pcap') cmdPcap(target);
