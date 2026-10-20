@@ -73,6 +73,19 @@ const BINOP = {
   'f64.eq': '==', 'f64.lt': '<', 'f64.gt': '>', 'f64.le': '<=', 'f64.ge': '>=',
 };
 
+// prefix 0xFC (saturating truncation + bulk memory/table): subopcode -> name
+const FC = { 0: 'i32.trunc_sat_f32_s', 1: 'i32.trunc_sat_f32_u', 2: 'i32.trunc_sat_f64_s', 3: 'i32.trunc_sat_f64_u', 4: 'i64.trunc_sat_f32_s', 5: 'i64.trunc_sat_f32_u', 6: 'i64.trunc_sat_f64_s', 7: 'i64.trunc_sat_f64_u', 8: 'memory.init', 9: 'data.drop', 10: 'memory.copy', 11: 'memory.fill', 12: 'table.init', 13: 'elem.drop', 14: 'table.copy', 15: 'table.grow', 16: 'table.size', 17: 'table.fill' };
+// prefix 0xFD (SIMD / v128): the common subopcodes by name; the rest keep a simd.0xNN name but
+// their immediate is still consumed from the subopcode range so decoding never desyncs
+const FD = {
+  0: 'v128.load', 1: 'v128.load8x8_s', 2: 'v128.load8x8_u', 3: 'v128.load16x4_s', 4: 'v128.load16x4_u', 5: 'v128.load32x2_s', 6: 'v128.load32x2_u', 7: 'v128.load8_splat', 8: 'v128.load16_splat', 9: 'v128.load32_splat', 10: 'v128.load64_splat', 11: 'v128.store',
+  12: 'v128.const', 13: 'i8x16.shuffle', 14: 'i8x16.swizzle', 15: 'i8x16.splat', 16: 'i16x8.splat', 17: 'i32x4.splat', 18: 'i64x2.splat', 19: 'f32x4.splat', 20: 'f64x2.splat',
+  21: 'i8x16.extract_lane_s', 22: 'i8x16.extract_lane_u', 23: 'i8x16.replace_lane', 24: 'i16x8.extract_lane_s', 25: 'i16x8.extract_lane_u', 26: 'i16x8.replace_lane', 27: 'i32x4.extract_lane', 28: 'i32x4.replace_lane', 29: 'i64x2.extract_lane', 30: 'i64x2.replace_lane', 31: 'f32x4.extract_lane', 32: 'f32x4.replace_lane', 33: 'f64x2.extract_lane', 34: 'f64x2.replace_lane',
+  35: 'i8x16.eq', 36: 'i8x16.ne', 110: 'i8x16.add', 113: 'i8x16.sub', 174: 'i32x4.add', 177: 'i32x4.sub', 181: 'i32x4.mul', 228: 'f32x4.add', 229: 'f32x4.sub', 230: 'f32x4.mul', 231: 'f32x4.div', 77: 'v128.not', 78: 'v128.and', 80: 'v128.or', 81: 'v128.xor', 82: 'v128.bitselect', 83: 'v128.any_true',
+};
+// prefix 0xFE (threads / atomics): mostly memarg; only atomic.fence has no memarg
+const FE = { 3: 'atomic.fence' };
+
 /** Read a block type (0x40 void, a valtype, or a type index). */
 function blocktype(r) {
   const b = r.b[r.p];
@@ -86,6 +99,22 @@ function decodeExpr(r, end) {
   const ins = [];
   while (r.p < end) {
     const addr = r.p; const op = r.byte();
+    if (op === 0xfc || op === 0xfd || op === 0xfe) { // multi-byte prefix: subopcode is a u32 LEB
+      const sub = r.u32(); const imm = {};
+      let nm = op === 0xfc ? FC[sub] : op === 0xfd ? FD[sub] : FE[sub];
+      if (!nm) nm = `${op === 0xfc ? 'fc' : op === 0xfd ? 'simd' : 'atomic'}.0x${sub.toString(16)}`;
+      if (op === 0xfd) {
+        if ((sub >= 0 && sub <= 11) || (sub >= 84 && sub <= 91)) { imm.align = r.u32(); imm.offset = r.u32(); if (sub >= 84 && sub <= 91) imm.lane = r.byte(); } // memarg (+ lane for load/store_lane)
+        else if (sub === 12 || sub === 13) { imm.bytes = []; for (let k = 0; k < 16; k += 1) imm.bytes.push(r.byte()); } // v128.const / shuffle lane indices
+        else if (sub >= 21 && sub <= 34) imm.lane = r.byte(); // extract / replace lane
+      } else if (op === 0xfc) {
+        if (sub === 8) { imm.data = r.u32(); r.byte(); } else if (sub === 9 || (sub >= 13 && sub <= 17)) imm.idx = r.u32();
+        else if (sub === 10) { r.byte(); r.byte(); } else if (sub === 11) r.byte();
+        else if (sub === 12) { imm.a = r.u32(); imm.b = r.u32(); } else if (sub === 14) { imm.a = r.u32(); imm.b = r.u32(); }
+      } else if (op === 0xfe && sub !== 3) { imm.align = r.u32(); imm.offset = r.u32(); } else if (op === 0xfe) r.byte();
+      ins.push({ addr, op, name: nm, text: nm + (imm.offset ? ` offset=${imm.offset}` : '') + (imm.lane != null ? ` lane=${imm.lane}` : ''), imm });
+      continue;
+    }
     const name = OP[op];
     if (name === undefined) { ins.push({ addr, op, text: `.byte 0x${op.toString(16)}`, bad: true }); continue; }
     let text = name, imm = {};
@@ -142,6 +171,18 @@ function liftWasm(ins, funcNames) {
     if (n === 'return') { flush(stack.length ? `return ${pop()};` : 'return;'); continue; }
     if (n === 'unreachable') { flush('unreachable;'); continue; }
     if (n === 'nop') continue;
+    // SIMD (v128) and bulk-memory ops
+    if (n.startsWith('v128.load') || /load\d+(x\d+)?(_s|_u|_splat)?$/.test(n) && n.includes('v128')) { stack.push(`v128[${pop()}${i.imm.offset ? '+' + i.imm.offset : ''}]`); continue; }
+    if (n === 'v128.store' || /\.store\d*_lane$/.test(n)) { const v = pop(), a = pop(); flush(`v128[${a}] = ${v};`); continue; }
+    if (n === 'v128.const') { stack.push('v128.const(...)'); continue; }
+    if (/\.splat$/.test(n) || /extract_lane/.test(n) || n === 'v128.not' || n === 'v128.any_true') { stack.push(`${n}(${pop()})`); continue; }
+    if (/replace_lane/.test(n)) { const v = pop(), a = pop(); stack.push(`${n}(${a}, ${v})`); continue; }
+    if (n === 'v128.bitselect') { const c = pop(), b = pop(), a = pop(); stack.push(`${n}(${a}, ${b}, ${c})`); continue; }
+    if (/^(i8x16|i16x8|i32x4|i64x2|f32x4|f64x2)\.(add|sub|mul|div|eq|ne|lt|gt|le|ge|min|max|and|or|xor)/.test(n) || n === 'i8x16.swizzle' || /^v128\.(and|or|xor|andnot)$/.test(n)) { const b = pop(), a = pop(); stack.push(`${n}(${a}, ${b})`); continue; }
+    if (/^memory\.(copy|fill|init)$/.test(n)) { pop(); pop(); pop(); flush(`${n}(...);`); continue; }
+    if (/^(data|elem)\.drop$|^table\.(copy|init|fill|grow)$/.test(n)) { flush(`${n}(...);`); continue; }
+    if (/trunc_sat/.test(n)) { stack.push(`${n}(${pop()})`); continue; }
+    if (n.startsWith('simd.') || n.startsWith('fc.') || n.startsWith('atomic.')) { flush(`/* ${i.text} */`); continue; }
     // numeric conversions and the rest: render as a call on the top of stack
     stack.push(`${n}(${pop()})`);
   }

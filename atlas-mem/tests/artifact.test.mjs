@@ -1361,6 +1361,16 @@ test('the pyc disassembler resolves consts, names and locals from the opmap', as
   assert.deepEqual(py.disasm(c13, '3.13').map((i) => i.text), ['LOAD_CONST "x"', 'RETURN_CONST "x"']);
 });
 
+test('the WASM decoder decodes the SIMD (0xFD) prefix without desync', async () => {
+  const wm = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-wasm.mjs')).href);
+  const mkR = (bytes) => { const b = Buffer.from(bytes); let p = 0; const u32 = () => { let r = 0, s = 0, x; do { x = b[p++]; r |= (x & 0x7f) << s; s += 7; } while (x & 0x80); return r >>> 0; }; return { b, get p() { return p; }, set p(v) { p = v; }, byte: () => b[p++], u32, i32: u32, i64: u32, f32: () => { const v = b.readFloatLE(p); p += 4; return v; }, f64: () => { const v = b.readDoubleLE(p); p += 8; return v; }, vec: (f) => { const n = u32(); const o = []; for (let i = 0; i < n; i += 1) o.push(f({ u32 })); return o; } }; };
+  // local.get 0 ; i32x4.splat ; v128.const(16 bytes) ; i32x4.add (subop 174 = 0xae 0x01) ; drop ; end
+  const bytes = [0x20, 0x00, 0xfd, 0x11, 0xfd, 0x0c, ...Array(16).fill(0), 0xfd, 0xae, 0x01, 0x1a, 0x0b];
+  const ins = wm.decodeExpr(mkR(bytes), bytes.length);
+  assert.deepEqual(ins.map((i) => i.text), ['local.get 0', 'i32x4.splat', 'v128.const', 'i32x4.add', 'drop', 'end']);
+  assert.ok(!ins.some((i) => i.bad), 'no .byte desync markers');
+});
+
 test('the pcap command runs end to end and detect routes to it', () => {
   const p = path.join(tmp, 'cap.pcap');
   fs.writeFileSync(p, makePcap());
