@@ -856,6 +856,19 @@ test('the lift renders rotate, byte-swap, bit-scan and popcount as intrinsics', 
   assert.ok(bsf.stmts.includes('rdx = bsf(rsi);'), bsf.stmts.join(' | '));
 });
 
+test('the lift renders repeated string ops as memcpy/memset/memcmp', async () => {
+  const lx = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-lift-x86.mjs')).href);
+  const ins = (t) => ({ mnem: t.split(' ')[1], text: t, addr: 0 });
+  const cpy = lx.liftBlock([ins('rep movsb')], null, new Set(['rcx']));
+  assert.ok(cpy.stmts.includes('memcpy(rdi, rsi, rcx);'), cpy.stmts.join(' | '));
+  const cpyq = lx.liftBlock([ins('rep movsq')], null, new Set());
+  assert.ok(cpyq.stmts.includes('memcpy(rdi, rsi, rcx * 8);'), cpyq.stmts.join(' | '));
+  const set = lx.liftBlock([ins('rep stosb')], null, new Set());
+  assert.ok(set.stmts.includes('memset(rdi, al, rcx);'), set.stmts.join(' | '));
+  const cmp = lx.liftBlock([ins('rep cmpsb')], null, new Set());
+  assert.ok(cmp.stmts.includes('memcmp(rdi, rsi, rcx);'), cmp.stmts.join(' | '));
+});
+
 test('the lift renders array and field access from the address shape', async () => {
   const lx = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-lift-x86.mjs')).href);
   const load = lx.liftBlock([{ mnem: 'mov', text: 'mov rax, [r8+rcx*8]' }], null, new Set(['rax']));

@@ -113,6 +113,17 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
     }
     // one-operand multiply: full product into rax (high half rdx cleared for our purposes)
     if ((mnem === 'mul' || mnem === 'imul') && ops.length === 1) { wr('rax', `(${val('rax')} * ${val(ops[0])})`); wr('rdx', '0'); continue; }
+    // repeated string op: the recognisable memcpy/memset/memcmp/memchr idiom (rcx is the count,
+    // left 0; rdi/rsi are advanced so a later read of them is opaque)
+    if ((mnem === 'rep' || mnem === 'repne') && ops.length === 1) {
+      const s = ops[0]; const w = s.endsWith('q') ? ' * 8' : s.endsWith('d') ? ' * 4' : s.endsWith('w') ? ' * 2' : '';
+      if (/^movs/.test(s)) stmts.push(`memcpy(rdi, rsi, rcx${w});`);
+      else if (/^stos/.test(s)) stmts.push(`memset(rdi, ${val(s === 'stosb' ? 'al' : s === 'stosw' ? 'ax' : s === 'stosd' ? 'eax' : 'rax')}, rcx${w});`);
+      else if (/^cmps/.test(s)) stmts.push(`memcmp(rdi, rsi, rcx${w});`);
+      else if (/^scas/.test(s)) stmts.push(`memchr(rdi, ${val(s === 'scasb' ? 'al' : s === 'scasd' ? 'eax' : 'rax')}, rcx);`);
+      else { stmts.push(`// ${ins.text}`); continue; }
+      wr('rcx', '0'); kill('rdi'); kill('rsi'); continue;
+    }
     if (mnem === 'lea') { const [dst, m] = ops; wr(dst, `&(${subAddr(m.slice(1, -1))})`); continue; }
     if ((mnem === 'xor' || mnem === 'sub') && ops.length === 2 && ops[0] === ops[1] && !isMem(ops[0])) { wr(ops[0], '0'); continue; } // zeroing idiom
     if (BIN[mnem] && ops.length >= 2) { const [dst, src] = ops; const e = `(${val(dst)} ${BIN[mnem]} ${val(src)})`; if (isMem(dst)) stmts.push(`${deref(dst)} = ${e};`); else wr(dst, e); continue; }
