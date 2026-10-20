@@ -947,6 +947,18 @@ test('the x86 decoder decodes VEX/AVX and the three-byte 0F38/0F3A maps', async 
   assert.equal(dec([0x66, 0x0f, 0x38, 0xdc, 0xc1]), 'aesenc xmm0, xmm1');
 });
 
+test('the x86 decoder decodes the x87 FPU escapes', async () => {
+  const x = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-x86.mjs')).href);
+  const dec = (bytes) => { const b = Buffer.from(bytes); return x.decodeOne(b, 0, b.length).text; };
+  assert.equal(dec([0xdd, 0x00]), 'fld [rax]');        // memory form by esc+reg
+  assert.equal(dec([0xd8, 0x00]), 'fadd [rax]');
+  assert.equal(dec([0xde, 0xc1]), 'faddp st(1), st');  // register-stack form
+  assert.equal(dec([0xd9, 0xc1]), 'fld st(1)');
+  assert.equal(dec([0xd9, 0xfa]), 'fsqrt');            // single-byte op
+  assert.equal(dec([0xdb, 0xf1]), 'fcomi st, st(1)');
+  assert.equal(dec([0xdf, 0xe0]), 'fnstsw ax');
+});
+
 test('the arm64 decoder decodes the scalar floating-point group', async () => {
   const a = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-arm64.mjs')).href);
   const W = (f) => { let w = 0; for (const [hi, lo, v] of f) w = (w | ((v & ((1 << (hi - lo + 1)) - 1)) << lo)) >>> 0; return w >>> 0; };

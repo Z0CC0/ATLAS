@@ -51,7 +51,7 @@ OP[0xc0] = { x: 'g2', i: 'b' }; OP[0xc1] = { x: 'g2', i: 'b' }; put(0xc2, 'ret',
 OP[0xc6] = { x: 'g11', i: 'b' }; OP[0xc7] = { x: 'g11', i: 'z' }; OP[0xc8] = { m: 'enter', x: 'enter' }; put(0xc9, 'leave'); put(0xca, 'retf', false, 'w'); put(0xcb, 'retf');
 put(0xcc, 'int3'); put(0xcd, 'int', false, 'b'); put(0xce, 'into'); put(0xcf, 'iretq');
 OP[0xd0] = { x: 'g2' }; OP[0xd1] = { x: 'g2' }; OP[0xd2] = { x: 'g2' }; OP[0xd3] = { x: 'g2' }; put(0xd7, 'xlat');
-for (let c = 0xd8; c <= 0xdf; c += 1) OP[c] = { m: 'fpu', M: true }; // x87 escape, ModR/M, no immediate
+for (let c = 0xd8; c <= 0xdf; c += 1) OP[c] = { m: 'fpu', x: 'fpu', M: true }; // x87 escape, ModR/M, no immediate
 put(0xe0, 'loopne', false, 'b'); put(0xe1, 'loope', false, 'b'); put(0xe2, 'loop', false, 'b'); put(0xe3, 'jrcxz', false, 'b');
 put(0xe4, 'in', false, 'b'); put(0xe5, 'in', false, 'b'); put(0xe6, 'out', false, 'b'); put(0xe7, 'out', false, 'b');
 put(0xe8, 'call', false, 'z'); put(0xe9, 'jmp', false, 'z'); put(0xeb, 'jmp', false, 'b'); put(0xec, 'in'); put(0xed, 'in'); put(0xee, 'out'); put(0xef, 'out');
@@ -204,6 +204,41 @@ function decodeVex(buf, pos, end, seg) {
   return fin(start, pos, mnem, ops, null, seg);
 }
 
+// x87 FPU escape D8-DF. Memory forms name by (esc, ModR/M.reg); register-stack forms (mod==3)
+// are the common fadd/fmul/fld/fst/faddp/fcomi/fucomi and the single-byte ops (fchs, fsqrt…).
+const X87_MEM = {
+  0xd8: ['fadd', 'fmul', 'fcom', 'fcomp', 'fsub', 'fsubr', 'fdiv', 'fdivr'],
+  0xd9: ['fld', null, 'fst', 'fstp', 'fldenv', 'fldcw', 'fnstenv', 'fnstcw'],
+  0xda: ['fiadd', 'fimul', 'ficom', 'ficomp', 'fisub', 'fisubr', 'fidiv', 'fidivr'],
+  0xdb: ['fild', 'fisttp', 'fist', 'fistp', null, 'fld', null, 'fstp'],
+  0xdc: ['fadd', 'fmul', 'fcom', 'fcomp', 'fsub', 'fsubr', 'fdiv', 'fdivr'],
+  0xdd: ['fld', 'fisttp', 'fst', 'fstp', 'frstor', null, 'fnsave', 'fnstsw'],
+  0xde: ['fiadd', 'fimul', 'ficom', 'ficomp', 'fisub', 'fisubr', 'fidiv', 'fidivr'],
+  0xdf: ['fild', 'fisttp', 'fist', 'fistp', 'fbld', 'fild', 'fbstp', 'fistp'],
+};
+const X87_D9 = { 0xe0: 'fchs', 0xe1: 'fabs', 0xe4: 'ftst', 0xe5: 'fxam', 0xe8: 'fld1', 0xe9: 'fldl2t', 0xea: 'fldl2e', 0xeb: 'fldpi', 0xec: 'fldlg2', 0xed: 'fldln2', 0xee: 'fldz', 0xf0: 'f2xm1', 0xf1: 'fyl2x', 0xf2: 'fptan', 0xf3: 'fpatan', 0xf4: 'fxtract', 0xf5: 'fprem1', 0xf6: 'fdecstp', 0xf7: 'fincstp', 0xf8: 'fprem', 0xf9: 'fyl2xp1', 0xfa: 'fsqrt', 0xfb: 'fsincos', 0xfc: 'frndint', 0xfd: 'fscale', 0xfe: 'fsin', 0xff: 'fcos' };
+function decodeX87(buf, pos, end, esc, start, seg) {
+  if (pos >= end) return { len: pos - start, bad: true, text: 'x87 (truncated)' };
+  const modrm = buf[pos], mod = modrm >> 6, reg = (modrm >> 3) & 7, rm = modrm & 7;
+  if (mod !== 3) { // memory operand
+    const mr = decodeModRM(buf, pos, end, { W: 0, Rx: 0, Xx: 0, Bx: 0, hasRex: false, opsize: 8, p67: false, xmm: false });
+    if (mr.bad) return { len: pos - start, bad: true, text: 'x87 (bad modrm)' };
+    const nm = X87_MEM[esc][reg]; if (!nm) return { len: mr.pos - start, bad: true, text: 'x87 (reserved)' };
+    return fin(start, mr.pos, nm, mr.rm, null, seg);
+  }
+  pos += 1; const sti = `st(${rm})`; let nm = null, ops = `st, ${sti}`;
+  if (esc === 0xd8) { nm = ['fadd', 'fmul', 'fcom', 'fcomp', 'fsub', 'fsubr', 'fdiv', 'fdivr'][reg]; if (reg === 2 || reg === 3) ops = sti; }
+  else if (esc === 0xdc) { nm = ['fadd', 'fmul', null, null, 'fsubr', 'fsub', 'fdivr', 'fdiv'][reg]; ops = `${sti}, st`; }
+  else if (esc === 0xde) { if (modrm === 0xd9) { nm = 'fcompp'; ops = ''; } else { nm = ['faddp', 'fmulp', null, null, 'fsubrp', 'fsubp', 'fdivrp', 'fdivp'][reg]; ops = `${sti}, st`; } }
+  else if (esc === 0xdd) { nm = ['ffree', null, 'fst', 'fstp', 'fucom', 'fucomp', null, null][reg]; ops = sti; }
+  else if (esc === 0xd9) { if (reg === 0) { nm = 'fld'; ops = sti; } else if (reg === 1) { nm = 'fxch'; ops = sti; } else { nm = X87_D9[modrm]; ops = ''; } }
+  else if (esc === 0xdf) { if (modrm === 0xe0) { nm = 'fnstsw'; ops = 'ax'; } else if (reg === 5) { nm = 'fucomip'; ops = `st, ${sti}`; } else if (reg === 6) { nm = 'fcomip'; ops = `st, ${sti}`; } }
+  else if (esc === 0xdb) { if (modrm === 0xe3) { nm = 'fninit'; ops = ''; } else { nm = { 0: 'fcmovnb', 1: 'fcmovne', 2: 'fcmovnbe', 3: 'fcmovnu', 5: 'fucomi', 6: 'fcomi' }[reg]; ops = `st, ${sti}`; } }
+  else if (esc === 0xda) { if (modrm === 0xe9) { nm = 'fucompp'; ops = ''; } else { nm = { 0: 'fcmovb', 1: 'fcmove', 2: 'fcmovbe', 3: 'fcmovu' }[reg]; ops = `st, ${sti}`; } }
+  if (!nm) return { len: pos - start, bad: true, text: 'x87 (reserved)' };
+  return fin(start, pos, nm, ops, null, seg);
+}
+
 // group mnemonics by the ModR/M reg field
 const G1 = ['add', 'or', 'adc', 'sbb', 'and', 'sub', 'xor', 'cmp'];
 const G2 = ['rol', 'ror', 'rcl', 'rcr', 'shl', 'shr', 'sal', 'sar'];
@@ -257,6 +292,7 @@ function decodeOne(buf, pos, end) {
     ent = OF[op];
   } else ent = OP[op];
   if (!ent) return { len: pos - start, bad: true, text: `(unknown ${twobyte ? '0f' : ''}${op.toString(16).padStart(2, '0')})` };
+  if (ent.x === 'fpu') return decodeX87(buf, pos, end, op, start, seg);
 
   // groups: the mnemonic comes from the ModR/M reg field; immediate may depend on it
   let mnem = ent.m, grpImm = ent.i;
