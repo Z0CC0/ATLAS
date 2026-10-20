@@ -1097,7 +1097,7 @@ test('a classic pcap decodes Ethernet/IPv4/TCP and summarises conversations', ()
   assert.equal(cap.packets[0].dport, 80);
   const sum = summarisePcap(cap);
   assert.equal(sum.protocols.tcp, 3);
-  assert.equal(sum.conversations[0].flow, '10.0.0.1:12345 -> 10.0.0.2:80 (tcp)');
+  assert.equal(sum.conversations[0].flow, '10.0.0.1:12345 -> 10.0.0.2:80 (tcp, http)');
   assert.equal(sum.conversations[0].packets, 2);
 });
 

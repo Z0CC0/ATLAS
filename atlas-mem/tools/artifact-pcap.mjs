@@ -93,6 +93,10 @@ function readNg(buf) {
   return cap;
 }
 
+// well-known ports -> service, for labelling a conversation by its application protocol
+const PORTS = { 20: 'ftp-data', 21: 'ftp', 22: 'ssh', 23: 'telnet', 25: 'smtp', 53: 'dns', 67: 'dhcp', 68: 'dhcp', 69: 'tftp', 80: 'http', 110: 'pop3', 123: 'ntp', 143: 'imap', 161: 'snmp', 179: 'bgp', 389: 'ldap', 443: 'https', 445: 'smb', 465: 'smtps', 514: 'syslog', 587: 'smtp', 636: 'ldaps', 853: 'dns-tls', 993: 'imaps', 995: 'pop3s', 1433: 'mssql', 1883: 'mqtt', 3306: 'mysql', 3389: 'rdp', 5432: 'postgres', 5672: 'amqp', 6379: 'redis', 8080: 'http-alt', 8443: 'https-alt', 9200: 'elasticsearch', 27017: 'mongodb' };
+const service = (sp, dp) => { const s = PORTS[dp] || PORTS[sp]; return s ? ', ' + s : ''; };
+
 /** Build the protocol counts and the conversation list. */
 function summarise(cap) {
   const proto = {}; const conv = new Map();
@@ -102,7 +106,7 @@ function summarise(cap) {
     if (p.src && p.dst) {
       const a = p.sport != null ? `${p.src}:${p.sport}` : p.src;
       const b = p.dport != null ? `${p.dst}:${p.dport}` : p.dst;
-      const k = `${a} -> ${b} (${p.l4 || p.proto})`;
+      const k = `${a} -> ${b} (${p.l4 || p.proto}${service(p.sport, p.dport)})`;
       conv.set(k, (conv.get(k) || 0) + 1);
     }
   }
