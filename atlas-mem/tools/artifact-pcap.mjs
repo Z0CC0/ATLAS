@@ -14,7 +14,76 @@ function ipv4(b, o) { return `${b[o]}.${b[o + 1]}.${b[o + 2]}.${b[o + 3]}`; }
 function ipv6(b, o) { const p = []; for (let i = 0; i < 16; i += 2) p.push(((b[o + i] << 8) | b[o + i + 1]).toString(16)); return p.join(':').replace(/(^|:)(0:)+/, '::').replace(/::+/, '::'); }
 function mac(b, o) { const p = []; for (let i = 0; i < 6; i += 1) p.push(b[o + i].toString(16).padStart(2, '0')); return p.join(':'); }
 
-/** Decode one link-layer frame down to L4. Returns a compact description. */
+// --- L7 (application layer) from a transport payload. Read-only, best-effort, from the
+// protocol RFCs: HTTP/1.x request or status line + Host, DNS question (RFC 1035), and the
+// TLS ClientHello SNI (RFC 6066). We parse what is in the captured bytes; a truncated or
+// encrypted payload simply yields nothing.
+const HTTP_REQ = /^(GET|POST|PUT|DELETE|HEAD|OPTIONS|PATCH|TRACE|CONNECT) \S+ HTTP\/\d/;
+const DNS_QT = { 1: 'A', 2: 'NS', 5: 'CNAME', 6: 'SOA', 12: 'PTR', 15: 'MX', 16: 'TXT', 28: 'AAAA', 33: 'SRV', 43: 'DS', 48: 'DNSKEY', 65: 'HTTPS', 255: 'ANY' };
+
+function parseHttp(p) {
+  const text = p.toString('latin1', 0, Math.min(p.length, 2048));
+  const first = text.split('\r\n', 1)[0];
+  if (HTTP_REQ.test(first)) {
+    const sp = first.split(' '); const host = (text.match(/\r\nHost:\s*([^\r\n]+)/i) || [])[1];
+    return { proto: 'http', summary: `${sp[0]} ${host ? host : ''}${sp[1]}` };
+  }
+  if (/^HTTP\/\d\.\d \d{3}/.test(first)) return { proto: 'http', summary: first.slice(0, 80) };
+  return null;
+}
+
+function dnsName(b, off) {
+  const parts = []; let o = off, safety = 0;
+  while (o < b.length && safety++ < 128) {
+    const len = b[o];
+    if (len === 0) { o += 1; break; }
+    if ((len & 0xc0) === 0xc0) { o += 2; break; } // compression pointer: stop, the labels so far are enough
+    if (o + 1 + len > b.length) return null;
+    parts.push(b.toString('latin1', o + 1, o + 1 + len)); o += 1 + len;
+  }
+  return { name: parts.join('.') || '.', off: o };
+}
+
+function parseDns(p) {
+  if (p.length < 12 || ((p[4] << 8) | p[5]) < 1) return null;
+  const nm = dnsName(p, 12); if (!nm || nm.off + 2 > p.length) return null;
+  const qtype = (p[nm.off] << 8) | p[nm.off + 1];
+  const kind = (p[2] & 0x80) ? 'response' : 'query';
+  return { proto: 'dns', summary: `${kind} ${DNS_QT[qtype] || 'TYPE' + qtype} ${nm.name}` };
+}
+
+function parseTlsSni(p) {
+  if (p.length < 44 || p[0] !== 0x16 || p[5] !== 0x01) return null; // TLS handshake, ClientHello
+  let o = 5 + 4 + 2 + 32; // record header + handshake header + client version + 32-byte random
+  if (o >= p.length) return null;
+  o += 1 + p[o]; // session id
+  if (o + 2 > p.length) return null;
+  o += 2 + ((p[o] << 8) | p[o + 1]); // cipher suites
+  if (o + 1 > p.length) return null;
+  o += 1 + p[o]; // compression methods
+  if (o + 2 > p.length) return null;
+  const extEnd = Math.min(p.length, o + 2 + ((p[o] << 8) | p[o + 1])); o += 2;
+  while (o + 4 <= extEnd) {
+    const type = (p[o] << 8) | p[o + 1], len = (p[o + 2] << 8) | p[o + 3]; o += 4;
+    if (type === 0x0000 && o + 5 <= p.length) { // server_name extension
+      const nameLen = (p[o + 3] << 8) | p[o + 4];
+      return { proto: 'tls', summary: `ClientHello SNI=${p.toString('latin1', o + 5, Math.min(p.length, o + 5 + nameLen))}` };
+    }
+    o += len;
+  }
+  return { proto: 'tls', summary: 'ClientHello' };
+}
+
+/** Recognise the application protocol from a transport payload and the ports. */
+function decodeL7(f) {
+  const p = f.payload, sp = f.sport, dp = f.dport;
+  if (f.l4 === 'tcp' && (dp === 443 || sp === 443 || dp === 8443 || sp === 8443)) { const t = parseTlsSni(p); if (t) return t; }
+  if (dp === 53 || sp === 53) { const d = parseDns(f.l4 === 'tcp' && p.length > 2 ? p.subarray(2) : p); if (d) return d; } // TCP DNS has a 2-byte length prefix
+  if (f.l4 === 'tcp') { const h = parseHttp(p); if (h) return h; }
+  return null;
+}
+
+/** Decode one link-layer frame down to L4 (and the application layer when present). */
 function decodeFrame(b, linktype) {
   const f = { l3: null, l4: null };
   let o = 0; let ethertype = null;
@@ -40,8 +109,11 @@ function decodeFrame(b, linktype) {
     o += 40;
   } else { f.l3 = ethertype ? 'ethertype/0x' + ethertype.toString(16) : null; return f; }
 
-  if (f.proto === 'tcp' && b.length >= o + 4) { f.l4 = 'tcp'; f.sport = (b[o] << 8) | b[o + 1]; f.dport = (b[o + 2] << 8) | b[o + 3]; }
+  if (f.proto === 'tcp' && b.length >= o + 14) { f.l4 = 'tcp'; f.sport = (b[o] << 8) | b[o + 1]; f.dport = (b[o + 2] << 8) | b[o + 3]; const dataOff = (b[o + 12] >> 4) * 4; f.payload = b.subarray(o + dataOff); }
+  else if (f.proto === 'tcp' && b.length >= o + 4) { f.l4 = 'tcp'; f.sport = (b[o] << 8) | b[o + 1]; f.dport = (b[o + 2] << 8) | b[o + 3]; }
+  else if (f.proto === 'udp' && b.length >= o + 8) { f.l4 = 'udp'; f.sport = (b[o] << 8) | b[o + 1]; f.dport = (b[o + 2] << 8) | b[o + 3]; f.payload = b.subarray(o + 8); }
   else if (f.proto === 'udp' && b.length >= o + 4) { f.l4 = 'udp'; f.sport = (b[o] << 8) | b[o + 1]; f.dport = (b[o + 2] << 8) | b[o + 3]; }
+  if (f.payload && f.payload.length) { const app = decodeL7(f); if (app) { f.l7 = app.proto; f.app = app; } }
   return f;
 }
 
@@ -99,10 +171,11 @@ const service = (sp, dp) => { const s = PORTS[dp] || PORTS[sp]; return s ? ', ' 
 
 /** Build the protocol counts and the conversation list. */
 function summarise(cap) {
-  const proto = {}; const conv = new Map();
+  const proto = {}; const conv = new Map(); const apps = new Map();
   for (const p of cap.packets) {
     const key = p.l4 || p.proto || p.l3 || 'other';
     proto[key] = (proto[key] || 0) + 1;
+    if (p.app) { apps.set(`${p.app.proto}: ${p.app.summary}`, (apps.get(`${p.app.proto}: ${p.app.summary}`) || 0) + 1); }
     if (p.src && p.dst) {
       const a = p.sport != null ? `${p.src}:${p.sport}` : p.src;
       const b = p.dport != null ? `${p.dst}:${p.dport}` : p.dst;
@@ -111,7 +184,8 @@ function summarise(cap) {
     }
   }
   const conversations = [...conv.entries()].sort((x, y) => y[1] - x[1]).slice(0, 20).map(([k, n]) => ({ flow: k, packets: n }));
-  return { protocols: proto, conversations };
+  const applications = [...apps.entries()].sort((x, y) => y[1] - x[1]).slice(0, 30).map(([k, n]) => ({ detail: k, packets: n }));
+  return { protocols: proto, conversations, applications };
 }
 
 function readPcap(buf) {

@@ -1247,6 +1247,27 @@ test('a classic pcap decodes Ethernet/IPv4/TCP and summarises conversations', ()
   assert.equal(sum.conversations[0].packets, 2);
 });
 
+test('pcap reads the application layer: HTTP, DNS and the TLS ClientHello SNI', async () => {
+  const pc = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-pcap.mjs')).href);
+  const eth = (et) => { const h = Buffer.alloc(14); h[12] = et >> 8; h[13] = et & 0xff; return h; };
+  const ip = (proto) => { const h = Buffer.alloc(20); h[0] = 0x45; h[9] = proto; h[12] = 10; h[15] = 1; h[16] = 10; h[19] = 2; return h; };
+  const tcp = (sp, dp) => { const h = Buffer.alloc(20); h.writeUInt16BE(sp, 0); h.writeUInt16BE(dp, 2); h[12] = 0x50; return h; };
+  const udp = (sp, dp) => { const h = Buffer.alloc(8); h.writeUInt16BE(sp, 0); h.writeUInt16BE(dp, 2); return h; };
+  const http = pc.decodeFrame(Buffer.concat([eth(0x0800), ip(6), tcp(50000, 80), Buffer.from('GET /i.html HTTP/1.1\r\nHost: example.com\r\n\r\n')]), 'ethernet');
+  assert.deepEqual(http.app, { proto: 'http', summary: 'GET example.com/i.html' });
+  const qname = Buffer.from([7, 101, 120, 97, 109, 112, 108, 101, 3, 99, 111, 109, 0]); // example.com
+  const dnsh = Buffer.alloc(12); dnsh[5] = 1;
+  const dns = pc.decodeFrame(Buffer.concat([eth(0x0800), ip(17), udp(40000, 53), dnsh, qname, Buffer.from([0, 1, 0, 1])]), 'ethernet');
+  assert.deepEqual(dns.app, { proto: 'dns', summary: 'query A example.com' });
+  const sni = Buffer.from('example.org');
+  const snExt = Buffer.concat([Buffer.from([0, 0]), Buffer.from([0, sni.length + 5]), Buffer.from([0, sni.length + 3]), Buffer.from([0]), Buffer.from([0, sni.length]), sni]);
+  const hello = Buffer.concat([Buffer.from([0x03, 0x03]), Buffer.alloc(32), Buffer.from([0]), Buffer.from([0, 2, 0x13, 0x01]), Buffer.from([1, 0]), Buffer.from([snExt.length >> 8, snExt.length & 0xff]), snExt]);
+  const hs = Buffer.concat([Buffer.from([0x01, 0, hello.length >> 8, hello.length & 0xff]), hello]);
+  const rec = Buffer.concat([Buffer.from([0x16, 0x03, 0x01, hs.length >> 8, hs.length & 0xff]), hs]);
+  const tls = pc.decodeFrame(Buffer.concat([eth(0x0800), ip(6), tcp(50001, 443), rec]), 'ethernet');
+  assert.deepEqual(tls.app, { proto: 'tls', summary: 'ClientHello SNI=example.org' });
+});
+
 test('the pcap command runs end to end and detect routes to it', () => {
   const p = path.join(tmp, 'cap.pcap');
   fs.writeFileSync(p, makePcap());

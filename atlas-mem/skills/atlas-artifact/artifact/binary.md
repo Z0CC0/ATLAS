@@ -290,13 +290,17 @@ database, which is not shipped; the hashes are reported as-is.
 `pcap <file>` reads a libpcap or pcapng capture: the link type and byte order from the
 header, then every packet record. It decodes the common stack — Ethernet (with VLAN tags),
 IPv4 / IPv6, TCP / UDP / ICMP — and summarises the protocol counts and the conversations
-(source and destination address and port, ordered by packet count). `--max N` caps how many
-individual packets the JSON lists. The payload bytes are not reassembled and higher
-protocols (TLS, HTTP bodies) are not parsed; a conversation is counted by packet, not by
-reconstructed stream. Useful for reversing a wire protocol from a capture without a live tap.
+(source and destination address and port, ordered by packet count). It also reads the
+application layer best-effort from a single packet: an HTTP/1.x request (method + Host +
+path) or status line, a DNS question (kind, type, name), and the TLS ClientHello SNI — listed
+under `applications`. `--max N` caps how many individual packets the JSON lists. The payload
+bytes are not reassembled across packets, so a body split over segments is not recovered, and
+a conversation is counted by packet, not by reconstructed stream. Useful for reversing a wire
+protocol from a capture without a live tap.
 
 ## Not yet
 
 Expression reconstruction's last native frontier is user-struct and full type recovery (API
-prototypes already type the call sites). Firmware is read by header only; payload reassembly
-and higher-layer protocol decode on top of `pcap` are a later slice.
+prototypes already type the call sites). Firmware is read by header only; cross-packet
+payload reassembly (a full HTTP body, a TLS record spanning segments) on top of `pcap` is a
+later slice.
