@@ -74,6 +74,14 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
     return `*${B}`;
   };
   const val = (t) => { if (t == null) return '?'; if (isMem(t)) return deref(t); if (REGINFO[t]) return rd(t); return t; };
+  // recover a flag condition from the preceding cmp/test, the same way the branch does
+  const condFromCmp = (cc) => {
+    const opr = CC[cc];
+    if (cmp && opr) return cmp.test ? (cmp.a === cmp.b ? `${cmp.a} ${opr} 0` : `(${cmp.a} & ${cmp.b}) ${opr} 0`) : `${cmp.a} ${opr} ${cmp.b}`;
+    if (cc === 's') return cmp ? `(${cmp.a} - ${cmp.b}) < 0` : 'SF';
+    if (cc === 'ns') return cmp ? `(${cmp.a} - ${cmp.b}) >= 0` : '!SF';
+    return `cc_${cc}`;
+  };
 
   for (let k = 0; k < insns.length; k += 1) {
     const ins = insns[k]; const { mnem, ops } = parse(ins.text);
@@ -90,6 +98,21 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
       if (isMem(dst)) stmts.push(`${deref(dst)} = ${sv};`); else if (REGINFO[dst]) wr(dst, sv); else stmts.push(`${dst} = ${sv};`);
       continue;
     }
+    // conditional set: a byte becomes 0/1 from the flags of the preceding cmp/test
+    if (/^set[a-z]{1,3}$/.test(mnem) && ops.length === 1) {
+      const e = `(${condFromCmp(mnem.slice(3))})`;
+      if (isMem(ops[0])) stmts.push(`${deref(ops[0])} = ${e};`); else wr(ops[0], e); continue;
+    }
+    // conditional move: dst takes src only when the condition holds, else keeps its value
+    if (/^cmov[a-z]{1,3}$/.test(mnem) && ops.length === 2) {
+      const [dst, src] = ops; wr(dst, `(${condFromCmp(mnem.slice(4))} ? ${val(src)} : ${val(dst)})`); continue;
+    }
+    // unsigned/signed divide: quotient in rax, remainder in rdx (the low dividend is rax)
+    if ((mnem === 'div' || mnem === 'idiv') && ops.length === 1) {
+      const a = val('rax'), d = val(ops[0]); wr('rax', `(${a} / ${d})`); wr('rdx', `(${a} % ${d})`); continue;
+    }
+    // one-operand multiply: full product into rax (high half rdx cleared for our purposes)
+    if ((mnem === 'mul' || mnem === 'imul') && ops.length === 1) { wr('rax', `(${val('rax')} * ${val(ops[0])})`); wr('rdx', '0'); continue; }
     if (mnem === 'lea') { const [dst, m] = ops; wr(dst, `&(${subAddr(m.slice(1, -1))})`); continue; }
     if ((mnem === 'xor' || mnem === 'sub') && ops.length === 2 && ops[0] === ops[1] && !isMem(ops[0])) { wr(ops[0], '0'); continue; } // zeroing idiom
     if (BIN[mnem] && ops.length >= 2) { const [dst, src] = ops; const e = `(${val(dst)} ${BIN[mnem]} ${val(src)})`; if (isMem(dst)) stmts.push(`${deref(dst)} = ${e};`); else wr(dst, e); continue; }
@@ -109,13 +132,7 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
   for (const [c, e] of env) if (e.expr !== c && (!liveOut || liveOut.has(c) || (endsRet && c === 'rax')) && !(noSpill && noSpill.has(c))) stmts.push(`${c} = ${e.expr};`);
 
   const term = insns[insns.length - 1]; let cond = null;
-  if (term && /^j/.test(term.mnem) && term.mnem !== 'jmp') {
-    const cc = term.mnem.slice(1); const opr = CC[cc];
-    if (cmp && opr) cond = { text: cmp.test ? (cmp.a === cmp.b ? `${cmp.a} ${opr} 0` : `(${cmp.a} & ${cmp.b}) ${opr} 0`) : `${cmp.a} ${opr} ${cmp.b}` };
-    else if (cc === 's') cond = { text: cmp ? `(${cmp.a} - ${cmp.b}) < 0` : 'SF' };
-    else if (cc === 'ns') cond = { text: cmp ? `(${cmp.a} - ${cmp.b}) >= 0` : '!SF' };
-    else cond = { text: `cc_${cc}` };
-  }
+  if (term && /^j/.test(term.mnem) && term.mnem !== 'jmp') cond = { text: condFromCmp(term.mnem.slice(1)) };
   return { stmts, cond, outEnv: new Map(env) };
 }
 

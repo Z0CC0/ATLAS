@@ -810,6 +810,18 @@ test('the lift renders SSE data moves as assignments', async () => {
   assert.ok(r.stmts.includes('rax = xmm0;'), 'movq to a general register is tracked');
 });
 
+test('the lift renders setcc, cmov and div from the flags', async () => {
+  const lx = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-lift-x86.mjs')).href);
+  const mk = (t) => ({ mnem: t.split(' ')[0], text: t, addr: 0 });
+  const setcc = lx.liftBlock([mk('cmp edi, 0xa'), mk('setl al')], null, new Set(['rax']));
+  assert.ok(setcc.stmts.includes('rax = (edi < 0xa);'), setcc.stmts.join(' | '));
+  const cmov = lx.liftBlock([mk('cmp rax, rbx'), mk('cmovl rax, rbx')], null, new Set(['rax']));
+  assert.ok(cmov.stmts.includes('rax = (rax < rbx ? rbx : rax);'), cmov.stmts.join(' | '));
+  const div = lx.liftBlock([mk('mov eax, edi'), mk('div ecx')], null, new Set(['rax', 'rdx']));
+  assert.ok(div.stmts.includes('rax = (edi / ecx);'), div.stmts.join(' | '));
+  assert.ok(div.stmts.includes('rdx = (edi % ecx);'));
+});
+
 test('the lift renders array and field access from the address shape', async () => {
   const lx = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-lift-x86.mjs')).href);
   const load = lx.liftBlock([{ mnem: 'mov', text: 'mov rax, [r8+rcx*8]' }], null, new Set(['rax']));
