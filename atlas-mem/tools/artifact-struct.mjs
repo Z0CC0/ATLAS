@@ -235,4 +235,64 @@ function structurize(cfg, base, lift) {
   return head + '\nvoid func() {\n' + lines.join('\n') + '\n}';
 }
 
-export { structurize, domTree, dominates, rpo };
+/**
+ * Structure the linear, label-and-goto output of a bytecode lift (CIL, Dalvik, EVM) into
+ * if/else/while, reusing the same dominator-based structurizer. The input is a list of
+ * { off, text } where text is a plain statement, a label `X:`, `goto X;`, `if (c) goto X;`,
+ * a `return`/`throw`, or a `switch …`. Branch targets are numeric offsets encoded in the
+ * label name (e.g. IL_0012 -> 0x12). Returns the structured body lines (no `void func()`
+ * wrapper); where the flow is irreducible a labelled goto remains.
+ */
+function structureLinear(entries) {
+  const offOf = (label) => parseInt(String(label).replace(/^[A-Za-z]+_/, ''), 16);
+  const isLabel = (t) => /^[A-Za-z]\w*:$/.test(t);
+  const blocks = []; let cur = null;
+  const open = (start) => { cur = { start, stmts: [], term: null, succ: [] }; blocks.push(cur); };
+  for (let i = 0; i < entries.length; i += 1) {
+    const e = entries[i]; const t = e.text;
+    if (isLabel(t)) { const start = offOf(t.slice(0, -1)); if (cur && !cur.term) cur.fallTo = start; open(start); continue; }
+    if (!cur) open(e.off != null ? e.off : 0);
+    let m;
+    if (/^(return\b|throw\b)/.test(t)) { cur.stmts.push(t); cur.term = { kind: 'ret' }; }
+    else if ((m = /^goto (\w+);$/.exec(t))) cur.term = { kind: 'goto', target: offOf(m[1]), label: m[1] };
+    else if ((m = /^if \((.*)\) goto (\w+);$/.exec(t))) cur.term = { kind: 'if', cond: m[1], target: offOf(m[2]), label: m[2] };
+    else if (/^switch/.test(t)) { cur.stmts.push(t); cur.term = { kind: 'ret' }; } // switch left inline, no structured edges
+    else { cur.stmts.push(t); continue; }
+    // a terminator closed the block; the next entry (if not a label) starts a fresh block
+    const next = entries[i + 1];
+    if (next && !isLabel(next.text)) open(next.off != null ? next.off : cur.start + 1);
+    else cur = cur && cur.term ? null : cur;
+  }
+  const ids = new Set(blocks.map((b) => b.start));
+  // wire edges
+  for (let i = 0; i < blocks.length; i += 1) {
+    const b = blocks[i]; const term = b.term;
+    const fallNext = () => { const f = b.fallTo != null ? b.fallTo : (blocks[i + 1] && blocks[i + 1].start); if (f != null && ids.has(f)) b.succ.push({ to: f, fall: true }); };
+    if (term && term.kind === 'ret') { /* no successors */ }
+    else if (term && term.kind === 'goto') { if (ids.has(term.target)) b.succ.push({ to: term.target }); else b.stmts.push(`goto ${term.label};`); } // unresolved target: keep the goto
+    else if (term && term.kind === 'if') {
+      if (ids.has(term.target)) { b.succ.push({ to: term.target, cond: true }); b.cond = { text: term.cond }; fallNext(); }
+      else { b.stmts.push(`if (${term.cond}) goto ${term.label};`); fallNext(); } // unresolved target: keep the conditional goto, fall through
+    } else fallNext();
+  }
+  const cfg = { start: blocks.length ? blocks[0].start : 0, blocks };
+  const text = structurize(cfg, 0, (b) => ({ stmts: b.stmts, cond: b.cond || null }));
+  // strip the `void func() { … }` wrapper and the leading comment the structurizer adds
+  const lines = text.split('\n');
+  let body = lines.slice(2, -1).map((l) => l.replace(/^ {2}/, '')); // drop wrapper, dedent one level
+  // the structurizer appends a bare `return;` to a no-successor block; drop it when the block
+  // already ends with a real `return …;`/`throw …;`, and drop a dead goto after such a return
+  const out = [];
+  for (let i = 0; i < body.length; i += 1) {
+    const t = body[i].trim();
+    if (t === 'return;' && out.length && /^(return\b|throw\b)/.test(out[out.length - 1].trim())) continue;
+    if (/^goto \w+;$/.test(t) && out.length && /^(return\b|throw\b)/.test(out[out.length - 1].trim())) continue;
+    out.push(body[i]);
+  }
+  // drop any label line no surviving goto still targets
+  const referenced = new Set();
+  for (const l of out) { const m = /\bgoto (\w+);/.exec(l); if (m) referenced.add(m[1]); }
+  return out.filter((l) => { const m = /^(\w+):$/.exec(l.trim()); return !m || referenced.has(m[1]); });
+}
+
+export { structurize, structureLinear, domTree, dominates, rpo };

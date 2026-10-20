@@ -9,7 +9,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { structurize, dominates, domTree, rpo } from '../tools/artifact-struct.mjs';
+import { structurize, structureLinear, dominates, domTree, rpo } from '../tools/artifact-struct.mjs';
 import { liftBlock as liftArm64Block } from '../tools/artifact-lift-arm64.mjs';
 import { inferTypes, inferTypesArm, protoFor, signatureText } from '../tools/artifact-types.mjs';
 import { readWasm, liftWasm } from '../tools/artifact-wasm.mjs';
@@ -894,6 +894,30 @@ test('structuring recovers a loop with a break, no goto', () => {
   assert.ok(!/goto/.test(t), 'a natural loop needs no goto');
 });
 
+test('structureLinear turns labelled-goto bytecode into if/else and keeps the return value', () => {
+  const body = structureLinear([
+    { off: 0, text: 't0 = arg0;' }, { off: 1, text: 'if (!(t0)) goto IL_0008;' },
+    { off: 3, text: 'loc0 = 1;' }, { off: 6, text: 'goto IL_000b;' },
+    { off: 8, text: 'IL_0008:' }, { off: 8, text: 'loc0 = 2;' },
+    { off: 0xb, text: 'IL_000b:' }, { off: 0xb, text: 'return loc0;' },
+  ]).join('\n');
+  assert.match(body, /if \(!\(t0\)\) \{/);
+  assert.match(body, /\} else \{/);
+  assert.match(body, /return loc0;/);
+  assert.ok(!/goto/.test(body), 'a reducible bytecode diamond needs no goto');
+});
+
+test('structureLinear recovers a while loop from bytecode', () => {
+  const body = structureLinear([
+    { off: 0, text: 'loc0 = 0;' }, { off: 2, text: 'IL_0002:' },
+    { off: 2, text: 'if (loc0 >= arg0) goto IL_0010;' }, { off: 5, text: 'sum = (sum + loc0);' },
+    { off: 9, text: 'loc0 = (loc0 + 1);' }, { off: 0xd, text: 'goto IL_0002;' },
+    { off: 0x10, text: 'IL_0010:' }, { off: 0x10, text: 'return sum;' },
+  ]).join('\n');
+  assert.match(body, /while \(|for \(;;\)/);
+  assert.match(body, /return sum;/);
+});
+
 test('dominators: entry dominates all, a branch does not dominate the merge', () => {
   const succ = new Map([[0, [16, 8]], [8, [24]], [16, [24]], [24, []]]);
   const pred = new Map([[0, []], [8, [0]], [16, [0]], [24, [8, 16]]]);
@@ -1027,7 +1051,7 @@ test('EVM extracts the function selector from the dispatcher', () => {
 
 test('EVM lift resolves a constant jump and reads a selector extraction', () => {
   const ins = evmDecode(Buffer.from(EVM_HEX, 'hex'));
-  const p = liftEvm(ins);
+  const p = liftEvm(ins).map((e) => e.text).join('\n');
   assert.match(p, /calldata\[0x00\] >> 0xe0/); // top 4 bytes of calldata = the selector
   assert.match(p, /goto L_19/);
   assert.match(p, /storage|mem\[0x20\] = 0x2a/);

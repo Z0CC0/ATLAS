@@ -95,8 +95,9 @@ function lift(ins) {
   const L = (pc) => 'L_' + pc.toString(16);
   for (const i of ins) {
     const n = i.name;
-    if (!n) { out.push(`  ${i.text}`); continue; }
-    if (n === 'JUMPDEST') { out.push(`${L(i.pc)}:`); continue; }
+    const em = (txt) => out.push({ off: i.pc, text: txt });
+    if (!n) { em(`${i.text}`); continue; }
+    if (n === 'JUMPDEST') { em(`${L(i.pc)}:`); continue; }
     if (n === 'PUSH0') { stack.push('0'); continue; }
     if (n.startsWith('PUSH')) { stack.push(i.value); continue; }
     if (n.startsWith('DUP')) { const k = parseInt(n.slice(3), 10); stack.push(stack[stack.length - k] ?? '?'); continue; }
@@ -110,22 +111,22 @@ function lift(ins) {
     if (n === 'MLOAD') { stack.push(`mem[${pop()}]`); continue; }
     if (n === 'KECCAK256') { const a = pop(), b = pop(); stack.push(`keccak256(mem[${a}..${a}+${b}])`); continue; }
     if (n === 'BALANCE') { stack.push(`${pop()}.balance`); continue; }
-    if (n === 'SSTORE') { const k = pop(), v = pop(); out.push(`  storage[${k}] = ${v};`); continue; }
-    if (n === 'MSTORE' || n === 'MSTORE8') { const a = pop(), v = pop(); out.push(`  mem[${a}] = ${v};`); continue; }
+    if (n === 'SSTORE') { const k = pop(), v = pop(); em(`storage[${k}] = ${v};`); continue; }
+    if (n === 'MSTORE' || n === 'MSTORE8') { const a = pop(), v = pop(); em(`mem[${a}] = ${v};`); continue; }
     if (n === 'POP') { pop(); continue; }
-    if (n === 'JUMP') { const d = pop(); out.push(`  goto ${/^0x/.test(d) ? L(parseInt(d, 16)) : d};`); continue; }
-    if (n === 'JUMPI') { const d = pop(), c = pop(); out.push(`  if (${c}) goto ${/^0x/.test(d) ? L(parseInt(d, 16)) : d};`); continue; }
-    if (n === 'RETURN') { const a = pop(), b = pop(); out.push(`  return mem[${a}..${a}+${b}];`); continue; }
-    if (n === 'REVERT') { const a = pop(), b = pop(); out.push(`  revert(mem[${a}..${a}+${b}]);`); continue; }
-    if (n === 'STOP') { out.push('  stop;'); continue; }
-    if (n === 'SELFDESTRUCT') { out.push(`  selfdestruct(${pop()});`); continue; }
+    if (n === 'JUMP') { const d = pop(); em(`goto ${/^0x/.test(d) ? L(parseInt(d, 16)) : d};`); continue; }
+    if (n === 'JUMPI') { const d = pop(), c = pop(); em(`if (${c}) goto ${/^0x/.test(d) ? L(parseInt(d, 16)) : d};`); continue; }
+    if (n === 'RETURN') { const a = pop(), b = pop(); em(`return mem[${a}..${a}+${b}];`); continue; }
+    if (n === 'REVERT') { const a = pop(), b = pop(); em(`revert(mem[${a}..${a}+${b}]);`); continue; }
+    if (n === 'STOP') { em('stop;'); continue; }
+    if (n === 'SELFDESTRUCT') { em(`selfdestruct(${pop()});`); continue; }
     if (n === 'CALL' || n === 'DELEGATECALL' || n === 'STATICCALL' || n === 'CALLCODE') { const argc = n === 'DELEGATECALL' || n === 'STATICCALL' ? 6 : 7; const a = []; for (let k = 0; k < argc; k += 1) a.push(pop()); stack.push(`${n.toLowerCase()}(${a.join(', ')})`); continue; }
-    if (n.startsWith('LOG')) { const k = parseInt(n.slice(3), 10); for (let q = 0; q < 2 + k; q += 1) pop(); out.push(`  emit log${k}(...);`); continue; }
+    if (n.startsWith('LOG')) { const k = parseInt(n.slice(3), 10); for (let q = 0; q < 2 + k; q += 1) pop(); em(`emit log${k}(...);`); continue; }
     if (n === 'CALLDATASIZE' || n === 'RETURNDATASIZE') { stack.push(ENV0[n] || n.toLowerCase()); continue; }
     // default: a one-result builtin
     stack.push(`${n.toLowerCase()}(...)`);
   }
-  return out.join('\n');
+  return out;
 }
 
 function readEvm(buf) {

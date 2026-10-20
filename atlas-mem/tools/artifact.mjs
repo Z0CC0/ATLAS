@@ -40,7 +40,7 @@ import { decodeOne as x86decode } from './artifact-x86.mjs';
 import { decodeOne as arm64decode } from './artifact-arm64.mjs';
 import { buildCfg, formatCfg } from './artifact-cfg.mjs';
 import { liftFunction as liftX86Fn, liftBlock as liftX86Block } from './artifact-lift-x86.mjs';
-import { structurize } from './artifact-struct.mjs';
+import { structurize, structureLinear } from './artifact-struct.mjs';
 import { liftBlock as liftArm64Block } from './artifact-lift-arm64.mjs';
 import { inferTypes, inferTypesArm } from './artifact-types.mjs';
 import { readWasm, liftWasm } from './artifact-wasm.mjs';
@@ -776,7 +776,8 @@ function cmdCil(path) {
   for (const m of (d.decoded || [])) {
     if (!m.instructions) { L.push(`\n// ${m.method} — ${m.note}`); continue; }
     L.push(`\n.method ${m.method}  (IL ${m.codeSize} bytes, maxstack ${m.maxStack}${m.complete ? '' : `, STOPPED at ${m.stoppedAt}`})`);
-    if (flags.pseudo && m.pseudo) for (const s of m.pseudo) L.push(/:$/.test(s.text) ? s.text : '  ' + s.text);
+    if (flags.pseudo && m.pseudo && !flags.goto) for (const s of structureLinear(m.pseudo.map((e) => ({ off: e.il, text: e.text })))) L.push('  ' + s);
+    else if (flags.pseudo && m.pseudo) for (const s of m.pseudo) L.push(/:$/.test(s.text) ? s.text : '  ' + s.text);
     else for (const ins of m.instructions) L.push('  ' + cilFormat(ins));
   }
   L.push(`\nid ${rec.id}`);
@@ -880,7 +881,8 @@ function cmdDex(path) {
   for (const m of out.decoded) {
     if (!m.instructions) { L.push(`\n// ${m.method} — ${m.note}`); continue; }
     L.push(`\n.method ${m.method}  (${m.units} units, ${m.registers} regs${m.complete ? '' : `, STOPPED at ${m.stoppedAt}`})`);
-    if (flags.pseudo && m.pseudo) for (const s of m.pseudo) L.push(/:$/.test(s.text) ? s.text : '  ' + s.text);
+    if (flags.pseudo && m.pseudo && !flags.goto) for (const s of structureLinear(m.pseudo.map((e) => ({ off: e.off * 2, text: e.text })))) L.push('  ' + s);
+    else if (flags.pseudo && m.pseudo) for (const s of m.pseudo) L.push(/:$/.test(s.text) ? s.text : '  ' + s.text);
     else for (const ins of m.instructions) L.push(`  ${ins.off.toString(16).padStart(4, '0')}:  ${ins.text}`);
   }
   L.push(`\nid ${rec.id}`);
@@ -964,7 +966,12 @@ function cmdEvm(path) {
   const L = [`${subject.name}  evm  ${r.bytes} bytes, ${r.instructions.length} instructions, ${r.jumpdests} jumpdests`];
   if (r.selectors.length) { L.push(`\nfunction selectors (${r.selectors.length}):`); for (const s of r.selectors) L.push(`  ${s.selector}${s.dest ? '  -> ' + s.dest : ''}`); }
   if (r.metadata) L.push(`\nmetadata: ${[r.metadata.solc ? 'solc ' + r.metadata.solc : null, r.metadata.ipfs, r.metadata.swarm].filter(Boolean).join(', ') || r.metadata.length + ' bytes'}`);
-  if (flags.pseudo) { L.push('\n// pseudocode (stack lifted, constant jumps resolved):'); L.push(liftEvm(r.instructions)); }
+  if (flags.pseudo) {
+    L.push('\n// pseudocode (stack lifted, constant jumps resolved):');
+    const lifted = liftEvm(r.instructions);
+    if (flags.goto) for (const e of lifted) L.push(/:$/.test(e.text) ? e.text : '  ' + e.text);
+    else for (const s of structureLinear(lifted)) L.push('  ' + s);
+  }
   else { L.push('\n// disassembly:'); for (const i of r.instructions) L.push(`  ${i.pc.toString(16).padStart(6, '0')}:  ${i.text}`); }
   L.push(`\nid ${rec.id}`);
   emit(rec, L.join('\n'));
