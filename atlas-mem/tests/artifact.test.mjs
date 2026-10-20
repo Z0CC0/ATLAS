@@ -944,6 +944,21 @@ test('the arm64 decoder decodes the scalar floating-point group', async () => {
   assert.equal(dec([[31, 24, 0b00011111], [23, 22, 1], [21, 21, 0], [20, 16, 2], [15, 15, 0], [14, 10, 3], [9, 5, 1], [4, 0, 0]]), 'fmadd d0, d1, d2, d3');
 });
 
+test('the arm64 decoder decodes the Advanced SIMD vector classes', async () => {
+  const a = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-arm64.mjs')).href);
+  const W = (f) => { let w = 0; for (const [hi, lo, v] of f) w = (w | ((v & ((1 << (hi - lo + 1)) - 1)) << lo)) >>> 0; return w >>> 0; };
+  const dec = (f) => a.decodeOne(W(f)).text;
+  assert.equal(dec([[30, 30, 1], [28, 24, 0b01110], [23, 22, 2], [21, 21, 1], [20, 16, 2], [15, 11, 0x10], [10, 10, 1], [9, 5, 1], [4, 0, 0]]), 'add v0.4s, v1.4s, v2.4s'); // three-same
+  assert.equal(dec([[30, 30, 1], [29, 29, 1], [28, 24, 0b01110], [23, 23, 0], [22, 22, 0], [21, 21, 1], [20, 16, 2], [15, 11, 0x1b], [10, 10, 1], [9, 5, 1], [4, 0, 0]]), 'fmul v0.4s, v1.4s, v2.4s'); // fp three-same
+  assert.equal(dec([[30, 30, 1], [28, 24, 0b01110], [23, 22, 2], [21, 21, 1], [20, 17, 0], [16, 12, 0x0b], [11, 10, 0b10], [9, 5, 1], [4, 0, 0]]), 'abs v0.4s, v1.4s'); // two-reg misc
+  assert.equal(dec([[30, 30, 1], [28, 24, 0b01110], [23, 22, 2], [21, 21, 1], [20, 20, 1], [19, 17, 0], [16, 12, 0x1b], [11, 10, 0b10], [9, 5, 1], [4, 0, 0]]), 'addv s0, v1.4s'); // across lanes
+  assert.equal(dec([[29, 29, 1], [28, 24, 0b01110], [23, 22, 0], [21, 21, 1], [20, 16, 2], [15, 12, 0x0c], [11, 10, 0b00], [9, 5, 1], [4, 0, 0]]), 'umull v0.8h, v1.8b, v2.8b'); // three different
+  assert.equal(dec([[30, 30, 1], [28, 21, 0b01110000], [20, 16, 0b01100], [15, 15, 0], [14, 11, 0], [10, 10, 1], [9, 5, 1], [4, 0, 0]]), 'dup v0.4s, v1.s[1]'); // copy
+  assert.equal(dec([[30, 30, 1], [28, 19, 0b0111100000], [18, 16, 0], [15, 12, 0b1110], [10, 10, 1], [9, 5, 0], [4, 0, 0]]), 'movi v0.16b, #0x0'); // modified immediate
+  assert.equal(dec([[30, 30, 1], [28, 23, 0b011110], [22, 19, 0b0100], [18, 16, 0b011], [15, 11, 0x0a], [10, 10, 1], [9, 5, 1], [4, 0, 0]]), 'shl v0.4s, v1.4s, #3'); // shift by immediate
+  assert.equal(dec([[30, 30, 1], [29, 23, 0b0011000], [22, 22, 1], [21, 16, 0], [15, 12, 0x8], [11, 10, 2], [9, 5, 1], [4, 0, 0]]), 'ld2 {v0.4s, v1.4s}, [x1]'); // load multiple structures
+});
+
 test('the lift renders array and field access from the address shape', async () => {
   const lx = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-lift-x86.mjs')).href);
   const load = lx.liftBlock([{ mnem: 'mov', text: 'mov rax, [r8+rcx*8]' }], null, new Set(['rax']));

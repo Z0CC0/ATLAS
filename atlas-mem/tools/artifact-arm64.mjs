@@ -127,6 +127,29 @@ function loadStore(w) {
     const size = bits(w, 31, 30), V = bit(w, 26), opc = bits(w, 23, 22), Rm = bits(w, 20, 16), Rn = bits(w, 9, 5), Rt = bits(w, 4, 0);
     return ok(ldstName(size, opc, V), `${regT(Rt, size, V)}, [${X(Rn, 1, true)}, ${X(Rm, 1, false)}]`);
   }
+  if (bits(w, 29, 27) === 0b101 && bit(w, 26) === 1) { // SIMD load/store pair (ldp/stp q/d/s)
+    const opc = bits(w, 31, 30), L = bit(w, 22), imm7 = sext(bits(w, 21, 15), 7), Rt2 = bits(w, 14, 10), Rn = bits(w, 9, 5), Rt = bits(w, 4, 0), idx = bits(w, 25, 23);
+    const el = ['s', 'd', 'q'][opc]; if (!el) return coarse('ldst'); const off = imm7 << (opc + 2);
+    const mem = idx === 1 ? `[${X(Rn, 1, true)}], ${hex(off)}` : `[${X(Rn, 1, true)}${off ? ', ' + hex(off) : ''}]${idx === 3 ? '!' : ''}`;
+    return ok(L ? 'ldp' : 'stp', `${el}${Rt}, ${el}${Rt2}, ${mem}`);
+  }
+  if (bits(w, 31, 31) === 0 && bits(w, 29, 23) === 0b0011000) { // Advanced SIMD load/store multiple structures
+    const Q = bit(w, 30), L = bit(w, 22), opcode = bits(w, 15, 12), size = bits(w, 11, 10), Rn = bits(w, 9, 5), Rt = bits(w, 4, 0);
+    const STR = { 0x0: ['st4', 4], 0x2: ['st1', 4], 0x4: ['st3', 3], 0x6: ['st1', 3], 0x7: ['st1', 1], 0x8: ['st2', 2], 0xa: ['st1', 2] }[opcode];
+    if (!STR) return coarse('ldst'); const [base, cnt] = STR; const mn = L ? base.replace('st', 'ld') : base;
+    const arr = `${(Q ? 16 : 8) >> size}${['b', 'h', 's', 'd'][size]}`;
+    const list = Array.from({ length: cnt }, (_, i) => `v${(Rt + i) % 32}.${arr}`).join(', ');
+    return ok(mn, `{${list}}, [${X(Rn, 1, true)}]`);
+  }
+  if (bits(w, 31, 31) === 0 && bits(w, 29, 23) === 0b0011001) { // ... post-indexed (register or immediate)
+    const Q = bit(w, 30), L = bit(w, 22), Rm = bits(w, 20, 16), opcode = bits(w, 15, 12), size = bits(w, 11, 10), Rn = bits(w, 9, 5), Rt = bits(w, 4, 0);
+    const STR = { 0x0: ['st4', 4], 0x2: ['st1', 4], 0x4: ['st3', 3], 0x6: ['st1', 3], 0x7: ['st1', 1], 0x8: ['st2', 2], 0xa: ['st1', 2] }[opcode];
+    if (!STR) return coarse('ldst'); const [base, cnt] = STR; const mn = L ? base.replace('st', 'ld') : base;
+    const arr = `${(Q ? 16 : 8) >> size}${['b', 'h', 's', 'd'][size]}`;
+    const list = Array.from({ length: cnt }, (_, i) => `v${(Rt + i) % 32}.${arr}`).join(', ');
+    const inc = Rm === 31 ? '#' + (cnt * (Q ? 16 : 8)) : X(Rm, 1, false);
+    return ok(mn, `{${list}}, [${X(Rn, 1, true)}], ${inc}`);
+  }
   return coarse('ldst');
 }
 
@@ -208,30 +231,112 @@ function fpSimd(w) {
     if (bits(w, 12, 10) === 0b100) return ok('fmov', `${F(Rd)}, #imm8_${bits(w, 20, 13)}`); // immediate
     return coarse('fp-scalar');
   }
-  // Advanced SIMD vector: three-same and two-register-misc, with the register arrangement
-  if (bits(w, 28, 24) === 0b01110 || bits(w, 28, 24) === 0b01111) {
-    const Q = bit(w, 30), U = bit(w, 29), size = bits(w, 23, 22);
-    const V = (n, sz) => `v${n}.${(Q ? 16 : 8) >> sz}${['b', 'h', 's', 'd'][sz]}`;
-    if (bits(w, 28, 24) === 0b01110 && bit(w, 21) === 1 && bit(w, 10) === 1) { // three same
+  // Advanced SIMD vector, decoded by class (Arm ARM C7.2). The register arrangement comes from
+  // the size field and Q; a confident mnemonic table per class, coarse for the exotic rest.
+  const b2824v = bits(w, 28, 24);
+  if (b2824v === 0b01110 || b2824v === 0b01111) {
+    const Q = bit(w, 30), U = bit(w, 29), size = bits(w, 23, 22), EL = ['b', 'h', 's', 'd'];
+    const V = (n, sz) => `v${n}.${(Q ? 16 : 8) >> sz}${EL[sz]}`;      // vector at element size sz
+    const Vn = (n, sz, q) => `v${n}.${((q ? 16 : 8) >> sz)}${EL[sz]}`; // with explicit Q
+    const Fa = (n) => { const fsz = size & 1; return `v${n}.${fsz ? (Q ? 2 : 1) : (Q ? 4 : 2)}${fsz ? 'd' : 's'}`; };
+
+    if (b2824v === 0b01110 && bit(w, 21) === 1 && bit(w, 10) === 1) { // three same
       const opcode = bits(w, 15, 11), Rm = bits(w, 20, 16);
-      const vd = V(Rd, size), vn = V(Rn, size), vm = V(Rm, size);
-      if (opcode >= 0x18) { // floating-point three-same (element from the size<0> bit)
-        const fsz = size & 1, fe = fsz ? 'd' : 's', lanes = fsz ? (Q ? 2 : 1) : (Q ? 4 : 2);
-        const fa = (n) => `v${n}.${lanes}${fe}`;
-        const fp = opcode === 0x1a ? (U ? null : (fsz ? 'fsub' : 'fadd')) : opcode === 0x1b ? (U ? 'fmul' : 'fmulx') : opcode === 0x19 ? (U ? null : (fsz ? 'fmls' : 'fmla')) : opcode === 0x1f ? (U ? 'fdiv' : null) : opcode === 0x1c ? (U ? null : 'fcmeq') : null;
-        return fp ? ok(fp, `${fa(Rd)}, ${fa(Rn)}, ${fa(Rm)}`) : coarse('simd-fp');
+      if (opcode >= 0x18) { // floating-point three-same; o1=size<1>=bit23, sz=size<0>=bit22
+        const o1 = bit(w, 23);
+        const FP = {
+          0x18: U ? (o1 ? 'fminnmp' : 'fmaxnmp') : (o1 ? 'fminnm' : 'fmaxnm'),
+          0x19: U ? null : (o1 ? 'fmls' : 'fmla'),
+          0x1a: U ? (o1 ? 'fabd' : 'faddp') : (o1 ? 'fsub' : 'fadd'),
+          0x1b: U ? 'fmul' : 'fmulx',
+          0x1c: U ? (o1 ? 'fcmgt' : 'fcmge') : 'fcmeq',
+          0x1d: U ? (o1 ? 'facgt' : 'facge') : null,
+          0x1e: U ? (o1 ? 'fminp' : 'fmaxp') : (o1 ? 'fmin' : 'fmax'),
+          0x1f: U ? (o1 ? null : 'fdiv') : (o1 ? 'frsqrts' : 'frecps'),
+        }[opcode];
+        return FP ? ok(FP, `${Fa(Rd)}, ${Fa(Rn)}, ${Fa(Rm)}`) : coarse('simd-fp3');
       }
-      const TS = { 0x10: ['add', 'sub'], 0x11: ['cmtst', 'cmeq'], 0x13: ['mul', 'pmul'], 0x12: ['mla', 'mls'], 0x0c: ['smax', 'umax'], 0x0d: ['smin', 'umin'], 0x0e: ['sabd', 'uabd'], 0x06: ['cmgt', 'cmhi'], 0x07: ['cmge', 'cmhs'], 0x01: ['sqadd', 'uqadd'], 0x05: ['sqsub', 'uqsub'], 0x08: ['sshl', 'ushl'] };
       if (opcode === 0x03) { const log = U ? ['eor', 'bsl', 'bit', 'bif'][size] : ['and', 'bic', 'orr', 'orn'][size]; return ok(log, `${V(Rd, 0)}, ${V(Rn, 0)}, ${V(Rm, 0)}`); }
-      const m = TS[opcode] && TS[opcode][U];
-      return m ? ok(m, `${vd}, ${vn}, ${vm}`) : coarse('simd-3same');
+      const TS = {
+        0x00: ['shadd', 'uhadd'], 0x01: ['sqadd', 'uqadd'], 0x02: ['srhadd', 'urhadd'], 0x04: ['shsub', 'uhsub'], 0x05: ['sqsub', 'uqsub'],
+        0x06: ['cmgt', 'cmhi'], 0x07: ['cmge', 'cmhs'], 0x08: ['sshl', 'ushl'], 0x09: ['sqshl', 'uqshl'], 0x0a: ['srshl', 'urshl'], 0x0b: ['sqrshl', 'uqrshl'],
+        0x0c: ['smax', 'umax'], 0x0d: ['smin', 'umin'], 0x0e: ['sabd', 'uabd'], 0x0f: ['saba', 'uaba'],
+        0x10: ['add', 'sub'], 0x11: ['cmtst', 'cmeq'], 0x12: ['mla', 'mls'], 0x13: ['mul', 'pmul'],
+        0x14: ['smaxp', 'umaxp'], 0x15: ['sminp', 'uminp'], 0x16: ['sqdmulh', 'sqrdmulh'], 0x17: ['addp', null],
+      }[opcode];
+      const m = TS && TS[U];
+      return m ? ok(m, `${V(Rd, size)}, ${V(Rn, size)}, ${V(Rm, size)}`) : coarse('simd-3same');
     }
-    if (bits(w, 28, 24) === 0b01110 && bit(w, 21) === 1 && bits(w, 20, 17) === 0b1000 && bits(w, 11, 10) === 0b10) { // two-register misc
-      const opcode = bits(w, 16, 12), vd = V(Rd, size), vn = V(Rn, size);
-      const M0 = { 0x0b: 'abs', 0x08: 'cmgt', 0x09: 'cmeq', 0x0a: 'cmlt', 0x05: 'cnt', 0x04: 'cls', 0x1a: 'fcvtns' };
-      const M1 = { 0x0b: 'neg', 0x05: 'not', 0x08: 'cmge', 0x09: 'cmle', 0x07: 'rbit' };
-      const mn = (U ? M1 : M0)[opcode];
-      return mn ? ok(mn, `${vd}, ${vn}`) : coarse('simd-misc');
+    if (b2824v === 0b01110 && bit(w, 21) === 1 && bit(w, 11) === 1 && bit(w, 10) === 0) { // two-register misc / across lanes
+      const Rm = bits(w, 20, 16); // for two-misc/across this field is 0 or the fixed pattern
+      if (bit(w, 20) === 0 && bits(w, 19, 17) === 0) { // two-register miscellaneous (bits[21:17]=10000)
+        const opcode = bits(w, 16, 12);
+        const INT = {
+          0x00: ['rev64', 'rev32'], 0x01: ['rev16', null], 0x02: ['saddlp', 'uaddlp'], 0x03: ['suqadd', 'usqadd'], 0x04: ['cls', 'clz'],
+          0x05: ['cnt', (size === 0 ? 'not' : 'rbit')], 0x06: ['sadalp', 'uadalp'], 0x07: ['sqabs', 'sqneg'],
+          0x08: ['cmgt', 'cmge'], 0x09: ['cmeq', 'cmle'], 0x0a: ['cmlt', null], 0x0b: ['abs', 'neg'],
+          0x12: ['xtn', 'sqxtun'], 0x14: ['sqxtn', 'uqxtn'],
+        }[opcode];
+        if (INT) { const m = INT[U]; if (m) return ok(m, `${V(Rd, size)}, ${V(Rn, size)}${(opcode >= 0x08 && opcode <= 0x0a) ? ', #0' : ''}`); }
+        const FP = { 0x0c: ['fcmgt', 'fcmge'], 0x0d: ['fcmeq', 'fcmle'], 0x0e: ['fcmlt', null], 0x0f: ['fabs', 'fneg'], 0x1a: ['fcvtns', 'fcvtnu'], 0x1b: ['fcvtms', 'fcvtmu'], 0x1c: ['fcvtas', 'fcvtau'], 0x1d: ['scvtf', 'ucvtf'], 0x18: ['frintn', 'frinta'], 0x19: ['frintm', 'frintx'], 0x1f: [null, 'fsqrt'] }[opcode];
+        if (FP) { const m = FP[U]; if (m) return ok(m, `${Fa(Rd)}, ${Fa(Rn)}${(opcode >= 0x0c && opcode <= 0x0e) ? ', #0.0' : ''}`); }
+        return coarse('simd-misc');
+      }
+      if (bit(w, 20) === 1 && bits(w, 19, 17) === 0) { // across lanes (bits[21:17]=11000)
+        const opcode = bits(w, 16, 12);
+        const AC = { 0x03: ['saddlv', 'uaddlv'], 0x0a: ['smaxv', 'umaxv'], 0x1a: ['sminv', 'uminv'], 0x1b: ['addv', null], 0x0c: ['fmaxnmv', 'fmaxnmv'], 0x0f: ['fmaxv', 'fminv'] }[opcode];
+        const m = AC && AC[U];
+        return m ? ok(m, `${EL[size]}${Rd}, ${V(Rn, size)}`) : coarse('simd-across'); // result is a scalar of the element size
+      }
+      return coarse('simd-misc');
+    }
+    if (b2824v === 0b01110 && bit(w, 21) === 1 && bits(w, 11, 10) === 0b00) { // three different (widening)
+      const opcode = bits(w, 15, 12), Rm = bits(w, 20, 16);
+      const TD = { 0x00: ['saddl', 'uaddl'], 0x01: ['saddw', 'uaddw'], 0x02: ['ssubl', 'usubl'], 0x03: ['ssubw', 'usubw'], 0x04: ['addhn', 'raddhn'], 0x05: ['sabal', 'uabal'], 0x06: ['subhn', 'rsubhn'], 0x07: ['sabdl', 'uabdl'], 0x08: ['smlal', 'umlal'], 0x09: ['sqdmlal', null], 0x0a: ['smlsl', 'umlsl'], 0x0b: ['sqdmlsl', null], 0x0c: ['smull', 'umull'], 0x0d: ['sqdmull', null], 0x0e: ['pmull', null] }[opcode];
+      const m = TD && TD[U];
+      // widening: destination one element wider, sources the element size with Q selecting the half
+      return m ? ok(m + (Q ? '2' : ''), `${Vn(Rd, size + 1, true)}, ${Vn(Rn, size, Q)}, ${Vn(Rm, size, Q)}`) : coarse('simd-3diff');
+    }
+    if (b2824v === 0b01110 && bit(w, 21) === 0 && bit(w, 15) === 0 && bit(w, 10) === 1) { // copy: dup/ins/umov/smov
+      const imm5 = bits(w, 20, 16), imm4 = bits(w, 14, 11), op = bit(w, 29);
+      const sz = imm5 & 1 ? 0 : imm5 & 2 ? 1 : imm5 & 4 ? 2 : imm5 & 8 ? 3 : 0;
+      const idx = imm5 >> (sz + 1);
+      if (op === 1) return ok('ins', `v${Rd}.${EL[sz]}[${idx}], v${Rn}.${EL[sz]}[${imm4 >> (sz + 1)}]`); // element insert
+      if (imm4 === 0) return ok('dup', `${V(Rd, sz)}, v${Rn}.${EL[sz]}[${idx}]`);       // duplicate element
+      if (imm4 === 1) return ok('dup', `${V(Rd, sz)}, ${X(Rn, sz === 3, false)}`);        // duplicate general register
+      if (imm4 === 3) return ok('ins', `v${Rd}.${EL[sz]}[${idx}], ${X(Rn, sz === 3, false)}`); // insert from general register
+      if (imm4 === 5) return ok(Q ? 'smov' : 'smov', `${X(Rd, Q, false)}, v${Rn}.${EL[sz]}[${idx}]`);
+      if (imm4 === 7) return ok('umov', `${X(Rd, sz === 3, false)}, v${Rn}.${EL[sz]}[${idx}]`);
+      return coarse('simd-copy');
+    }
+    if (bits(w, 28, 19) === 0b0111100000 && bit(w, 10) === 1) { // modified immediate: movi/mvni/orr/bic/fmov
+      const op = bit(w, 29), cmode = bits(w, 15, 12), abc = bits(w, 18, 16), defgh = bits(w, 9, 5), imm8 = (abc << 5) | defgh;
+      let mn = 'movi';
+      if ((cmode & 1) === 0 && cmode < 0b1000) mn = op ? 'mvni' : 'movi';
+      else if ((cmode & 1) === 1 && cmode < 0b1000) mn = op ? 'bic' : 'orr';
+      else if (cmode === 0b1111) mn = op ? 'fmov' : 'fmov';
+      else mn = op ? 'mvni' : 'movi';
+      const arr = cmode === 0b1110 ? `${Q ? 16 : 8}b` : (cmode >= 0b1000 ? `${Q ? 8 : 4}h` : `${Q ? 4 : 2}s`);
+      return ok(mn, `v${Rd}.${arr}, #${hex(imm8)}`);
+    }
+    if (b2824v === 0b01111 && bit(w, 23) === 0 && bits(w, 22, 19) !== 0 && bit(w, 10) === 1) { // shift by immediate
+      const immh = bits(w, 22, 19), immb = bits(w, 18, 16), opcode = bits(w, 15, 11);
+      const esz = immh & 0b1000 ? 3 : immh & 0b0100 ? 2 : immh & 0b0010 ? 1 : 0; // highest set bit of immh
+      const h = (8 << esz), shr = h * 2 - ((immh << 3) | immb), shl = ((immh << 3) | immb) - h;
+      const SH = { 0x00: ['sshr', 'ushr'], 0x02: ['ssra', 'usra'], 0x04: ['srshr', 'urshr'], 0x06: ['srsra', 'ursra'], 0x08: [null, 'sri'], 0x0a: ['shl', 'sli'], 0x0c: [null, 'sqshlu'], 0x0e: ['sqshl', 'uqshl'], 0x10: ['shrn', 'rshrn'], 0x11: [null, 'sqrshrun'], 0x12: ['sqshrn', 'uqshrn'], 0x13: ['sqrshrn', 'uqrshrn'], 0x14: ['sshll', 'ushll'] }[opcode];
+      const m = SH && SH[U];
+      if (!m) return coarse('simd-shift');
+      const isLeft = (opcode === 0x0a || opcode === 0x0c || opcode === 0x0e || opcode === 0x14);
+      return ok(m, `${V(Rd, esz)}, ${V(Rn, esz)}, #${isLeft ? shl : shr}`);
+    }
+    if (b2824v === 0b01111 && bit(w, 10) === 0) { // vector x indexed element
+      const opcode = bits(w, 15, 12), M = bit(w, 20), L = bit(w, 21), H = bit(w, 11), Rmlo = bits(w, 19, 16);
+      const BYEL = { 0x0: ['mla', null], 0x1: [null, 'fmla'], 0x2: ['smlal', 'umlal'], 0x3: ['sqdmlal', null], 0x4: ['mls', null], 0x5: [null, 'fmls'], 0x6: ['smlsl', 'umlsl'], 0x7: ['sqdmlsl', null], 0x8: ['mul', null], 0x9: [null, 'fmul'], 0xa: ['smull', 'umull'], 0xb: ['sqdmull', null], 0xc: ['sqdmulh', null], 0xd: ['sqrdmulh', null] }[opcode];
+      const m = BYEL && BYEL[U];
+      if (!m) return coarse('simd-byelem');
+      // element index: size 2s -> H:L, size 1d/4h -> H:L:M; keep it simple with H:L
+      const idx = (H << 1) | L;
+      return ok(m, `${V(Rd, size)}, ${V(Rn, size)}, v${Rmlo}.${EL[size]}[${idx}]`);
     }
     return coarse('simd');
   }
