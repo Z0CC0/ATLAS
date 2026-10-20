@@ -906,6 +906,32 @@ test('the lift renders scalar SSE floating-point, conversions and compare', asyn
   assert.equal(cmp.cond.text, 'xmm0 > xmm1');
 });
 
+test('the lift renders packed SIMD as named intrinsics', async () => {
+  const lx = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-lift-x86.mjs')).href);
+  const mk = (t) => ({ mnem: t.split(' ')[0], text: t, addr: 0 });
+  const add = lx.liftBlock([mk('paddd xmm0, xmm1')], null, new Set());
+  assert.ok(add.stmts.includes('xmm0 = paddd(xmm0, xmm1);'), add.stmts.join(' | '));
+  const zero = lx.liftBlock([mk('pxor xmm0, xmm0')], null, new Set());
+  assert.ok(zero.stmts.includes('xmm0 = 0;'), 'self-xor zeroing: ' + zero.stmts.join(' | '));
+  const avx = lx.liftBlock([mk('vpaddq ymm0, ymm1, ymm2')], null, new Set());
+  assert.ok(avx.stmts.includes('ymm0 = vpaddq(ymm1, ymm2);'), '3-operand AVX drops the destination: ' + avx.stmts.join(' | '));
+  const mask = lx.liftBlock([mk('pmovmskb eax, xmm0')], null, new Set(['rax']));
+  assert.ok(mask.stmts.includes('rax = pmovmskb(xmm0);'), 'non-destructive, GP destination tracked: ' + mask.stmts.join(' | '));
+});
+
+test('the x86 decoder names SSE opcodes from the mandatory prefix', async () => {
+  const x = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-x86.mjs')).href);
+  const dec = (bytes) => { const b = Buffer.from(bytes); return x.decodeOne(b, 0, b.length).text; };
+  assert.equal(dec([0x0f, 0x58, 0xc1]), 'addps xmm0, xmm1');             // no prefix
+  assert.equal(dec([0x66, 0x0f, 0x58, 0xc1]), 'addpd xmm0, xmm1');       // 0x66
+  assert.equal(dec([0xf3, 0x0f, 0x58, 0xc1]), 'addss xmm0, xmm1');       // 0xF3
+  assert.equal(dec([0xf2, 0x0f, 0x58, 0xc1]), 'addsd xmm0, xmm1');       // 0xF2
+  assert.equal(dec([0x66, 0x0f, 0xfe, 0xc1]), 'paddd xmm0, xmm1');
+  assert.equal(dec([0xf2, 0x0f, 0x2a, 0xc0]), 'cvtsi2sd xmm0, eax');     // mixed: rm is a GP register
+  assert.equal(dec([0xf2, 0x0f, 0x2c, 0xc0]), 'cvttsd2si eax, xmm0');    // mixed: reg is a GP register
+  assert.equal(dec([0x66, 0x0f, 0xd7, 0xc0]), 'pmovmskb eax, xmm0');     // GP stays 32-bit under 0x66
+});
+
 test('the lift renders array and field access from the address shape', async () => {
   const lx = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-lift-x86.mjs')).href);
   const load = lx.liftBlock([{ mnem: 'mov', text: 'mov rax, [r8+rcx*8]' }], null, new Set(['rax']));

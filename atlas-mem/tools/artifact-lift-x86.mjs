@@ -89,13 +89,14 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
     if (mnem === 'lock') ({ mnem, ops } = parse(ins.text.slice(5)));
     const last = k === insns.length - 1;
     if (mnem === 'nop' || mnem === 'endbr64' || mnem === 'int3') continue;
+    if (/^(pause|prefetch\w*|[lsm]fence)$/.test(mnem)) continue; // hint/fence: no value computed
     if (/^j/.test(mnem) && last) break;
     if (mnem === 'ret' || mnem === 'retf') break;
     if (mnem === 'mov' || mnem === 'movzx' || mnem === 'movsx' || mnem === 'movsxd') {
       const [dst, src] = ops; if (isMem(dst)) stmts.push(`${deref(dst)} = ${val(src)};`); else wr(dst, val(src)); continue;
     }
     // SSE/AVX data moves: a move, so render it as one (xmm registers are not env-tracked)
-    if (/^(movups|movaps|movdqu|movdqa|movss|movsd|movq|movd|vmovups|vmovaps|vmovdqu|vmovdqa)$/.test(mnem) && ops.length === 2) {
+    if (/^v?(movup[sd]|movap[sd]|movdq[ua]|movntdqa?|movntp[sd]|movq|movd|movs[sd]|movl(p[sd]|hps)|movh(p[sd]|lps)|movsldup|movshdup|movddup|lddqu|maskmovdqu)$/.test(mnem) && ops.length === 2) {
       const [dst, src] = ops; const sv = isMem(src) ? deref(src) : (REGINFO[src] ? rd(src) : src);
       if (isMem(dst)) stmts.push(`${deref(dst)} = ${sv};`); else if (REGINFO[dst]) wr(dst, sv); else stmts.push(`${dst} = ${sv};`);
       continue;
@@ -138,6 +139,16 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
       if (/^sqrts[sd]$/.test(mnem) && ops.length === 2) { put(ops[0], `sqrt(${val(ops[1])})`); continue; }
       if (/^cvtt?[a-z0-9]+2[a-z0-9]+$/.test(mnem) && ops.length === 2) { put(ops[0], `${mnem}(${val(ops[1])})`); continue; }
       if (/^u?comis[sd]$/.test(mnem) && ops.length === 2) { cmp = { a: val(ops[0]), b: val(ops[1]), test: false }; continue; }
+      // packed SIMD (SSE2..AVX, integer p* and packed-float *ps/*pd/*dq): rendered as a named
+      // intrinsic. Vector lanes are NOT expanded to a scalar operator, which would mislead.
+      if (/^v?(p[a-z]|(add|sub|mul|div|sqrt|rcp|rsqrt|max|min|and|andn|or|xor|cmp|cvt|unpck|shuf|blend|hadd|hsub|dp|round|pack|movmsk)[a-z]*(ps|pd|dq))/.test(mnem) && !/^(popcnt|lzcnt|tzcnt)$/.test(mnem) && ops.length >= 2) {
+        const a2 = ops[ops.length - 2], a1 = ops[ops.length - 1];
+        if (/^(pxor|xorps|xorpd|vpxor|vxorps|vxorpd|psub[bwdq]|pandn)$/.test(mnem) && a2 === a1) { put(ops[0], '0'); continue; } // self-op zeroing idiom
+        // non-destructive ops (mask/extract/unary): the destination is pure output, not a source
+        const nonDestr = /^v?(pmovmskb|movmskp[sd]|pmov[sz]x\w*|sqrt(ps|pd)|rcp(ps|ss)|rsqrt(ps|ss)|pabs[bwd]|broadcast\w*|pextr\w*)$/.test(mnem);
+        const args = (ops.length >= 3 || nonDestr ? ops.slice(1) : ops).map(val).join(', ');
+        put(ops[0], `${mnem}(${args})`); continue;
+      }
     }
     if (mnem === 'lea') { const [dst, m] = ops; wr(dst, `&(${subAddr(m.slice(1, -1))})`); continue; }
     if ((mnem === 'xor' || mnem === 'sub') && ops.length === 2 && ops[0] === ops[1] && !isMem(ops[0])) { wr(ops[0], '0'); continue; } // zeroing idiom

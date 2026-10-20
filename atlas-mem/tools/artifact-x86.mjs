@@ -67,6 +67,7 @@ for (let c = 0x18; c <= 0x1f; c += 1) putf(c, 'nop', true); // hint/nop Ev
 putf(0x28, 'movaps', true); putf(0x29, 'movaps', true); putf(0x2a, 'cvtsi2ss', true); putf(0x2b, 'movntps', true); putf(0x2c, 'cvttss2si', true); putf(0x2d, 'cvtss2si', true); putf(0x2e, 'ucomiss', true); putf(0x2f, 'comiss', true);
 putf(0x31, 'rdtsc'); putf(0x34, 'sysenter'); putf(0x37, 'getsec');
 for (let c = 0x40; c <= 0x4f; c += 1) putf(c, 'cmov' + JCC[c - 0x40], true);
+putf(0x50, 'movmskps', true);
 const SSE = { 0x51: 'sqrtps', 0x52: 'rsqrtps', 0x53: 'rcpps', 0x54: 'andps', 0x55: 'andnps', 0x56: 'orps', 0x57: 'xorps', 0x58: 'addps', 0x59: 'mulps', 0x5a: 'cvtps2pd', 0x5b: 'cvtdq2ps', 0x5c: 'subps', 0x5d: 'minps', 0x5e: 'divps', 0x5f: 'maxps' };
 for (const c in SSE) putf(Number(c), SSE[c], true);
 for (let c = 0x60; c <= 0x6f; c += 1) putf(c, 'mmx', true); for (let c = 0x74; c <= 0x76; c += 1) putf(c, 'pcmpeq', true); putf(0x77, 'emms');
@@ -78,6 +79,59 @@ putf(0xb0, 'cmpxchg', true); putf(0xb1, 'cmpxchg', true); putf(0xb3, 'btr', true
 putf(0xc0, 'xadd', true); putf(0xc1, 'xadd', true); putf(0xc2, 'cmpps', true, 'b'); putf(0xc3, 'movnti', true); putf(0xc4, 'pinsrw', true, 'b'); putf(0xc5, 'pextrw', true, 'b'); putf(0xc6, 'shufps', true, 'b'); putf(0xc7, 'grp9', true);
 for (let c = 0xc8; c <= 0xcf; c += 1) putf(c, 'bswap');
 for (let c = 0xd0; c <= 0xff; c += 1) putf(c, 'sse2', true); // SSE2/SSE3 packed: ModR/M, no immediate
+
+// SSE/SSE2/SSE3 two-byte opcode -> mnemonic by mandatory prefix [none, 0x66, 0xF3, 0xF2].
+// The decoder picks the real name from the prefix; without this a prefix-free name (e.g.
+// addps for 0x58) would be wrong under 66/F3/F2 (addpd/addss/addsd) and the lifter could not
+// tell a packed op from a scalar one. From the Intel SDM opcode tables.
+const S2 = {
+  0x10: ['movups', 'movupd', 'movss', 'movsd'], 0x11: ['movups', 'movupd', 'movss', 'movsd'],
+  0x12: ['movlps', 'movlpd', 'movsldup', 'movddup'], 0x13: ['movlps', 'movlpd'],
+  0x14: ['unpcklps', 'unpcklpd'], 0x15: ['unpckhps', 'unpckhpd'],
+  0x16: ['movhps', 'movhpd', 'movshdup'], 0x17: ['movhps', 'movhpd'],
+  0x28: ['movaps', 'movapd'], 0x29: ['movaps', 'movapd'],
+  0x2a: ['cvtpi2ps', 'cvtpi2pd', 'cvtsi2ss', 'cvtsi2sd'], 0x2b: ['movntps', 'movntpd'],
+  0x2c: ['cvttps2pi', 'cvttpd2pi', 'cvttss2si', 'cvttsd2si'], 0x2d: ['cvtps2pi', 'cvtpd2pi', 'cvtss2si', 'cvtsd2si'],
+  0x2e: ['ucomiss', 'ucomisd'], 0x2f: ['comiss', 'comisd'],
+  0x50: ['movmskps', 'movmskpd'],
+  0x51: ['sqrtps', 'sqrtpd', 'sqrtss', 'sqrtsd'], 0x52: ['rsqrtps', null, 'rsqrtss'], 0x53: ['rcpps', null, 'rcpss'],
+  0x54: ['andps', 'andpd'], 0x55: ['andnps', 'andnpd'], 0x56: ['orps', 'orpd'], 0x57: ['xorps', 'xorpd'],
+  0x58: ['addps', 'addpd', 'addss', 'addsd'], 0x59: ['mulps', 'mulpd', 'mulss', 'mulsd'],
+  0x5a: ['cvtps2pd', 'cvtpd2ps', 'cvtss2sd', 'cvtsd2ss'], 0x5b: ['cvtdq2ps', 'cvtps2dq', 'cvttps2dq'],
+  0x5c: ['subps', 'subpd', 'subss', 'subsd'], 0x5d: ['minps', 'minpd', 'minss', 'minsd'],
+  0x5e: ['divps', 'divpd', 'divss', 'divsd'], 0x5f: ['maxps', 'maxpd', 'maxss', 'maxsd'],
+  0x60: ['punpcklbw', 'punpcklbw'], 0x61: ['punpcklwd', 'punpcklwd'], 0x62: ['punpckldq', 'punpckldq'],
+  0x63: ['packsswb', 'packsswb'], 0x64: ['pcmpgtb', 'pcmpgtb'], 0x65: ['pcmpgtw', 'pcmpgtw'], 0x66: ['pcmpgtd', 'pcmpgtd'],
+  0x67: ['packuswb', 'packuswb'], 0x68: ['punpckhbw', 'punpckhbw'], 0x69: ['punpckhwd', 'punpckhwd'], 0x6a: ['punpckhdq', 'punpckhdq'],
+  0x6b: ['packssdw', 'packssdw'], 0x6c: [null, 'punpcklqdq'], 0x6d: [null, 'punpckhqdq'],
+  0x6e: ['movd', 'movd'], 0x6f: ['movq', 'movdqa', 'movdqu'],
+  0x70: ['pshufw', 'pshufd', 'pshufhw', 'pshuflw'], 0x71: ['psllw'], 0x72: ['pslld'], 0x73: ['psllq'],
+  0x74: ['pcmpeqb', 'pcmpeqb'], 0x75: ['pcmpeqw', 'pcmpeqw'], 0x76: ['pcmpeqd', 'pcmpeqd'],
+  0x7c: [null, 'haddpd', null, 'haddps'], 0x7d: [null, 'hsubpd', null, 'hsubps'],
+  0x7e: ['movd', 'movd', 'movq'], 0x7f: ['movq', 'movdqa', 'movdqu'],
+  0xc2: ['cmpps', 'cmppd', 'cmpss', 'cmpsd'], 0xc4: ['pinsrw', 'pinsrw'], 0xc5: ['pextrw', 'pextrw'], 0xc6: ['shufps', 'shufpd'],
+  0xd0: [null, 'addsubpd', null, 'addsubps'], 0xd1: ['psrlw', 'psrlw'], 0xd2: ['psrld', 'psrld'], 0xd3: ['psrlq', 'psrlq'],
+  0xd4: ['paddq', 'paddq'], 0xd5: ['pmullw', 'pmullw'], 0xd6: [null, 'movq'], 0xd7: ['pmovmskb', 'pmovmskb'],
+  0xd8: ['psubusb', 'psubusb'], 0xd9: ['psubusw', 'psubusw'], 0xda: ['pminub', 'pminub'], 0xdb: ['pand', 'pand'],
+  0xdc: ['paddusb', 'paddusb'], 0xdd: ['paddusw', 'paddusw'], 0xde: ['pmaxub', 'pmaxub'], 0xdf: ['pandn', 'pandn'],
+  0xe0: ['pavgb', 'pavgb'], 0xe1: ['psraw', 'psraw'], 0xe2: ['psrad', 'psrad'], 0xe3: ['pavgw', 'pavgw'],
+  0xe4: ['pmulhuw', 'pmulhuw'], 0xe5: ['pmulhw', 'pmulhw'], 0xe6: [null, 'cvttpd2dq', 'cvtdq2pd', 'cvtpd2dq'], 0xe7: [null, 'movntdq'],
+  0xe8: ['psubsb', 'psubsb'], 0xe9: ['psubsw', 'psubsw'], 0xea: ['pminsw', 'pminsw'], 0xeb: ['por', 'por'],
+  0xec: ['paddsb', 'paddsb'], 0xed: ['paddsw', 'paddsw'], 0xee: ['pmaxsw', 'pmaxsw'], 0xef: ['pxor', 'pxor'],
+  0xf0: [null, null, null, 'lddqu'], 0xf1: ['psllw', 'psllw'], 0xf2: ['pslld', 'pslld'], 0xf3: ['psllq', 'psllq'],
+  0xf4: ['pmuludq', 'pmuludq'], 0xf5: ['pmaddwd', 'pmaddwd'], 0xf6: ['psadbw', 'psadbw'], 0xf7: ['maskmovq', 'maskmovdqu'],
+  0xf8: ['psubb', 'psubb'], 0xf9: ['psubw', 'psubw'], 0xfa: ['psubd', 'psubd'], 0xfb: ['psubq', 'psubq'],
+  0xfc: ['paddb', 'paddb'], 0xfd: ['paddw', 'paddw'], 0xfe: ['paddd', 'paddd'],
+};
+// name an SSE two-byte opcode from the mandatory prefix (0=none,1=66,2=F3,3=F2) and, for the
+// shift groups 71/72/73, the ModR/M reg field (opcode extension)
+function sseName(op, pfx, reg) {
+  const e = S2[op]; if (!e) return null;
+  if (op === 0x71) return ['', '', 'psrlw', '', 'psraw', '', 'psllw', ''][reg] || null;
+  if (op === 0x72) return ['', '', 'psrld', '', 'psrad', '', 'pslld', ''][reg] || null;
+  if (op === 0x73) return ['', '', 'psrlq', 'psrldq', '', '', 'psllq', 'pslldq'][reg] || null;
+  return e[pfx] || e[0] || null;
+}
 
 // group mnemonics by the ModR/M reg field
 const G1 = ['add', 'or', 'adc', 'sbb', 'and', 'sub', 'xor', 'cmp'];
@@ -150,13 +204,30 @@ function decodeOne(buf, pos, end) {
 
   // everything else has a ModR/M. Only the SSE/MMX subset of the two-byte map names its
   // operands as XMM; movzx/movsx/cmov/bt/setcc/imul and the rest use general registers.
-  const xmmOp = twobyte && ((op >= 0x10 && op <= 0x17) || (op >= 0x28 && op <= 0x2f) || (op >= 0x51 && op <= 0x6f) || (op >= 0x70 && op <= 0x7f) || op === 0xc2 || (op >= 0xc4 && op <= 0xc6) || (op >= 0xd0 && op <= 0xff));
+  const xmmOp = twobyte && ((op >= 0x10 && op <= 0x17) || (op >= 0x28 && op <= 0x2f) || op === 0x50 || (op >= 0x51 && op <= 0x6f) || (op >= 0x70 && op <= 0x7f) || op === 0xc2 || (op >= 0xc4 && op <= 0xc6) || (op >= 0xd0 && op <= 0xff));
   let rmSize = opsize;
   if (twobyte && (op === 0xb6 || op === 0xbe)) rmSize = 1; // movzx/movsx from byte
   if (twobyte && (op === 0xb7 || op === 0xbf)) rmSize = 2; // movzx/movsx from word
-  const mr = decodeModRM(buf, pos, end, { W, Rx, Xx, Bx, hasRex, opsize, rmSize, p67, xmm: xmmOp });
+  // mixed GP/xmm SSE ops: one operand is a general register, not an xmm
+  let xmmReg = xmmOp, xmmRm = xmmOp;
+  if (xmmOp) {
+    if (op === 0x2a || op === 0x6e || op === 0xc4) xmmRm = false; // cvtsi2ss/sd, movd xmm<-r/m, pinsrw: rm is GP/mem
+    else if (op === 0x2c || op === 0x2d || op === 0x50 || op === 0xc5 || op === 0xd7) xmmReg = false; // cvt*2si, movmsk*, pextrw, pmovmskb: reg is GP
+    else if (op === 0x7e && repPrefix !== 'rep') xmmRm = false; // 66 movd/movq store: rm GP (F3 movq is xmm<-xmm)
+  }
+  // for an SSE op the 0x66 is a mandatory prefix, not an operand-size override: a GP operand
+  // stays 32-bit (or 64-bit under REX.W), never 16-bit
+  const gpSize = xmmOp ? (W ? 8 : 4) : opsize;
+  const mr = decodeModRM(buf, pos, end, { W, Rx, Xx, Bx, hasRex, opsize: gpSize, rmSize: xmmOp ? gpSize : rmSize, p67, xmm: xmmOp, xmmReg, xmmRm });
   if (mr.bad) return { len: pos - start, bad: true, text: `${mnem || marker} (bad modrm)` };
   const reg = mr.reg;
+  // prefix-aware SSE naming: pick the real mnemonic from the mandatory prefix and, for the
+  // shift groups, the reg field; the F2/F3 here is a mandatory prefix, not a rep, so drop it
+  if (xmmOp) {
+    const pfx = p66 ? 1 : (repPrefix === 'rep' ? 2 : (repPrefix === 'repne' ? 3 : 0));
+    const nm = sseName(op, pfx, reg);
+    if (nm) { mnem = nm; if (repPrefix === 'rep' || repPrefix === 'repne') repPrefix = null; }
+  }
   let group = true;
   if (marker === 'g1') { mnem = G1[reg]; }
   else if (marker === 'g1pop') { mnem = 'pop'; }
@@ -174,9 +245,10 @@ function decodeOne(buf, pos, end) {
   let opstr;
   if (group) opstr = mr.rm;
   else if (mnem === 'nop' || /^set/.test(mnem) || /^(dec|inc|not|neg|bswap|push|pop|call|jmp)$/.test(mnem)) opstr = mr.rm;
+  else if (twobyte && (op === 0x71 || op === 0x72 || op === 0x73)) opstr = mr.rm; // shift-by-imm group: reg field is the opcode extension
   else {
     let regFirst = twobyte || op === 0x8d || op === 0x63 || op === 0x69 || op === 0x6b || (op & 0x02) === 0x02;
-    if (twobyte && (op === 0xa3 || op === 0xab || op === 0xb3 || op === 0xbb || op === 0x7e || op === 0xd6 || op === 0x11 || op === 0x29)) regFirst = false; // store/bit forms: r/m, reg
+    if (twobyte && (op === 0xa3 || op === 0xab || op === 0xb3 || op === 0xbb || op === 0x7e || op === 0x7f || op === 0xd6 || op === 0x11 || op === 0x13 || op === 0x17 || op === 0x29)) regFirst = false; // store/bit forms: r/m, reg
     opstr = regFirst ? `${mr.reg_s}, ${mr.rm}` : `${mr.rm}, ${mr.reg_s}`;
   }
   if (immLen) { opstr += ', ' + hex(readImm(buf, pos, immLen)); pos += immLen; }
@@ -200,8 +272,10 @@ function decodeModRM(buf, pos, end, cx) {
   if (pos >= end) return { bad: true };
   const modrm = buf[pos]; pos += 1;
   const mod = modrm >> 6, regf = ((modrm >> 3) & 7) | (cx.Rx << 3), rm = modrm & 7;
-  const regStr = cx.xmm ? XMM[regf] : regName(cx.opsize, regf, cx.hasRex);
-  if (mod === 3) { const r = cx.xmm ? XMM[rm | (cx.Bx << 3)] : regName(cx.rmSize || cx.opsize, rm | (cx.Bx << 3), cx.hasRex); return { pos, reg: (modrm >> 3) & 7, rm: r, reg_s: regStr }; }
+  const xmmReg = cx.xmmReg !== undefined ? cx.xmmReg : cx.xmm;
+  const xmmRm = cx.xmmRm !== undefined ? cx.xmmRm : cx.xmm;
+  const regStr = xmmReg ? XMM[regf] : regName(cx.opsize, regf, cx.hasRex);
+  if (mod === 3) { const r = xmmRm ? XMM[rm | (cx.Bx << 3)] : regName(cx.rmSize || cx.opsize, rm | (cx.Bx << 3), cx.hasRex); return { pos, reg: (modrm >> 3) & 7, rm: r, reg_s: regStr }; }
   // memory operand
   let baseReg = null, indexReg = null, scale = 1, dispSize = 0, rip = false;
   if (rm === 4) { // SIB

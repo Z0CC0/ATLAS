@@ -73,6 +73,22 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
     if (mnem === 'nop') continue;
     if (/^(b|b\.|cbz|cbnz|tbz|tbnz|br|ret|eret)/.test(mnem) && last) break; // terminator; cond handled below
     if (mnem === 'ret' || mnem === 'br' || mnem === 'eret') break;
+    // NEON / SIMD: a vector-register operand (vN[.arr] or qN) or a {..} register list. Vector
+    // registers are not env-tracked (like the x86 xmm path), so render a statement and never
+    // let the scalar mov/ldr/str handlers below swallow a vector destination into the env.
+    {
+      const isVec = (t) => t && /^(v\d+(\.\w+)?|q\d+)$/.test(t);
+      if (ops[0] && (isVec(ops[0]) || ops[0].startsWith('{') || (ops[1] && (isVec(ops[1]) || ops[1].startsWith('{'))))) {
+        const mem = ops.find(isMem);
+        if ((ops[0].startsWith('{') || isVec(ops[0])) && /^st/.test(mnem) && mem) { stmts.push(`${deref(mem)} = ${ops[0]};`); continue; }
+        if (/^ld/.test(mnem) && mem) { stmts.push(`${ops[0]} = ${deref(mem)};`); continue; }
+        if (/^str/.test(mnem) && mem) { stmts.push(`${deref(mem)} = ${ops[0]};`); continue; }
+        if ((mnem === 'mov' || mnem === 'fmov' || mnem === 'orr' || mnem === 'dup') && ops.length === 2) { stmts.push(`${ops[0]} = ${val(ops[1])};`); continue; }
+        const acc = /^(fml[as]|ml[as]|[su]?dot|usdot|sqrdml[as]h|[su]?[qr]*adal?p?)$/.test(mnem); // dst is also an accumulator source
+        const args = (acc ? ops : ops.slice(1)).map(val).join(', ');
+        stmts.push(`${ops[0]} = ${mnem}(${args});`); continue;
+      }
+    }
     if (mnem === 'mov') { wr(ops[0], val(ops[1])); continue; }
     if (mnem === 'movz') { const sh = ops[2] && /lsl (\d+)/.exec(ops[2]); wr(ops[0], sh ? `(${ops[1]} << ${sh[1]})` : ops[1]); continue; }
     if (mnem === 'movn') { wr(ops[0], `(~${ops[1]})`); continue; }
