@@ -1312,6 +1312,12 @@ test('pcap reads the application layer: HTTP, DNS and the TLS ClientHello SNI', 
   const rec = Buffer.concat([Buffer.from([0x16, 0x03, 0x01, hs.length >> 8, hs.length & 0xff]), hs]);
   const tls = pc.decodeFrame(Buffer.concat([eth(0x0800), ip(6), tcp(50001, 443), rec]), 'ethernet');
   assert.deepEqual(tls.app, { proto: 'tls', summary: 'ClientHello SNI=example.org' });
+  const dh = Buffer.alloc(244); dh[0] = 1; dh.writeUInt32BE(0x63825363, 236); dh[240] = 53; dh[241] = 1; dh[242] = 1; dh[243] = 255;
+  assert.deepEqual(pc.decodeFrame(Buffer.concat([eth(0x0800), ip(17), udp(68, 67), dh]), 'ethernet').app, { proto: 'dhcp', summary: 'DISCOVER' });
+  const h2 = pc.decodeFrame(Buffer.concat([eth(0x0800), ip(6), tcp(40000, 443), Buffer.from('PRI * HTTP/2.0\r\n\r\nSM\r\n\r\n')]), 'ethernet');
+  assert.deepEqual(h2.app, { proto: 'http2', summary: 'connection preface' });
+  const cnrec = Buffer.concat([Buffer.from([0x16, 0x03, 0x03, 0, 40]), Buffer.from([0x0b, 0, 0, 36]), Buffer.alloc(10), Buffer.from([0x55, 0x04, 0x03, 0x13, 0x0b]), Buffer.from('example.com')]);
+  assert.deepEqual(pc.decodeFrame(Buffer.concat([eth(0x0800), ip(6), tcp(443, 40000), cnrec]), 'ethernet').app, { proto: 'tls', summary: 'Certificate CN=example.com' });
 });
 
 test('pcap reassembles a TCP stream split across segments (HTTP Host, TLS SNI)', async () => {

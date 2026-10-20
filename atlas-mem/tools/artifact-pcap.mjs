@@ -52,34 +52,59 @@ function parseDns(p) {
   return { proto: 'dns', summary: `${kind} ${DNS_QT[qtype] || 'TYPE' + qtype} ${nm.name}` };
 }
 
-function parseTlsSni(p) {
-  if (p.length < 44 || p[0] !== 0x16 || p[5] !== 0x01) return null; // TLS handshake, ClientHello
-  let o = 5 + 4 + 2 + 32; // record header + handshake header + client version + 32-byte random
-  if (o >= p.length) return null;
-  o += 1 + p[o]; // session id
-  if (o + 2 > p.length) return null;
-  o += 2 + ((p[o] << 8) | p[o + 1]); // cipher suites
-  if (o + 1 > p.length) return null;
-  o += 1 + p[o]; // compression methods
-  if (o + 2 > p.length) return null;
-  const extEnd = Math.min(p.length, o + 2 + ((p[o] << 8) | p[o + 1])); o += 2;
-  while (o + 4 <= extEnd) {
-    const type = (p[o] << 8) | p[o + 1], len = (p[o + 2] << 8) | p[o + 3]; o += 4;
-    if (type === 0x0000 && o + 5 <= p.length) { // server_name extension
-      const nameLen = (p[o + 3] << 8) | p[o + 4];
-      return { proto: 'tls', summary: `ClientHello SNI=${p.toString('latin1', o + 5, Math.min(p.length, o + 5 + nameLen))}` };
+// extract the subject Common Name from a TLS Certificate handshake: scan for the CN OID
+// (2.5.4.3 = 55 04 03) followed by an ASN.1 string, taking the first (the leaf's subject)
+function certCN(p, start, endp) {
+  for (let o = start; o + 7 < endp; o += 1) {
+    if (p[o] === 0x55 && p[o + 1] === 0x04 && p[o + 2] === 0x03) { // id-at-commonName
+      const tag = p[o + 3]; if (tag !== 0x13 && tag !== 0x0c && tag !== 0x16) continue; // PrintableString/UTF8String/IA5String
+      const len = p[o + 4]; if (len > 0 && len < 128 && o + 5 + len <= endp) return p.toString('latin1', o + 5, o + 5 + len);
     }
-    o += len;
   }
-  return { proto: 'tls', summary: 'ClientHello' };
+  return null;
+}
+
+function parseTls(p) {
+  if (p.length < 6 || p[0] !== 0x16) return null; // not a TLS handshake record
+  const ht = p[5];
+  if (ht === 0x01 && p.length >= 44) { // ClientHello: walk extensions for server_name (SNI)
+    let o = 5 + 4 + 2 + 32;
+    if (o < p.length) {
+      o += 1 + p[o];
+      if (o + 2 <= p.length) { o += 2 + ((p[o] << 8) | p[o + 1]); if (o + 1 <= p.length) { o += 1 + p[o];
+        if (o + 2 <= p.length) { const extEnd = Math.min(p.length, o + 2 + ((p[o] << 8) | p[o + 1])); o += 2;
+          while (o + 4 <= extEnd) { const type = (p[o] << 8) | p[o + 1], len = (p[o + 2] << 8) | p[o + 3]; o += 4;
+            if (type === 0x0000 && o + 5 <= p.length) { const nameLen = (p[o + 3] << 8) | p[o + 4]; return { proto: 'tls', summary: `ClientHello SNI=${p.toString('latin1', o + 5, Math.min(p.length, o + 5 + nameLen))}` }; }
+            o += len; } } } }
+    }
+    return { proto: 'tls', summary: 'ClientHello' };
+  }
+  if (ht === 0x02) return { proto: 'tls', summary: 'ServerHello' };
+  if (ht === 0x0b) { const cn = certCN(p, 11, p.length); return { proto: 'tls', summary: cn ? `Certificate CN=${cn}` : 'Certificate' }; } // server certificate
+  return { proto: 'tls', summary: 'handshake' };
+}
+
+// BOOTP/DHCP (RFC 2131): the message type is DHCP option 53, after the 0x63825363 magic cookie
+const DHCP_T = { 1: 'DISCOVER', 2: 'OFFER', 3: 'REQUEST', 4: 'DECLINE', 5: 'ACK', 6: 'NAK', 7: 'RELEASE', 8: 'INFORM' };
+function parseDhcp(p) {
+  if (p.length < 240 || p.readUInt32BE(236) !== 0x63825363) return null; // magic cookie
+  let o = 240;
+  while (o + 2 <= p.length) { const opt = p[o]; if (opt === 255) break; if (opt === 0) { o += 1; continue; } const len = p[o + 1];
+    if (opt === 53 && len >= 1) return { proto: 'dhcp', summary: DHCP_T[p[o + 2]] || 'type' + p[o + 2] };
+    o += 2 + len; }
+  return { proto: 'dhcp', summary: p[0] === 1 ? 'request' : 'reply' };
 }
 
 /** Recognise the application protocol from a transport payload and the ports. */
 function decodeL7(f) {
   const p = f.payload, sp = f.sport, dp = f.dport;
-  if (f.l4 === 'tcp' && (dp === 443 || sp === 443 || dp === 8443 || sp === 8443)) { const t = parseTlsSni(p); if (t) return t; }
-  if (dp === 53 || sp === 53) { const d = parseDns(f.l4 === 'tcp' && p.length > 2 ? p.subarray(2) : p); if (d) return d; } // TCP DNS has a 2-byte length prefix
-  if (f.l4 === 'tcp') { const h = parseHttp(p); if (h) return h; }
+  if (f.l4 === 'udp' && (dp === 67 || dp === 68 || sp === 67 || sp === 68)) { const d = parseDhcp(p); if (d) return d; }
+  if (f.l4 === 'tcp' && (dp === 443 || sp === 443 || dp === 8443 || sp === 8443)) { const t = parseTls(p); if (t) return t; }
+  if (dp === 53 || sp === 53 || dp === 5353 || sp === 5353 || dp === 5355 || sp === 5355) { const d = parseDns(f.l4 === 'tcp' && p.length > 2 ? p.subarray(2) : p); if (d) return d; } // DNS / mDNS / LLMNR; TCP DNS has a 2-byte length prefix
+  if (f.l4 === 'tcp') {
+    if (p.length >= 16 && p.toString('latin1', 0, 16) === 'PRI * HTTP/2.0\r\n') return { proto: 'http2', summary: 'connection preface' };
+    const h = parseHttp(p); if (h) return h;
+  }
   return null;
 }
 

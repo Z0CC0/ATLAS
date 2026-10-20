@@ -292,7 +292,8 @@ header, then every packet record. It decodes the common stack — Ethernet (with
 IPv4 / IPv6, TCP / UDP / ICMP — and summarises the protocol counts and the conversations
 (source and destination address and port, ordered by packet count). It also reads the
 application layer best-effort: an HTTP/1.x request (method + Host + path) or status line, a
-DNS question (kind, type, name), and the TLS ClientHello SNI — per packet under `applications`
+DNS / mDNS / LLMNR question (kind, type, name), DHCP (message type), the HTTP/2 connection
+preface, and TLS (ClientHello SNI, ServerHello, certificate subject CN) — per packet under `applications`
 and, for a message split across segments, from the reassembled stream under `streams`. TCP
 streams are reassembled per direction by sequence number (up to 64 KB per flow, stopping at a
 gap or sequence wrap), so a request whose Host header or a ClientHello whose SNI falls in a
