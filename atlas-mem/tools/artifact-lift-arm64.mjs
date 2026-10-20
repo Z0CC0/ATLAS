@@ -84,6 +84,16 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
     if ((mnem === 'tst' || mnem === 'ands') && (ops[0] === 'xzr' || ops[0] === 'wzr' || mnem === 'tst')) {
       const o = mnem === 'tst' ? ops : ops.slice(1); cmp = { a: val(o[0]), b: val(o[1]), test: true }; continue;
     }
+    // multiply-accumulate: madd = Ra + Rn*Rm, msub = Ra - Rn*Rm (also the widening smaddl/umaddl)
+    if (/^[su]?m(add|sub)l?$/.test(mnem) && ops.length === 4) {
+      const prod = `(${val(ops[1])} * ${val(ops[2])})`;
+      wr(ops[0], /sub/.test(mnem) ? `(${val(ops[3])} - ${prod})` : `(${val(ops[3])} + ${prod})`); continue;
+    }
+    // multiply-negate, and widening/high multiplies rendered as the product
+    if (/^(mneg|[su]mull|[su]mnegl)$/.test(mnem) && ops.length === 3) {
+      const prod = `(${val(ops[1])} * ${val(ops[2])})`; wr(ops[0], /neg/.test(mnem) ? `(-${prod})` : prod); continue;
+    }
+    if (/^[su]mulh$/.test(mnem) && ops.length === 3) { wr(ops[0], `mulhi(${val(ops[1])}, ${val(ops[2])})`); continue; }
     if (BIN[base] && ops.length >= 3) {
       const [d, n, m] = ops; let rhs = val(m);
       if (ops[3] && /(lsl|lsr|asr) (\d+)/.test(ops[3])) { const s = /(lsl|lsr|asr) (\d+)/.exec(ops[3]); rhs = `(${rhs} ${s[1] === 'lsl' ? '<<' : '>>'} ${s[2]})`; }
@@ -98,10 +108,19 @@ function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
     if (/^str/.test(mnem)) { stmts.push(`${deref(ops[1])} = ${val(ops[0])};`); continue; }
     if (mnem === 'ldp') { const [a, b2] = pairSlots(ops[2]); wr(ops[0], a); wr(ops[1], b2); continue; }
     if (mnem === 'stp') { const [a, b2] = pairSlots(ops[2]); stmts.push(`${a} = ${val(ops[0])};`); stmts.push(`${b2} = ${val(ops[1])};`); continue; }
-    if (mnem === 'csel' || mnem === 'csinc' || mnem === 'csinv' || mnem === 'csneg' || mnem === 'cset' || mnem === 'csetm') {
+    if (/^(csel|csinc|csinv|csneg|cset|csetm)$/.test(mnem)) {
       const cc = ops[ops.length - 1]; const c = cmp && CC[cc] ? CC[cc](cmp.a, cmp.b) : `cc_${cc}`;
-      if (mnem === 'cset') wr(ops[0], `(${c} ? 1 : 0)`); else wr(ops[0], `(${c} ? ${val(ops[1])} : ${val(ops[2])})`);
-      continue;
+      if (mnem === 'cset') { wr(ops[0], `(${c} ? 1 : 0)`); continue; }
+      if (mnem === 'csetm') { wr(ops[0], `(${c} ? -1 : 0)`); continue; }
+      const n = val(ops[1]), m = val(ops[2]);
+      const f = mnem === 'csinc' ? `(${m} + 1)` : mnem === 'csinv' ? `(~${m})` : mnem === 'csneg' ? `(-${m})` : m;
+      wr(ops[0], `(${c} ? ${n} : ${f})`); continue;
+    }
+    // cinc/cinv/cneg: the condition picks the transformed source, else the source unchanged
+    if (/^(cinc|cinv|cneg)$/.test(mnem) && ops.length === 3) {
+      const cc = ops[2]; const c = cmp && CC[cc] ? CC[cc](cmp.a, cmp.b) : `cc_${cc}`; const n = val(ops[1]);
+      const t = mnem === 'cinc' ? `(${n} + 1)` : mnem === 'cinv' ? `(~${n})` : `(-${n})`;
+      wr(ops[0], `(${c} ? ${t} : ${n})`); continue;
     }
     if (mnem === 'bl' || mnem === 'blr') {
       const named = sym && sym(ins);

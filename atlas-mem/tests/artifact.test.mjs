@@ -753,6 +753,21 @@ test('the ARM64 lift folds expressions, loads, stores, calls and recovers a cond
   assert.equal(s.cond.text, 'x0 != 0');
 });
 
+test('the ARM64 lift renders conditional-select and multiply-accumulate', () => {
+  const csneg = liftArm64Block([{ text: 'cmp x0, x1' }, { text: 'csneg x2, x3, x4, lt' }], null, null, null, null);
+  assert.ok(csneg.stmts.includes('x2 = (x0 < x1 ? x3 : (-x4));'), csneg.stmts.join(' | '));
+  const csetm = liftArm64Block([{ text: 'cmp x0, x1' }, { text: 'csetm x2, eq' }], null, new Set(['x2']));
+  assert.ok(csetm.stmts.includes('x2 = (x0 == x1 ? -1 : 0);'), csetm.stmts.join(' | '));
+  const cinc = liftArm64Block([{ text: 'cmp x0, 0x0' }, { text: 'cinc x1, x2, gt' }], null, new Set(['x1']));
+  assert.ok(cinc.stmts.includes('x1 = (x0 > 0x0 ? (x2 + 1) : x2);'), cinc.stmts.join(' | '));
+  const madd = liftArm64Block([{ text: 'madd x0, x1, x2, x3' }], null, new Set(['x0']));
+  assert.ok(madd.stmts.includes('x0 = (x3 + (x1 * x2));'), madd.stmts.join(' | '));
+  const msub = liftArm64Block([{ text: 'msub x0, x1, x2, x3' }], null, new Set(['x0']));
+  assert.ok(msub.stmts.includes('x0 = (x3 - (x1 * x2));'), msub.stmts.join(' | '));
+  const mneg = liftArm64Block([{ text: 'mneg x0, x1, x2' }], null, new Set(['x0']));
+  assert.ok(mneg.stmts.includes('x0 = (-(x1 * x2));'), mneg.stmts.join(' | '));
+});
+
 test('ARM64 liveness drops a dead spill and keeps the return value', async () => {
   const df = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-dataflow.mjs')).href);
   const fr = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-frame.mjs')).href);
