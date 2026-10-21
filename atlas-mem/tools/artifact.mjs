@@ -1142,8 +1142,24 @@ function cmdCfg(path) {
     'the function\'s extent is followed from the entry by recursive descent up to the byte budget; data between blocks (jump tables, constants) is not code and is not followed',
   ];
   const rec = record(subject, 'cfg', { at: flags.at || null, budget }, result, { confidence: 'derived', coverage: { status: cfg.bad ? 'partial' : 'complete', scope: `${cfg.blocks.length} basic blocks, ${cfg.instructions} instructions, ${cfg.loops} loop edge(s), from 0x${at.toString(16)}` }, limitations });
-  // import symbol names for call targets, when this is a PE
-  const sym = buildSym(r); // PE import (IAT) / PE export / ELF PLT stub
+  // a local function name map (address -> name) from a sibling PDB (PE) or DWARF (ELF), so a
+  // direct call to one of the binary's own functions reads as its name, and the function header
+  // can be labelled. Keyed in the same address space buildSym uses: RVA for PE, VA for ELF.
+  let nameByAddr = null;
+  try {
+    if (r.format === 'pe') {
+      const base = abs.replace(/\.(exe|dll|sys|node)$/i, '');
+      const pdbPath = [abs + '.pdb', base + '.pdb'].find((p) => existsSync(p));
+      if (pdbPath) { const p = readPdb(readFileSync(pdbPath)); nameByAddr = new Map(p.functions.filter((f) => f.rva != null).map((f) => [f.rva, f.demangled || f.name])); }
+    } else if (r.format === 'elf') {
+      const d = readDwarf(buf, r.sections); if (d) nameByAddr = new Map(d.functions.map((f) => [f.low, f.name]));
+    }
+  } catch { nameByAddr = null; }
+  const sym = buildSym(r, nameByAddr); // PE import (IAT) / PE export / ELF PLT stub / local function
+  // the function's own name for the header
+  let fnName = null;
+  if (nameByAddr) { const s = r.sections.find((x) => at >= (r.format === 'pe' ? x.raw : x.off) && at < (r.format === 'pe' ? x.raw : x.off) + (r.format === 'pe' ? Math.max(x.vsize, x.rawSize) : x.size)); if (s) { const key = (r.format === 'pe' ? s.vaddr : s.addr) + (at - (r.format === 'pe' ? s.raw : s.off)); fnName = nameByAddr.get(key); } }
+  rec.result.name = fnName || undefined;
   let body;
   if (flags.pseudo && ARCH === 'x86-64') {
     const live = liveness(cfg);
@@ -1207,6 +1223,7 @@ function cmdCfg(path) {
     if (head.length) body = head.join('\n') + '\n' + body;
   } else body = formatCfg(cfg, 0, sym);
   if (switches.length) { body += '\n\n// recovered switch jump tables (indirect jmp resolved from the table in the image):'; for (const s of switches) body += `\n//   block L_${s.block.toString(16)}: ${s.kind} table at 0x${(s.tableVA >>> 0).toString(16)}, ${s.cases} cases -> ${s.targets.map((t) => 'L_' + t.toString(16)).join(', ')}`; }
+  if (fnName) body = `// ${fnName}\n${body}`;
   emit(rec, body + `\n\nid ${rec.id}`);
 }
 

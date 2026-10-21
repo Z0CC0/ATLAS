@@ -569,7 +569,7 @@ function readBinary(b, opts) {
  * Resolves a PE import through the IAT (`call [rip+x]`), a PE direct call/jmp to a named
  * export, and an ELF direct call/jmp to a PLT stub (`name@plt`). Returns '' when unresolved.
  */
-function buildSym(r) {
+function buildSym(r, localNames) {
   const fmt = r.format;
   const iat = new Map((r.iat || []).map((e) => [e.rva, e.name]));
   const exp = new Map((((r.exports && r.exports.addrs) || [])).map((e) => [e.rva, e.name]));
@@ -581,7 +581,7 @@ function buildSym(r) {
     if (fmt === 'mach-o') { for (const s of (r.segments || [])) { if (off >= s.fileoff && off < s.fileoff + s.filesize) return s.vmaddr + (off - s.fileoff); } return null; }
     return null;
   };
-  const has = iat.size || exp.size || plt.size || stub.size;
+  const has = iat.size || exp.size || plt.size || stub.size || (localNames && localNames.size);
   return (ins) => {
     if (!has || !/^(call|jmp)$/.test(ins.mnem || '')) return '';
     if (fmt === 'pe' && iat.size) {
@@ -595,6 +595,7 @@ function buildSym(r) {
         if (fmt === 'pe') { const n = exp.get(a); if (n) return `${(r.exports && r.exports.name) || 'this'}!${demangle(n)}`; }
         else if (fmt === 'elf') { const n = plt.get(a); if (n) return `${demangle(n)}@plt`; }
         else if (fmt === 'mach-o') { const n = stub.get(a); if (n) return `${demangle(n)}@stub`; }
+        if (localNames) { const ln = localNames.get(a); if (ln) return demangle(ln); } // a local function from DWARF / a sibling PDB
       }
     }
     return '';
