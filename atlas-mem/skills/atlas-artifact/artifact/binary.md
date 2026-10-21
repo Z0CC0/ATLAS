@@ -15,7 +15,9 @@ it asks for, DPI awareness) and the hardening flags the linker set: ASLR and hig
 ASLR, NX, Control Flow Guard, an Authenticode signature present or not. A shipped program
 without ASLR or NX, or with a writable code section, is a `high` for `atlas-secure`.
 
-A 64-bit PE also carries a `.pdata` exception table (an array of RUNTIME_FUNCTION entries):
+A PE's debug directory names the matching PDB: `bin` reports the PDB file name, its GUID and
+age (the signature a symbol server keys on), so you know exactly which `.pdb` to fetch and that
+it matches this build. A 64-bit PE also carries a `.pdata` exception table (an array of RUNTIME_FUNCTION entries):
 `bin` reads it to bound every function by `[begin, end)` RVA and reports the count — a function
 table even when the binary has no symbols (e.g. node.exe: 68,335 functions).
 

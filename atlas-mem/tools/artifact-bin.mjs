@@ -124,9 +124,23 @@ function readPe(b, opts) {
     for (let k = 0; d !== null && k < n && d + 12 <= b.length; k += 1, d += 12) { const begin = u32(b, d), endA = u32(b, d + 4); if (!begin) continue; funcs.push({ begin, end: endA, size: endA - begin }); }
     if (funcs.length) pdata = { count: funcs.length, functions: funcs };
   }
+  // debug directory (index 6): the CodeView (RSDS) record names the matching PDB and its GUID+age
+  let debug = null;
+  const dbg = dir(6);
+  if (dbg.rva && dbg.size) {
+    let d = toOff(dbg.rva);
+    for (let k = 0; d !== null && k < Math.floor(dbg.size / 28) && d + 28 <= b.length; k += 1, d += 28) {
+      if (u32(b, d + 12) !== 2) continue; // IMAGE_DEBUG_TYPE_CODEVIEW
+      const raw = u32(b, d + 24); // PointerToRawData (file offset)
+      if (raw + 24 > b.length || b.toString('latin1', raw, raw + 4) !== 'RSDS') continue;
+      const g = raw + 4; const guid = `${u32(b, g).toString(16).padStart(8, '0')}-${u16(b, g + 4).toString(16).padStart(4, '0')}-${u16(b, g + 6).toString(16).padStart(4, '0')}-${[...b.subarray(g + 8, g + 10)].map((x) => x.toString(16).padStart(2, '0')).join('')}-${[...b.subarray(g + 10, g + 16)].map((x) => x.toString(16).padStart(2, '0')).join('')}`.toUpperCase();
+      const age = u32(b, g + 16); const path = cstr(b, g + 20, 260);
+      debug = { pdb: path, guid, age }; break;
+    }
+  }
   return {
     format: 'pe', machine: MACHINES[machine] || `0x${machine.toString(16)}`, pe32plus: plus, timestamp: stampDate && !stampIsHash ? stampDate.toISOString() : null, timestampRaw: timestamp, entry, imageBase, subsystem: SUBSYSTEMS[subsystem] || subsystem,
-    dll: Boolean(characteristics & 0x2000), dllCharacteristics: DLL_CHARS.filter(([f]) => dllChars & f).map(([, n]) => n), hardening, sections, imports, iat, exports: exportsOut, pdata, dotnet, version, manifest, limitations,
+    dll: Boolean(characteristics & 0x2000), dllCharacteristics: DLL_CHARS.filter(([f]) => dllChars & f).map(([, n]) => n), hardening, sections, imports, iat, exports: exportsOut, pdata, debug, dotnet, version, manifest, limitations,
   };
 }
 
