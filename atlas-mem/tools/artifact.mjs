@@ -37,7 +37,7 @@ import { disasm as x86disasm } from './artifact-x86.mjs';
 import { disasm as arm64disasm } from './artifact-arm64.mjs';
 import { readDex, dexEntriesFromZip } from './artifact-dex.mjs';
 import { readClass as readJvmClass, decode as jvmDecode, lift as jvmLift } from './artifact-jvm.mjs';
-import { readPyc, disasm as pycDisasm, functions as pycFunctions } from './artifact-pyc.mjs';
+import { readPyc, disasm as pycDisasm, liftPyc, functions as pycFunctions } from './artifact-pyc.mjs';
 import { readDwarf } from './artifact-dwarf.mjs';
 import { readPdb } from './artifact-pdb.mjs';
 import { resolveJumpTable } from './artifact-jumptable.mjs';
@@ -786,7 +786,7 @@ function cmdPyc(path) {
   const methodFilter = flags.method ? String(flags.method).toLowerCase() : null;
   const fns = pycFunctions(r.top).filter((f) => !methodFilter || (f.c.name || '').toLowerCase().includes(methodFilter)).slice(0, Number(flags.max || 50));
   const subject = { name: basename(abs), path: abs, format: 'pyc', bytes: buf.length, sha256: sha256(buf) };
-  const out = fns.map((f) => ({ name: f.c.qualname || f.c.name, args: f.c.argcount, firstLine: f.c.firstlineno, instructions: pycDisasm(f.c, r.version) }));
+  const out = fns.map((f) => { const ins = pycDisasm(f.c, r.version); return { name: f.c.qualname || f.c.name, args: f.c.argcount, firstLine: f.c.firstlineno, instructions: ins, pseudo: flags.pseudo ? liftPyc(ins) : undefined }; });
   const result = { magic: r.magicHex, pythonVersion: r.version, functions: out.map((f) => ({ name: f.name, args: f.args, firstLine: f.firstLine, count: f.instructions.length })) };
   const limitations = ['disassembled from the marshalled code object, not executed or unmarshalled into live Python', 'opcode numbers are version-specific; this reader knows the maps for Python 3.11/3.12/3.13 and labels an unknown version\'s opcodes as <op N>', 'inline cache slots are skipped; the line table and exception table are not decoded'];
   if (!r.version) limitations.push(`magic ${r.magicHex} is not a version this reader maps; opcode names may be wrong`);
@@ -794,7 +794,9 @@ function cmdPyc(path) {
   const L = [`${subject.name}  Python ${r.version || '?'} (magic ${r.magicHex})  ${out.length} code objects`];
   for (const f of out) {
     L.push(`\n# ${f.name}  (args ${f.args}, line ${f.firstLine})`);
-    for (const ins of f.instructions) L.push(`  ${ins.off.toString().padStart(5)}  ${ins.text}`);
+    if (flags.pseudo && !flags.goto) for (const s of structureLinear(f.pseudo.map((e) => ({ off: e.off, text: e.text })))) L.push('  ' + s);
+    else if (flags.pseudo) for (const s of f.pseudo) L.push(/:$/.test(s.text) ? s.text : '  ' + s.text);
+    else for (const ins of f.instructions) L.push(`  ${ins.off.toString().padStart(5)}  ${ins.text}`);
   }
   L.push(`\nid ${rec.id}`);
   emit(rec, L.join('\n'));

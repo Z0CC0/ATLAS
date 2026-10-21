@@ -120,7 +120,7 @@ function lift(insns) {
   const out = []; const st = []; // operand stack of { x: expression, o: origin offset }
   const push = (x, o) => st.push({ x, o });
   const pop = () => (st.length ? st.pop() : { x: '?', o: 0 });
-  const label = (t) => `L_${t}`;
+  const label = (t) => `L_${Number(t).toString(16)}`; // hex, to match structureLinear's offOf
   const emit = (off, text) => out.push({ off, text });
   for (const ins of insns) {
     const sp = ins.text.indexOf(' '); const op = sp < 0 ? ins.text : ins.text.slice(0, sp); const rest = sp < 0 ? '' : ins.text.slice(sp + 1); const O = ins.off;
@@ -159,7 +159,7 @@ function lift(insns) {
     if (/^[ilfda]return$/.test(op)) { const a = pop(); emit(Math.min(O, a.o), `return ${a.x};`); continue; }
     if (op === 'return') { emit(O, 'return;'); continue; }
     if (op === 'athrow') { const a = pop(); emit(Math.min(O, a.o), `throw ${a.x};`); continue; }
-    if (op === 'tableswitch' || op === 'lookupswitch') { const key = pop(); const parts = rest.split(' '); const cs = parts.map((p) => { const [k, t] = p.split(':'); return k === 'default' ? `default: goto L_${t};` : `case ${k}: goto L_${t};`; }); emit(Math.min(O, key.o), `switch (${key.x}) { ${cs.join(' ')} }`); continue; }
+    if (op === 'tableswitch' || op === 'lookupswitch') { const key = pop(); const parts = rest.split(' '); const cs = parts.map((p) => { const [k, t] = p.split(':'); return k === 'default' ? `default: goto ${label(t)};` : `case ${k}: goto ${label(t)};`; }); emit(Math.min(O, key.o), `switch (${key.x}) { ${cs.join(' ')} }`); continue; }
     emit(O, `// ${ins.text}`);
   }
   return out;

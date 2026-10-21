@@ -95,6 +95,48 @@ function functions(top) {
   walk(top, 0); return list;
 }
 
+const PY_BIN = ['+', '&', '//', '<<', '@', '*', '%', '|', '**', '>>', '-', '/', '^', '+=', '&=', '//=', '<<=', '@=', '*=', '%=', '|=', '**=', '>>=', '-=', '/=', '^='];
+const PY_JMPIF = { POP_JUMP_IF_FALSE: '!', POP_JUMP_IF_TRUE: '', POP_JUMP_IF_NONE: ' is None', POP_JUMP_IF_NOT_NONE: ' is not None', JUMP_IF_FALSE_OR_POP: '!', JUMP_IF_TRUE_OR_POP: '' };
+
+/** Lift a disassembled code object to pseudo-Python as label+goto lines for structureLinear.
+ * The operand stack carries each value's origin offset so a collapsed statement keys to the
+ * first contributing offset — the offset a branch points at. Best-effort for the common opcodes. */
+function liftPyc(insns) {
+  const out = []; const st = [];
+  const push = (x, o) => st.push({ x, o }); const pop = () => (st.length ? st.pop() : { x: '?', o: 0 });
+  const emit = (off, text) => out.push({ off, text }); const L = (t) => `L_${Number(t).toString(16)}`; // hex, to match structureLinear's offOf
+  for (const ins of insns) {
+    const sp = ins.text.indexOf(' '); const op = sp < 0 ? ins.text : ins.text.slice(0, sp); const arg = sp < 0 ? '' : ins.text.slice(sp + 1); const O = ins.off;
+    if (/^(RESUME|NOP|CACHE|PRECALL|MAKE_CELL|COPY_FREE_VARS|RETURN_GENERATOR|PUSH_NULL)$/.test(op)) { continue; }
+    if (op === 'LOAD_CONST' || op === 'RETURN_CONST') { if (op === 'RETURN_CONST') { emit(O, `return ${arg};`); } else push(arg, O); continue; }
+    if (/^LOAD_(FAST|NAME|GLOBAL|DEREF|CLASSDEREF|FAST_CHECK)/.test(op)) { push(arg.replace(/^NULL \+ /, ''), O); continue; }
+    if (op === 'STORE_FAST' || op === 'STORE_NAME' || op === 'STORE_GLOBAL' || op === 'STORE_DEREF') { const a = pop(); emit(Math.min(O, a.o), `${arg} = ${a.x};`); continue; }
+    if (op === 'LOAD_ATTR' || op === 'LOAD_METHOD') { const a = pop(); push(`${a.x}.${arg.replace(/^NULL\|self \+ /, '')}`, Math.min(O, a.o)); continue; }
+    if (op === 'STORE_ATTR') { const o2 = pop(), v = pop(); emit(Math.min(O, v.o), `${o2.x}.${arg} = ${v.x};`); continue; }
+    if (op === 'BINARY_OP') { const b = pop(), a = pop(); const sym = (arg.length > 1 && arg.endsWith('=') && arg !== '==') ? arg.slice(0, -1) : arg; push(`(${a.x} ${sym} ${b.x})`, Math.min(a.o, O)); continue; }
+    if (op === 'BINARY_SUBSCR') { const i = pop(), a = pop(); push(`${a.x}[${i.x}]`, Math.min(a.o, O)); continue; }
+    if (op === 'STORE_SUBSCR') { const i = pop(), a = pop(), v = pop(); emit(Math.min(O, v.o), `${a.x}[${i.x}] = ${v.x};`); continue; }
+    if (op === 'COMPARE_OP' || op === 'IS_OP' || op === 'CONTAINS_OP') { const b = pop(), a = pop(); const o3 = op === 'IS_OP' ? 'is' : op === 'CONTAINS_OP' ? 'in' : arg; push(`(${a.x} ${o3} ${b.x})`, Math.min(a.o, O)); continue; }
+    if (/^UNARY_/.test(op)) { const a = pop(); push(`${op === 'UNARY_NEGATIVE' ? '-' : op === 'UNARY_NOT' ? 'not ' : op === 'UNARY_INVERT' ? '~' : ''}${a.x}`, Math.min(a.o, O)); continue; }
+    if (op === 'CALL' || op === 'CALL_FUNCTION' || op === 'CALL_METHOD' || op === 'CALL_KW') { const n = parseInt(arg, 10) || 0; const args = []; for (let i = 0; i < n; i += 1) args.unshift(pop().x); const fn = pop(); if (st.length && st[st.length - 1].x === '') pop(); push(`${fn.x}(${args.join(', ')})`, Math.min(O, fn.o)); continue; }
+    if (/^BUILD_(LIST|TUPLE|SET)/.test(op)) { const n = parseInt(arg, 10) || 0; const e = []; for (let i = 0; i < n; i += 1) e.unshift(pop().x); push(op.includes('LIST') ? `[${e.join(', ')}]` : op.includes('SET') ? `{${e.join(', ')}}` : `(${e.join(', ')})`, O); continue; }
+    if (op === 'BUILD_MAP' || op === 'BUILD_CONST_KEY_MAP') { push('{...}', O); continue; }
+    if (op === 'RETURN_VALUE') { const a = pop(); emit(Math.min(O, a.o), `return ${a.x};`); continue; }
+    if (op === 'YIELD_VALUE') { const a = pop(); emit(Math.min(O, a.o), `yield ${a.x};`); continue; }
+    if (op === 'RAISE_VARARGS') { const a = parseInt(arg, 10) ? pop().x : ''; emit(O, `raise ${a};`); continue; }
+    if (PY_JMPIF[op] != null) { const a = pop(); emit(Math.min(O, a.o), `if (${PY_JMPIF[op]}${a.x}) goto ${L(arg)};`); continue; }
+    if (op === 'JUMP_FORWARD' || op === 'JUMP_BACKWARD' || op === 'JUMP' || op === 'JUMP_ABSOLUTE') { emit(O, `goto ${L(arg)};`); continue; }
+    if (op === 'POP_TOP') { const a = pop(); if (/\(.*\)$/.test(a.x)) emit(Math.min(O, a.o), `${a.x};`); continue; } // a bare call result -> a statement
+    if (op === 'POP_JUMP_FORWARD_IF_FALSE' || op === 'POP_JUMP_FORWARD_IF_TRUE') { const a = pop(); emit(Math.min(O, a.o), `if (${op.includes('FALSE') ? '!' : ''}${a.x}) goto ${L(arg)};`); continue; }
+    if (op === 'IMPORT_NAME') { pop(); pop(); push(`import ${arg}`, O); continue; }
+    if (op === 'MAKE_FUNCTION') { push('<function>', O); continue; }
+    if (op === 'GET_ITER' || op === 'FOR_ITER' || op === 'END_FOR' || op === 'KW_NAMES') { if (op === 'FOR_ITER') emit(O, `for-iter goto ${L(arg)} on exhaustion;`); continue; }
+    if (op === 'COPY' || op === 'SWAP' || op === 'DUP_TOP') { if (op === 'COPY') { const a = st[st.length - (parseInt(arg, 10) || 1)]; if (a) st.push({ ...a }); } continue; }
+    emit(O, `// ${ins.text}`);
+  }
+  return out;
+}
+
 /** Read a .pyc: header + magic/version, then the marshalled top-level code object. */
 function readPyc(buf) {
   if (buf.length < 20) throw new Error('too short for a .pyc');
@@ -106,4 +148,4 @@ function readPyc(buf) {
   return { magicHex: buf.toString('hex', 0, 4), version, top };
 }
 
-export { readPyc, disasm, functions, OPMAP };
+export { readPyc, disasm, liftPyc, functions, OPMAP };

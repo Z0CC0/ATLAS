@@ -291,7 +291,9 @@ marshalled top-level code object and every nested one (functions, comprehensions
 disassembles the wordcode and resolves each argument — `LOAD_CONST` to the constant,
 `LOAD_NAME`/`LOAD_GLOBAL` to the name, `LOAD_FAST`/`STORE_FAST` to the local, `COMPARE_OP` and
 `BINARY_OP` to the operator, the jumps to an absolute offset. `--method NAME` filters,
-`--max N` caps the code objects. Opcode numbers change between Python versions; this reader
+`--max N` caps the code objects. `--pseudo` lifts it further to pseudo-Python — assignments,
+operator expressions, calls with their arguments, and `if`/loops through the shared structurizer
+(`--goto` keeps the flat labelled form). Opcode numbers change between Python versions; this reader
 knows the maps for 3.11 / 3.12 / 3.13 and labels an unknown version's opcodes as `<op N>`.
 Inline cache slots are skipped; the line table, exception table and the marshalled objects'
 live values are not reconstructed.

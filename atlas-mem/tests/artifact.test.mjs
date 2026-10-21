@@ -1361,6 +1361,21 @@ test('the pyc disassembler resolves consts, names and locals from the opmap', as
   assert.deepEqual(py.disasm(c13, '3.13').map((i) => i.text), ['LOAD_CONST "x"', 'RETURN_CONST "x"']);
 });
 
+test('the pyc lift builds pseudo-Python and structures a branch (hex labels)', async () => {
+  const py = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-pyc.mjs')).href);
+  // a branch whose target offset is >= 16, to guard the hex-vs-decimal label bug
+  const ins = [
+    { off: 2, text: 'LOAD_FAST n' }, { off: 4, text: 'LOAD_CONST 10' }, { off: 6, text: 'COMPARE_OP >' },
+    { off: 10, text: 'POP_JUMP_IF_FALSE 20' }, { off: 12, text: 'RETURN_CONST "big"' }, { off: 20, text: 'RETURN_CONST "small"' },
+  ];
+  const lifted = py.liftPyc(ins);
+  // the target label must be the hex of 20 (0x14), matching structureLinear's offOf
+  assert.ok(lifted.some((s) => s.text === 'if (!(n > 10)) goto L_14;'), JSON.stringify(lifted));
+  const structured = structureLinear(lifted.map((e) => ({ off: e.off, text: e.text }))).join('\n');
+  assert.ok(structured.includes('return "big"') && structured.includes('return "small"'), 'both branches survive: ' + structured);
+  assert.ok(/if \(/.test(structured) && /\} else \{/.test(structured), 'structured into if/else: ' + structured);
+});
+
 test('the WASM decoder decodes the SIMD (0xFD) prefix without desync', async () => {
   const wm = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-wasm.mjs')).href);
   const mkR = (bytes) => { const b = Buffer.from(bytes); let p = 0; const u32 = () => { let r = 0, s = 0, x; do { x = b[p++]; r |= (x & 0x7f) << s; s += 7; } while (x & 0x80); return r >>> 0; }; return { b, get p() { return p; }, set p(v) { p = v; }, byte: () => b[p++], u32, i32: u32, i64: u32, f32: () => { const v = b.readFloatLE(p); p += 4; return v; }, f64: () => { const v = b.readDoubleLE(p); p += 8; return v; }, vec: (f) => { const n = u32(); const o = []; for (let i = 0; i < n; i += 1) o.push(f({ u32 })); return o; } }; };
