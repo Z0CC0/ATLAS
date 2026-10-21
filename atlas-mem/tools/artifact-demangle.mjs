@@ -36,7 +36,7 @@ function demangleRustV0(sym) {
   const BASIC = { a: 'i8', b: 'bool', c: 'char', d: 'f64', e: 'str', f: 'f32', h: 'u8', i: 'isize', j: 'usize', l: 'i32', m: 'u32', n: 'i128', o: 'u128', p: '_', s: 'i16', t: 'u16', u: '()', v: '...', x: 'i64', y: 'u64', z: '!' };
   function type() {
     const t = peek();
-    if (BASIC[t] && /[a-z]/.test(t) && t !== 'u' && t !== 'p') { o += 1; return BASIC[t]; }
+    if (BASIC[t] && /[a-z]/.test(t)) { o += 1; return BASIC[t]; } // a basic type is a single lowercase letter (incl. 'u' = unit, 'p' = placeholder)
     if (t === 'A') { o += 1; const el = type(); constArg(); return `[${el}]`; }
     if (t === 'S') { o += 1; return `[${type()}]`; }
     if (t === 'R' || t === 'Q') { o += 1; if (peek() === 'L') { o += 1; base62(); } return '&' + type(); }

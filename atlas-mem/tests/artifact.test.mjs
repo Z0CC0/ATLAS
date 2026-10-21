@@ -1447,6 +1447,7 @@ test('the demangler reads Rust v0 and C++ Itanium symbol names', async () => {
   const { demangle } = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-demangle.mjs')).href);
   assert.equal(demangle('_RNvCscU8Vk5KhzgW_4demo4main'), 'demo::main'); // Rust v0
   assert.equal(demangle('_RNvNtCs1234_4core3fmt5write'), 'core::fmt::write');
+  assert.equal(demangle('_RINvNtCslFVcyoAu48q_3std2rt10lang_startuECscU8Vk5KhzgW_4demo'), 'std::rt::lang_start::<()>'); // generic with the unit type
   assert.equal(demangle('_ZN3foo3barEv'), 'foo::bar'); // Itanium nested
   assert.equal(demangle('_ZNSt6vectorIiE9push_backEi'), 'std::vector::push_back'); // template skipped
   assert.equal(demangle('__Z3foov'), 'foo'); // Mach-O leading underscore
