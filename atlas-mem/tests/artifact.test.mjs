@@ -1475,6 +1475,14 @@ test('readElf enumerates functions from .eh_frame on a (stripped) ELF when one i
   assert.ok(r.ehFrame.functions.every((f) => f.low > 0), 'each FDE has a pc_begin');
 });
 
+test('readWasm names internal functions from the custom "name" section', async () => {
+  const wm = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-wasm.mjs')).href);
+  // minimal module: magic + version + a custom "name" section with function-names subsection (idx 0 -> "foo")
+  const mod = Buffer.from([0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00, 0x00, 0x0d, 0x04, 0x6e, 0x61, 0x6d, 0x65, 0x01, 0x06, 0x01, 0x00, 0x03, 0x66, 0x6f, 0x6f]);
+  const m = wm.readWasm(mod);
+  assert.equal(m.funcNames[0], 'foo');
+});
+
 test('the pcap command runs end to end and detect routes to it', () => {
   const p = path.join(tmp, 'cap.pcap');
   fs.writeFileSync(p, makePcap());

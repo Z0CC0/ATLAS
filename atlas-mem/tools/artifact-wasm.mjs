@@ -196,6 +196,7 @@ function readWasm(buf) {
   const version = buf.readUInt32LE(4);
   const r = new Reader(buf, 8);
   const mod = { format: 'wasm', version, sections: [], types: [], imports: [], functions: [], exports: [], memories: [], globals: [], code: [], start: null, custom: [] };
+  const nameSec = []; // function index -> name, from the "name" custom section
   while (r.has()) {
     const id = r.byte(); const size = r.u32(); const bodyEnd = r.p + size; const name = SECTION[id] || `id${id}`;
     mod.sections.push({ id, name, size });
@@ -209,7 +210,14 @@ function readWasm(buf) {
       else if (id === 8) mod.start = s.u32();
       else if (id === 5) mod.memories = s.vec((x) => { const fl = x.byte(); const min = x.u32(); const max = fl ? x.u32() : null; return { min, max }; });
       else if (id === 10) mod.code = s.vec((x) => { const sz = x.u32(); const codeEnd = x.p + sz; const locals = x.vec((y) => ({ count: y.u32(), type: VALTYPE[y.byte()] })); const ins = decodeExpr(x, codeEnd); x.p = codeEnd; return { locals, ins }; });
-      else if (id === 0) mod.custom.push({ name: new Reader(buf, r.p, bodyEnd).name() });
+      else if (id === 0) { // custom section; the "name" section maps function indices to names
+        const cr = new Reader(buf, r.p, bodyEnd); const cname = cr.name(); mod.custom.push({ name: cname });
+        if (cname === 'name') {
+          while (cr.p < bodyEnd) { const sid = cr.byte(); const ssz = cr.u32(); const ssEnd = cr.p + ssz;
+            if (sid === 1) { const cnt = cr.u32(); for (let k = 0; k < cnt && cr.p < ssEnd; k += 1) { const idx = cr.u32(); nameSec[idx] = cr.name(); } }
+            cr.p = ssEnd; }
+        }
+      }
     } catch (e) { mod.sections[mod.sections.length - 1].error = e.message; }
     r.p = bodyEnd;
   }
@@ -217,6 +225,7 @@ function readWasm(buf) {
   const importedFns = mod.imports.filter((i) => i.kind === 'func').length;
   const names = [];
   mod.imports.filter((i) => i.kind === 'func').forEach((i, k) => { names[k] = `${i.module}.${i.field}`; });
+  nameSec.forEach((nm, idx) => { if (nm) names[idx] = nm; }); // the name section names internal functions
   for (const e of mod.exports) if (e.kind === 'func') names[e.index] = e.name;
   mod.importedFns = importedFns;
   mod.funcNames = names;
