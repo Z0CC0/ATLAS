@@ -409,6 +409,36 @@ function readElf(b) {
       const name = cstr(b, strtabSec.off + nameIdx, 512); if (name) symFuncs.push({ name, addr: val });
     }
   }
+  // .eh_frame (DWARF CFI): every FDE bounds a function [pc_begin, pc_begin+range) — enumerates
+  // functions even when the binary is stripped, the ELF counterpart of the PE .pdata table.
+  const ehFuncs = [];
+  const ehSec = sections.find((s) => s.name === '.eh_frame');
+  if (ehSec && ehSec.off != null && ehSec.addr) {
+    try {
+      const uleb = (p) => { let s = 0, v = 0, x; do { x = b[p++]; v |= (x & 0x7f) << s; s += 7; } while (x & 0x80); return [v >>> 0, p]; };
+      const sleb = (p) => { let s = 0, v = 0, x; do { x = b[p++]; v |= (x & 0x7f) << s; s += 7; } while (x & 0x80); if (x & 0x40) v |= (~0 << s); return [v, p]; };
+      const encSize = (enc) => { const f = enc & 0x0f; return f === 0x02 || f === 0x0a ? 2 : f === 0x03 || f === 0x0b ? 4 : f === 0x04 || f === 0x0c ? 8 : (is64 ? 8 : 4); };
+      const rdEnc = (p, enc) => { const f = enc & 0x0f; let val; const sz = encSize(enc); if (f === 0x02) val = b.readInt16LE(p); else if (f === 0x0a) val = b.readInt16LE(p); else if (f === 0x04 || f === 0x0c) val = Number(b.readBigInt64LE(p)); else if (f === 0x00) val = is64 ? r64(p) : r32(p); else val = b.readInt32LE(p); let out = val; if ((enc & 0x70) === 0x10) out = (ehSec.addr + (p - ehSec.off)) + val; return { out: out >>> 0, raw: val >>> 0, sz }; };
+      const cies = {}; let o = ehSec.off; const end = ehSec.off + ehSec.size;
+      while (o + 4 <= end) {
+        const recStart = o; const len = r32(o); if (len === 0 || len === 0xffffffff) break; const next = o + 4 + len; if (next > end) break;
+        const id = r32(o + 4); let p = o + 8;
+        if (id === 0) { // CIE
+          const ver = b[p]; p += 1; const as = p; while (b[p]) p += 1; const aug = b.toString('latin1', as, p); p += 1;
+          [, p] = uleb(p); [, p] = sleb(p); if (ver === 1) p += 1; else [, p] = uleb(p); // code_align, data_align, return_reg
+          let fdeEnc = 0x1b;
+          if (aug.startsWith('z')) { let al; [al, p] = uleb(p); void al; for (const ch of aug.slice(1)) { if (ch === 'R') { fdeEnc = b[p]; p += 1; } else if (ch === 'L') p += 1; else if (ch === 'P') { const pe = b[p]; p += 1; p += encSize(pe); } } }
+          cies[recStart] = fdeEnc;
+        } else { // FDE
+          const cieOff = (o + 4) - id; const enc = cies[cieOff] != null ? cies[cieOff] : 0x1b;
+          const pc = rdEnc(p, enc); const rng = rdEnc(p + pc.sz, enc);
+          if (pc.out) ehFuncs.push({ low: pc.out, size: rng.raw });
+        }
+        o = next;
+        if (ehFuncs.length > 200000) break;
+      }
+    } catch { /* malformed .eh_frame: skip */ }
+  }
   // PLT resolution: map each PLT stub address to its imported symbol, via .rela.plt + .dynsym.
   // In code a `call <stub>` targets the .plt (or .plt.sec on CET builds) entry for that slot.
   const plt = [], got = [];
@@ -436,7 +466,7 @@ function readElf(b) {
   }
   const stack = segments.find((s) => s.type === 'GNU_STACK');
   const hardening = { pie: type === 3, nx: stack ? !stack.flags.includes('x') : null, relro: segments.some((s) => s.type === 'GNU_RELRO') ? 'partial-or-full' : false, canary: imported.some((s) => s.startsWith('__stack_chk_fail')), fortify: imported.some((s) => /_chk$/.test(s)), stripped: !sections.some((s) => s.name === '.symtab'), writableExec: segments.filter((s) => s.type === 'LOAD' && s.flags.includes('w') && s.flags.includes('x')).length };
-  return { format: 'elf', class: is64 ? 64 : 32, type: ELF_TYPES[type] || type, machine: ELF_MACHINES[machine] || machine, entry, interpreter, soname, needed, rpath, runpath, segments, sections: sections.map((s) => ({ name: s.name, off: s.off, size: s.size, addr: s.addr })), imported: imported.slice(0, 3000), exported: exported.slice(0, 3000), plt, got, symtab: symFuncs.slice(0, 5000), symtabCount: symFuncs.length, counts: { imported: imported.length, exported: exported.length, sections: sections.length, plt: plt.length }, hardening, limitations };
+  return { format: 'elf', class: is64 ? 64 : 32, type: ELF_TYPES[type] || type, machine: ELF_MACHINES[machine] || machine, entry, interpreter, soname, needed, rpath, runpath, segments, sections: sections.map((s) => ({ name: s.name, off: s.off, size: s.size, addr: s.addr })), imported: imported.slice(0, 3000), exported: exported.slice(0, 3000), plt, got, symtab: symFuncs.slice(0, 5000), symtabCount: symFuncs.length, ehFrame: { count: ehFuncs.length, functions: ehFuncs.slice(0, 5000) }, counts: { imported: imported.length, exported: exported.length, sections: sections.length, plt: plt.length }, hardening, limitations };
 }
 
 // ---------------------------------------------------------------- Mach-O

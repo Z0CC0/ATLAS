@@ -687,6 +687,7 @@ function cmdBin(path) {
   let text = binText({ ...rec, result: r });
   if (r.dwarf) { text += `\n\nDWARF — ${r.dwarf.functionCount} functions${r.dwarf.producer ? ', built by ' + r.dwarf.producer : ''}${r.dwarf.unit ? ' (' + r.dwarf.unit + ')' : ''}:`; for (const f of r.dwarf.functions.slice(0, 40)) text += `\n  0x${(f.low >>> 0).toString(16)}${f.high != null ? '-0x' + (f.high >>> 0).toString(16) : ''}  ${f.name}`; }
   if (r.pdata) text += `\n\n.pdata (x64 exception table) — ${r.pdata.count} functions bounded; largest: ${r.pdata.functions.slice().sort((a, b) => b.size - a.size).slice(0, 5).map((f) => `0x${(f.begin >>> 0).toString(16)} (${f.size}B)`).join(', ')}`;
+  if (r.ehFrame && r.ehFrame.count) text += `\n\n.eh_frame (DWARF CFI) — ${r.ehFrame.count} functions bounded (works on a stripped ELF)`;
   emit(rec, text);
 }
 

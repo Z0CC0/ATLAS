@@ -1462,6 +1462,18 @@ test('readPe enumerates functions from the x64 .pdata table when a PE is present
   assert.ok(r.pdata.functions.every((f) => f.end >= f.begin), 'each runtime function has end >= begin');
 });
 
+test('readElf enumerates functions from .eh_frame on a (stripped) ELF when one is present', async () => {
+  const bin = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-bin.mjs')).href);
+  const cands = [
+    'C:/Users/mazzo/AppData/Local/Android/Sdk/build-tools/35.0.0/renderscript/lib/blas/arm64-v8a/libblasV8.so',
+    'C:/Users/mazzo/AppData/Local/Android/Sdk/build-tools/35.0.0/renderscript/lib/blas/x86_64/libblasV8.so',
+  ].filter((p) => { try { return fs.statSync(p).isFile(); } catch { return false; } });
+  if (!cands.length) return; // no ELF here: skip
+  const r = bin.readElf(fs.readFileSync(cands[0]));
+  assert.ok(r.ehFrame && r.ehFrame.count > 0, 'an ELF with .eh_frame yields a function table');
+  assert.ok(r.ehFrame.functions.every((f) => f.low > 0), 'each FDE has a pc_begin');
+});
+
 test('the pcap command runs end to end and detect routes to it', () => {
   const p = path.join(tmp, 'cap.pcap');
   fs.writeFileSync(p, makePcap());

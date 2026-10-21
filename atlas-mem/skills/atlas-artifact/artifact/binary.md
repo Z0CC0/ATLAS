@@ -34,6 +34,10 @@ and not stripped), `bin` lists the real function names and their PC ranges, and 
 (compiler) — a `DWARF` section after the headers. The line-number program and the type graph
 are not reconstructed.
 
+An ELF's `.eh_frame` (DWARF call-frame info) is also read: each FDE bounds a function by
+`[pc_begin, pc_begin+range)`, so `bin` reports a function table even on a stripped ELF — the
+counterpart of the PE `.pdata` table.
+
 ## Linux: ELF
 
 Class, type (a shared object is also what a PIE executable looks like), machine, the
