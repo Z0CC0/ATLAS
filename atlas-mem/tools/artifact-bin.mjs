@@ -329,15 +329,35 @@ function readClr(b, off, toOff, limitations, clrOpts) {
       if (!rva || (implFlags & 3) !== 0) { decoded.push({ method: nm, rva, note: 'no IL body (native, runtime or abstract)' }); continue; }
       const bo = toOff(rva);
       if (bo === null || bo >= b.length) { decoded.push({ method: nm, rva, note: 'body RVA not in any section' }); continue; }
-      const b0 = b[bo]; let codeStart, codeSize, maxStack = 8, localTok = 0;
+      const b0 = b[bo]; let codeStart, codeSize, maxStack = 8, localTok = 0, moreSects = false;
       if ((b0 & 3) === 2) { codeSize = b0 >> 2; codeStart = bo + 1; }
-      else if ((b0 & 3) === 3) { maxStack = b.readUInt16LE(bo + 2); codeSize = b.readUInt32LE(bo + 4); localTok = b.readUInt32LE(bo + 8); codeStart = bo + 12; }
+      else if ((b0 & 3) === 3) { const fatFlags = b.readUInt16LE(bo) & 0xfff; moreSects = (fatFlags & 0x08) !== 0; maxStack = b.readUInt16LE(bo + 2); codeSize = b.readUInt32LE(bo + 4); localTok = b.readUInt32LE(bo + 8); codeStart = bo + 12; }
       else { decoded.push({ method: nm, rva, note: `unknown method-body header 0x${b0.toString(16)}` }); continue; }
       if (codeStart + codeSize > b.length) { decoded.push({ method: nm, rva, note: 'code extends past the file' }); continue; }
       attempted += 1;
       const d = cil.decode(b, codeStart, codeSize, { token: resolveToken, string: readUserString });
       if (d.complete) full += 1; else if (d.stoppedAt) unknown.add(d.stoppedAt);
       const entry = { method: nm, rva, codeSize, maxStack, localVarSigTok: localTok, count: d.instructions.length, complete: d.complete, stoppedAt: d.stoppedAt, instructions: d.instructions };
+      // exception-handler clauses of a fat body (CorILMethod_MoreSects): the try/catch/finally regions
+      if (moreSects) {
+        let s = (codeStart + codeSize + 3) & ~3; const EHK = { 0: 'catch', 1: 'filter', 2: 'finally', 4: 'fault' }; const hs = [];
+        if (s < b.length && (b[s] & 0x01)) {
+          const fat = (b[s] & 0x40) !== 0;
+          const dataSize = fat ? (b[s + 1] | (b[s + 2] << 8) | (b[s + 3] << 16)) : b[s + 1];
+          let p = s + 4; const n = Math.floor((dataSize - 4) / (fat ? 24 : 12));
+          for (let k = 0; k < n && p + (fat ? 24 : 12) <= b.length; k += 1) {
+            const fl = fat ? b.readUInt32LE(p) : b.readUInt16LE(p);
+            const tryO = fat ? b.readUInt32LE(p + 4) : b.readUInt16LE(p + 2);
+            const tryL = fat ? b.readUInt32LE(p + 8) : b[p + 4];
+            const hO = fat ? b.readUInt32LE(p + 12) : b.readUInt16LE(p + 5);
+            const hL = fat ? b.readUInt32LE(p + 16) : b[p + 7];
+            const tok = fat ? b.readUInt32LE(p + 20) : b.readUInt32LE(p + 8);
+            hs.push({ kind: EHK[fl] || `0x${fl.toString(16)}`, try: `IL_${tryO.toString(16).padStart(4, '0')}..${(tryO + tryL).toString(16).padStart(4, '0')}`, handler: `IL_${hO.toString(16).padStart(4, '0')}..${(hO + hL).toString(16).padStart(4, '0')}`, token: fl === 0 ? `0x${tok.toString(16)}` : undefined });
+            p += fat ? 24 : 12;
+          }
+        }
+        if (hs.length) entry.handlers = hs;
+      }
       if (clrOpts.pseudo) entry.pseudo = cil.lift(d.instructions, { sig: methodSig });
       decoded.push(entry);
     }

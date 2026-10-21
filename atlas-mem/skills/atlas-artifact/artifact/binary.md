@@ -91,8 +91,9 @@ library, 7,176 methods lifted to 91,448 statements with no crash.
 Every run reports its coverage: how many method bodies were decoded and how many fully,
 with any opcode the reader did not know listed (on the whole .NET core library and four
 more assemblies, 42,949 methods, 100%, no unknown opcode). A native method, a runtime
-method or an abstract one has no byte stream and is said to have none. The exception-handler
-regions after a fat method body are not listed yet.
+method or an abstract one has no byte stream and is said to have none. A fat method body's
+exception-handler clauses are listed — `.catch`/`.finally`/`.fault`/`.filter` with the try and
+handler IL ranges — though they are not folded into the pseudo-C# structure.
 
 ## Native code: `disasm` (x86-64 and ARM64)
 

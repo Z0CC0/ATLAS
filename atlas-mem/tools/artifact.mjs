@@ -846,17 +846,18 @@ function cmdCil(path) {
   if (!r.dotnet) fail('not a .NET assembly (no CLR metadata)', 'unsupported');
   const d = r.dotnet;
   const cov = d.cilCoverage || { attempted: 0, fullyDecoded: 0, percent: null, unknownOpcodes: [] };
-  const limitations = ['CIL read from the bytes, not executed; a token is resolved to a name through the metadata, a signature blob is shown as its token', 'exception-handler regions after a fat body are not listed'];
+  const limitations = ['CIL read from the bytes, not executed; a token is resolved to a name through the metadata, a signature blob is shown as its token', 'the exception-handler clauses of a fat body are listed (try/catch/finally/fault/filter IL ranges); the handler regions are not folded into the pseudo-C# structure'];
   if (cov.unknownOpcodes.length) limitations.push(`opcodes not known to this reader, decoding stopped at them: ${cov.unknownOpcodes.join(', ')}`);
   if (cov.truncated) limitations.push(`more methods match than the --max limit (${flags.max || 40}); raise --max or narrow with --type/--method`);
   const subject = { name: basename(abs), path: abs, format: 'cil', bytes: buf.length, sha256: sha256(buf) };
   const bodies = (d.decoded || []).filter((m) => m.instructions);
-  const result = { assembly: d.assembly, runtimeVersion: d.runtimeVersion, coverage: cov, methods: (d.decoded || []).map((m) => m.instructions ? { method: m.method, codeSize: m.codeSize, maxStack: m.maxStack, count: m.count, complete: m.complete, stoppedAt: m.stoppedAt, instructions: flags.pseudo ? undefined : m.instructions, pseudo: m.pseudo } : { method: m.method, note: m.note }) };
+  const result = { assembly: d.assembly, runtimeVersion: d.runtimeVersion, coverage: cov, methods: (d.decoded || []).map((m) => m.instructions ? { method: m.method, codeSize: m.codeSize, maxStack: m.maxStack, count: m.count, complete: m.complete, stoppedAt: m.stoppedAt, handlers: m.handlers, instructions: flags.pseudo ? undefined : m.instructions, pseudo: m.pseudo } : { method: m.method, note: m.note }) };
   const rec = record(subject, 'cil', { type: flags.type || null, method: flags.method || null, max: Number(flags.max || 40) }, result, { confidence: 'observed', coverage: { status: cov.unknownOpcodes.length ? 'partial' : 'complete', scope: `${cov.attempted} method bodies decoded, ${cov.fullyDecoded} fully (${cov.percent}%)` }, limitations });
   const L = [`${subject.name}  ${d.assembly ? d.assembly.name + ' ' + d.assembly.version : d.module}  ${d.runtimeVersion}  methods decoded ${cov.attempted}, fully ${cov.fullyDecoded} (${cov.percent}%)`];
   for (const m of (d.decoded || [])) {
     if (!m.instructions) { L.push(`\n// ${m.method} — ${m.note}`); continue; }
     L.push(`\n.method ${m.method}  (IL ${m.codeSize} bytes, maxstack ${m.maxStack}${m.complete ? '' : `, STOPPED at ${m.stoppedAt}`})`);
+    if (m.handlers) for (const h of m.handlers) L.push(`  .${h.kind} try ${h.try} handler ${h.handler}${h.token ? ' ' + h.token : ''}`);
     if (flags.pseudo && m.pseudo && !flags.goto) for (const s of structureLinear(m.pseudo.map((e) => ({ off: e.il, text: e.text })))) L.push('  ' + s);
     else if (flags.pseudo && m.pseudo) for (const s of m.pseudo) L.push(/:$/.test(s.text) ? s.text : '  ' + s.text);
     else for (const ins of m.instructions) L.push('  ' + cilFormat(ins));
