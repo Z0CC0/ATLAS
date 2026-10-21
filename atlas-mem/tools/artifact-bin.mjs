@@ -397,6 +397,18 @@ function readElf(b) {
       if (symSize === null && name === '' ) break;
     }
   }
+  // static symbol table (.symtab, present when not stripped): function symbols with addresses
+  const symFuncs = [];
+  const symtabSec = sections.find((s) => s.name === '.symtab'); const strtabSec = sections.find((s) => s.name === '.strtab');
+  if (symtabSec && strtabSec && symtabSec.off != null) {
+    const ent = symtabSec.entsize || (is64 ? 24 : 16); const n = Math.floor(symtabSec.size / ent);
+    for (let i = 1; i < n && i < 200000; i += 1) {
+      const o = symtabSec.off + i * ent; if (o + ent > b.length) break;
+      const nameIdx = r32(o); const info = is64 ? b[o + 4] : b[o + 12]; if ((info & 0xf) !== 2) continue; // STT_FUNC
+      const val = is64 ? Number(b.readBigUInt64LE(o + 8)) : r32(o + 4); if (!val || !nameIdx) continue;
+      const name = cstr(b, strtabSec.off + nameIdx, 512); if (name) symFuncs.push({ name, addr: val });
+    }
+  }
   // PLT resolution: map each PLT stub address to its imported symbol, via .rela.plt + .dynsym.
   // In code a `call <stub>` targets the .plt (or .plt.sec on CET builds) entry for that slot.
   const plt = [], got = [];
@@ -424,7 +436,7 @@ function readElf(b) {
   }
   const stack = segments.find((s) => s.type === 'GNU_STACK');
   const hardening = { pie: type === 3, nx: stack ? !stack.flags.includes('x') : null, relro: segments.some((s) => s.type === 'GNU_RELRO') ? 'partial-or-full' : false, canary: imported.some((s) => s.startsWith('__stack_chk_fail')), fortify: imported.some((s) => /_chk$/.test(s)), stripped: !sections.some((s) => s.name === '.symtab'), writableExec: segments.filter((s) => s.type === 'LOAD' && s.flags.includes('w') && s.flags.includes('x')).length };
-  return { format: 'elf', class: is64 ? 64 : 32, type: ELF_TYPES[type] || type, machine: ELF_MACHINES[machine] || machine, entry, interpreter, soname, needed, rpath, runpath, segments, sections: sections.map((s) => ({ name: s.name, off: s.off, size: s.size, addr: s.addr })), imported: imported.slice(0, 3000), exported: exported.slice(0, 3000), plt, got, counts: { imported: imported.length, exported: exported.length, sections: sections.length, plt: plt.length }, hardening, limitations };
+  return { format: 'elf', class: is64 ? 64 : 32, type: ELF_TYPES[type] || type, machine: ELF_MACHINES[machine] || machine, entry, interpreter, soname, needed, rpath, runpath, segments, sections: sections.map((s) => ({ name: s.name, off: s.off, size: s.size, addr: s.addr })), imported: imported.slice(0, 3000), exported: exported.slice(0, 3000), plt, got, symtab: symFuncs.slice(0, 5000), symtabCount: symFuncs.length, counts: { imported: imported.length, exported: exported.length, sections: sections.length, plt: plt.length }, hardening, limitations };
 }
 
 // ---------------------------------------------------------------- Mach-O

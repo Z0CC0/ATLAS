@@ -1152,7 +1152,9 @@ function cmdCfg(path) {
       const pdbPath = [abs + '.pdb', base + '.pdb'].find((p) => existsSync(p));
       if (pdbPath) { const p = readPdb(readFileSync(pdbPath)); nameByAddr = new Map(p.functions.filter((f) => f.rva != null).map((f) => [f.rva, f.demangled || f.name])); }
     } else if (r.format === 'elf') {
-      const d = readDwarf(buf, r.sections); if (d) nameByAddr = new Map(d.functions.map((f) => [f.low, f.name]));
+      nameByAddr = new Map((r.symtab || []).map((f) => [f.addr, f.name])); // static symbols (.symtab)
+      const d = readDwarf(buf, r.sections); if (d) for (const f of d.functions) nameByAddr.set(f.low, f.name); // DWARF names take precedence
+      if (!nameByAddr.size) nameByAddr = null;
     }
   } catch { nameByAddr = null; }
   const sym = buildSym(r, nameByAddr); // PE import (IAT) / PE export / ELF PLT stub / local function
