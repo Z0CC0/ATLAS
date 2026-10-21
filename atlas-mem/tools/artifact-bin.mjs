@@ -115,9 +115,18 @@ function readPe(b, opts) {
   const stampDate = timestamp ? new Date(timestamp * 1000) : null;
   const stampIsHash = stampDate && stampDate.getUTCFullYear() > new Date().getUTCFullYear() + 1;
   if (stampIsHash) limitations.push('the timestamp field holds a build hash, not a date (reproducible build)');
+  // x64 exception directory (.pdata): a RUNTIME_FUNCTION table that bounds every function —
+  // [beginRVA, endRVA) — so functions can be enumerated even with no symbols
+  let pdata = null;
+  const exc = dir(3);
+  if (exc.rva && exc.size && plus) {
+    let d = toOff(exc.rva); const n = Math.floor(exc.size / 12); const funcs = [];
+    for (let k = 0; d !== null && k < n && d + 12 <= b.length; k += 1, d += 12) { const begin = u32(b, d), endA = u32(b, d + 4); if (!begin) continue; funcs.push({ begin, end: endA, size: endA - begin }); }
+    if (funcs.length) pdata = { count: funcs.length, functions: funcs };
+  }
   return {
     format: 'pe', machine: MACHINES[machine] || `0x${machine.toString(16)}`, pe32plus: plus, timestamp: stampDate && !stampIsHash ? stampDate.toISOString() : null, timestampRaw: timestamp, entry, imageBase, subsystem: SUBSYSTEMS[subsystem] || subsystem,
-    dll: Boolean(characteristics & 0x2000), dllCharacteristics: DLL_CHARS.filter(([f]) => dllChars & f).map(([, n]) => n), hardening, sections, imports, iat, exports: exportsOut, dotnet, version, manifest, limitations,
+    dll: Boolean(characteristics & 0x2000), dllCharacteristics: DLL_CHARS.filter(([f]) => dllChars & f).map(([, n]) => n), hardening, sections, imports, iat, exports: exportsOut, pdata, dotnet, version, manifest, limitations,
   };
 }
 

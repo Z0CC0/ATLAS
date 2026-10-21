@@ -1438,6 +1438,15 @@ test('the demangler reads Rust v0 and C++ Itanium symbol names', async () => {
   assert.equal(demangle('plain_c_name'), 'plain_c_name'); // not mangled -> unchanged
 });
 
+test('readPe enumerates functions from the x64 .pdata table when a PE is present', async () => {
+  const bin = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-bin.mjs')).href);
+  const cand = ['C:/Program Files/nodejs/node.exe', process.execPath].filter((p) => { try { return fs.statSync(p).isFile(); } catch { return false; } });
+  if (!cand.length) { return; } // no PE x64 here: skip
+  const r = bin.readPe(fs.readFileSync(cand[0]));
+  assert.ok(r.pdata && r.pdata.count > 0, 'a 64-bit PE has a .pdata function table');
+  assert.ok(r.pdata.functions.every((f) => f.end >= f.begin), 'each runtime function has end >= begin');
+});
+
 test('the pcap command runs end to end and detect routes to it', () => {
   const p = path.join(tmp, 'cap.pcap');
   fs.writeFileSync(p, makePcap());
