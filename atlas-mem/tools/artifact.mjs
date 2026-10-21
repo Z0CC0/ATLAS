@@ -1188,6 +1188,12 @@ function cmdCfg(path) {
     const layouts = structLayouts(body);
     const arrays = arrayElems(cfg);
     rec.result.layouts = layouts;
+    // parameter arity: the argument registers read before written at entry (observed, not guessed)
+    const abiX = r.format === 'pe' ? ['rcx', 'rdx', 'r8', 'r9'] : ['rdi', 'rsi', 'rdx', 'rcx', 'r8', 'r9'];
+    const liveInX = live.get(cfg.start) || new Set();
+    const paramsX = abiX.filter((rg) => liveInX.has(rg));
+    rec.result.params = paramsX;
+    if (paramsX.length) body = `// parameters (argument registers read before written at entry): ${paramsX.join(', ')}\n${body}`;
     if (ti.signatures.length || Object.keys(ti.regTypes).length || fr.locals.length || layouts.length || arrays.length) {
       const head = [];
       if (ti.signatures.length) { head.push('// resolved API prototypes (ground-truth types at these call sites):'); for (const s of ti.signatures) head.push(`//   ${s.text}`); }
@@ -1227,6 +1233,10 @@ function cmdCfg(path) {
     if (fr.locals.length) head.push(`// stack locals recovered: ${[...new Set(fr.locals)].join(', ')}`);
     rec.result.structs = pt.structs;
     if (head.length) body = head.join('\n') + '\n' + body;
+    const liveInA = live.get(cfg.start) || new Set();
+    const paramsA = ['x0', 'x1', 'x2', 'x3', 'x4', 'x5', 'x6', 'x7'].filter((rg) => liveInA.has(rg));
+    rec.result.params = paramsA;
+    if (paramsA.length) body = `// parameters (argument registers read before written at entry): ${paramsA.join(', ')}\n${body}`;
   } else body = formatCfg(cfg, 0, sym);
   if (switches.length) { body += '\n\n// recovered switch jump tables (indirect jmp resolved from the table in the image):'; for (const s of switches) body += `\n//   block L_${s.block.toString(16)}: ${s.kind} table at 0x${(s.tableVA >>> 0).toString(16)}, ${s.cases} cases -> ${s.targets.map((t) => 'L_' + t.toString(16)).join(', ')}`; }
   if (fnName) body = `// ${fnName}\n${body}`;
