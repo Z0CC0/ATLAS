@@ -902,7 +902,8 @@ function cmdDisasm(path) {
   if (r.format === 'pe' && r.entry) { const s = r.sections.find((x) => r.entry >= x.vaddr && r.entry < x.vaddr + Math.max(x.vsize, x.rawSize)); if (s) entryOff = s.raw + (r.entry - s.vaddr); }
   else if (r.format === 'elf' && r.entry) { const s = r.sections.find((x) => r.entry >= x.addr && x.addr && r.entry < x.addr + x.size); if (s) entryOff = s.off + (r.entry - s.addr); }
   const textSec = secs.find((s) => s.name === '.text' || s.name === '__text') || secs[0];
-  const at = flags.at ? parseInt(String(flags.at), 16) : (entryOff !== null ? entryOff : textSec.off);
+  const rvaToOff = (rva) => { const s = r.sections.find((x) => { const a = r.format === 'pe' ? x.vaddr : x.addr; const sz = r.format === 'pe' ? Math.max(x.vsize || 0, x.rawSize || 0) : x.size; return a != null && rva >= a && rva < a + sz; }); return s ? (r.format === 'pe' ? s.raw : s.off) + (rva - (r.format === 'pe' ? s.vaddr : s.addr)) : null; };
+  const at = flags.rva != null ? (rvaToOff(parseInt(String(flags.rva), 16)) ?? fail('--rva fuori dalle sezioni', 'not_found')) : flags.at ? parseInt(String(flags.at), 16) : (entryOff !== null ? entryOff : textSec.off);
   const count = Math.max(1, Math.min(2000, Number(flags.count || 60)));
   const secOf = secs.find((s) => at >= s.off && at < s.off + s.size) || textSec;
   const d = dis(buf, at, Math.min(secOf.off + secOf.size, buf.length), at - secOf.off, count);
@@ -1110,7 +1111,8 @@ function cmdCfg(path) {
   if (r.format === 'pe' && r.entry) { const s = r.sections.find((x) => r.entry >= x.vaddr && r.entry < x.vaddr + Math.max(x.vsize, x.rawSize)); if (s) entryOff = s.raw + (r.entry - s.vaddr); }
   else if (r.format === 'elf' && r.entry) { const s = r.sections.find((x) => r.entry >= x.addr && x.addr && r.entry < x.addr + x.size); if (s) entryOff = s.off + (r.entry - s.addr); }
   const textSec = secs.find((s) => s.name === '.text' || s.name === '__text') || secs[0];
-  const at = flags.at ? parseInt(String(flags.at), 16) : (entryOff !== null ? entryOff : textSec.off);
+  const rvaToOff = (rva) => { const s = r.sections.find((x) => { const a = r.format === 'pe' ? x.vaddr : x.addr; const sz = r.format === 'pe' ? Math.max(x.vsize || 0, x.rawSize || 0) : x.size; return a != null && rva >= a && rva < a + sz; }); return s ? (r.format === 'pe' ? s.raw : s.off) + (rva - (r.format === 'pe' ? s.vaddr : s.addr)) : null; };
+  const at = flags.rva != null ? (rvaToOff(parseInt(String(flags.rva), 16)) ?? fail('--rva fuori dalle sezioni', 'not_found')) : flags.at ? parseInt(String(flags.at), 16) : (entryOff !== null ? entryOff : textSec.off);
   const secOf = secs.find((s) => at >= s.off && at < s.off + s.size) || textSec;
   const end = Math.min(secOf.off + secOf.size, buf.length);
   const budget = Math.max(16, Math.min(65536, Number(flags.budget || 8192)));
