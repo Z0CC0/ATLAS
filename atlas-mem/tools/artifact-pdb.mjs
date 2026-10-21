@@ -50,14 +50,26 @@ function symbols(stream) {
   while (o + 4 <= stream.length) {
     const len = stream.readUInt16LE(o); if (len < 2) break; const kind = stream.readUInt16LE(o + 2);
     const rec = stream.subarray(o + 4, o + 2 + len); // record body (after len+kind)
-    if (kind === S_PUB32) { const flags = rec.readUInt32LE(0), offset = rec.readUInt32LE(4), seg = rec.readUInt16LE(8); const name = cstr(rec, 10); out.push({ kind: 'pub', name, seg, offset, func: (flags & 2) !== 0 }); }
-    else if (kind === S_GPROC32 || kind === S_LPROC32) { const offset = rec.readUInt32LE(28), seg = rec.readUInt16LE(32); const name = cstr(rec, 35); out.push({ kind: kind === S_GPROC32 ? 'gproc' : 'lproc', name, seg, offset, func: true }); }
-    else if (kind === S_LDATA32 || kind === S_GDATA32) { const offset = rec.readUInt32LE(4), seg = rec.readUInt16LE(8); const name = cstr(rec, 10); out.push({ kind: 'data', name, seg, offset, func: false }); }
+    if (kind === S_PUB32 && rec.length >= 11) { const flags = rec.readUInt32LE(0), offset = rec.readUInt32LE(4), seg = rec.readUInt16LE(8); const name = cstr(rec, 10); out.push({ kind: 'pub', name, seg, offset, func: (flags & 2) !== 0 }); }
+    else if ((kind === S_GPROC32 || kind === S_LPROC32) && rec.length >= 36) { const offset = rec.readUInt32LE(28), seg = rec.readUInt16LE(32); const name = cstr(rec, 35); out.push({ kind: kind === S_GPROC32 ? 'gproc' : 'lproc', name, seg, offset, func: true }); }
+    else if ((kind === S_LDATA32 || kind === S_GDATA32) && rec.length >= 11) { const offset = rec.readUInt32LE(4), seg = rec.readUInt16LE(8); const name = cstr(rec, 10); out.push({ kind: 'data', name, seg, offset, func: false }); }
     o += 2 + len; o = (o + 3) & ~3; // records are 4-byte aligned
   }
   return out;
 }
 function cstr(b, o) { let e = o; while (e < b.length && b[e]) e += 1; return b.toString('utf8', o, e); }
+
+/** Parse the DBI ModInfo substream: each module's symbol-stream index and name. */
+function modules(dbi, hdr) {
+  const mods = []; let o = 64; const end = 64 + hdr.modInfoSize;
+  while (o + 64 <= end && o + 64 <= dbi.length) {
+    const symStream = dbi.readInt16LE(o + 34); const symSize = dbi.readUInt32LE(o + 36);
+    let p = o + 64; const name = cstr(dbi, p); p += name.length + 1; const obj = cstr(dbi, p); p += obj.length + 1;
+    mods.push({ symStream, symSize, name });
+    o = (p + 3) & ~3; // records are 4-byte aligned
+  }
+  return mods;
+}
 
 /** Section headers from the DBI optional-debug-header substream (index 5), to map seg:offset -> RVA. */
 function sectionHeaders(streams, dbi, hdr) {
@@ -79,10 +91,18 @@ function readPdb(b) {
   if (!hdr) throw new Error('no DBI stream');
   const symStream = streams[hdr.symRecordStream] || Buffer.alloc(0);
   const syms = symbols(symStream);
+  // per-module procedures (S_GPROC32/S_LPROC32) — the local functions not in the public stream
+  let moduleCount = 0;
+  for (const m of modules(dbi, hdr)) {
+    if (m.symStream < 0 || m.symStream >= streams.length || m.symSize < 4) continue;
+    moduleCount += 1; const ms = streams[m.symStream].subarray(4, m.symSize); // skip the CV signature
+    for (const s of symbols(ms)) if (s.func) syms.push(s);
+  }
   const secs = sectionHeaders(streams, dbi, hdr);
   const rva = (s) => (secs && secs[s.seg - 1] ? secs[s.seg - 1].vaddr + s.offset : null);
-  const functions = syms.filter((s) => s.func).map((s) => { const d = demangle(s.name); return { name: s.name, demangled: d !== s.name ? d : undefined, rva: rva(s), seg: s.seg, offset: s.offset }; });
-  return { streamCount: streams.length, machine: hdr.machine, symbolCount: syms.length, functions, hasSections: !!secs };
+  const seen = new Set(); const functions = [];
+  for (const s of syms) { if (!s.func) continue; const key = s.name + ':' + s.seg + ':' + s.offset; if (seen.has(key)) continue; seen.add(key); const d = demangle(s.name); functions.push({ name: s.name, demangled: d !== s.name ? d : undefined, rva: rva(s), seg: s.seg, offset: s.offset }); }
+  return { streamCount: streams.length, machine: hdr.machine, symbolCount: syms.length, moduleCount, functions, hasSections: !!secs };
 }
 
 export { readPdb, readMsf, symbols, dbiHeader };
