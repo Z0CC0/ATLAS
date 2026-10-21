@@ -957,13 +957,14 @@ function cmdDex(path) {
   out.coverage.unknownOpcodes = [...unk];
   out.coverage.percent = out.coverage.attempted ? Math.round((out.coverage.fullyDecoded / out.coverage.attempted) * 100) : null;
   const subject = { name: basename(abs), path: abs, format: buf.toString('latin1', 0, 4) === 'dex\n' ? 'dex' : 'apk', bytes: buf.length, sha256: sha256(buf) };
-  const limitations = ['Dalvik bytecode decoded from the units, not executed; a pool index is resolved to a name, a method body\'s exception table and debug info are not listed', 'register-based: operands are vN registers; what a register holds is not tracked'];
+  const limitations = ['Dalvik bytecode decoded from the units, not executed; a pool index is resolved to a name; try/catch regions are listed, the debug info is not', 'register-based: operands are vN registers; what a register holds is not tracked'];
   if (unk.size) limitations.push(`opcodes not known to this reader: ${[...unk].join(', ')}`);
   const rec = record(subject, 'dex', { class: flags.class || null, method: flags.method || null, max: Number(flags.max || 40) }, out, { confidence: 'observed', coverage: { status: unk.size ? 'partial' : 'complete', scope: `${dexes.length} dex, ${out.classes} classes, ${out.coverage.attempted} method bodies decoded, ${out.coverage.fullyDecoded} fully (${out.coverage.percent}%)` }, limitations });
   const L = [`${subject.name}  ${dexes.length} dex, ${out.counts ? out.counts.classes : 0} classes, ${out.counts ? out.counts.methods : 0} methods  bodies decoded ${out.coverage.attempted}, fully ${out.coverage.fullyDecoded} (${out.coverage.percent}%)`];
   for (const m of out.decoded) {
     if (!m.instructions) { L.push(`\n// ${m.method} — ${m.note}`); continue; }
     L.push(`\n.method ${m.method}  (${m.units} units, ${m.registers} regs${m.complete ? '' : `, STOPPED at ${m.stoppedAt}`})`);
+    if (m.handlers) for (const h of m.handlers) L.push(`  try ${h.try} -> ${h.catches.map((c) => `${c.type === '*' ? 'catch-all' : 'catch ' + c.type}@${c.addr.toString(16)}`).join(', ') || '(none)'}`);
     if (flags.pseudo && m.pseudo && !flags.goto) for (const s of structureLinear(m.pseudo.map((e) => ({ off: e.off * 2, text: e.text })))) L.push('  ' + s);
     else if (flags.pseudo && m.pseudo) for (const s of m.pseudo) L.push(/:$/.test(s.text) ? s.text : '  ' + s.text);
     else for (const ins of m.instructions) L.push(`  ${ins.off.toString(16).padStart(4, '0')}:  ${ins.text}`);

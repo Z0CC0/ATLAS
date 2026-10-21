@@ -277,8 +277,9 @@ and a throw are the statements. So the android.jar stub comes back as
 `throw new RuntimeException("Stub!");`. Branch targets get a label and a `goto`; full
 if/while structuring is not done.
 
-What is not done: the exception table and debug line info of a method, and if/while
-structuring of the pseudo-Java. A register's value is not tracked across blocks.
+The try/catch regions of a method are listed (`try <range> -> catch <Type>@addr`, the finally
+as catch-all). What is not done: the debug line info, and if/while structuring of the
+pseudo-Java. A register's value is not tracked across blocks.
 
 ## Java: `jvm`
 

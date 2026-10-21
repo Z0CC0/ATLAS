@@ -185,7 +185,21 @@ function readDex(buf, opts) {
           attempted += 1;
           const d = decodeInsns((idx) => buf.readUInt16LE(insnsOff + idx * 2), insnsSize, resolve);
           if (d.complete) full += 1; else if (d.stoppedAt) unknown.add(d.stoppedAt);
-          result.decoded.push({ method: mn, registers, units: insnsSize, count: d.instructions.length, complete: d.complete, stoppedAt: d.stoppedAt, instructions: d.instructions, pseudo: (opts && opts.pseudo) ? liftDalvik(d.instructions) : undefined });
+          // try/catch regions (code_item tries + encoded catch handlers)
+          let handlers;
+          const triesSize = buf.readUInt16LE(codeOff + 6);
+          if (triesSize > 0) {
+            try {
+              let triesOff = insnsOff + insnsSize * 2; if (insnsSize & 1) triesOff += 2; // 4-byte alignment
+              const listOff = triesOff + triesSize * 8;
+              const sleb = (b, p) => { let r = 0, s = 0, x; do { x = b[p.o++]; r |= (x & 0x7f) << s; s += 7; } while (x & 0x80); if (x & 0x40) r |= (~0 << s); return r; };
+              const byOff = {}; const pp = { o: listOff }; const nLists = uleb(buf, pp);
+              for (let i = 0; i < nLists; i += 1) { const hoff = pp.o - listOff; const sz = sleb(buf, pp); const arr = []; for (let k = 0; k < Math.abs(sz); k += 1) { const tIdx = uleb(buf, pp); const addr = uleb(buf, pp); arr.push({ type: resolve('type', tIdx), addr }); } if (sz <= 0) arr.push({ type: '*', addr: uleb(buf, pp) }); byOff[hoff] = arr; }
+              handlers = [];
+              for (let t = 0; t < triesSize; t += 1) { const o = triesOff + t * 8; const start = u32(o), count = buf.readUInt16LE(o + 4), hOff = buf.readUInt16LE(o + 6); handlers.push({ try: `${start.toString(16).padStart(4, '0')}..${(start + count).toString(16).padStart(4, '0')}`, catches: byOff[hOff] || [] }); }
+            } catch { handlers = undefined; }
+          }
+          result.decoded.push({ method: mn, registers, units: insnsSize, count: d.instructions.length, complete: d.complete, stoppedAt: d.stoppedAt, handlers, instructions: d.instructions, pseudo: (opts && opts.pseudo) ? liftDalvik(d.instructions) : undefined });
         }
       };
       readMethods(dm); if (!result.decodedTruncated) readMethods(vm);
