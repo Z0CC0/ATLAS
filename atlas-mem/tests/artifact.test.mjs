@@ -1428,6 +1428,16 @@ test('the jump-table resolver recovers switch targets for both compiler idioms',
   assert.deepEqual(abs.targets, [0x1500, 0x1600]);
 });
 
+test('the demangler reads Rust v0 and C++ Itanium symbol names', async () => {
+  const { demangle } = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-demangle.mjs')).href);
+  assert.equal(demangle('_RNvCscU8Vk5KhzgW_4demo4main'), 'demo::main'); // Rust v0
+  assert.equal(demangle('_RNvNtCs1234_4core3fmt5write'), 'core::fmt::write');
+  assert.equal(demangle('_ZN3foo3barEv'), 'foo::bar'); // Itanium nested
+  assert.equal(demangle('_ZNSt6vectorIiE9push_backEi'), 'std::vector::push_back'); // template skipped
+  assert.equal(demangle('__Z3foov'), 'foo'); // Mach-O leading underscore
+  assert.equal(demangle('plain_c_name'), 'plain_c_name'); // not mangled -> unchanged
+});
+
 test('the pcap command runs end to end and detect routes to it', () => {
   const p = path.join(tmp, 'cap.pcap');
   fs.writeFileSync(p, makePcap());

@@ -772,7 +772,7 @@ function cmdPdb(path) {
   const limitations = ['function names and section:offset read from the CodeView symbol records; RVA is resolved from the section headers when present', 'the type stream (TPI/IPM) and line information are not reconstructed'];
   const rec = record(subject, 'pdb', { method: flags.method || null, max: Number(flags.max || 500) }, result, { confidence: 'observed', coverage: { status: 'complete', scope: `${r.streamCount} MSF streams, ${r.symbolCount} symbols, ${r.functions.length} functions` }, limitations });
   const L = [`${subject.name}  PDB  ${r.streamCount} streams, ${r.functions.length} functions (${r.symbolCount} symbols)${r.hasSections ? '' : ', no section map (RVA unresolved)'}`];
-  for (const f of fns.slice(0, 80)) L.push(`  ${f.rva != null ? '0x' + (f.rva >>> 0).toString(16).padStart(6) : `${f.seg}:${f.offset}`}  ${f.name}`);
+  for (const f of fns.slice(0, 80)) L.push(`  ${f.rva != null ? '0x' + (f.rva >>> 0).toString(16).padStart(6) : `${f.seg}:${f.offset}`}  ${f.demangled || f.name}`);
   L.push(`\nid ${rec.id}`);
   emit(rec, L.join('\n'));
 }

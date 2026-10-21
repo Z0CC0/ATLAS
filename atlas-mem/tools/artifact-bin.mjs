@@ -10,6 +10,7 @@
 
 import { inflateSync } from 'node:zlib';
 import * as cil from './artifact-cil.mjs';
+import { demangle } from './artifact-demangle.mjs';
 
 const u8 = (b, o) => b[o];
 const u16 = (b, o) => b.readUInt16LE(o);
@@ -576,15 +577,15 @@ function buildSym(r) {
     if (!has || !/^(call|jmp)$/.test(ins.mnem || '')) return '';
     if (fmt === 'pe' && iat.size) {
       const m = /\[rip([+-])0x([0-9a-f]+)\]/.exec(ins.text || '');
-      if (m) { const disp = parseInt(m[2], 16) * (m[1] === '-' ? -1 : 1); const ir = off2addr(ins.addr); if (ir != null) { const n = iat.get(ir + ins.len + disp); if (n) return n; } }
+      if (m) { const disp = parseInt(m[2], 16) * (m[1] === '-' ? -1 : 1); const ir = off2addr(ins.addr); if (ir != null) { const n = iat.get(ir + ins.len + disp); if (n) return demangle(n); } }
     }
     const dm = /^\S+\s+(-?)0x([0-9a-f]+)$/.exec(ins.text || ''); // a direct self-relative call/jmp
     if (dm) {
       const v = parseInt(dm[2], 16) * (dm[1] ? -1 : 1); const a = off2addr(ins.addr + v);
       if (a != null) {
-        if (fmt === 'pe') { const n = exp.get(a); if (n) return `${(r.exports && r.exports.name) || 'this'}!${n}`; }
-        else if (fmt === 'elf') { const n = plt.get(a); if (n) return `${n}@plt`; }
-        else if (fmt === 'mach-o') { const n = stub.get(a); if (n) return `${n}@stub`; }
+        if (fmt === 'pe') { const n = exp.get(a); if (n) return `${(r.exports && r.exports.name) || 'this'}!${demangle(n)}`; }
+        else if (fmt === 'elf') { const n = plt.get(a); if (n) return `${demangle(n)}@plt`; }
+        else if (fmt === 'mach-o') { const n = stub.get(a); if (n) return `${demangle(n)}@stub`; }
       }
     }
     return '';

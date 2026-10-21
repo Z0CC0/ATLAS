@@ -6,6 +6,8 @@
  * executed. The type stream (TPI) and line information are not reconstructed here.
  */
 
+import { demangle } from './artifact-demangle.mjs';
+
 const MSF_MAGIC = 'Microsoft C/C++ MSF 7.00\r\n\x1aDS';
 
 /** Reconstruct every stream from the MSF directory. Returns { streams: Buffer[], blockSize }. */
@@ -79,7 +81,7 @@ function readPdb(b) {
   const syms = symbols(symStream);
   const secs = sectionHeaders(streams, dbi, hdr);
   const rva = (s) => (secs && secs[s.seg - 1] ? secs[s.seg - 1].vaddr + s.offset : null);
-  const functions = syms.filter((s) => s.func).map((s) => ({ name: s.name, rva: rva(s), seg: s.seg, offset: s.offset }));
+  const functions = syms.filter((s) => s.func).map((s) => { const d = demangle(s.name); return { name: s.name, demangled: d !== s.name ? d : undefined, rva: rva(s), seg: s.seg, offset: s.offset }; });
   return { streamCount: streams.length, machine: hdr.machine, symbolCount: syms.length, functions, hasSections: !!secs };
 }
 
