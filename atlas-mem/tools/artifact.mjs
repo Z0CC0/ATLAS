@@ -1194,6 +1194,16 @@ function cmdCfg(path) {
     const paramsX = abiX.filter((rg) => liveInX.has(rg));
     rec.result.params = paramsX;
     if (paramsX.length) body = `// parameters (argument registers read before written at entry): ${paramsX.join(', ')}\n${body}`;
+    // interprocedural (depth 1): recover each local callee's arity, so a `sub_0x…(...)` call
+    // gets its argument count — the first cross-function type signal
+    const callees = new Map();
+    for (const b of cfg.blocks) for (const ins of b.insns) {
+      const mm = /^call\s+(-?)0x([0-9a-f]+)$/.exec(ins.text || ''); if (!mm) continue;
+      const tgt = ins.addr + parseInt(mm[2], 16) * (mm[1] ? -1 : 1);
+      if (tgt < secOf.off || tgt >= end || tgt === at || callees.has(tgt) || callees.size >= 24) continue;
+      try { const cc = buildCfg(decodeAt, tgt, end, ARCH, 2048); const cl = liveness(cc); const li = cl.get(cc.start) || new Set(); const ps = abiX.filter((rg) => li.has(rg)); callees.set(tgt, ps); } catch { /* skip */ }
+    }
+    if (callees.size) { const lines = [...callees.entries()].filter(([, ps]) => ps.length).map(([t, ps]) => `//   sub_0x${(t >>> 0).toString(16)}(${ps.join(', ')})`); if (lines.length) body = `// called local functions (recovered argument registers):\n${lines.join('\n')}\n${body}`; }
     if (ti.signatures.length || Object.keys(ti.regTypes).length || fr.locals.length || layouts.length || arrays.length) {
       const head = [];
       if (ti.signatures.length) { head.push('// resolved API prototypes (ground-truth types at these call sites):'); for (const s of ti.signatures) head.push(`//   ${s.text}`); }
