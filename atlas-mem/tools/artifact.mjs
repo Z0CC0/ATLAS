@@ -1198,6 +1198,9 @@ function cmdCfg(path) {
     const ptype = (rg) => (new RegExp(`\\*${rg}\\b|${rg}->|${rg}\\[|\\*\\(${rg}\\b`).test(body) ? 'void*' : 'int64_t');
     const paramSig = paramsX.map((rg) => `${ptype(rg)} ${rg}`);
     rec.result.params = paramsX; rec.result.paramTypes = paramSig;
+    const retX = ti.regTypes && ti.regTypes.rax && ti.regTypes.rax !== '?' ? ti.regTypes.rax : null;
+    rec.result.returns = retX;
+    if (retX) body = `// returns: ${retX} (rax, from the value live at the function end)\n${body}`;
     if (paramsX.length) body = `// parameters (observed argument registers and their use): ${paramSig.join(', ')}\n${body}`;
     // interprocedural (depth 1): recover each local callee's arity, so a `sub_0x…(...)` call
     // gets its argument count — the first cross-function type signal
@@ -1253,6 +1256,9 @@ function cmdCfg(path) {
     const ptypeA = (rg) => (new RegExp(`\\*${rg}\\b|${rg}->|${rg}\\[|\\*\\(${rg}\\b`).test(body) ? 'void*' : 'int64_t');
     const paramSigA = paramsA.map((rg) => `${ptypeA(rg)} ${rg}`);
     rec.result.params = paramsA; rec.result.paramTypes = paramSigA;
+    const retA = ti.regTypes && ti.regTypes.x0 && ti.regTypes.x0 !== '?' ? ti.regTypes.x0 : null;
+    rec.result.returns = retA;
+    if (retA) body = `// returns: ${retA} (x0, from the value live at the function end)\n${body}`;
     if (paramsA.length) body = `// parameters (observed argument registers and their use): ${paramSigA.join(', ')}\n${body}`;
   } else body = formatCfg(cfg, 0, sym);
   if (switches.length) { body += '\n\n// recovered switch jump tables (indirect jmp resolved from the table in the image):'; for (const s of switches) body += `\n//   block L_${s.block.toString(16)}: ${s.kind} table at 0x${(s.tableVA >>> 0).toString(16)}, ${s.cases} cases -> ${s.targets.map((t) => 'L_' + t.toString(16)).join(', ')}`; }
