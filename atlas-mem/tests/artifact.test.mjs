@@ -1483,6 +1483,19 @@ test('readWasm names internal functions from the custom "name" section', async (
   assert.equal(m.funcNames[0], 'foo');
 });
 
+test('scanCrypto finds known constants by their byte tables', async () => {
+  const cr = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-crypto.mjs')).href);
+  const aes = Buffer.from('637c777bf26b6fc53001672bfed7ab76', 'hex');
+  const sigma = Buffer.from('expand 32-byte k', 'latin1');
+  const buf = Buffer.concat([Buffer.alloc(16), aes, Buffer.alloc(32), sigma]);
+  const hits = cr.scanCrypto(buf);
+  const names = hits.map((h) => h.name);
+  assert.ok(names.includes('AES S-box'), names.join(', '));
+  assert.ok(names.includes('ChaCha/Salsa sigma'), names.join(', '));
+  assert.equal(hits.find((h) => h.name === 'AES S-box').offset, 16);
+  assert.equal(cr.scanCrypto(Buffer.alloc(64)).length, 0); // no false positive on zeros
+});
+
 test('the pcap command runs end to end and detect routes to it', () => {
   const p = path.join(tmp, 'cap.pcap');
   fs.writeFileSync(p, makePcap());

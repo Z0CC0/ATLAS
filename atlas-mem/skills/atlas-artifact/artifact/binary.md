@@ -343,6 +343,16 @@ and, when the section-headers substream is present, their RVA — so a stripped-
 regains real names from its sibling `.pdb`. `--method NAME` filters, `--max N` caps. The type
 stream (TPI) and line information are not reconstructed.
 
+## Crypto constants: `crypto`
+
+`crypto <file>` scans the raw bytes for the fixed constant tables of well-known primitives —
+the AES S-box and its inverse, the SHA-256/512 init and round constants, the MD5/SHA-1 initial
+state, the CRC-32 table and polynomials, the Base64 / Base64url alphabets, the ChaCha/Salsa
+`"expand 32-byte k"` string, Blowfish and Keccak constants — and reports each with its offset.
+These constants are public, fixed facts of each algorithm, so a match is strong evidence the
+file embeds that primitive. `bin` also surfaces a short list. A hit is embedded data at an
+offset, not proof the code executes it, and a table-free or custom implementation is not seen.
+
 ## Network captures: `pcap`
 
 `pcap <file>` reads a libpcap or pcapng capture: the link type and byte order from the
