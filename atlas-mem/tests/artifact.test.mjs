@@ -1483,6 +1483,16 @@ test('readWasm names internal functions from the custom "name" section', async (
   assert.equal(m.funcNames[0], 'foo');
 });
 
+test('bin reports per-section entropy and does not false-flag an unpacked PE', () => {
+  const cand = ['C:/Program Files/nodejs/node.exe', process.execPath].find((p) => { try { return fs.statSync(p).isFile(); } catch { return false; } });
+  if (!cand) return; // no PE here: skip
+  const r = run('bin', cand);
+  const pk = r.json && r.json.result && r.json.result.packing;
+  assert.ok(pk && Array.isArray(pk.sections) && pk.sections.length, 'packing section entropies present');
+  assert.ok(pk.sections.every((s) => s.entropy >= 0 && s.entropy <= 8), 'entropy in [0,8]');
+  assert.equal(pk.suspect, false, 'a normal system binary is not flagged as packed');
+});
+
 test('scanCrypto finds known constants by their byte tables', async () => {
   const cr = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-crypto.mjs')).href);
   const aes = Buffer.from('637c777bf26b6fc53001672bfed7ab76', 'hex');

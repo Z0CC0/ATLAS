@@ -679,18 +679,35 @@ function cmdBin(path) {
   try { r = readBinary(buf); } catch (e) { fail(e.message, 'unsupported'); }
   const limitations = [...(r.limitations || []), 'headers and tables read as the loader reads them; code not disassembled, nothing run: what a function does is not known from this'];
   try { const cr = scanCrypto(buf); if (cr.length) r.crypto = cr; } catch { /* scan skipped */ }
+  // entropy per section + a packer verdict: high entropy = compressed/encrypted, packer section
+  // names, and very few imports over executable code all point to packing/obfuscation
+  try {
+    const H = (sl) => { if (!sl.length) return 0; const f = new Float64Array(256); for (const x of sl) f[x] += 1; let h = 0; for (let i = 0; i < 256; i += 1) if (f[i]) { const p = f[i] / sl.length; h -= p * Math.log2(p); } return h; };
+    const isPE = r.format === 'pe', isELF = r.format === 'elf';
+    if ((isPE || isELF) && r.sections) {
+      const secs = r.sections.map((s) => { const off = isPE ? s.raw : s.off; const sz = isPE ? s.rawSize : s.size; const sl = (off != null && sz) ? buf.subarray(off, Math.min(buf.length, off + sz)) : null; return { name: s.name, entropy: sl && sl.length ? Math.round(H(sl) * 100) / 100 : null, exec: (s.flags || []).includes('exec') || (s.flags || []).includes('code') }; });
+      const reasons = []; const high = secs.filter((s) => s.entropy != null && s.entropy >= 7.2);
+      if (high.length) reasons.push(`high-entropy section(s): ${high.map((s) => `${s.name} ${s.entropy}`).join(', ')}`);
+      const packerName = secs.find((s) => /^(UPX[0-9!]|\.themida|\.vmp|\.aspack|\.petite|\.nsp|\.mpress|\.enigma)/i.test(s.name || ''));
+      if (packerName) reasons.push(`packer-style section name: ${packerName.name}`);
+      const impCount = (r.counts && r.counts.imported) || (r.imports ? r.imports.reduce((n, i) => n + (i.count || (i.names || []).length), 0) : 0);
+      if (impCount > 0 && impCount < 6 && secs.some((s) => s.exec)) reasons.push(`very few imports (${impCount}) for executable code`);
+      r.packing = { sections: secs.filter((s) => s.entropy != null), suspect: reasons.length > 0, reasons };
+    }
+  } catch { /* entropy skipped */ }
   if (r.format === 'elf' && r.sections) { try { const d = readDwarf(buf, r.sections); if (d && d.functions.length) { r.dwarf = { producer: (d.units[0] || {}).producer || null, unit: (d.units[0] || {}).name || null, functionCount: d.functions.length, functions: d.functions.slice(0, 200).map((f) => ({ name: f.name, low: f.low, high: f.high })) }; limitations.push('DWARF: function names and PC ranges from .debug_info; the line-number program and types are not reconstructed'); } } catch { /* malformed DWARF: skip */ } }
   if (r.go && r.go.limitations) limitations.push(...r.go.limitations);
   delete r.limitations;
   const subject = { name: basename(abs), path: abs, format: r.format, bytes: buf.length, sha256: sha256(buf) };
   const full = flags.detail === 'full';
-  const result = full ? r : { ...r, sections: r.sections ? r.sections.map((s) => ({ name: s.name, size: s.rawSize ?? s.size ?? s.filesize, flags: s.flags })) : undefined, imports: r.imports ? r.imports.map((i) => ({ dll: i.dll, count: i.count, names: i.names.slice(0, 40) })) : undefined, exports: r.exports ? { ...r.exports, names: r.exports.names.slice(0, 60), addrs: undefined } : r.exports, imported: r.imported ? r.imported.slice(0, 80) : undefined, exported: r.exported ? r.exported.slice(0, 80) : undefined, dotnet: r.dotnet ? { ...r.dotnet, types: r.dotnet.types.slice(0, 60), userStrings: r.dotnet.userStrings.slice(0, 60), pinvoke: r.dotnet.pinvoke.slice(0, 60) } : r.dotnet, segments: r.segments ? r.segments.map((s) => ({ ...s, sections: undefined })) : undefined, pdata: r.pdata ? { count: r.pdata.count, functions: r.pdata.functions.slice(0, 200) } : undefined, debug: r.debug, ehFrame: r.ehFrame ? { count: r.ehFrame.count, functions: r.ehFrame.functions.slice(0, 200) } : undefined, symtabCount: r.symtabCount, crypto: r.crypto };
+  const result = full ? r : { ...r, sections: r.sections ? r.sections.map((s) => ({ name: s.name, size: s.rawSize ?? s.size ?? s.filesize, flags: s.flags })) : undefined, imports: r.imports ? r.imports.map((i) => ({ dll: i.dll, count: i.count, names: i.names.slice(0, 40) })) : undefined, exports: r.exports ? { ...r.exports, names: r.exports.names.slice(0, 60), addrs: undefined } : r.exports, imported: r.imported ? r.imported.slice(0, 80) : undefined, exported: r.exported ? r.exported.slice(0, 80) : undefined, dotnet: r.dotnet ? { ...r.dotnet, types: r.dotnet.types.slice(0, 60), userStrings: r.dotnet.userStrings.slice(0, 60), pinvoke: r.dotnet.pinvoke.slice(0, 60) } : r.dotnet, segments: r.segments ? r.segments.map((s) => ({ ...s, sections: undefined })) : undefined, pdata: r.pdata ? { count: r.pdata.count, functions: r.pdata.functions.slice(0, 200) } : undefined, debug: r.debug, ehFrame: r.ehFrame ? { count: r.ehFrame.count, functions: r.ehFrame.functions.slice(0, 200) } : undefined, symtabCount: r.symtabCount, crypto: r.crypto, packing: r.packing };
   const rec = record(subject, 'bin', { detail: full ? 'full' : 'summary' }, result, { limitations, coverage: { status: 'complete', scope: `${r.format} headers, sections, imports and exports${r.dotnet ? ', .NET metadata tables' : ''}${r.go ? ', Go build info' : ''}${r.rust ? ', Rust crate paths' : ''}${r.dwarf ? ', DWARF function names' : ''}, strings` } });
   let text = binText({ ...rec, result: r });
   if (r.dwarf) { text += `\n\nDWARF — ${r.dwarf.functionCount} functions${r.dwarf.producer ? ', built by ' + r.dwarf.producer : ''}${r.dwarf.unit ? ' (' + r.dwarf.unit + ')' : ''}:`; for (const f of r.dwarf.functions.slice(0, 40)) text += `\n  0x${(f.low >>> 0).toString(16)}${f.high != null ? '-0x' + (f.high >>> 0).toString(16) : ''}  ${f.name}`; }
   if (r.pdata) text += `\n\n.pdata (x64 exception table) — ${r.pdata.count} functions bounded; largest: ${r.pdata.functions.slice().sort((a, b) => b.size - a.size).slice(0, 5).map((f) => `0x${(f.begin >>> 0).toString(16)} (${f.size}B)`).join(', ')}`;
   if (r.ehFrame && r.ehFrame.count) text += `\n\n.eh_frame (DWARF CFI) — ${r.ehFrame.count} functions bounded (works on a stripped ELF)`;
   if (r.crypto && r.crypto.length) text += `\n\ncrypto constants: ${r.crypto.map((c) => c.name).join(', ')}`;
+  if (r.packing) { text += `\n\nentropy per section: ${r.packing.sections.map((s) => `${s.name} ${s.entropy}`).join(', ')}`; if (r.packing.suspect) text += `\n  likely packed/obfuscated: ${r.packing.reasons.join('; ')}`; }
   if (r.debug) text += `\n\ndebug info: PDB ${r.debug.pdb}  (GUID ${r.debug.guid}, age ${r.debug.age})`;
   emit(rec, text);
 }

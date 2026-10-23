@@ -343,6 +343,11 @@ and, when the section-headers substream is present, their RVA — so a stripped-
 regains real names from its sibling `.pdb`. `--method NAME` filters, `--max N` caps. The type
 stream (TPI) and line information are not reconstructed.
 
+For a PE or ELF, `bin` also reports the Shannon entropy of each section and a packing verdict:
+a near-8 entropy means compressed or encrypted, a packer-style section name (UPX/themida/vmp…)
+or very few imports over executable code add to it. A high-entropy section is a signal, not
+proof — a resource or an embedded archive is high-entropy too.
+
 ## Crypto constants: `crypto`
 
 `crypto <file>` scans the raw bytes for the fixed constant tables of well-known primitives —
