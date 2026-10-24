@@ -50,3 +50,34 @@ command is not available.
 
 Internal tools behind the perimeter when the diff says so; test fixtures with fake keys that
 look fake; `Math.random` for jitter; `eval` in a plugin loader documented as one.
+A missing best practice with no path from input to it. A guess about how the code is deployed.
+A generic parser crash with no security effect. An effect only on the caller themselves
+(self-impact). None of these is elevated to a security line; the first may be one `unclear`.
+
+## Verdict
+
+Each security line carries one of three verdicts after the tier, and the tier follows it:
+- `confirmed` — the path is read end to end in source, from the entry where lower-trust input
+  arrives to the sink, and the effect is shown: a bounded local check (a fixture, a function
+  call, a parser input, a CLI run, a rendered policy — whatever the target's own interface is),
+  or a trace precise enough that a reader can rerun it. Tier `breaks`. Severity never exceeds
+  the effect that was shown.
+- `needs_validation` — the source supports the claim but one fact outside the source decides
+  it: a deployment setting, an identity, a route, a runtime flag. The line names that exact
+  fact and the non-destructive way the owner can observe it. Tier `ask`. No severity. This is
+  not a place to park a hunch: with no decisive missing fact the line is `rejected`.
+- `rejected` — source, a visible control, a missing impact or an impossible prerequisite refutes
+  it. Not printed as a finding; one line at the end, `N rejected on second look`, so the same
+  claim is not raised again without new evidence.
+
+Nothing deployed is contacted: no request to an endpoint, no external service, no shared
+infrastructure, no production identity. Dynamic checks run only against a local copy with no
+network; when that is not possible the line stays `needs_validation` and says which capability
+was missing. On a second opinion, the second reviewer (`atlas-diff`) is given the candidate
+lines without their verdicts and asked to refute each one from the source; a `confirmed` that
+it cannot confirm drops to `needs_validation`. The fix on a `confirmed` line is the narrowest
+source change that enforces the invariant, not one that moves the trust somewhere else. A clean
+diff has zero confirmed lines; nothing is invented to fill the space.
+
+(Verdict rules distilled from cloudflare/security-audit-skill, `VALIDATION-AND-REPORTING.md`,
+MIT: three verdicts, verifier ≠ hunter, severity bounded by demonstrated impact, no live probing.)

@@ -39,6 +39,7 @@ Funzionano entrambe le forme: `atlas high` scritto come intero messaggio, oppure
 | `/atlas:atlas-commit` | messaggio di commit per quello che hai in stage |
 | `/atlas:atlas-organize` | riordina una cartella locale, con annullamento |
 | `/atlas:atlas-silent` | fa il lavoro e consegna il risultato, nient'altro |
+| `/atlas:atlas-workflow` | lancia un flusso multi-agente con nome: `review-full` o `ship`; solo quando lo chiedi |
 
 ## Installazione
 
@@ -172,6 +173,13 @@ npm test
 `tests/prompts.json` contiene venticinque prove di comportamento, scritte prima delle regole che
 verificano. Quelle hanno bisogno di un modello per girare; `npm test` copre quello che una
 macchina può giudicare da sola.
+
+Prima di dire che una build è finita, il cancello:
+
+```bash
+node check.mjs            # tutte le suite, peso degli hook, versioni, script dei flussi — esce 0 o stampa la prima riga che fallisce
+node build.mjs --check    # lo stesso, poi la build; rosso = non si costruisce nulla
+```
 
 ## Licenza
 

@@ -348,6 +348,85 @@ a near-8 entropy means compressed or encrypted, a packer-style section name (UPX
 or very few imports over executable code add to it. A high-entropy section is a signal, not
 proof — a resource or an embedded archive is high-entropy too.
 
+For a PE or ELF, `bin` also groups the imported API names into capabilities — what the code
+*can* do: RWX memory, process injection, dynamic API resolution (LoadLibrary/GetProcAddress),
+anti-debug, keylogging, registry persistence, service control, networking, crypto API, token
+privilege, screen capture. Each capability lists the exact imported APIs that triggered it.
+This is a triage signal observed from the import table, not proof the code runs those paths —
+a JIT engine imports VirtualProtect, a loader imports GetProcAddress, both for honest reasons.
+
+For a PE, `bin` reports an `imphash` — the import-table fingerprint, computed the pefile way
+("dll.func" entries in table order, lowercased, comma-joined, MD5'd). Two builds linked the
+same way share it even when the code differs, so it clusters related samples. For an ELF or
+Mach-O there is no standard imphash, so `bin` reports an `import-symbol-hash` over the sorted
+imported-symbol names instead, labelled distinctly so it is never read as a real imphash.
+
+## Call graph: `callgraph`
+
+`callgraph <file>` (PE or ELF, x86-64 or arm64) builds the caller→callee graph over the
+functions already enumerated from the unwind tables and symbols (`.pdata` on PE, `.eh_frame`
+plus `.symtab`/DWARF on ELF). It walks each function from its real entry and reads the target
+of every *direct* call — x86-64 `call rel32`, ARM64 `bl` — then maps that target back to the
+function that contains it. Names come from a sibling `.pdb` (PE), the exports, or `.symtab`/
+DWARF (ELF); an unnamed function shows as `sub_<rva>`. The summary ranks the hubs by fan-in
+(`topCallers`) and fan-out (`topCallees`). `--func <name>` or `--rva <hex>` returns the ego
+graph of one function — its direct callees and its callers — which is what the app's graph
+canvas draws. Honest: only direct calls are edges; an indirect call (register, import thunk,
+vtable) has no static target, so it is counted (`indirectCalls`), never invented; a direct
+call that leaves the enumerated set is counted as `externalDirect`. On a very large binary the
+walk stops at an 8 MiB budget and says so (`truncated`).
+
+## String cross-references: `xrefs`
+
+`xrefs <file>` (PE or ELF, x86-64 or arm64) maps which function points at which string literal.
+It extracts the printable-ASCII strings from the data sections (with their virtual address),
+then walks each enumerated function and reads every instruction that forms a string's address
+directly — x86-64 `lea reg, [rip+disp]` and `mov reg, imm64`, ARM64 the `adrp`+`add` pair — and
+links the function to the string when the address hits a string start. Default output ranks the
+most-referenced strings and names the functions that use them; `--func <name>` / `--rva <hex>`
+lists one function's strings; `--str <substr>` finds who references the strings matching a
+substring; `--min <n>` sets the minimum string length. Names come from the same PDB / symbols as
+`callgraph`. Honest: only direct address-forming patterns are followed (a string reached through
+a table, a GOT slot or a runtime computation is not attributed); strings are printable-ASCII
+runs, so UTF-16 and obfuscated strings are missed, and a binary that packs its string data with
+no terminators (Rust `.rodata`) reports long merged runs whose start still carries the edge.
+
+## PE security and provenance metadata
+
+For a PE, `bin` also reports a `security` block with the provenance and hardening metadata:
+- `rich`: the Rich header — the MSVC toolchain fingerprint the linker stamps between the DOS
+  stub and the PE header, XOR-masked by a key. Each record is a tool (product id + name where
+  known), the build number, and how many objects that tool produced. A binary with a trimmed
+  DOS stub has no Rich header and the field is absent.
+- `loadConfig`: whether Control Flow Guard is actually instrumented (`cfgInstrumented`,
+  `cfgFunctionTable`), whether the build is shadow-stack aware (`rfInstrumented`), the raw
+  `guardFlags`, and whether a stack `securityCookie` is set. This is the truth of the load-
+  config directory, stronger than the DLL-characteristics bit alone.
+- `delayImports`: DLLs loaded lazily through the delay-import table — dependencies the normal
+  import table does not list.
+- `authenticode`: whether a signature certificate is embedded, its size, and a best-effort
+  `signerHint` — a common name scanned out of the PKCS#7 DER. The signature is **not** verified
+  and the hint may be a CA in the chain, not the leaf signer; it says a certificate is present,
+  not that it is valid or trusted.
+
+For an ELF, `bin` reports a `security` block from the notes and version sections:
+- `buildId`: the `.note.gnu.build-id` — what a symbol server keys on.
+- `cet` (x86-64) / `aarch64`: the GNU program properties — whether the toolchain marked the
+  binary for Intel CET (`ibt`, `shstk`) or AArch64 `bti` / `pac`, the hardware control-flow
+  hardening. Absent means the marker is not there, which usually means the feature is off.
+- `needVersions`: the libraries and symbol versions the binary needs (`.gnu.version_r`), which
+  pin the minimum glibc / library versions it will load against.
+Little-endian ELF only. A big-endian ELF is read for everything else but its security notes
+are skipped.
+
+For a Mach-O, `bin` reports a `security` block from the load commands and the code signature:
+- `codeSignature`: whether an embedded signature is present, its size, whether it is `adhoc`
+  (self-hash only, effectively unsigned), whether `hardenedRuntime` is set, and the
+  `entitlementKeys` of the embedded entitlements plist — what the process is allowed to do
+  (JIT, debugging, disabled library validation…). The signature is **not** verified.
+- `chainedFixups` / `exportsTrie`: whether the binary uses the modern dyld chained-fixups and
+  export-trie formats.
+
 ## Crypto constants: `crypto`
 
 `crypto <file>` scans the raw bytes for the fixed constant tables of well-known primitives —

@@ -30,6 +30,10 @@ More than one note matches: read the few that do, and answer from them together,
 they agree. Nothing matches: say so plainly — "nothing in memory on that" — and do not
 invent a fact to fill the gap.
 
+A note whose `metadata` carries `superseded: <date> by [[slug]]` is not an answer: follow
+the slug and answer from the winner, naming the loser only when the question is about what
+changed or why. It is off the index on purpose; it is reached through the winner's `Why`.
+
 ## By meaning, when the words fail
 
 When the index and the descriptions do not name it and the question is about a thing, not a

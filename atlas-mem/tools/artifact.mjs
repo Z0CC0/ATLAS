@@ -42,6 +42,10 @@ import { readDwarf } from './artifact-dwarf.mjs';
 import { readPdb } from './artifact-pdb.mjs';
 import { resolveJumpTable } from './artifact-jumptable.mjs';
 import { scanCrypto } from './artifact-crypto.mjs';
+import { buildCallGraph } from './artifact-callgraph.mjs';
+import { extractStrings, buildStringXrefs } from './artifact-xrefs.mjs';
+import { importHash } from './artifact-imphash.mjs';
+import { demangle } from './artifact-demangle.mjs';
 import { decodeOne as x86decode } from './artifact-x86.mjs';
 import { decodeOne as arm64decode } from './artifact-arm64.mjs';
 import { buildCfg, formatCfg } from './artifact-cfg.mjs';
@@ -679,6 +683,32 @@ function cmdBin(path) {
   try { r = readBinary(buf); } catch (e) { fail(e.message, 'unsupported'); }
   const limitations = [...(r.limitations || []), 'headers and tables read as the loader reads them; code not disassembled, nothing run: what a function does is not known from this'];
   try { const cr = scanCrypto(buf); if (cr.length) r.crypto = cr; } catch { /* scan skipped */ }
+  try { const ih = importHash(r); if (ih) r.imphash = ih; } catch { /* no imports */ }
+  // capabilities from the imported API names: a behavioural triage signal (what the code can do),
+  // observed from imports only — not proof it runs them
+  try {
+    const CAPS = [
+      ['dynamic code / RWX memory', ['VirtualAlloc', 'VirtualProtect', 'mprotect', 'NtProtectVirtualMemory']],
+      ['process injection', ['VirtualAllocEx', 'WriteProcessMemory', 'CreateRemoteThread', 'NtCreateThreadEx', 'QueueUserAPC', 'SetThreadContext', 'NtMapViewOfSection']],
+      ['dynamic API resolution', ['LoadLibrary', 'GetProcAddress', 'dlopen', 'dlsym', 'LdrLoadDll']],
+      ['anti-debug', ['IsDebuggerPresent', 'CheckRemoteDebuggerPresent', 'NtQueryInformationProcess', 'OutputDebugString', 'ptrace']],
+      ['keylogging / input', ['SetWindowsHookEx', 'GetAsyncKeyState', 'GetKeyState', 'RegisterRawInputDevices']],
+      ['persistence (registry)', ['RegSetValue', 'RegCreateKey', 'RegSetKeyValue']],
+      ['service control', ['CreateService', 'OpenSCManager', 'StartService', 'ChangeServiceConfig']],
+      ['networking', ['WSAStartup', 'InternetOpen', 'WinHttpOpen', 'URLDownloadToFile', 'connect', 'socket', 'HttpSendRequest', 'getaddrinfo']],
+      ['crypto API', ['CryptEncrypt', 'CryptDecrypt', 'BCryptEncrypt', 'CryptAcquireContext', 'EVP_', 'SSL_', 'CryptGenRandom']],
+      ['token / privilege', ['AdjustTokenPrivileges', 'OpenProcessToken', 'LookupPrivilegeValue', 'ImpersonateLoggedOnUser']],
+      ['screen capture', ['BitBlt', 'CreateCompatibleBitmap', 'GetDesktopWindow', 'PrintWindow']],
+    ];
+    const names = [];
+    if (r.imports) for (const i of r.imports) for (const n of (i.names || [])) names.push(n);
+    if (r.imported) for (const n of r.imported) names.push(n);
+    if (names.length) {
+      const caps = [];
+      for (const [label, apis] of CAPS) { const hit = apis.filter((a) => names.some((n) => n.includes(a))); if (hit.length) caps.push({ capability: label, apis: hit }); }
+      if (caps.length) r.capabilities = caps;
+    }
+  } catch { /* caps skipped */ }
   // entropy per section + a packer verdict: high entropy = compressed/encrypted, packer section
   // names, and very few imports over executable code all point to packing/obfuscation
   try {
@@ -700,7 +730,7 @@ function cmdBin(path) {
   delete r.limitations;
   const subject = { name: basename(abs), path: abs, format: r.format, bytes: buf.length, sha256: sha256(buf) };
   const full = flags.detail === 'full';
-  const result = full ? r : { ...r, sections: r.sections ? r.sections.map((s) => ({ name: s.name, size: s.rawSize ?? s.size ?? s.filesize, flags: s.flags })) : undefined, imports: r.imports ? r.imports.map((i) => ({ dll: i.dll, count: i.count, names: i.names.slice(0, 40) })) : undefined, exports: r.exports ? { ...r.exports, names: r.exports.names.slice(0, 60), addrs: undefined } : r.exports, imported: r.imported ? r.imported.slice(0, 80) : undefined, exported: r.exported ? r.exported.slice(0, 80) : undefined, dotnet: r.dotnet ? { ...r.dotnet, types: r.dotnet.types.slice(0, 60), userStrings: r.dotnet.userStrings.slice(0, 60), pinvoke: r.dotnet.pinvoke.slice(0, 60) } : r.dotnet, segments: r.segments ? r.segments.map((s) => ({ ...s, sections: undefined })) : undefined, pdata: r.pdata ? { count: r.pdata.count, functions: r.pdata.functions.slice(0, 200) } : undefined, debug: r.debug, ehFrame: r.ehFrame ? { count: r.ehFrame.count, functions: r.ehFrame.functions.slice(0, 200) } : undefined, symtabCount: r.symtabCount, crypto: r.crypto, packing: r.packing };
+  const result = full ? r : { ...r, sections: r.sections ? r.sections.map((s) => ({ name: s.name, size: s.rawSize ?? s.size ?? s.filesize, flags: s.flags })) : undefined, imports: r.imports ? r.imports.map((i) => ({ dll: i.dll, count: i.count, names: i.names.slice(0, 40) })) : undefined, exports: r.exports ? { ...r.exports, names: r.exports.names.slice(0, 60), addrs: undefined } : r.exports, imported: r.imported ? r.imported.slice(0, 80) : undefined, exported: r.exported ? r.exported.slice(0, 80) : undefined, dotnet: r.dotnet ? { ...r.dotnet, types: r.dotnet.types.slice(0, 60), userStrings: r.dotnet.userStrings.slice(0, 60), pinvoke: r.dotnet.pinvoke.slice(0, 60) } : r.dotnet, segments: r.segments ? r.segments.map((s) => ({ ...s, sections: undefined })) : undefined, pdata: r.pdata ? { count: r.pdata.count, functions: r.pdata.functions.slice(0, 200) } : undefined, debug: r.debug, ehFrame: r.ehFrame ? { count: r.ehFrame.count, functions: r.ehFrame.functions.slice(0, 200) } : undefined, symtabCount: r.symtabCount, crypto: r.crypto, packing: r.packing, capabilities: r.capabilities, security: r.security, imphash: r.imphash };
   const rec = record(subject, 'bin', { detail: full ? 'full' : 'summary' }, result, { limitations, coverage: { status: 'complete', scope: `${r.format} headers, sections, imports and exports${r.dotnet ? ', .NET metadata tables' : ''}${r.go ? ', Go build info' : ''}${r.rust ? ', Rust crate paths' : ''}${r.dwarf ? ', DWARF function names' : ''}, strings` } });
   let text = binText({ ...rec, result: r });
   if (r.dwarf) { text += `\n\nDWARF — ${r.dwarf.functionCount} functions${r.dwarf.producer ? ', built by ' + r.dwarf.producer : ''}${r.dwarf.unit ? ' (' + r.dwarf.unit + ')' : ''}:`; for (const f of r.dwarf.functions.slice(0, 40)) text += `\n  0x${(f.low >>> 0).toString(16)}${f.high != null ? '-0x' + (f.high >>> 0).toString(16) : ''}  ${f.name}`; }
@@ -708,6 +738,22 @@ function cmdBin(path) {
   if (r.ehFrame && r.ehFrame.count) text += `\n\n.eh_frame (DWARF CFI) — ${r.ehFrame.count} functions bounded (works on a stripped ELF)`;
   if (r.crypto && r.crypto.length) text += `\n\ncrypto constants: ${r.crypto.map((c) => c.name).join(', ')}`;
   if (r.packing) { text += `\n\nentropy per section: ${r.packing.sections.map((s) => `${s.name} ${s.entropy}`).join(', ')}`; if (r.packing.suspect) text += `\n  likely packed/obfuscated: ${r.packing.reasons.join('; ')}`; }
+  if (r.imphash) text += `\n\n${r.imphash.kind}: ${r.imphash.value} (${r.imphash.functions} functions)`;
+  if (r.capabilities) { text += `\n\ncapabilities (from imported APIs, observed not proven to run):`; for (const c of r.capabilities) text += `\n  ${c.capability}: ${c.apis.join(', ')}`; }
+  if (r.security) {
+    const s = r.security;
+    if (s.rich) text += `\n\nRich header (MSVC toolchain fingerprint): ${s.rich.tools.length} tool records — ${s.rich.tools.slice(0, 6).map((t) => `${t.product} b${t.build}×${t.count}`).join(', ')}`;
+    if (s.loadConfig) text += `\n\nload config: CFG ${s.loadConfig.cfgInstrumented ? 'instrumented' : 'not instrumented'}${s.loadConfig.cfgFunctionTable ? ' (+function table)' : ''}${s.loadConfig.rfInstrumented ? ', shadow-stack aware' : ''}; security cookie ${s.loadConfig.securityCookie ? 'set' : 'absent'} (GuardFlags ${s.loadConfig.guardFlags})`;
+    if (s.delayImports) text += `\n\ndelay-loaded DLLs (${s.delayImports.length}): ${s.delayImports.slice(0, 20).join(', ')}`;
+    if (s.authenticode) text += `\n\nAuthenticode: signed, certificate ${s.authenticode.size} bytes${s.authenticode.signerHint ? `, signer hint "${s.authenticode.signerHint}"` : ''} (presence only — signature not verified)`;
+    if (s.buildId) text += `\n\nbuild id: ${s.buildId}`;
+    if (s.cet) text += `\n\nIntel CET: IBT ${s.cet.ibt ? 'on' : 'off'}, shadow stack ${s.cet.shstk ? 'on' : 'off'}`;
+    if (s.aarch64) text += `\n\nAArch64 hardening: BTI ${s.aarch64.bti ? 'on' : 'off'}, PAC ${s.aarch64.pac ? 'on' : 'off'}`;
+    if (s.needVersions) text += `\n\nneeded symbol versions: ${s.needVersions.map((n) => `${n.file} [${n.versions.join(', ')}]`).join('; ')}`;
+    if (s.codeSignature) { const c = s.codeSignature; text += `\n\ncode signature: present, ${c.size} bytes${c.adhoc ? ', ad-hoc (unsigned)' : ''}${c.hardenedRuntime ? ', Hardened Runtime' : ''}${c.entitlementKeys && c.entitlementKeys.length ? `\n  entitlements: ${c.entitlementKeys.join(', ')}` : ''} (presence only — not verified)`; }
+    if (s.chainedFixups) text += `\n\nuses chained fixups (modern dyld)`;
+    if (s.exportsTrie && !s.chainedFixups) text += `\n\nhas an exports trie`;
+  }
   if (r.debug) text += `\n\ndebug info: PDB ${r.debug.pdb}  (GUID ${r.debug.guid}, age ${r.debug.age})`;
   emit(rec, text);
 }
@@ -1196,6 +1242,7 @@ function cmdCfg(path) {
       if (pdbPath) { const p = readPdb(readFileSync(pdbPath)); nameByAddr = new Map(p.functions.filter((f) => f.rva != null).map((f) => [f.rva, f.demangled || f.name])); }
     } else if (r.format === 'elf') {
       nameByAddr = new Map((r.symtab || []).map((f) => [f.addr, f.name])); // static symbols (.symtab)
+      for (const f of (r.exportedFuncs || [])) if (!nameByAddr.has(f.addr)) nameByAddr.set(f.addr, demangle(f.name)); // dynsym exports survive stripping
       const d = readDwarf(buf, r.sections); if (d) for (const f of d.functions) nameByAddr.set(f.low, f.name); // DWARF names take precedence
       if (!nameByAddr.size) nameByAddr = null;
     }
@@ -1369,6 +1416,214 @@ function decodeMappings(mappings) {
   return { lines, segments };
 }
 
+/**
+ * The common function set for callgraph / xrefs: the enumerated functions (from .pdata on PE,
+ * .eh_frame + symtab/DWARF on ELF) with their file offset, exclusive end and best name, plus the
+ * address-space helpers. Returns null-free entries only (those that fall inside a mapped section).
+ */
+function enumFunctions(r, buf, abs) {
+  const isPE = r.format === 'pe';
+  const secAddr = (s) => (isPE ? s.vaddr : s.addr); const secStart = (s) => (isPE ? s.raw : s.off); const secLen = (s) => (isPE ? Math.max(s.vsize || 0, s.rawSize || 0) : s.size);
+  const rvaToOff = (rva) => { const s = r.sections.find((x) => { const a = secAddr(x); const sz = secLen(x); return a != null && rva >= a && rva < a + sz; }); return s ? secStart(s) + (rva - secAddr(s)) : null; };
+  const offToVa = (off) => { const s = r.sections.find((x) => off >= secStart(x) && off < secStart(x) + (isPE ? x.rawSize : x.size)); return s && secAddr(s) ? secAddr(s) + (off - secStart(s)) : null; };
+  const nameByAddr = new Map();
+  try {
+    if (isPE) {
+      const base = abs.replace(/\.(exe|dll|sys|node)$/i, '');
+      const pdbPath = [abs + '.pdb', base + '.pdb'].find((p) => existsSync(p));
+      if (pdbPath) { const p = readPdb(readFileSync(pdbPath)); for (const f of p.functions) if (f.rva != null) nameByAddr.set(f.rva, f.demangled || f.name); }
+      if (r.exports && r.exports.names) r.exports.names.forEach((n, i) => { const a = r.exports.addrs && r.exports.addrs[i]; if (a != null && !nameByAddr.has(a)) nameByAddr.set(a, n); });
+    } else {
+      for (const f of (r.symtab || [])) nameByAddr.set(f.addr, f.name);
+      const d = readDwarf(buf, r.sections); if (d) for (const f of d.functions) nameByAddr.set(f.low, f.name);
+    }
+  } catch { /* names optional */ }
+  if (!isPE) for (const f of (r.exportedFuncs || [])) if (!nameByAddr.has(f.addr)) nameByAddr.set(f.addr, demangle(f.name)); // dynsym exports: named even when stripped
+  const byVa = new Map();
+  const add = (va, size) => { if (va == null) return; const cur = byVa.get(va); if (!cur) byVa.set(va, { va, size: size || 0 }); else if (size && !cur.size) cur.size = size; };
+  if (isPE && r.pdata) for (const f of r.pdata.functions) add(f.begin, f.size);
+  else if (!isPE && r.ehFrame) for (const f of r.ehFrame.functions) add(f.low, f.size);
+  if (!isPE) for (const f of (r.symtab || [])) add(f.addr, 0);
+  const vas = [...byVa.values()].sort((a, b) => a.va - b.va);
+  const entries = [];
+  for (let i = 0; i < vas.length; i += 1) {
+    const e = vas[i]; const off = rvaToOff(e.va); if (off == null) continue;
+    const gap = i + 1 < vas.length ? vas[i + 1].va - e.va : (e.size || 0x1000);
+    let len = e.size > 0 ? e.size : gap; if (len <= 0) len = gap > 0 ? gap : 0x400;
+    entries.push({ va: e.va, off, end: Math.min(off + len, buf.length), name: nameByAddr.get(e.va) || null });
+  }
+  return { isPE, secAddr, secStart, secLen, rvaToOff, offToVa, nameByAddr, entries };
+}
+
+function cmdXrefs(path) {
+  const abs = resolve(path);
+  if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
+  const buf = readFileSync(abs);
+  let r; try { r = readBinary(buf); } catch (e) { fail(e.message, 'unsupported'); }
+  const ARCH = r.machine || r.cpu;
+  if (ARCH !== 'x86-64' && ARCH !== 'arm64') fail(`${ARCH || r.format} not supported; x86-64 and arm64`, 'unsupported');
+  if (r.format !== 'pe' && r.format !== 'elf') fail(`${r.format} not supported for xrefs; PE and ELF`, 'unsupported');
+  const fn = enumFunctions(r, buf, abs);
+  if (!fn.entries.length) fail('no functions could be enumerated (no .pdata / .eh_frame / symbols)', 'not_found');
+  // read-only / data sections that hold string literals
+  const dataSecs = r.sections.filter((s) => {
+    if (fn.secAddr(s) == null) return false;
+    if (fn.isPE) return (s.flags || []).includes('read') && !(s.flags || []).includes('exec');
+    return /rodata|\.rdata|\.data|__cstring|__const|\.str/.test(s.name) && s.name !== '.text';
+  }).map((s) => ({ off: fn.secStart(s), size: fn.isPE ? (s.rawSize || s.vsize) : s.size, va: fn.secAddr(s) }));
+  const strings = extractStrings(buf, dataSecs, Math.max(4, Number(flags.min || 4)));
+  const strByVa = new Map(); strings.forEach((s, i) => { if (!strByVa.has(s.va)) strByVa.set(s.va, i); });
+  const decodeAt = ARCH === 'x86-64'
+    ? (pos) => { const d = x86decode(buf, pos, buf.length); return d ? { addr: pos, len: d.len, text: d.text, mnem: d.mnem, bad: d.bad } : null; }
+    : (pos) => { if (pos + 4 > buf.length) return null; const d = arm64decode(buf.readUInt32LE(pos)); return { addr: pos, len: 4, text: d.text, mnem: d.mnem, bad: d.bad }; };
+  const xr = buildStringXrefs({ arch: ARCH, entries: fn.entries, decodeAt, offToVa: fn.offToVa, strByVa });
+  const nm = (i) => fn.entries[i].name || `sub_${fn.entries[i].va.toString(16)}`;
+  const str = (i) => strings[i].text;
+  const totalRefs = [...xr.byStr.values()].reduce((a, s) => a + s.size, 0);
+  let view;
+  if (flags.func || flags.rva != null) {
+    let idx = flags.rva != null ? fn.entries.findIndex((e) => e.va === parseInt(String(flags.rva), 16)) : fn.entries.findIndex((e) => e.name === String(flags.func));
+    if (idx < 0) fail(`function not found: ${flags.func ?? flags.rva}`, 'not_found');
+    const set = xr.byFunc.get(idx);
+    view = { focus: { fn: nm(idx), va: `0x${fn.entries[idx].va.toString(16)}` }, strings: set ? [...set].map((si) => strings[si].text) : [] };
+  } else if (flags.str) {
+    const needle = String(flags.str).toLowerCase();
+    const hits = strings.map((s, i) => [s, i]).filter(([s]) => s.text.toLowerCase().includes(needle));
+    view = { query: flags.str, matches: hits.map(([s, i]) => ({ string: s.text, va: `0x${s.va.toString(16)}`, referencedBy: (xr.byStr.get(i) ? [...xr.byStr.get(i)] : []).map(nm) })).filter((m) => m.referencedBy.length) };
+  } else {
+    const cap = Math.max(10, Math.min(2000, Number(flags.limit || 60)));
+    const ranked = [...xr.byStr.entries()].sort((a, b) => b[1].size - a[1].size).slice(0, cap);
+    view = { topStrings: ranked.map(([si, fset]) => ({ string: str(si).slice(0, 120), refs: fset.size, by: [...fset].slice(0, 6).map(nm) })) };
+  }
+  const result = { arch: ARCH, functions: fn.entries.length, strings: strings.length, referencedStrings: xr.byStr.size, totalRefs, ...view, truncated: xr.truncated };
+  const subject = { name: basename(abs), path: abs, format: 'xrefs', bytes: buf.length, sha256: sha256(buf) };
+  const limitations = [
+    'a reference is an instruction that forms a string\'s address directly: x86-64 `lea [rip+disp]` or `mov reg, imm64`, ARM64 `adrp`+`add`; a string reached through a jump table, a GOT slot or a runtime computation is not attributed',
+    'strings are printable-ASCII runs in the data sections; UTF-16 and obfuscated/encrypted strings are not read',
+    'an edge requires the address to hit a string start exactly; a pointer into the middle of a string is not counted',
+    xr.truncated ? 'the walk stopped at the 8 MiB budget: xrefs are partial' : null,
+  ].filter(Boolean);
+  const rec = record(subject, 'xrefs', { func: flags.func || null, rva: flags.rva || null, str: flags.str || null }, result, { confidence: 'derived', coverage: { status: xr.truncated ? 'partial' : 'complete', scope: `${xr.byStr.size} strings referenced by ${xr.byFunc.size} functions, ${totalRefs} edges` }, limitations });
+  let text = `${subject.name}  ${ARCH}  ${strings.length} strings, ${xr.byStr.size} referenced, ${totalRefs} xref edges across ${xr.byFunc.size} functions`;
+  if (view.focus) { text += `\n\n${view.focus.fn} ${view.focus.va} references ${view.strings.length} strings:`; for (const s of view.strings.slice(0, 60)) text += `\n  "${s.slice(0, 100)}"`; }
+  else if (view.query != null) { text += `\n\nstrings matching "${view.query}":`; for (const m of view.matches.slice(0, 60)) text += `\n  "${m.string.slice(0, 80)}"  <- ${m.referencedBy.join(', ')}`; if (!view.matches.length) text += '\n  (none referenced)'; }
+  else { text += `\n\nmost-referenced strings:`; for (const t of view.topStrings) text += `\n  ${String(t.refs).padStart(3)}  "${t.string}"  <- ${t.by.join(', ')}`; }
+  if (xr.truncated) text += `\n\n(partial: walk capped at 8 MiB)`;
+  emit(rec, text);
+}
+
+function cmdCallgraph(path) {
+  const abs = resolve(path);
+  if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
+  const buf = readFileSync(abs);
+  let r;
+  try { r = readBinary(buf); } catch (e) { fail(e.message, 'unsupported'); }
+  const ARCH = r.machine || r.cpu;
+  if (ARCH !== 'x86-64' && ARCH !== 'arm64') fail(`${ARCH || r.format} not supported; x86-64 and arm64`, 'unsupported');
+  if (r.format !== 'pe' && r.format !== 'elf') fail(`${r.format} not supported for callgraph; PE and ELF`, 'unsupported');
+  const isPE = r.format === 'pe';
+  const secAddr = (s) => (isPE ? s.vaddr : s.addr); const secStart = (s) => (isPE ? s.raw : s.off); const secLen = (s) => (isPE ? Math.max(s.vsize || 0, s.rawSize || 0) : s.size);
+  const rvaToOff = (rva) => { const s = r.sections.find((x) => { const a = secAddr(x); const sz = secLen(x); return a != null && rva >= a && rva < a + sz; }); return s ? secStart(s) + (rva - secAddr(s)) : null; };
+  // the enumerated function set: exception/unwind tables give begin+size, symbols give names
+  const nameByAddr = new Map();
+  try {
+    if (isPE) {
+      const base = abs.replace(/\.(exe|dll|sys|node)$/i, '');
+      const pdbPath = [abs + '.pdb', base + '.pdb'].find((p) => existsSync(p));
+      if (pdbPath) { const p = readPdb(readFileSync(pdbPath)); for (const f of p.functions) if (f.rva != null) nameByAddr.set(f.rva, f.demangled || f.name); }
+      if (r.exports && r.exports.names) r.exports.names.forEach((n, i) => { const a = r.exports.addrs && r.exports.addrs[i]; if (a != null && !nameByAddr.has(a)) nameByAddr.set(a, n); });
+    } else {
+      for (const f of (r.symtab || [])) nameByAddr.set(f.addr, f.name);
+      const d = readDwarf(buf, r.sections); if (d) for (const f of d.functions) nameByAddr.set(f.low, f.name);
+    }
+  } catch { /* names optional */ }
+  if (!isPE) for (const f of (r.exportedFuncs || [])) if (!nameByAddr.has(f.addr)) nameByAddr.set(f.addr, demangle(f.name)); // dynsym exports: named even when stripped
+  const byVa = new Map(); // va -> { va, size }
+  const add = (va, size) => { if (va == null) return; const cur = byVa.get(va); if (!cur) byVa.set(va, { va, size: size || 0 }); else if (size && !cur.size) cur.size = size; };
+  if (isPE && r.pdata) for (const f of r.pdata.functions) add(f.begin, f.size);
+  else if (!isPE && r.ehFrame) for (const f of r.ehFrame.functions) add(f.low, f.size);
+  if (!isPE) for (const f of (r.symtab || [])) add(f.addr, 0); // symbols fill gaps the unwind table misses
+  if (!byVa.size) fail(isPE ? 'no .pdata unwind table and no symbols: functions cannot be enumerated' : 'no .eh_frame and no symbols: functions cannot be enumerated', 'not_found');
+  // sort, derive an exclusive end (own size, else next start), map to file offsets, keep code-range only
+  const vas = [...byVa.values()].sort((a, b) => a.va - b.va);
+  const entries = [];
+  for (let i = 0; i < vas.length; i += 1) {
+    const e = vas[i]; const off = rvaToOff(e.va); if (off == null) continue;
+    const gap = i + 1 < vas.length ? vas[i + 1].va - e.va : (e.size || 0x1000);
+    let len = e.size > 0 ? e.size : gap; if (len <= 0) len = gap > 0 ? gap : 0x400; // a symbol with no size: run to the next start
+    entries.push({ va: e.va, off, end: Math.min(off + len, buf.length), name: nameByAddr.get(e.va) || null });
+  }
+  if (!entries.length) fail('no function offsets fell inside a mapped section', 'not_found');
+  const sec0 = r.sections.find((s) => entries[0].off >= secStart(s) && entries[0].off < secStart(s) + secLen(s));
+  const decodeAt = ARCH === 'x86-64'
+    ? (pos) => { const d = x86decode(buf, pos, buf.length); return d ? { addr: pos, len: d.len, text: d.text, mnem: d.mnem, bad: d.bad } : null; }
+    : (pos) => { if (pos + 4 > buf.length) return null; const d = arm64decode(buf.readUInt32LE(pos)); return { addr: pos, len: 4, text: d.text, mnem: d.mnem, bad: d.bad }; };
+  // an import reached through its PLT stub (ELF) or lazy stub (Mach-O) is named, not counted as "external"
+  const stubByOff = new Map();
+  for (const s of [...(r.plt || []), ...(r.stubs || [])]) { const o = rvaToOff(s.addr); if (o != null && s.name) stubByOff.set(o, demangle(s.name)); }
+  // PE: an import is reached through a thunk `jmp qword [rip+X]` whose slot is in the IAT; name it by decoding the thunk
+  const iatByRva = new Map((r.iat || []).map((e) => [e.rva, e.name]));
+  const offToVa = (off) => { const s = r.sections.find((x) => off >= secStart(x) && off < secStart(x) + (isPE ? x.rawSize : x.size)); return s && secAddr(s) != null ? secAddr(s) + (off - secStart(s)) : null; };
+  const thunkName = (off) => {
+    if (!isPE || ARCH !== 'x86-64') return null;
+    const d = x86decode(buf, off, Math.min(buf.length, off + 16)); if (!d || d.bad || d.mnem !== 'jmp') return null;
+    const m = /\[rip([+-])0x([0-9a-f]+)\]/.exec(d.text); if (!m) return null;
+    const va = offToVa(off); if (va == null) return null;
+    return iatByRva.get(va + d.len + parseInt(m[2], 16) * (m[1] === '-' ? -1 : 1)) || null;
+  };
+  const resolveExternal = (off) => stubByOff.get(off) || thunkName(off); // a call lands on the stub's / thunk's first instruction
+  // executable sections as file-offset ranges: a direct call into one of them that no table lists discovers a node
+  const codeRanges = r.sections.filter((s) => (isPE ? (s.flags || []).includes('exec') : /^\.(text|init|fini|plt)/.test(s.name)) && secAddr(s) != null).map((s) => [secStart(s), secStart(s) + (isPE ? s.rawSize : s.size)]);
+  const g = buildCallGraph({ arch: ARCH, entries, decodeAt, resolveExternal, codeRanges });
+  const nodes = entries.concat(g.discovered.map((off) => ({ va: offToVa(off) ?? off, off, end: off, name: null, discovered: true })));
+  const nm = (i) => nodes[i].name || `sub_${nodes[i].va.toString(16)}`;
+  const topImports = [...g.imports.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12).map(([name, count]) => ({ name, count }));
+  const importCalls = [...g.imports.values()].reduce((a, b) => a + b, 0);
+  // rank by fan-in and fan-out so the summary shows the hubs, not an arbitrary slice
+  const top = (deg, k) => [...deg.entries()].sort((a, b) => b[1] - a[1]).slice(0, k).map(([i, c]) => ({ fn: nm(i), va: `0x${nodes[i].va.toString(16)}`, count: c }));
+  let edgesOut;
+  const want = flags.func ? String(flags.func) : null;
+  if (want != null || flags.rva != null) {
+    // ego graph of one function: its callees and its callers
+    let idx = -1;
+    if (flags.rva != null) { const tva = parseInt(String(flags.rva), 16); idx = nodes.findIndex((e) => e.va === tva); }
+    else idx = nodes.findIndex((e) => e.name === want);
+    if (idx < 0) fail(`function not found in the enumerated set: ${want ?? flags.rva}`, 'not_found');
+    const callees = g.edges.filter(([f]) => f === idx).map(([, t]) => ({ fn: nm(t), va: `0x${nodes[t].va.toString(16)}` }));
+    const callers = g.edges.filter(([, t]) => t === idx).map(([f]) => ({ fn: nm(f), va: `0x${nodes[f].va.toString(16)}` }));
+    edgesOut = { focus: { fn: nm(idx), va: `0x${nodes[idx].va.toString(16)}` }, callees, callers };
+  } else {
+    const cap = Math.max(100, Math.min(20000, Number(flags.limit || 3000)));
+    edgesOut = { sample: g.edges.slice(0, cap).map(([f, t]) => ({ from: nm(f), to: nm(t) })), sampleCapped: g.edges.length > cap };
+  }
+  const result = {
+    arch: ARCH, functions: entries.length, named: entries.filter((e) => e.name).length, discovered: g.discovered.length,
+    edges: g.edges.length, directIndirect: { indirectCalls: g.indirectCalls, externalDirect: g.external, importCalls },
+    topImports, topCallers: top(g.inDeg, 10), topCallees: top(g.outDeg, 10), ...edgesOut,
+    scannedBytes: g.scannedBytes, truncated: g.truncated,
+  };
+  const subject = { name: basename(abs), path: abs, format: 'callgraph', bytes: buf.length, sha256: sha256(buf) };
+  const limitations = [
+    'edges are direct calls only (x86-64 `call rel32`, ARM64 `bl`): an indirect call through a register, an import thunk or a vtable has no static target and is counted, not drawn',
+    'an edge is kept only when its target lands on an enumerated function; a direct call into padding, a stub or data is counted as external',
+    isPE ? 'functions come from the .pdata unwind table (and a sibling PDB / exports for names); a function absent from .pdata is not a node' : 'functions come from .eh_frame and the symbol tables; a function in neither is not a node',
+    g.truncated ? `the walk stopped at the ${(g.scannedBytes / 1024 / 1024).toFixed(0)} MiB budget: the graph is partial` : null,
+  ].filter(Boolean);
+  const rec = record(subject, 'callgraph', { func: flags.func || null, rva: flags.rva || null }, result, { confidence: 'derived', coverage: { status: g.truncated ? 'partial' : 'complete', scope: `${entries.length} functions, ${g.edges.length} direct-call edges${sec0 ? ` in ${sec0.name}` : ''}` }, limitations });
+  let text = `${subject.name}  ${ARCH}  ${entries.length} functions (${result.named} named)${g.discovered.length ? ` + ${g.discovered.length} discovered by direct calls (no table lists them)` : ''}, ${g.edges.length} direct-call edges`;
+  text += `\nindirect calls: ${g.indirectCalls}   calls to imports (named stubs): ${importCalls}   direct calls leaving the set: ${g.external}`;
+  if (topImports.length) text += `\n\nmost called imports:\n` + topImports.map((t) => `  ${t.count.toString().padStart(4)}  ${t.name}`).join('\n');
+  if (result.topCallees.length) text += `\n\nmost outgoing calls (callees):\n` + result.topCallees.map((t) => `  ${t.count.toString().padStart(4)}  ${t.fn}  ${t.va}`).join('\n');
+  if (result.topCallers.length) text += `\n\nmost incoming calls (hubs):\n` + result.topCallers.map((t) => `  ${t.count.toString().padStart(4)}  ${t.fn}  ${t.va}`).join('\n');
+  if (edgesOut.focus) {
+    text += `\n\n${edgesOut.focus.fn} ${edgesOut.focus.va}`;
+    text += `\n  calls (${edgesOut.callees.length}): ${edgesOut.callees.map((c) => c.fn).join(', ') || '(none direct)'}`;
+    text += `\n  called by (${edgesOut.callers.length}): ${edgesOut.callers.map((c) => c.fn).join(', ') || '(none direct)'}`;
+  }
+  if (g.truncated) text += `\n\n(partial: walk capped at ${(g.scannedBytes / 1024 / 1024).toFixed(0)} MiB)`;
+  emit(rec, text);
+}
+
 function cmdMap(path) {
   const abs = resolve(path);
   if (!existsSync(abs)) fail(`not found: ${abs}`, 'not_found');
@@ -1418,7 +1673,7 @@ function cmdDetect(path) {
 // ---------------------------------------------------------------- main
 
 if (!command || !target || flags.help || (command === 'compare' && !positional[2])) {
-  process.stdout.write('usage: node artifact.mjs detect|app|bin|cil|disasm|cfg|dex|wasm|evm|pcap|sqlite|map|fuses <path> | compare <a> <b> | observe <folder|exe> --yes [--seconds 12] [--text] [--all] [--detail summary|full] [--page N --per 60] [--table T --limit 20] [--line L --col C] [--func name] [--pseudo]\n');
+  process.stdout.write('usage: node artifact.mjs detect|app|bin|cil|disasm|cfg|callgraph|xrefs|dex|wasm|evm|pcap|sqlite|map|fuses <path> | compare <a> <b> | observe <folder|exe> --yes [--seconds 12] [--text] [--all] [--detail summary|full] [--page N --per 60] [--table T --limit 20] [--line L --col C] [--func name] [--rva HEX] [--pseudo]\n');
   process.exit(command ? 2 : 0);
 }
 try {
@@ -1431,6 +1686,8 @@ try {
   else if (command === 'cil') cmdCil(target);
   else if (command === 'disasm') cmdDisasm(target);
   else if (command === 'cfg') cmdCfg(target);
+  else if (command === 'callgraph') cmdCallgraph(target);
+  else if (command === 'xrefs') cmdXrefs(target);
   else if (command === 'dex') cmdDex(target);
   else if (command === 'jvm' || command === 'class') cmdJvm(target);
   else if (command === 'pyc') cmdPyc(target);
@@ -1443,5 +1700,6 @@ try {
   else if (command === 'compare') await cmdCompare(target, positional[2]);
   else fail(`unknown command: ${command}`);
 } catch (e) {
+  if (process.env.ATLAS_DEBUG && e && e.stack) process.stderr.write(e.stack + '\n'); // the stack, only when asked: the record stays clean
   fail(e && e.message ? e.message : String(e), 'internal');
 }

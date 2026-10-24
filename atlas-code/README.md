@@ -183,7 +183,7 @@ All four persist across turns, restarts and projects until changed, and move ind
 
 **Seven subagents** do the expensive reading somewhere else and hand back only the answer: `atlas-finder` (where is X), `atlas-editor` (a bounded edit), `atlas-diff` (what is wrong with this diff), `atlas-runner` (run the tests, return the verdict), `atlas-browser` (does the page work, without a screenshot in your context), `atlas-research` (an answer with sources, or a reading list), `atlas-catalog` (is there a free API for this).
 
-**Nine commands**: the dials, the reference card, `atlas-search` (an answer from a live search, or with "give me sources" a reading list), `atlas-review` (what is wrong with a diff, with a checklist for the languages in it), `atlas-fix` (a failing build, type check or linter back to green, one error at a time), `atlas-commit`, `atlas-recap` (a handover file so a new chat can continue where this one stopped), `atlas-organize` (tidies a folder with a plan first and an undo after; nothing is ever deleted), `atlas-silent`.
+**Ten commands**: the dials, the reference card, `atlas-search` (an answer from a live search, or with "give me sources" a reading list), `atlas-review` (what is wrong with a diff, with a checklist for the languages in it), `atlas-fix` (a failing build, type check or linter back to green, one error at a time), `atlas-commit`, `atlas-recap` (a handover file so a new chat can continue where this one stopped), `atlas-organize` (tidies a folder with a plan first and an undo after; nothing is ever deleted), `atlas-silent`, `atlas-workflow` (two named multi-agent workflows — a three-angle review with every finding refuted by a fresh agent, and a pre-ship run of every check beside a security review — only when you ask for one).
 
 ## Commands
 
@@ -198,6 +198,7 @@ All four persist across turns, restarts and projects until changed, and move ind
 | `/atlas:atlas-commit` | commit message for the staged changes |
 | `/atlas:atlas-organize` | tidy a local folder, with an undo |
 | `/atlas:atlas-silent` | do it and hand over the result, nothing else |
+| `/atlas:atlas-workflow` | run a named multi-agent workflow: `review-full` or `ship`; only when you ask for it |
 
 ## Install
 
@@ -479,6 +480,13 @@ npm test
 
 `tests/prompts.json` holds twenty-five behavioural prompts, written before the rules they test.
 Those need a model to run; `npm test` covers what a machine can judge on its own.
+
+Before a build is called done, the gate:
+
+```bash
+node check.mjs            # every suite, hook sizes, versions, workflow scripts — exit 0 or the first failing line
+node build.mjs --check    # the same, then the build; red means nothing is built
+```
 
 ## Licence
 

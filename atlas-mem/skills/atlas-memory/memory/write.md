@@ -18,6 +18,35 @@ Not a signal: a task completed, a fix that lives in the diff, a status, anything
 history or the code already says. Asked to remember one of those: ask what was non-obvious
 about it and save that, or decline in one line.
 
+At the end of a turn the `atlas-signals` hook may name one sign it saw in the transcript — a
+check that failed and then passed after an edit, a correction, an edit undone, a choice between
+offered options — and ask whether it is worth a note. It never writes one. Nothing worth
+keeping: say so in one line and stop; it asks at most three times in a session.
+
+## The gate — before the file is written
+
+Four checks, each a reason to rewrite the note or drop it:
+
+1. **It names what it is about.** A note on code names the file and the definition
+   (`src/x.ts`, `parseConfig`), so it can be linked and so it is found when that file is
+   opened. A general preference names the behaviour. A note that names neither is about the
+   session, not the project, and goes.
+2. **No status.** "PR is open", "not merged yet", "today", "waiting on", "still failing":
+   true when written, wrong next week. Keep the cause, the rule, the why; status belongs in the
+   pull request.
+3. **It says why.** A decision without its reason cannot be weighed later and gets reopened.
+   Each `Decided` line has a "because", the error it hit, or the number that settled it.
+4. **It does not repeat an existing note.** Same files and much the same title or body: that is
+   an **update** or a **contradiction** (below), never a second file.
+
+Longer than ~250 words is a warning, not a refusal: long notes get skimmed; cut to the fact
+and the why.
+
+(Gate after trailhq/Trail-Code `src/notes/note-gate.ts`, MIT: names code, no status, has a
+why, no duplicate. The hook's signs after `src/claude/note-signals.ts`. The explicit
+supersession record — the loser kept and marked, never deleted — after mattpocock/skills
+`teach/LEARNING-RECORD-FORMAT.md`, MIT, with the slug in place of its record number.)
+
 ## Does it already exist
 
 Before creating a file, look for a note that covers this: the index by words, then
@@ -31,8 +60,13 @@ Read the top hits whole and decide, in one of four ways, and say which:
 - **update** — a note on the same fact exists: edit it (the new detail, the date), keep its
   slug and its links. Duplicates are how a vault rots.
 - **contradiction** — a note says the opposite or a different value: never written over.
-  Show the two together and let the user say which holds; the loser gets a line saying it
-  was superseded, with the date, and the winner links to it.
+  Show the two together and let the user say which holds. Then the record is explicit, so a
+  later session cannot mistake the loser for current: the loser's file stays; its frontmatter
+  gets `superseded: <YYYY-MM-DD> by [[winner-slug]]` under `metadata`, its `description`
+  starts with `(superseded)`, and its line leaves `MEMORY.md`; the winner's `**Why:**` names
+  the loser with `[[loser-slug]]` and the reason it lost. The slug is the note's id — no
+  separate numbering. A note that merely *updates* another is an **update**, not a
+  supersession.
 - **nothing** — the fact is already there, in those words or better: no write, say so.
 - **add** — nothing covers it: a new file, linked with `[[slug]]` to the nearest notes the
   search returned when they are related.

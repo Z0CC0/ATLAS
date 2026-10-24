@@ -249,6 +249,7 @@ const hex = (n) => (n < 0 ? '-0x' + (-n).toString(16) : '0x' + n.toString(16));
 
 /** Decode one instruction at `pos`. Returns { len, text, mnem, bad }. Never throws. */
 function decodeOne(buf, pos, end) {
+  if (!(pos >= 0) || pos >= end || pos >= buf.length) return { len: 1, bad: true, text: '(out of range)' }; // a caller handing a bad offset gets a bad insn, never a throw
   const start = pos;
   let p66 = false, p67 = false, repPrefix = null, seg = null, rex = 0, hasRex = false;
   // prefixes

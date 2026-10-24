@@ -54,6 +54,10 @@ Everything below lives in the `artifact/` folder beside this file.
    whose code you want read → `binary.md` (the `cil` section)
    "disassemble", "x86", "x86-64", "arm64", "aarch64", "the instructions", "what does this
    function do", "the assembly of this exe" → `binary.md` (the `disasm` section)
+   "call graph", "who calls what", "which functions call this", "map the functions", "the
+   graph of calls" → `binary.md` (the `callgraph` section)
+   "string xrefs", "which function uses this string", "where is this string referenced", "find
+   the string", "strings per function" → `binary.md` (the `xrefs` section)
    an `.apk`, a `.dex`, "Android", "Dalvik", "smali", "what does this app's code do" →
    `binary.md` (the `dex` section)
    a `.class`, Java bytecode, JVM, "decompile this class" → `binary.md` (the `jvm` section)

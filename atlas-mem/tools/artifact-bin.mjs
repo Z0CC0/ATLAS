@@ -11,6 +11,9 @@
 import { inflateSync } from 'node:zlib';
 import * as cil from './artifact-cil.mjs';
 import { demangle } from './artifact-demangle.mjs';
+import { readPeSecurity } from './artifact-pesec.mjs';
+import { readElfSecurity } from './artifact-elfsec.mjs';
+import { readMachoSecurity } from './artifact-machosec.mjs';
 
 const u8 = (b, o) => b[o];
 const u16 = (b, o) => b.readUInt16LE(o);
@@ -138,9 +141,11 @@ function readPe(b, opts) {
       debug = { pdb: path, guid, age }; break;
     }
   }
+  let security = null;
+  try { security = readPeSecurity(b, { peOff, dir, toOff, plus, opt }); } catch { security = null; }
   return {
     format: 'pe', machine: MACHINES[machine] || `0x${machine.toString(16)}`, pe32plus: plus, timestamp: stampDate && !stampIsHash ? stampDate.toISOString() : null, timestampRaw: timestamp, entry, imageBase, subsystem: SUBSYSTEMS[subsystem] || subsystem,
-    dll: Boolean(characteristics & 0x2000), dllCharacteristics: DLL_CHARS.filter(([f]) => dllChars & f).map(([, n]) => n), hardening, sections, imports, iat, exports: exportsOut, pdata, debug, dotnet, version, manifest, limitations,
+    dll: Boolean(characteristics & 0x2000), dllCharacteristics: DLL_CHARS.filter(([f]) => dllChars & f).map(([, n]) => n), hardening, sections, imports, iat, exports: exportsOut, pdata, debug, dotnet, version, manifest, security, limitations,
   };
 }
 
@@ -415,6 +420,7 @@ function readElf(b) {
   }
   // dynamic symbols: undefined = imported, defined = exported
   const imported = [], exported = [];
+  const exportedFuncs = []; // defined function symbols with their address: a stripped .so still names these
   const dynsym = sections.find((s) => s.name === '.dynsym');
   const symOff = dynsym ? dynsym.off : symtabVa !== null ? toOff(symtabVa) : null;
   const symSize = dynsym ? dynsym.size : null;
@@ -428,6 +434,7 @@ function readElf(b) {
       const name = cstr(b, dynStrOff + nameIdx, 512); const kind = info & 0xf; const bind = info >> 4;
       if (kind === 4 || bind === 0) continue; // file, local
       if (shndx === 0) imported.push(name); else exported.push(name);
+      if (shndx !== 0 && kind === 2) { const val = is64 ? Number(b.readBigUInt64LE(o + 8)) : r32(o + 4); if (val) exportedFuncs.push({ name, addr: val }); }
       if (symSize === null && name === '' ) break;
     }
   }
@@ -500,7 +507,9 @@ function readElf(b) {
   }
   const stack = segments.find((s) => s.type === 'GNU_STACK');
   const hardening = { pie: type === 3, nx: stack ? !stack.flags.includes('x') : null, relro: segments.some((s) => s.type === 'GNU_RELRO') ? 'partial-or-full' : false, canary: imported.some((s) => s.startsWith('__stack_chk_fail')), fortify: imported.some((s) => /_chk$/.test(s)), stripped: !sections.some((s) => s.name === '.symtab'), writableExec: segments.filter((s) => s.type === 'LOAD' && s.flags.includes('w') && s.flags.includes('x')).length };
-  return { format: 'elf', class: is64 ? 64 : 32, type: ELF_TYPES[type] || type, machine: ELF_MACHINES[machine] || machine, entry, interpreter, soname, needed, rpath, runpath, segments, sections: sections.map((s) => ({ name: s.name, off: s.off, size: s.size, addr: s.addr })), imported: imported.slice(0, 3000), exported: exported.slice(0, 3000), plt, got, symtab: symFuncs.slice(0, 5000), symtabCount: symFuncs.length, ehFrame: { count: ehFuncs.length, functions: ehFuncs.slice(0, 5000) }, counts: { imported: imported.length, exported: exported.length, sections: sections.length, plt: plt.length }, hardening, limitations };
+  let security = null;
+  try { security = readElfSecurity(b, sections, is64); } catch { security = null; }
+  return { format: 'elf', class: is64 ? 64 : 32, type: ELF_TYPES[type] || type, machine: ELF_MACHINES[machine] || machine, entry, interpreter, soname, needed, rpath, runpath, segments, sections: sections.map((s) => ({ name: s.name, off: s.off, size: s.size, addr: s.addr })), imported: imported.slice(0, 3000), exported: exported.slice(0, 3000), exportedFuncs: exportedFuncs.slice(0, 5000), plt, got, symtab: symFuncs.slice(0, 5000), symtabCount: symFuncs.length, ehFrame: { count: ehFuncs.length, functions: ehFuncs.slice(0, 5000) }, counts: { imported: imported.length, exported: exported.length, sections: sections.length, plt: plt.length }, hardening, security, limitations };
 }
 
 // ---------------------------------------------------------------- Mach-O
@@ -524,6 +533,7 @@ function readMachO(b, depth) {
   const r32 = (o) => b.readUInt32LE(o), r64 = (o) => Number(b.readBigUInt64LE(o));
   const cpu = r32(4), filetype = r32(12), ncmds = r32(16), flags = r32(24);
   const segments = []; const dylibs = []; let id = null; const rpaths = []; let uuid = null, build = null, entry = null, signed = false, symtab = null, dysym = null, stubsSec = null;
+  let codeSig = null, chainedFixups = false, exportsTrie = false;
   let o = is64 ? 32 : 28;
   const limitations = [];
   for (let i = 0; i < ncmds && i < 1024; i += 1) {
@@ -539,7 +549,10 @@ function readMachO(b, depth) {
     else if (cmd === 0x32) build = { platform: PLATFORMS[r32(o + 8)] || r32(o + 8), minos: ver32(r32(o + 12)), sdk: ver32(r32(o + 16)) };
     else if (cmd === 0x24 || cmd === 0x25 || cmd === 0x26 || cmd === 0x2f || cmd === 0x30) build = build || { platform: { 0x24: 'macos', 0x25: 'ios', 0x26: 'watchos', 0x2f: 'tvos' }[cmd] || 'other', minos: ver32(r32(o + 8)), sdk: ver32(r32(o + 12)) };
     else if (cmd === 0x80000028) entry = r64(o + 8);
-    else if (cmd === 0x1d) signed = true;
+    else if (cmd === 0x1d) { signed = true; codeSig = { dataoff: r32(o + 8), datasize: r32(o + 12) }; }
+    else if (cmd === 0x80000034) chainedFixups = true; // LC_DYLD_CHAINED_FIXUPS
+    else if (cmd === 0x80000033) exportsTrie = true; // LC_DYLD_EXPORTS_TRIE
+    else if (cmd === 0x22 || cmd === 0x80000022) { if (r32(o + 44) > 0) exportsTrie = true; } // LC_DYLD_INFO(_ONLY): export_size
     else if (cmd === 0x2) symtab = { symoff: r32(o + 8), nsyms: r32(o + 12), stroff: r32(o + 16), strsize: r32(o + 20) };
     else if (cmd === 0xb) dysym = { indirectsymoff: r32(o + 56), nindirectsyms: r32(o + 60) };
     o += size;
@@ -568,7 +581,9 @@ function readMachO(b, depth) {
       if (name) stubs.push({ addr: stubsSec.addr + j * stubsSec.stub, name });
     }
   }
-  return { format: 'mach-o', fat: false, class: is64 ? 64 : 32, cpu: MACHO_CPU[cpu] || cpu, filetype: MACHO_FILETYPES[filetype] || filetype, flags: { pie: Boolean(flags & 0x200000), twoLevel: Boolean(flags & 0x80), noHeapExec: Boolean(flags & 0x1000000) }, id, dylibs, rpaths, uuid, build, entry, signed, segments, imported: imported.slice(0, 3000), exported: exported.slice(0, 3000), stubs, counts: { imported: imported.length, exported: exported.length, dylibs: dylibs.length, stubs: stubs.length }, limitations };
+  let security = null;
+  try { security = readMachoSecurity(b, { codeSig, chainedFixups, exportsTrie }); } catch { security = null; }
+  return { format: 'mach-o', fat: false, class: is64 ? 64 : 32, cpu: MACHO_CPU[cpu] || cpu, filetype: MACHO_FILETYPES[filetype] || filetype, flags: { pie: Boolean(flags & 0x200000), twoLevel: Boolean(flags & 0x80), noHeapExec: Boolean(flags & 0x1000000) }, id, dylibs, rpaths, uuid, build, entry, signed, segments, imported: imported.slice(0, 3000), exported: exported.slice(0, 3000), stubs, counts: { imported: imported.length, exported: exported.length, dylibs: dylibs.length, stubs: stubs.length }, security, limitations };
 }
 
 // ---------------------------------------------------------------- what Go and Rust leave behind

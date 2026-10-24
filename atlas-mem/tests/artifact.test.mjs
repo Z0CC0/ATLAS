@@ -1506,6 +1506,162 @@ test('scanCrypto finds known constants by their byte tables', async () => {
   assert.equal(cr.scanCrypto(Buffer.alloc(64)).length, 0); // no false positive on zeros
 });
 
+test('bin groups imported APIs into capabilities', () => {
+  const cand = ['C:/Windows/System32/notepad.exe', 'C:/Program Files/nodejs/node.exe', process.execPath].find((p) => { try { return fs.statSync(p).isFile(); } catch { return false; } });
+  if (!cand) return; // no PE here: skip
+  const caps = run('bin', cand).json.result.capabilities;
+  if (!caps) return; // binary imports nothing matched: nothing to assert
+  assert.ok(Array.isArray(caps) && caps.every((c) => c.capability && Array.isArray(c.apis) && c.apis.length), 'each capability lists its matched APIs');
+  // node.exe resolves symbols at runtime -> expect the dynamic-resolution bucket
+  const dyn = caps.find((c) => c.capability === 'dynamic API resolution');
+  if (dyn) assert.ok(dyn.apis.some((a) => a.includes('GetProcAddress') || a.includes('LoadLibrary')), dyn.apis.join(', '));
+});
+
+test('buildCallGraph maps direct calls to functions and counts the indirect ones', async () => {
+  const cg = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-callgraph.mjs')).href);
+  // A (off 0..8) calls B; B (off 8..16) does an indirect call then rets
+  const entries = [{ va: 0x1000, off: 0, end: 8, name: 'A' }, { va: 0x1008, off: 8, end: 16, name: 'B' }];
+  const ins = new Map([
+    [0, { addr: 0, len: 5, text: 'call 0x8', mnem: 'call' }],   // target = 0 + 8 = off 8 = B
+    [5, { addr: 5, len: 1, text: 'ret', mnem: 'ret' }],
+    [8, { addr: 8, len: 2, text: 'call rax', mnem: 'call' }],   // indirect: no static target
+    [10, { addr: 10, len: 1, text: 'ret', mnem: 'ret' }],
+  ]);
+  const g = cg.buildCallGraph({ arch: 'x86-64', entries, decodeAt: (p) => ins.get(p) || null });
+  assert.deepEqual(g.edges, [[0, 1]], 'one edge A->B');
+  assert.equal(g.indirectCalls, 1, 'the call through rax is counted, not drawn');
+  assert.equal(g.inDeg.get(1), 1);
+  // the x86 call-target parse: self-relative bytes from the instruction start
+  assert.equal(cg.callTargetX86({ addr: 0x100, text: 'call 0x20', mnem: 'call' }), 0x120);
+  assert.equal(cg.callTargetX86({ addr: 0x100, text: 'call rax', mnem: 'call' }), null);
+  // arm64 bl renders a .+/-offset
+  assert.equal(cg.callTargetArm64({ addr: 0x200, text: 'bl .+0x40', mnem: 'bl' }), 0x240);
+  assert.equal(cg.callTargetArm64({ addr: 0x200, text: 'blr x8', mnem: 'blr' }), null);
+});
+
+test('the callgraph command enumerates functions and direct-call edges on a real PE', () => {
+  const cand = ['C:/Program Files/nodejs/node.exe', process.execPath].find((p) => { try { return fs.statSync(p).isFile(); } catch { return false; } });
+  if (!cand) return; // no PE here: skip
+  const res = run('callgraph', cand).json.result;
+  assert.ok(res.functions > 0, 'functions enumerated from .pdata');
+  assert.ok(res.edges > 0, 'at least one direct-call edge');
+  assert.ok(res.directIndirect.indirectCalls >= 0 && res.directIndirect.externalDirect >= 0);
+  assert.ok(Array.isArray(res.topCallers) && Array.isArray(res.topCallees));
+  // a PE reaches its imports through `jmp [IAT]` thunks: direct calls to them are named, not "external"
+  assert.ok(res.directIndirect.importCalls > 0, 'calls to imports named through their thunks');
+  assert.ok(res.topImports.length && res.topImports.every((t) => t.name && t.count > 0), JSON.stringify(res.topImports.slice(0, 3)));
+});
+
+function makeSecElf() {
+  const shstr = '\0.shstrtab\0.note.gnu.build-id\0.note.gnu.property\0.gnu.version_r\0.dynstr\0';
+  const shstrtab = Buffer.from(shstr, 'latin1');
+  const off = (name) => shstr.indexOf('\0' + name + '\0') + 1;
+  const dynstrS = '\0libc.so.6\0GLIBC_2.2.5\0';
+  const dynstr = Buffer.from(dynstrS, 'latin1');
+  const doff = (n) => dynstrS.indexOf('\0' + n + '\0') + 1;
+  const bid = Buffer.alloc(24); bid.writeUInt32LE(4, 0); bid.writeUInt32LE(8, 4); bid.writeUInt32LE(3, 8); bid.write('GNU\0', 12, 'latin1'); for (let i = 0; i < 8; i++) bid[20 + i] = i + 0xa0;
+  const prop = Buffer.alloc(32); prop.writeUInt32LE(4, 0); prop.writeUInt32LE(16, 4); prop.writeUInt32LE(5, 8); prop.write('GNU\0', 12, 'latin1'); prop.writeUInt32LE(0xc0000002, 16); prop.writeUInt32LE(4, 20); prop.writeUInt32LE(0x3, 24);
+  const vr = Buffer.alloc(32); vr.writeUInt16LE(1, 0); vr.writeUInt16LE(1, 2); vr.writeUInt32LE(doff('libc.so.6'), 4); vr.writeUInt32LE(16, 8); vr.writeUInt32LE(0, 12); vr.writeUInt32LE(doff('GLIBC_2.2.5'), 16 + 8);
+  let p = 64; const parts = [];
+  const place = (buf) => { const at = p; parts.push({ at, buf }); p += buf.length; p = (p + 7) & ~7; return at; };
+  const bidOff = place(bid), propOff = place(prop), vrOff = place(vr), dynOff = place(dynstr), shstrOff = place(shstrtab);
+  const shoff = (p + 7) & ~7; const b = Buffer.alloc(shoff + 6 * 64);
+  for (const { at, buf } of parts) buf.copy(b, at);
+  b.write('\x7fELF', 0, 'latin1'); b[4] = 2; b[5] = 1; b[6] = 1;
+  b.writeUInt16LE(3, 0x10); b.writeUInt16LE(0x3e, 0x12); b.writeUInt32LE(1, 0x14); b.writeBigUInt64LE(BigInt(shoff), 0x28);
+  b.writeUInt16LE(64, 0x34); b.writeUInt16LE(56, 0x36); b.writeUInt16LE(64, 0x3a); b.writeUInt16LE(6, 0x3c); b.writeUInt16LE(1, 0x3e);
+  const sh = (i, name, type, offset, size, link) => { const o = shoff + i * 64; b.writeUInt32LE(name, o); b.writeUInt32LE(type, o + 4); b.writeBigUInt64LE(BigInt(offset), o + 24); b.writeBigUInt64LE(BigInt(size), o + 32); b.writeUInt32LE(link, o + 40); };
+  sh(1, off('.shstrtab'), 3, shstrOff, shstrtab.length, 0); sh(2, off('.note.gnu.build-id'), 7, bidOff, bid.length, 0);
+  sh(3, off('.note.gnu.property'), 7, propOff, prop.length, 0); sh(4, off('.gnu.version_r'), 0x6ffffffe, vrOff, vr.length, 5); sh(5, off('.dynstr'), 3, dynOff, dynstr.length, 0);
+  return b;
+}
+function makeSecMacho() {
+  const plist = '<?xml version="1.0"?><plist><dict><key>com.apple.security.cs.allow-jit</key><true/></dict></plist>';
+  const ent = Buffer.alloc(8 + plist.length); ent.writeUInt32BE(0xfade7171, 0); ent.writeUInt32BE(ent.length, 4); ent.write(plist, 8, 'latin1');
+  const cd = Buffer.alloc(24); cd.writeUInt32BE(0xfade0c02, 0); cd.writeUInt32BE(24, 4); cd.writeUInt32BE(0x20400, 8); cd.writeUInt32BE(0x10000, 12);
+  const hdr = 12 + 2 * 8; const cdOff = hdr, entOff = hdr + cd.length; const superLen = entOff + ent.length;
+  const sig = Buffer.alloc(superLen); sig.writeUInt32BE(0xfade0cc0, 0); sig.writeUInt32BE(superLen, 4); sig.writeUInt32BE(2, 8);
+  sig.writeUInt32BE(0, 12); sig.writeUInt32BE(cdOff, 16); sig.writeUInt32BE(5, 20); sig.writeUInt32BE(entOff, 24); cd.copy(sig, cdOff); ent.copy(sig, entOff);
+  const macHdr = 32, lc = 32, sigOff = macHdr + lc; const b = Buffer.alloc(sigOff + sig.length);
+  b.writeUInt32BE(0xcffaedfe, 0); b.writeUInt32LE(0x0100000c, 4); b.writeUInt32LE(2, 12); b.writeUInt32LE(2, 16); b.writeUInt32LE(lc, 20);
+  let o = macHdr; b.writeUInt32LE(0x80000034, o); b.writeUInt32LE(16, o + 4); o += 16;
+  b.writeUInt32LE(0x1d, o); b.writeUInt32LE(16, o + 4); b.writeUInt32LE(sigOff, o + 8); b.writeUInt32LE(sig.length, o + 12); sig.copy(b, sigOff);
+  return b;
+}
+
+test('importHash follows the pefile convention and is stable', async () => {
+  const ih = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-imphash.mjs')).href);
+  const r = { format: 'pe', imports: [{ dll: 'KERNEL32.dll', names: ['CreateFileW', 'ExitProcess'] }, { dll: 'USER32.DLL', names: ['MessageBoxA'] }] };
+  const h = ih.importHash(r);
+  assert.equal(h.kind, 'imphash');
+  assert.equal(h.functions, 3);
+  // "kernel32.createfilew,kernel32.exitprocess,user32.messageboxa" md5
+  assert.match(h.value, /^[0-9a-f]{32}$/);
+  assert.equal(ih.importHash(r).value, h.value, 'deterministic');
+  // ELF falls back to a sorted symbol hash, labelled distinctly
+  const e = ih.importHash({ format: 'elf', imported: ['malloc', 'free', 'printf'] });
+  assert.equal(e.kind, 'import-symbol-hash');
+});
+
+test('bin reads ELF security metadata: build-id, CET, needed symbol versions', () => {
+  const p = path.join(tmp, 'sec.elf'); fs.writeFileSync(p, makeSecElf());
+  const s = run('bin', p).json.result.security;
+  assert.ok(s, 'security block present');
+  assert.equal(s.buildId, '00000000a0a1a2a3');
+  assert.deepEqual(s.cet, { ibt: true, shstk: true });
+  assert.equal(s.needVersions[0].file, 'libc.so.6');
+  assert.ok(s.needVersions[0].versions.includes('GLIBC_2.2.5'));
+});
+
+test('bin reads Mach-O security metadata: code signature, entitlements, chained fixups', () => {
+  const p = path.join(tmp, 'sec.macho'); fs.writeFileSync(p, makeSecMacho());
+  const s = run('bin', p).json.result.security;
+  assert.ok(s, 'security block present');
+  assert.equal(s.chainedFixups, true);
+  assert.ok(s.codeSignature && s.codeSignature.present && s.codeSignature.hardenedRuntime);
+  assert.ok(s.codeSignature.entitlementKeys.includes('com.apple.security.cs.allow-jit'));
+});
+
+test('bin reads PE security metadata: Rich header, CFG, delay imports, Authenticode', () => {
+  const cand = ['C:/Windows/System32/kernel32.dll', 'C:/Windows/System32/user32.dll'].find((p) => { try { return fs.statSync(p).isFile(); } catch { return false; } });
+  if (!cand) return; // not on Windows, or DLL missing: skip
+  const s = run('bin', cand).json.result.security;
+  assert.ok(s, 'security block present on a system DLL');
+  assert.ok(s.rich && Array.isArray(s.rich.tools) && s.rich.tools.length, 'Rich header tool records recovered');
+  assert.ok(s.loadConfig && s.loadConfig.cfgInstrumented === true, 'a system DLL has Control Flow Guard instrumented');
+  assert.ok(s.authenticode && s.authenticode.present && s.authenticode.size > 0, 'Authenticode certificate present');
+});
+
+test('extractStrings reads NUL-terminated literals with their VA', async () => {
+  const xr = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-xrefs.mjs')).href);
+  const data = Buffer.from('hi\x00hello\x00', 'latin1');
+  const strs = xr.extractStrings(data, [{ off: 0, size: data.length, va: 0x2000 }], 2);
+  const texts = strs.map((s) => s.text);
+  assert.ok(texts.includes('hello'));
+  assert.equal(strs.find((s) => s.text === 'hello').va, 0x2000 + 3);
+});
+
+test('buildStringXrefs links a function to a string via lea/rip and adrp+add', async () => {
+  const xr = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-xrefs.mjs')).href);
+  // x86: a function at VA 0x1000 does `lea rax, [rip+0xff9]` -> 0x1000 + 7 + 0xff9 = 0x2000
+  const entries = [{ va: 0x1000, off: 0, end: 8, name: 'f' }];
+  const strByVa = new Map([[0x2000, 0]]);
+  const gx = xr.buildStringXrefs({ arch: 'x86-64', entries, strByVa, offToVa: () => 0x1000, decodeAt: (p) => p === 0 ? { addr: 0, len: 7, text: 'lea rax, [rip+0xff9]', mnem: 'lea' } : null });
+  assert.ok(gx.byFunc.get(0) && gx.byFunc.get(0).has(0), 'x86 lea/rip resolved');
+  // arm64: adrp x0, .+0x1000 at VA 0x1000 -> page 0x2000; add x0,x0,0x10 -> 0x2010
+  const ins = new Map([[0, { addr: 0, len: 4, text: 'adrp x0, .+0x1000', mnem: 'adrp' }], [4, { addr: 4, len: 4, text: 'add x0, x0, 0x10', mnem: 'add' }]]);
+  const ga = xr.buildStringXrefs({ arch: 'arm64', entries: [{ va: 0x1000, off: 0, end: 8, name: 'g' }], strByVa: new Map([[0x2010, 7]]), offToVa: (o) => 0x1000 + o, decodeAt: (p) => ins.get(p) || null });
+  assert.ok(ga.byFunc.get(0) && ga.byFunc.get(0).has(7), 'arm64 adrp+add resolved');
+});
+
+test('the xrefs command finds string references on a real PE', () => {
+  const cand = ['C:/Program Files/nodejs/node.exe', process.execPath].find((p) => { try { return fs.statSync(p).isFile(); } catch { return false; } });
+  if (!cand) return;
+  const res = run('xrefs', cand).json.result;
+  assert.ok(res.strings > 0, 'strings extracted from data sections');
+  assert.ok(res.referencedStrings >= 0 && Array.isArray(res.topStrings));
+});
+
 test('the pcap command runs end to end and detect routes to it', () => {
   const p = path.join(tmp, 'cap.pcap');
   fs.writeFileSync(p, makePcap());
