@@ -6,7 +6,7 @@
 // keeping. Nothing written here; three asks a session, each sign once, never without a vault
 // or while a stop hook is being answered; exit 0 always. Signs after trailhq/Trail-Code
 // `src/claude/note-signals.ts` (MIT); correction lead/neutraliser idea from
-// BayramAnnakov/claude-reflect (MIT), here in English and Italian.
+// BayramAnnakov/claude-reflect (MIT).
 'use strict';
 const fs = require('fs'); const os = require('os'); const path = require('path');
 
@@ -46,7 +46,7 @@ function signals(jsonl, cwd) {
     for (const b of blocks) if (b && b.type === 'tool_result') results.set(String(b.tool_use_id || ''), { error: b.is_error === true, text: textOf(b.content) });
     const raw = typeof e.message?.content === 'string' ? e.message.content : blocks.some((b) => b && b.type === 'text') ? blocks.filter((b) => b && b.type === 'text').map((b) => String(b.text || '')).join('\n') : null;
     if (raw === null) continue; const t = raw.trim();
-    if (t.includes(MARK)) { asked += 1; lastAsk = at; for (const m of t.matchAll(/\[atlas signal ([a-z]+#[\w-]+)\]/g)) askedKeys.add(m[1]); continue; } // our own earlier ask
+    if (t.includes(MARK)) { asked += 1; lastAsk = at; for (const m of t.matchAll(/\[atlas signal ([a-z]+#[\w-]+)\]/g)) askedKeys.add(m[1]); continue; }
     if (e.isMeta || !t || t.startsWith('<') || t.startsWith('[Request interrupted') || t.startsWith('Caveat:') || /^Stop hook feedback/i.test(t)) continue;
     if (spoke) prompts.push({ at, uuid, text: t });
   }
@@ -59,7 +59,7 @@ function signals(jsonl, cwd) {
   const workedAfter = (when) => work.some((t) => t.at > when && codeEdit(t) !== null);
   const out = []; const push = (kind, uuid, what) => { const key = kind + '#' + String(uuid).slice(0, 8); if (!askedKeys.has(key)) out.push({ kind, key, what }); };
   // fixed: the same check failed, then passed after a code edit
-  const checks = work.map((t) => { const c = bash(t); const m = c && CHECK.exec(c); const r = results.get(t.id); if (!m || !r) return null; return { t, name: m[1].replace(/\s+/g, ' ').trim(), failed: r.error || FAILED.test(r.text) }; }).filter(Boolean);
+  const checks = work.map((t) => { const c = bash(t); const m = c && CHECK.exec(c); const r = results.get(t.id); if (!m || !r) return null; return { t, name: m[1].replace(/\s+/g, ' ').trim(), failed: FAILED.test(r.text) || (r.error && !/[|;&]/.test(c)) }; }).filter(Boolean); // a pipeline's exit is grep's, not the check's
   for (let i = checks.length - 1; i >= 0; i -= 1) {
     const pass = checks[i]; if (pass.failed) continue;
     const fails = checks.slice(0, i).filter((c) => c.failed && c.name === pass.name); if (!fails.length) continue;
