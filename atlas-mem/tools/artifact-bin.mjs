@@ -534,6 +534,7 @@ function readMachO(b, depth) {
   const r32 = (o) => b.readUInt32LE(o), r64 = (o) => Number(b.readBigUInt64LE(o));
   const cpu = r32(4), filetype = r32(12), ncmds = r32(16), flags = r32(24);
   const segments = []; const dylibs = []; let id = null; const rpaths = []; let uuid = null, build = null, entry = null, signed = false, symtab = null, dysym = null, stubsSec = null, textAddr = null;
+  const sections = []; let funcStartsLc = null, textSegOff = 0, textSegAddr = 0; // __TEXT: where LC_MAIN's entryoff and LC_FUNCTION_STARTS' deltas start
   let codeSig = null, chainedFixups = false, exportsTrie = false;
   let o = is64 ? 32 : 28;
   const limitations = [];
@@ -542,15 +543,16 @@ function readMachO(b, depth) {
     const cmd = r32(o), size = r32(o + 4);
     if (size < 8) break;
     const str = (rel) => cstr(b, o + r32(o + rel), 1024);
-    if (cmd === 0x19 || cmd === 0x1) { const segname = fixed(b, o + 8, 16); const nsects = r32(o + (is64 ? 64 : 48)); const sects = []; let so = o + (is64 ? 72 : 56); for (let k = 0; k < nsects && k < 256; k += 1) { const sn = fixed(b, so, 16); sects.push(sn); if (is64 && sn === '__stubs') stubsSec = { addr: r64(so + 32), size: r64(so + 40), first: r32(so + 68), stub: r32(so + 72) }; if (sn === '__text' && textAddr == null) textAddr = is64 ? r64(so + 32) : r32(so + 24); so += is64 ? 80 : 68; } segments.push({ name: segname, vmaddr: is64 ? r64(o + 24) : r32(o + 24), vmsize: is64 ? r64(o + 32) : r32(o + 28), fileoff: is64 ? r64(o + 40) : r32(o + 32), filesize: is64 ? r64(o + 48) : r32(o + 36), maxprot: r32(o + (is64 ? 56 : 40)), initprot: r32(o + (is64 ? 60 : 44)), sections: sects }); }
+    if (cmd === 0x19 || cmd === 0x1) { const segname = fixed(b, o + 8, 16); const nsects = r32(o + (is64 ? 64 : 48)); const sects = []; let so = o + (is64 ? 72 : 56); for (let k = 0; k < nsects && k < 256; k += 1) { const sn = fixed(b, so, 16); sects.push(sn); sections.push({ name: sn, segment: segname, addr: is64 ? r64(so + 32) : r32(so + 24), size: is64 ? r64(so + 40) : r32(so + 28), off: is64 ? r32(so + 48) : r32(so + 32) }); if (is64 && sn === '__stubs') stubsSec = { addr: r64(so + 32), size: r64(so + 40), first: r32(so + 68), stub: r32(so + 72) }; if (sn === '__text' && textAddr == null) textAddr = is64 ? r64(so + 32) : r32(so + 24); so += is64 ? 80 : 68; } if (segname === '__TEXT') { textSegOff = is64 ? r64(o + 40) : r32(o + 32); textSegAddr = is64 ? r64(o + 24) : r32(o + 24); } segments.push({ name: segname, vmaddr: is64 ? r64(o + 24) : r32(o + 24), vmsize: is64 ? r64(o + 32) : r32(o + 28), fileoff: is64 ? r64(o + 40) : r32(o + 32), filesize: is64 ? r64(o + 48) : r32(o + 36), maxprot: r32(o + (is64 ? 56 : 40)), initprot: r32(o + (is64 ? 60 : 44)), sections: sects }); }
     else if (cmd === 0xc || cmd === 0x18 || cmd === 0x1f || cmd === 0x20) dylibs.push({ name: str(8), weak: cmd === 0x18, reexport: cmd === 0x1f, version: ver32(r32(o + 16)) });
     else if (cmd === 0xd) id = { name: str(8), version: ver32(r32(o + 16)) };
     else if (cmd === 0x8000001c) rpaths.push(str(8));
     else if (cmd === 0x1b) uuid = [...b.subarray(o + 8, o + 24)].map((x) => x.toString(16).padStart(2, '0')).join('');
     else if (cmd === 0x32) build = { platform: PLATFORMS[r32(o + 8)] || r32(o + 8), minos: ver32(r32(o + 12)), sdk: ver32(r32(o + 16)) };
-    else if (cmd === 0x24 || cmd === 0x25 || cmd === 0x26 || cmd === 0x2f || cmd === 0x30) build = build || { platform: { 0x24: 'macos', 0x25: 'ios', 0x26: 'watchos', 0x2f: 'tvos' }[cmd] || 'other', minos: ver32(r32(o + 8)), sdk: ver32(r32(o + 12)) };
+    else if (cmd === 0x24 || cmd === 0x25 || cmd === 0x2f || cmd === 0x30) build = build || { platform: { 0x24: 'macos', 0x25: 'ios', 0x2f: 'tvos', 0x30: 'watchos' }[cmd] || 'other', minos: ver32(r32(o + 8)), sdk: ver32(r32(o + 12)) };
     else if (cmd === 0x80000028) entry = r64(o + 8);
     else if (cmd === 0x1d) { signed = true; codeSig = { dataoff: r32(o + 8), datasize: r32(o + 12) }; }
+    else if (cmd === 0x26) funcStartsLc = { dataoff: r32(o + 8), datasize: r32(o + 12) }; // LC_FUNCTION_STARTS: every function entry, even stripped
     else if (cmd === 0x80000034) chainedFixups = true; // LC_DYLD_CHAINED_FIXUPS
     else if (cmd === 0x80000033) exportsTrie = true; // LC_DYLD_EXPORTS_TRIE
     else if (cmd === 0x22 || cmd === 0x80000022) { if (r32(o + 44) > 0) exportsTrie = true; } // LC_DYLD_INFO(_ONLY): export_size
@@ -558,7 +560,7 @@ function readMachO(b, depth) {
     else if (cmd === 0xb) dysym = { indirectsymoff: r32(o + 56), nindirectsyms: r32(o + 60) };
     o += size;
   }
-  const imported = [], exported = [];
+  const imported = [], exported = [], symFuncs = [];
   if (symtab && symtab.symoff + symtab.nsyms * (is64 ? 16 : 12) <= b.length) {
     for (let i = 0; i < symtab.nsyms && i < 50000; i += 1) {
       const so = symtab.symoff + i * (is64 ? 16 : 12);
@@ -568,6 +570,8 @@ function readMachO(b, depth) {
       if (!name) continue;
       const kind = ntype & 0x0e;
       if (kind === 0 && (ntype & 0x01)) imported.push(name); else if ((ntype & 0x01) && kind === 0xe) exported.push(name);
+      // a defined symbol in a section carries its address: the name of a function, exported or local
+      if (kind === 0xe) { const val = is64 ? r64(so + 8) : r32(so + 8); if (val && symFuncs.length < 50000) symFuncs.push({ name, addr: val }); }
     }
   } else limitations.push('no symbol table: imports and exports not listed');
   // lazy-binding stubs: __stubs[j] -> indirect symbol table[reserved1+j] -> symtab name
@@ -582,9 +586,20 @@ function readMachO(b, depth) {
       if (name) stubs.push({ addr: stubsSec.addr + j * stubsSec.stub, name });
     }
   }
+  // LC_FUNCTION_STARTS: ULEB128 deltas, the first from __TEXT's vmaddr, a zero delta ends the list
+  const functionStarts = [];
+  if (funcStartsLc && funcStartsLc.dataoff + funcStartsLc.datasize <= b.length) {
+    let p = funcStartsLc.dataoff; const end = p + funcStartsLc.datasize; let addr = textSegAddr;
+    while (p < end && functionStarts.length < 200000) {
+      let v = 0, shift = 0, byte;
+      do { byte = b[p]; p += 1; v += (byte & 0x7f) * 2 ** shift; shift += 7; } while ((byte & 0x80) && p < end && shift < 63);
+      if (v === 0) break;
+      addr += v; functionStarts.push(addr);
+    }
+  }
   let security = null;
   try { security = readMachoSecurity(b, { codeSig, chainedFixups, exportsTrie }); } catch { security = null; }
-  return { format: 'mach-o', fat: false, textAddr, class: is64 ? 64 : 32, cpu: MACHO_CPU[cpu] || cpu, filetype: MACHO_FILETYPES[filetype] || filetype, flags: { pie: Boolean(flags & 0x200000), twoLevel: Boolean(flags & 0x80), noHeapExec: Boolean(flags & 0x1000000) }, id, dylibs, rpaths, uuid, build, entry, signed, segments, imported: imported.slice(0, 3000), exported: exported.slice(0, 3000), stubs, counts: { imported: imported.length, exported: exported.length, dylibs: dylibs.length, stubs: stubs.length }, security, limitations };
+  return { format: 'mach-o', fat: false, textAddr, textSegOff, sections, functionStarts, symtabFuncs: symFuncs, class: is64 ? 64 : 32, cpu: MACHO_CPU[cpu] || cpu, filetype: MACHO_FILETYPES[filetype] || filetype, flags: { pie: Boolean(flags & 0x200000), twoLevel: Boolean(flags & 0x80), noHeapExec: Boolean(flags & 0x1000000) }, id, dylibs, rpaths, uuid, build, entry, signed, segments, imported: imported.slice(0, 3000), exported: exported.slice(0, 3000), stubs, counts: { imported: imported.length, exported: exported.length, dylibs: dylibs.length, stubs: stubs.length }, security, limitations };
 }
 
 // ---------------------------------------------------------------- what Go and Rust leave behind

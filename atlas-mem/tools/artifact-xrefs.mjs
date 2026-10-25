@@ -65,7 +65,7 @@ function buildStringXrefs(p) {
           if (d.mnem === 'lea') { const m = /\[rip([+-])0x([0-9a-f]+)\]/.exec(d.text); if (m) { const disp = parseInt(m[2], 16) * (m[1] === '-' ? -1 : 1); const va = p.offToVa(pos); if (va != null) targetVa = va + len + disp; } }
           else if (d.mnem === 'mov') { const m = /,\s*0x([0-9a-f]{6,})$/.exec(d.text); if (m) targetVa = parseInt(m[1], 16); }
         } else { // arm64
-          if (d.mnem === 'adrp') { const m = /^adrp\s+(x\d+),\s*\.([+-])0x([0-9a-f]+)/.exec(d.text); if (m) { const va = p.offToVa(pos); if (va != null) adrp.set(m[1], (va & ~0xfff) + parseInt(m[3], 16) * (m[2] === '-' ? -1 : 1)); } }
+          if (d.mnem === 'adrp') { const m = /^adrp\s+(x\d+),\s*\.([+-])0x([0-9a-f]+)/.exec(d.text); if (m) { const va = p.offToVa(pos); if (va != null) adrp.set(m[1], (va - (va % 0x1000)) + parseInt(m[3], 16) * (m[2] === '-' ? -1 : 1)); /* no bitwise: a Mach-O VA sits above 2^32 */ } }
           else if (d.mnem === 'add') { const m = /^add\s+(x\d+),\s*(x\d+),\s*0x([0-9a-f]+)/.exec(d.text); if (m && m[1] === m[2] && adrp.has(m[2])) targetVa = adrp.get(m[2]) + parseInt(m[3], 16); }
           else if (d.mnem === 'ldr' || d.mnem === 'str') { const m = /,\s*(x\d+)\]/.exec(d.text); if (m) adrp.delete(m[1]); } // reg reused as a base: its page value is spent
         }

@@ -954,7 +954,7 @@ function cmdCil(path) {
 function codeSections(r) {
   if (r.format === 'pe') return r.sections.filter((s) => s.flags.includes('exec') || s.name === '.text').map((s) => ({ name: s.name, off: s.raw, size: s.rawSize }));
   if (r.format === 'elf') return r.sections.filter((s) => s.name === '.text' || s.name === '.plt' || s.name === '.init' || s.name === '.fini').map((s) => ({ name: s.name, off: s.off, size: s.size }));
-  if (r.format === 'mach-o' && !r.fat) return r.segments.filter((s) => s.sections && s.sections.includes('__text')).map((s) => ({ name: '__text', off: s.fileoff, size: s.filesize }));
+  if (r.format === 'mach-o' && !r.fat) return (r.sections || []).filter((s) => s.name === '__text' || s.name === '__stubs').map((s) => ({ name: s.name, off: s.off, size: s.size }));
   return [];
 }
 
@@ -985,6 +985,7 @@ function cmdDisasm(path) {
   let entryOff = null;
   if (r.format === 'pe' && r.entry) { const s = r.sections.find((x) => r.entry >= x.vaddr && r.entry < x.vaddr + Math.max(x.vsize, x.rawSize)); if (s) entryOff = s.raw + (r.entry - s.vaddr); }
   else if (r.format === 'elf' && r.entry) { const s = r.sections.find((x) => r.entry >= x.addr && x.addr && r.entry < x.addr + x.size); if (s) entryOff = s.off + (r.entry - s.addr); }
+  else if (r.format === 'mach-o' && r.entry) entryOff = (r.textSegOff || 0) + r.entry; // LC_MAIN: entryoff is relative to __TEXT's file offset
   const textSec = secs.find((s) => s.name === '.text' || s.name === '__text') || secs[0];
   const rvaToOff = (rva) => { const s = r.sections.find((x) => { const a = r.format === 'pe' ? x.vaddr : x.addr; const sz = r.format === 'pe' ? Math.max(x.vsize || 0, x.rawSize || 0) : x.size; return a != null && rva >= a && rva < a + sz; }); return s ? (r.format === 'pe' ? s.raw : s.off) + (rva - (r.format === 'pe' ? s.vaddr : s.addr)) : null; };
   const at = flags.rva != null ? (rvaToOff(parseInt(String(flags.rva), 16)) ?? fail('--rva fuori dalle sezioni', 'not_found')) : flags.at ? parseInt(String(flags.at), 16) : (entryOff !== null ? entryOff : textSec.off);
@@ -1195,6 +1196,7 @@ function cmdCfg(path) {
   let entryOff = null;
   if (r.format === 'pe' && r.entry) { const s = r.sections.find((x) => r.entry >= x.vaddr && r.entry < x.vaddr + Math.max(x.vsize, x.rawSize)); if (s) entryOff = s.raw + (r.entry - s.vaddr); }
   else if (r.format === 'elf' && r.entry) { const s = r.sections.find((x) => r.entry >= x.addr && x.addr && r.entry < x.addr + x.size); if (s) entryOff = s.off + (r.entry - s.addr); }
+  else if (r.format === 'mach-o' && r.entry) entryOff = (r.textSegOff || 0) + r.entry; // LC_MAIN: entryoff is relative to __TEXT's file offset
   const textSec = secs.find((s) => s.name === '.text' || s.name === '__text') || secs[0];
   const rvaToOff = (rva) => { const s = r.sections.find((x) => { const a = r.format === 'pe' ? x.vaddr : x.addr; const sz = r.format === 'pe' ? Math.max(x.vsize || 0, x.rawSize || 0) : x.size; return a != null && rva >= a && rva < a + sz; }); return s ? (r.format === 'pe' ? s.raw : s.off) + (rva - (r.format === 'pe' ? s.vaddr : s.addr)) : null; };
   const at = flags.rva != null ? (rvaToOff(parseInt(String(flags.rva), 16)) ?? fail('--rva fuori dalle sezioni', 'not_found')) : flags.at ? parseInt(String(flags.at), 16) : (entryOff !== null ? entryOff : textSec.off);
@@ -1242,8 +1244,9 @@ function cmdCfg(path) {
       const base = abs.replace(/\.(exe|dll|sys|node)$/i, '');
       const pdbPath = [abs + '.pdb', base + '.pdb'].find((p) => existsSync(p));
       if (pdbPath) { const p = readPdb(readFileSync(pdbPath)); nameByAddr = new Map(p.functions.filter((f) => f.rva != null).map((f) => [f.rva, f.demangled || f.name])); }
-    } else if (r.format === 'elf') {
+    } else if (r.format === 'elf' || r.format === 'mach-o') {
       nameByAddr = new Map((r.symtab || []).map((f) => [f.addr, f.name])); // static symbols (.symtab)
+      for (const f of (r.symtabFuncs || [])) if (!nameByAddr.has(f.addr)) nameByAddr.set(f.addr, demangle(f.name.replace(/^_(?!_Z)/, ''))); // Mach-O nlist
       for (const f of (r.exportedFuncs || [])) if (!nameByAddr.has(f.addr)) nameByAddr.set(f.addr, demangle(f.name)); // dynsym exports survive stripping
       const d = readDwarf(buf, r.sections); if (d) for (const f of d.functions) nameByAddr.set(f.low, f.name); // DWARF names take precedence
     }
@@ -1443,11 +1446,13 @@ function enumFunctions(r, buf, abs) {
     if (r.goFuncs) for (const f of r.goFuncs.functions) { const a = isPE ? f.addr - r.imageBase : f.addr; if (a >= 0 && !nameByAddr.has(a)) nameByAddr.set(a, f.name); } // Go pclntab: names survive stripping
   } catch { /* names optional */ }
   if (!isPE) for (const f of (r.exportedFuncs || [])) if (!nameByAddr.has(f.addr)) nameByAddr.set(f.addr, demangle(f.name)); // dynsym exports: named even when stripped
+  if (!isPE) for (const f of (r.symtabFuncs || [])) if (!nameByAddr.has(f.addr)) nameByAddr.set(f.addr, demangle(f.name.replace(/^_(?!_Z)/, ''))); // Mach-O nlist: C names carry a leading underscore
   const byVa = new Map();
   const add = (va, size) => { if (va == null) return; const cur = byVa.get(va); if (!cur) byVa.set(va, { va, size: size || 0 }); else if (size && !cur.size) cur.size = size; };
   if (isPE && r.pdata) for (const f of r.pdata.functions) add(f.begin, f.size);
   else if (!isPE && r.ehFrame) for (const f of r.ehFrame.functions) add(f.low, f.size);
   if (!isPE) for (const f of (r.symtab || [])) add(f.addr, 0);
+  if (!isPE) for (const va of (r.functionStarts || [])) add(va, 0); // Mach-O LC_FUNCTION_STARTS: every function, stripped or not
   if (r.goFuncs) for (const f of r.goFuncs.functions) add(isPE ? f.addr - r.imageBase : f.addr, 0); // Go functions the unwind table misses
   const vas = [...byVa.values()].sort((a, b) => a.va - b.va);
   const entries = [];
@@ -1455,7 +1460,8 @@ function enumFunctions(r, buf, abs) {
     const e = vas[i]; const off = rvaToOff(e.va); if (off == null) continue;
     const gap = i + 1 < vas.length ? vas[i + 1].va - e.va : (e.size || 0x1000);
     let len = e.size > 0 ? e.size : gap; if (len <= 0) len = gap > 0 ? gap : 0x400;
-    entries.push({ va: e.va, off, end: Math.min(off + len, buf.length), name: nameByAddr.get(e.va) || null });
+    const sec = r.sections.find((x) => off >= secStart(x) && off < secStart(x) + secLen(x)); // a function never crosses its section: the last one must not swallow __stubs / .plt
+    entries.push({ va: e.va, off, end: Math.min(off + len, sec ? secStart(sec) + secLen(sec) : buf.length, buf.length), name: nameByAddr.get(e.va) || null });
   }
   return { isPE, secAddr, secStart, secLen, rvaToOff, offToVa, nameByAddr, entries };
 }
@@ -1467,7 +1473,7 @@ function cmdXrefs(path) {
   let r; try { r = readBinary(buf); } catch (e) { fail(e.message, 'unsupported'); }
   const ARCH = r.machine || r.cpu;
   if (ARCH !== 'x86-64' && ARCH !== 'arm64') fail(`${ARCH || r.format} not supported; x86-64 and arm64`, 'unsupported');
-  if (r.format !== 'pe' && r.format !== 'elf') fail(`${r.format} not supported for xrefs; PE and ELF`, 'unsupported');
+  if (r.format !== 'pe' && r.format !== 'elf' && r.format !== 'mach-o') fail(`${r.format} not supported for xrefs; PE, ELF and Mach-O`, 'unsupported');
   const fn = enumFunctions(r, buf, abs);
   if (!fn.entries.length) fail('no functions could be enumerated (no .pdata / .eh_frame / symbols)', 'not_found');
   // read-only / data sections that hold string literals
@@ -1525,7 +1531,7 @@ function cmdCallgraph(path) {
   try { r = readBinary(buf); } catch (e) { fail(e.message, 'unsupported'); }
   const ARCH = r.machine || r.cpu;
   if (ARCH !== 'x86-64' && ARCH !== 'arm64') fail(`${ARCH || r.format} not supported; x86-64 and arm64`, 'unsupported');
-  if (r.format !== 'pe' && r.format !== 'elf') fail(`${r.format} not supported for callgraph; PE and ELF`, 'unsupported');
+  if (r.format !== 'pe' && r.format !== 'elf' && r.format !== 'mach-o') fail(`${r.format} not supported for callgraph; PE, ELF and Mach-O`, 'unsupported');
   const isPE = r.format === 'pe';
   const secAddr = (s) => (isPE ? s.vaddr : s.addr); const secStart = (s) => (isPE ? s.raw : s.off); const secLen = (s) => (isPE ? Math.max(s.vsize || 0, s.rawSize || 0) : s.size);
   const rvaToOff = (rva) => { const s = r.sections.find((x) => { const a = secAddr(x); const sz = secLen(x); return a != null && rva >= a && rva < a + sz; }); return s ? secStart(s) + (rva - secAddr(s)) : null; };
@@ -1544,11 +1550,13 @@ function cmdCallgraph(path) {
     if (r.goFuncs) for (const f of r.goFuncs.functions) { const a = isPE ? f.addr - r.imageBase : f.addr; if (a >= 0 && !nameByAddr.has(a)) nameByAddr.set(a, f.name); } // Go pclntab: names survive stripping
   } catch { /* names optional */ }
   if (!isPE) for (const f of (r.exportedFuncs || [])) if (!nameByAddr.has(f.addr)) nameByAddr.set(f.addr, demangle(f.name)); // dynsym exports: named even when stripped
+  if (!isPE) for (const f of (r.symtabFuncs || [])) if (!nameByAddr.has(f.addr)) nameByAddr.set(f.addr, demangle(f.name.replace(/^_(?!_Z)/, ''))); // Mach-O nlist: C names carry a leading underscore
   const byVa = new Map(); // va -> { va, size }
   const add = (va, size) => { if (va == null) return; const cur = byVa.get(va); if (!cur) byVa.set(va, { va, size: size || 0 }); else if (size && !cur.size) cur.size = size; };
   if (isPE && r.pdata) for (const f of r.pdata.functions) add(f.begin, f.size);
   else if (!isPE && r.ehFrame) for (const f of r.ehFrame.functions) add(f.low, f.size);
-  if (!isPE) for (const f of (r.symtab || [])) add(f.addr, 0); // symbols fill gaps the unwind table misses
+  if (!isPE) for (const f of (r.symtab || [])) add(f.addr, 0);
+  if (!isPE) for (const va of (r.functionStarts || [])) add(va, 0); // Mach-O LC_FUNCTION_STARTS: every function, stripped or not // symbols fill gaps the unwind table misses
   if (r.goFuncs) for (const f of r.goFuncs.functions) add(isPE ? f.addr - r.imageBase : f.addr, 0); // Go pclntab entries: the whole function set on a stripped Go binary
   if (!byVa.size) fail(isPE ? 'no .pdata unwind table and no symbols: functions cannot be enumerated' : 'no .eh_frame and no symbols: functions cannot be enumerated', 'not_found');
   // sort, derive an exclusive end (own size, else next start), map to file offsets, keep code-range only
@@ -1558,7 +1566,8 @@ function cmdCallgraph(path) {
     const e = vas[i]; const off = rvaToOff(e.va); if (off == null) continue;
     const gap = i + 1 < vas.length ? vas[i + 1].va - e.va : (e.size || 0x1000);
     let len = e.size > 0 ? e.size : gap; if (len <= 0) len = gap > 0 ? gap : 0x400; // a symbol with no size: run to the next start
-    entries.push({ va: e.va, off, end: Math.min(off + len, buf.length), name: nameByAddr.get(e.va) || null });
+    const sec = r.sections.find((x) => off >= secStart(x) && off < secStart(x) + secLen(x)); // a function never crosses its section: the last one must not swallow __stubs / .plt
+    entries.push({ va: e.va, off, end: Math.min(off + len, sec ? secStart(sec) + secLen(sec) : buf.length, buf.length), name: nameByAddr.get(e.va) || null });
   }
   if (!entries.length) fail('no function offsets fell inside a mapped section', 'not_found');
   const sec0 = r.sections.find((s) => entries[0].off >= secStart(s) && entries[0].off < secStart(s) + secLen(s));
@@ -1567,7 +1576,7 @@ function cmdCallgraph(path) {
     : (pos) => { if (pos + 4 > buf.length) return null; const d = arm64decode(buf.readUInt32LE(pos)); return { addr: pos, len: 4, text: d.text, mnem: d.mnem, bad: d.bad }; };
   // an import reached through its PLT stub (ELF) or lazy stub (Mach-O) is named, not counted as "external"
   const stubByOff = new Map();
-  for (const s of [...(r.plt || []), ...(r.stubs || [])]) { const o = rvaToOff(s.addr); if (o != null && s.name) stubByOff.set(o, demangle(s.name)); }
+  for (const s of [...(r.plt || []), ...(r.stubs || [])]) { const o = rvaToOff(s.addr); if (o != null && s.name) stubByOff.set(o, demangle(r.format === 'mach-o' ? s.name.replace(/^_(?!_Z)/, '') : s.name)); }
   // PE: an import is reached through a thunk `jmp qword [rip+X]` whose slot is in the IAT; name it by decoding the thunk
   const iatByRva = new Map((r.iat || []).map((e) => [e.rva, e.name]));
   const offToVa = (off) => { const s = r.sections.find((x) => off >= secStart(x) && off < secStart(x) + (isPE ? x.rawSize : x.size)); return s && secAddr(s) != null ? secAddr(s) + (off - secStart(s)) : null; };
@@ -1580,7 +1589,7 @@ function cmdCallgraph(path) {
   };
   const resolveExternal = (off) => stubByOff.get(off) || thunkName(off); // a call lands on the stub's / thunk's first instruction
   // executable sections as file-offset ranges: a direct call into one of them that no table lists discovers a node
-  const codeRanges = r.sections.filter((s) => (isPE ? (s.flags || []).includes('exec') : /^\.(text|init|fini|plt)/.test(s.name)) && secAddr(s) != null).map((s) => [secStart(s), secStart(s) + (isPE ? s.rawSize : s.size)]);
+  const codeRanges = r.sections.filter((s) => (isPE ? (s.flags || []).includes('exec') : /^\.(text|init|fini|plt)|^__(text|stubs)/.test(s.name)) && secAddr(s) != null).map((s) => [secStart(s), secStart(s) + (isPE ? s.rawSize : s.size)]);
   const g = buildCallGraph({ arch: ARCH, entries, decodeAt, resolveExternal, codeRanges });
   const nodes = entries.concat(g.discovered.map((off) => ({ va: offToVa(off) ?? off, off, end: off, name: null, discovered: true })));
   const nm = (i) => nodes[i].name || `sub_${nodes[i].va.toString(16)}`;

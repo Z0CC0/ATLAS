@@ -54,6 +54,14 @@ Thin or fat (every slice listed by CPU); CPU, file type, the platform with minim
 SDK, the dylibs it loads (weak and re-exported marked) with their versions, `rpath`
 entries, UUID, a code signature present or not, PIE, imported and exported symbols.
 
+Functions are enumerated from `LC_FUNCTION_STARTS` (ULEB128 deltas from `__TEXT`), which a
+stripped binary keeps, so `callgraph`, `xrefs` and `cfg` work on a Mach-O with no symbol table.
+Names come from the `nlist` symbols when present (the C leading underscore removed: `_main` is
+`main`); `LC_MAIN`'s entry offset is read relative to `__TEXT`'s file offset. A direct call to a
+`__stubs` slot is named through the indirect symbol table. Verified on jq 1.7 for arm64 and
+x86-64 (stripped, chained fixups): 1,569 / 1,537 functions, about 2,000 / 2,500 named import
+calls, 883 strings referenced; a fat file is listed slice by slice and not walked.
+
 ## Go and Rust, in any of the three
 
 A Go binary carries its build information: the Go version, the main module, every
@@ -369,12 +377,13 @@ imported-symbol names instead, labelled distinctly so it is never read as a real
 
 ## Call graph: `callgraph`
 
-`callgraph <file>` (PE or ELF, x86-64 or arm64) builds the caller→callee graph over the
+`callgraph <file>` (PE, ELF or Mach-O, x86-64 or arm64) builds the caller→callee graph over the
 functions already enumerated from the unwind tables and symbols (`.pdata` on PE, `.eh_frame`
-plus `.symtab`/DWARF on ELF). It walks each function from its real entry and reads the target
+plus `.symtab`/DWARF on ELF, `LC_FUNCTION_STARTS` plus `nlist` on Mach-O). It walks each function from its real entry and reads the target
 of every *direct* call — x86-64 `call rel32`, ARM64 `bl` — then maps that target back to the
-function that contains it. Names come from a sibling `.pdb` (PE), the exports, or `.symtab`/
-DWARF (ELF); an unnamed function shows as `sub_<rva>`. The summary ranks the hubs by fan-in
+function that contains it. Names come from a sibling `.pdb` (PE), the exports, `.symtab`/
+DWARF (ELF) or `nlist` (Mach-O); an unnamed function shows as `sub_<rva>`. A function with no
+known size runs to the next enumerated start, never past the end of its own section. The summary ranks the hubs by fan-in
 (`topCallers`) and fan-out (`topCallees`). `--func <name>` or `--rva <hex>` returns the ego
 graph of one function — its direct callees and its callers — which is what the app's graph
 canvas draws. Honest: only direct calls are edges; an indirect call (register, import thunk,
@@ -384,7 +393,7 @@ walk stops at an 8 MiB budget and says so (`truncated`).
 
 ## String cross-references: `xrefs`
 
-`xrefs <file>` (PE or ELF, x86-64 or arm64) maps which function points at which string literal.
+`xrefs <file>` (PE, ELF or Mach-O, x86-64 or arm64) maps which function points at which string literal.
 It extracts the printable-ASCII strings from the data sections (with their virtual address),
 then walks each enumerated function and reads every instruction that forms a string's address
 directly — x86-64 `lea reg, [rip+disp]` and `mov reg, imm64`, ARM64 the `adrp`+`add` pair — and

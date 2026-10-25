@@ -58,6 +58,11 @@ test('corrected: an Italian or English correction followed by code work; a quest
 test('undone and chose are recognised', () => {
   const undo = lines(U('x'), A('ok'), T('Bash', { command: 'git restore src/a.ts' }, 'b1'), R('b1', ''));
   assert.equal(signals(undo, repo).out[0].kind, 'undone');
+  // an undo followed by a commit that went through is a technical restore, not a choice
+  const restored = undo + lines(T('Bash', { command: 'git add -A && git commit -m "x"' }, 'b2'), R('b2', '[main abc] x'));
+  assert.equal(signals(restored, repo).out.length, 0, 'undo then commit');
+  const failedCommit = undo + lines(T('Bash', { command: 'git commit -m "x"' }, 'b2'), R('b2', 'nothing to commit', true));
+  assert.equal(signals(failedCommit, repo).out[0].kind, 'undone', 'undo then a commit that failed');
   const chose = lines(U('how?'), A('Two ways:\n1. keep the cache\n2. drop it\nWhich?'), U('la seconda'), A('ok'), T('Edit', { file_path: path.join(repo, 'a.js') }, 'e1'), R('e1', 'ok'));
   assert.equal(signals(chose, repo).out[0].kind, 'chose');
 });
@@ -67,6 +72,12 @@ test('an earlier ask is counted, its sign is not asked twice, and the cap holds'
   const first = signals(one, repo).out[0];
   const again = one + lines(U(`Stop hook feedback:\n${ask(first)}`), A('nothing worth keeping'));
   assert.equal(signals(again, repo).out.length, 0, 'same sign, already asked');
+  // undone is asked once a session: a different undo after the ask is not a sign
+  const second = again + lines(U('y'), A('ok'), T('Bash', { command: 'git checkout -- b' }, 'b2'), R('b2', ''));
+  assert.equal(signals(second, repo).out.length, 0, 'second undo, undone already asked');
+  // the other kinds still fire after an undone ask
+  const other = again + lines(U('no, usa il poll-worker invece di spawn'), A('ok'), T('Edit', { file_path: path.join(repo, 'm.js') }, 'e1'), R('e1', 'ok'));
+  assert.equal(signals(other, repo).out[0].kind, 'corrected');
   let capped = '';
   for (let i = 0; i < MAX_ASKS; i += 1) capped += lines(U(`Stop hook feedback:\n[atlas signal undone#k${i}] x`));
   capped += lines(U('x'), A('ok'), T('Bash', { command: 'git restore b' }, 'b9'), R('b9', ''));
