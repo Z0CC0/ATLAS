@@ -1,13 +1,12 @@
 ---
 name: atlas-ship
 description: >
-  Gets finished work out: a pull request, a container image, a pipeline, a deploy, with the
-  checks before and the way back written down. Angles by the request: "PR", "pull request";
-  "deploy", "release", "rollout"; "docker", "compose", "container"; "kubernetes", "helm"; "CI",
-  "pipeline", "GitHub Actions"; "branch", "rebase", "tag"; "monitoring", "dashboard", "alerts"; "installer";
-  "terraform", "infrastructure"; and for anything that cannot be undone, the blast radius, the way
-  back and the dry run before the yes. Never pushes, publishes or deploys without a yes. Use for "atlas ship", "open a PR", "get
-  this deployed", "set up CI" — in any language.
+Gets finished work out: a pull request, a container image, a pipeline, a deploy, with the
+  checks before and the way back written down. Angles: "PR"; "deploy", "release", "rollout";
+  "docker", "compose"; "kubernetes", "helm"; "CI", "pipeline", "GitHub Actions"; "branch",
+  "rebase", "tag"; "monitoring", "alerts"; "installer"; "terraform". Anything irreversible:
+  blast radius, way back, dry run, then a yes. Never pushes, publishes or deploys without a
+  yes. Use for "atlas ship", "open a PR", "get this deployed", "set up CI" — in any language.
 ---
 
 Shipping is the part of the work other people and other machines see. Every step here that

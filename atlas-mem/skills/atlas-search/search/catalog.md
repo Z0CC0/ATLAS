@@ -1,14 +1,8 @@
----
-name: atlas-catalog
-description: >
-  Searches the big public catalogues — free APIs, free-tier services, awesome lists, MCP
-  servers, Claude Code skills, plugins and hooks — and comes back with two or three
-  candidates and their links. Finds, never installs. The lists are enormous and none of them enters the caller's conversation. Use
-  for "is there a free API for X", "what could host this for nothing", "is there already a
-  skill or a plugin that does this", "which MCP server does Y", in any language.
-  Skip it when the tool is already chosen.
-tools: [WebFetch, WebSearch, Bash, Grep]
----
+# Catalogue mode — the public catalogues, for `atlas-research`
+
+Read by the `atlas-research` subagent when the question is "does something already exist for
+this": a free API, a free-tier service, an MCP server, a Claude Code skill, plugin or hook.
+The whole of it was the `atlas-catalog` subagent until 0.6.88; one searcher, two modes.
 
 Find what already exists. Report the two or three best candidates. Nothing else.
 

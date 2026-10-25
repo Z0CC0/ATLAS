@@ -1,13 +1,11 @@
 ---
 name: atlas-docs
 description: >
-  Keeps a project's documentation true to its code: regenerates what can be derived from the
-  source, finds what has gone stale, and writes only what the code supports. Angles by the
-  request: "map", "architecture overview" (a short map of the codebase); "onboarding", "explain
-  this repo" (a guide for someone new); "how does X work", "trace" (one feature followed end
-  to end); "translate", "locale files", "i18n" (locale files in
-  step with the source). Use for "atlas docs", "update the docs", "is the README still right",
-  "document this" — in any language.
+Keeps a project's documentation true to its code: regenerates what the source can derive,
+  finds what went stale, writes only what the code supports. Angles: "map", "architecture
+  overview"; "onboarding", "explain this repo"; "how does X work", "trace" (one feature end to
+  end); "translate", "i18n" (locale files in step with the source). Use for "atlas docs",
+  "update the docs", "is the README still right", "document this" — in any language.
 ---
 
 Documentation is a claim about the code. Each claim here either has a source it was read

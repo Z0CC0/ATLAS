@@ -21,7 +21,7 @@ contract, never runs below `standard`.
 
 **Look.** What exists: the code this touches, how it does things, whether something already
 solves it: in the repository first, then in the dependencies already installed, then in a
-library worth adding (the `atlas-catalog` subagent searches outside, when it exists).
+library worth adding (the `atlas-research` subagent in catalogue mode searches outside, when it exists).
 Adopting something proven beats writing it. Kept short; positions, not
 file contents.
 

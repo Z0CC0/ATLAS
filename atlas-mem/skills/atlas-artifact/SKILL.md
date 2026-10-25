@@ -1,18 +1,15 @@
 ---
 name: atlas-artifact
 description: >
-  Reads what is inside a shipped artifact without running it: an installed Electron or Node
-  application (its modules, what reaches the entry, the IPC channels in both directions, the
-  preload bridge, the windows and their preferences, the hosts it talks to, the processes it
-  starts, the bundles by their module tables, the fuses of its executable, what changed
-  between two versions), a compiled file by its headers (PE with the .NET metadata, ELF,
-  Mach-O: imports, exports, hardening, signature, Go modules, Rust crates), the program
-  alive for a few seconds after a yes (real IPC channels, windows, network, console,
-  against the static reading), a SQLite file (schema, counts, a sample), a source map
-  (where a bundled line came from). Every fact with its file and line, a confidence, and what was not covered. Only for
-  software the person owns or is allowed to inspect. Use for "atlas artifact", "what is in
-  this app", "open this asar", "what does this installed program do", "read this database",
-  "map this bundled line back" — in any language.
+Reads what is inside a shipped artifact without running it: an installed Electron or Node
+  app (modules, IPC channels both ways, preload bridge, windows, hosts, processes, bundles,
+  fuses, what changed between versions); a compiled file by its headers (PE and .NET, ELF,
+  Mach-O: imports, exports, hardening, signature, Go, Rust); bytecode and native code as
+  pseudo-code; a SQLite file; a source map; a pcap; the program alive for a few seconds only
+  after a yes. Every fact with file and line, a confidence, what was not covered. Only software
+  the person may inspect. Use for "atlas artifact", "what is in this app", "open this asar",
+  "what does this binary do", "read this database", "map this bundled line back" — in any
+  language.
 ---
 
 The code that runs is the archive, not the repository. This reads the archive.

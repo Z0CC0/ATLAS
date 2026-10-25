@@ -18,7 +18,7 @@ nothing surprising to say, leave it empty rather than filling it.
 
 # ATLAS
 
-Four dials, nine commands, no subagents.
+Four dials, eight commands, no subagents.
 
 **It ships off.** A fresh install changes nothing until you type `atlas low` or `atlas high`.
 After that the setting persists — across turns and restarts — until you change it or type
@@ -60,17 +60,16 @@ name, the work is usually done without the command's rules.
 |---|---|---|---|
 | `atlas <dial>` | sets the dials | 40 | `/atlas:atlas high` or `atlas high` alone as the whole message. The plain form works before the command menu has loaded |
 | `atlas-help` | this card | 2.8k | |
-| `atlas-review` | what is wrong with a diff, a branch, a file or a pull request, one problem per line: where, what breaks, the fix | 1.2k | four tiers, `breaks` first. `nothing found` is the whole answer when there is nothing. Behind it, 22 short checklists, read only as the diff calls for them: one per language, plus security, tests, types, errors, a pull request. "second opinion" runs a second reviewer that has not seen the first |
+| `atlas-review` | what is wrong with a diff, a branch, a file or a pull request, one problem per line: where, what breaks, the fix | 1.2k | four tiers, `breaks` first. `nothing found` is the whole answer when there is nothing. Behind it, 22 short checklists, read only as the diff calls for them: one per language, plus security, tests, types, errors, a pull request. "second opinion" runs a second reviewer that has not seen the first; "full review" runs three angles in parallel and a refuter per finding (Workflow tool) |
 | `atlas-fix` | a failing build, type check or linter back to green: one error, one smallest change, run again | 791 | stops and says why instead of silencing an error: same error twice, more errors than before, a change of design. Ends with `PASS`, `STOPPED` or `DID NOT RUN` and four counts. One file per toolchain behind it, 10 in all |
 | `atlas-commit` | commit message for what is staged | 173 | written in normal prose whatever the level: it leaves the conversation |
 | `atlas-recap` | handover file for the conversation: decided, done, not done, tried and rejected | 952 | for starting a fresh chat without losing where you were |
 | `atlas-organize` | tidies a local folder: selects files by content or criterion, copies, moves, groups, sets aside | 2.2k | four levels, from a plan that touches nothing upward. Nothing is ever deleted and every run has an undo |
 | `atlas-silent` | does the work and hands over the result: no opinions, no narration, no report | 968 | questions only up front, only about the task. Three things still get said: destructive, blocked, done-but-wrong. Per request; `atlas silent` is the same mode as a dial, and that one stays on |
-| `atlas-workflow` | runs one of two named multi-agent workflows through the Workflow tool: `review-full` (three angles in parallel, then a fresh agent tries to refute each finding) or `ship` (every project check in parallel beside a security review, one verdict) | 887 | only when you ask for it: invoking it is the opt-in. Says what it will spend before it runs: `review-full` 3 agents plus one per finding, `ship` one per check plus one. Returns the review line format, unchanged. Read-only on the repository. Body measured with tiktoken on 0.6.84 |
 
 ## Subagents
 
-None in this build. `atlas-solo` ships the same rules and commands without the seven
+None in this build. `atlas-solo` ships the same rules and commands without the five
 subagents of `atlas`; work that would go to one is done in the conversation.
 
 ## Builds
@@ -78,7 +77,7 @@ subagents of `atlas`; work that would go to one is done in the conversation.
 | build | contains | fixed cost at `low` |
 |---|---|---|
 | `atlas` | everything on this card | 3,300 |
-| `atlas-solo` | same rules, no subagents, and nine commands rather than ten | 2,249 |
+| `atlas-solo` | same rules, no subagents, and eight commands rather than nine | 2,249 |
 | `atlas-min` | compression only: one command, no `ask`, no `check`, no provenance marker | 1,143 |
 
 `atlas` and `atlas-solo` have byte-identical rules, verified with `diff`: they write the same

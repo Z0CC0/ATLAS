@@ -39,7 +39,6 @@ Funzionano entrambe le forme: `atlas high` scritto come intero messaggio, oppure
 | `/atlas:atlas-commit` | messaggio di commit per quello che hai in stage |
 | `/atlas:atlas-organize` | riordina una cartella locale, con annullamento |
 | `/atlas:atlas-silent` | fa il lavoro e consegna il risultato, nient'altro |
-| `/atlas:atlas-workflow` | lancia un flusso multi-agente con nome: `review-full` o `ship`; solo quando lo chiedi |
 
 ## Installazione
 
@@ -100,7 +99,7 @@ Il subagente tiene le schermate fuori dalla conversazione, guidare Chrome di per
 due file e ne scrivono uno, e delle tue sessioni non esce mai niente.
 
 Tre subagenti la rete la toccano, perche' andare a prendere roba e' il loro mestiere, e solo
-quando li deleghi tu: `atlas-research` cerca e apre pagine, `atlas-catalog` scarica i cataloghi
+quando li deleghi tu: `atlas-research` cerca e apre pagine (e, in modalità cataloghi, i cataloghi pubblici)
 pubblici, `atlas-browser` guida una pagina che gli hai indicato. Mandano la tua domanda e nient'altro.
 `atlas-solo` e `atlas-min` non ne hanno nessuno e non fanno nessuna chiamata di rete.
 

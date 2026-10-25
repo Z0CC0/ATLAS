@@ -1,16 +1,14 @@
 ---
 name: atlas-media
 description: >
-  Makes videos, slides and demos with tools that run on this machine and send nothing out.
-  Video is quality first: the best framework installed is used in full (HyperFrames when
-  present, then Remotion, then Manim), with its own rules read before a line is written,
-  whatever that costs in tokens. Also HTML slide decks, a recorded walkthrough of a web
-  app with Playwright, checks on a Blender scene by numbers, and the measured look of
-  reference footage as a grade and a cut rhythm. Plans the piece first, renders small
-  before rendering well, gates every on-screen text on a legibility formula. Use for
+Makes videos, slides and demos with tools on this machine, nothing sent out. Video is
+  quality first: the best framework installed (HyperFrames, then Remotion, then Manim), its
+  own rules read before a line is written. Also HTML slide decks, a Playwright walkthrough of
+  a web app, Blender scene checks by numbers, the look of reference footage as a grade and a
+  cut. Plans first, renders small before well, gates on-screen text on legibility. Use for
   "atlas media", "make a video", "a short", "an explainer", "animate this concept", "build
-  slides", "record a demo", "check this Blender animation", "match the look of this clip"
-  — in any language.
+  slides", "record a demo", "check this Blender animation", "match the look of this clip" —
+  in any language.
 ---
 
 Everything here is code that renders locally. No generation service, no upload, no API

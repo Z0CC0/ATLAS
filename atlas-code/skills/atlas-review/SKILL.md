@@ -4,8 +4,9 @@ description: >
   What is wrong with a diff, branch, file or pull request, one problem per line: where, what
   breaks on what input, the fix. Nothing about what is fine. Checklist chosen by the languages
   in the diff; angle by the request: "security", "tests", "types", "comments", "before merge",
-  "second opinion", or a PR number. Use for "atlas review", "review my diff", "check this
-  code", "safe to commit?" — in any language.
+  "second opinion", or a PR number; "full review", "fan out the review", "use a workflow"
+  runs three angles in parallel and a refuter per finding. Use for "atlas review", "review my
+  diff", "check this code", "safe to commit?" — in any language.
 ---
 
 Findings only. The reader can see their own diff; what they cannot see is what is wrong with it.
@@ -57,6 +58,28 @@ angle and the absolute paths of the files above, nothing of what was found here.
 one list: lines both found first, then lines only one found, each of those marked `(one of
 two)`. A line one reviewer found and the other read and rejected is dropped and counted:
 `N dropped on second look`. Two passes cost twice; they are for a merge, not for a typo.
+
+## Full review — a workflow
+
+"full review", "fan out the review", "use a workflow", "refute everything", "the three
+angles": the person is asking for the multi-agent form, and that request is the opt-in the
+Workflow tool requires; nothing here starts it on its own. Then, after gathering the target
+as in `method.md`:
+
+1. Say the cost in one line: 3 reviewers plus one refuter per candidate line, each a fresh
+   context; the run can be stopped from `/workflows`.
+2. One call, with the plugin prefix (the name before the colon in the command used, e.g.
+   `atlas` from `/atlas:atlas-review`) so the script reaches `atlas-diff`:
+
+```
+Workflow({ scriptPath: "${CLAUDE_PLUGIN_ROOT}/skills/atlas-review/workflows/review-full.mjs",
+           args: { target, prefix, angles } })
+```
+
+`args.angles` only when the person named an angle the three (correctness, security,
+errors+tests) do not cover. It returns `lines` in the line format above, with
+`N dropped on second look` when the refuters removed candidates; print them unchanged.
+Without the Workflow tool: say so in one line and run "second opinion" instead.
 
 ## Where the work goes
 

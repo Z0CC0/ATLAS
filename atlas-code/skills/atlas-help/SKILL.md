@@ -18,7 +18,7 @@ nothing surprising to say, leave it empty rather than filling it.
 
 # ATLAS
 
-Four dials, twenty-five commands, twelve subagents.
+Four dials, twenty-four commands, ten subagents.
 
 **It ships off.** A fresh install changes nothing until you type `atlas low` or `atlas high`.
 After that the setting persists — across turns and restarts — until you change it or type
@@ -61,13 +61,12 @@ name, the work is usually done without the command's rules.
 | `atlas <dial>` | sets the dials | 40 | `/atlas:atlas high` or `atlas high` alone as the whole message. The plain form works before the command menu has loaded |
 | `atlas-help` | this card | 2.8k | |
 | `atlas-search` | answers only from a live web search | 398 | **Not in `atlas-solo` or `atlas-min`.** It is the handle on the `atlas-research` subagent, so the pages it reads never land in your session. Add "give me sources" to the request, in any language, and it hands back where to read instead of the answer: videos, discussions, articles, grouped, one line each |
-| `atlas-review` | what is wrong with a diff, a branch, a file or a pull request, one problem per line: where, what breaks, the fix | 1.2k | four tiers, `breaks` first. `nothing found` is the whole answer when there is nothing. Behind it, 22 short checklists, read only as the diff calls for them: one per language, plus security, tests, types, errors, a pull request. "second opinion" runs a second reviewer that has not seen the first |
+| `atlas-review` | what is wrong with a diff, a branch, a file or a pull request, one problem per line: where, what breaks, the fix | 1.2k | four tiers, `breaks` first. `nothing found` is the whole answer when there is nothing. Behind it, 22 short checklists, read only as the diff calls for them: one per language, plus security, tests, types, errors, a pull request. "second opinion" runs a second reviewer that has not seen the first; "full review" runs three angles in parallel and a refuter per finding (Workflow tool) |
 | `atlas-fix` | a failing build, type check or linter back to green: one error, one smallest change, run again | 791 | stops and says why instead of silencing an error: same error twice, more errors than before, a change of design. Ends with `PASS`, `STOPPED` or `DID NOT RUN` and four counts. One file per toolchain behind it, 10 in all |
 | `atlas-commit` | commit message for what is staged | 173 | written in normal prose whatever the level: it leaves the conversation |
 | `atlas-recap` | handover file for the conversation: decided, done, not done, tried and rejected | 952 | for starting a fresh chat without losing where you were |
 | `atlas-organize` | tidies a local folder: selects files by content or criterion, copies, moves, groups, sets aside | 2.2k | four levels, from a plan that touches nothing upward. Nothing is ever deleted and every run has an undo |
 | `atlas-silent` | does the work and hands over the result: no opinions, no narration, no report | 968 | questions only up front, only about the task. Three things still get said: destructive, blocked, done-but-wrong. Per request; `atlas silent` is the same mode as a dial, and that one stays on |
-| `atlas-workflow` | runs one of two named multi-agent workflows through the Workflow tool: `review-full` (three angles in parallel, then a fresh agent tries to refute each finding) or `ship` (every project check in parallel beside a security review, one verdict) | 887 | only when you ask for it: invoking it is the opt-in. Says what it will spend before it runs: `review-full` 3 agents plus one per finding, `ship` one per check plus one. Returns the review line format, unchanged. Read-only on the repository. Body measured with tiktoken on 0.6.84 |
 
 ## Coding section — `atlas-code` build only
 
@@ -130,7 +129,6 @@ nothing.
 | subagent | what it does | worth knowing |
 |---|---|---|
 | `atlas-finder` | answers "where": file and line range, one line each, nothing else | only cites ranges it actually read. Skip it when you already know the file |
-| `atlas-editor` | one small edit in at most two files, a line per file back | a third file and it hands the whole task back, on purpose |
 | `atlas-diff` | the same review, run where the diff stays: one line per problem, nothing about what is fine | reads the diff itself, so a large one never enters your context |
 | `atlas-runner` | runs tests, build or linter, returns only the deciding lines | never repairs anything, never works around a failure |
 | `atlas-auditor` | the whole-project security audit of `atlas-secure`, where the fifty files it reads stay | returns the ranked report with proof; changes nothing |
@@ -139,15 +137,14 @@ nothing.
 | `atlas-documenter` | reads a codebase and writes the map, the onboarding, a trace, or the list of stale claims | every statement traceable to a file |
 | `atlas-tester` | coverage gaps and the tests for a module, where the runner logs stay | a test that fails because the code is wrong is kept |
 | `atlas-browser` | drives a page, reports in words | one screenshot costs about 9,800 tokens; this pays for itself immediately |
-| `atlas-research` | searches the web: the answer with its sources, or a reading list grouped by kind | says "I did not find it" rather than "it does not exist", and never forces a weak link to fill a group |
-| `atlas-catalog` | searches the public catalogues: free APIs, free-tier services, MCP servers (the official registry and Smithery), Claude Code skills (skills.sh), plugins (Anthropic's two marketplaces), hooks and tooling. Finds, never installs | those lists are 550,000 tokens; it reads them live and hands back three candidates |
+| `atlas-research` | searches the web: the answer with its sources, or a reading list grouped by kind; in catalogue mode the public catalogues (free APIs, free tiers, MCP servers, skills, plugins, hooks), three candidates back, never installs | says "I did not find it" rather than "it does not exist", and never forces a weak link to fill a group; the catalogues are 550,000 tokens and never enter your context |
 
 ## Builds
 
 | build | contains | fixed cost at `low` |
 |---|---|---|
 | `atlas` | everything on this card | 3,300 |
-| `atlas-solo` | same rules, no subagents, and nine commands rather than ten | 2,249 |
+| `atlas-solo` | same rules, no subagents, and eight commands rather than nine | 2,249 |
 | `atlas-min` | compression only: one command, no `ask`, no `check`, no provenance marker | 1,143 |
 | `atlas-code` | everything in `atlas`, plus the coding section on this card | 6,434 |
 

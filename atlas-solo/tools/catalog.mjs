@@ -4,7 +4,7 @@
  *
  * The catalogues are large (one is 1.6 MB of JSON) and none of them may enter a
  * conversation. This reads them here and prints at most a handful of lines per
- * source, so `atlas-catalog` spends one command instead of a dozen fetches.
+ * source, so `atlas-research` (catalogue mode) spends one command instead of a dozen fetches.
  *
  *   node catalog.mjs skills  "changelog commits"
  *   node catalog.mjs mcp     postgres
@@ -34,7 +34,7 @@ async function get(url, as = 'json') {
   const ctl = new AbortController();
   const timer = setTimeout(() => ctl.abort(), TIMEOUT_MS);
   try {
-    const res = await fetch(url, { signal: ctl.signal, headers: { 'user-agent': 'atlas-catalog', accept: 'application/json, text/plain, */*' } });
+    const res = await fetch(url, { signal: ctl.signal, headers: { 'user-agent': 'atlas-research', accept: 'application/json, text/plain, */*' } });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     return as === 'json' ? await res.json() : await res.text();
   } finally {

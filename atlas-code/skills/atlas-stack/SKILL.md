@@ -1,14 +1,12 @@
 ---
 name: atlas-stack
 description: >
-  How new code is written in the language and framework of this project: the defaults, the
-  choices that matter and the mistakes typical of that stack. One short file per stack,
-  picked from the project's own files: TypeScript and Node, React and Next, Vue and Nuxt,
-  Angular, Python with Django and FastAPI, machine learning, Go, Rust, Java and Spring,
-  Kotlin and Android, Swift, C# and F#, PHP and Laravel, Ruby and Rails, Dart and Flutter,
-  C++, ArkTS and HarmonyOS, Perl, databases, HTTP APIs. Use before writing or changing code
-  in a project, once per stack per conversation, and when asked "what is the idiomatic way"
-  — in any language.
+How new code is written in this project's language and framework: the defaults, the choices
+  that matter, the mistakes typical of the stack. One short file per stack, picked from the
+  project's files: TypeScript/Node, React/Next, Vue/Nuxt, Angular, Python (Django, FastAPI),
+  ML, Go, Rust, Java/Spring, Kotlin/Android, Swift, C#/F#, PHP/Laravel, Ruby/Rails,
+  Dart/Flutter, C++, ArkTS, Perl, databases, HTTP APIs. Use before writing or changing code,
+  once per stack per conversation, and for "what is the idiomatic way" — in any language.
 ---
 
 What the project already does comes first. These files fill in what the project has not

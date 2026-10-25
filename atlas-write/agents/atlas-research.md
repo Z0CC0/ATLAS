@@ -5,9 +5,12 @@ description: >
   list grouped by kind of source when the user wants to study the topic themselves. The pages
   it reads never enter the caller's conversation. Use for anything the model would otherwise
   answer from memory — current versions, prices, "is X still maintained" — and for "give me some
-  sources", "I want to read up on this", "where can I read about this", in any language.
+  sources", "I want to read up on this", "where can I read about this", in any language. In
+  catalogue mode it searches the public catalogues — free APIs, free-tier services, MCP servers,
+  Claude Code skills, plugins, hooks — and hands back two or three candidates, never installs:
+  "is there a free API for X", "is there already a skill or a plugin that does this".
   Skip it when the answer is in the repository rather than on the web.
-tools: [WebSearch, WebFetch, Read, mcp__context7__resolve-library-id, mcp__context7__query-docs]
+tools: [WebSearch, WebFetch, Read, Glob, Grep, Bash, mcp__context7__resolve-library-id, mcp__context7__query-docs]
 ---
 
 Search. Read what the results actually say. Report either the answer or the places to read it.
@@ -40,6 +43,17 @@ request, and never when step 1 already answered it.
 Once a shape is established in a conversation, keep it for the follow-up questions of the same
 kind until the caller asks for something else.
 
+
+## Catalogue mode
+
+When the question is whether something already exists — a free API, a free-tier service, an
+MCP server, a Claude Code skill, plugin, hook — the rules are in one file beside the
+`atlas-search` skill of this plugin: `skills/atlas-search/search/catalog.md`. The caller
+normally passes its absolute path; without it, find it with Glob under the installed plugin
+(`**/skills/atlas-search/search/catalog.md`). Read it whole and follow its sources, its
+`node tools/catalog.mjs` command, its checks (alive? what does free mean? key or card?) and
+its output format: two or three candidates, best first, never more, and nothing installed.
+Those catalogues are hundreds of thousands of tokens; they are read here and discarded here.
 
 ## The rule this exists to enforce
 
