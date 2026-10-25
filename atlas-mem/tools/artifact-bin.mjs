@@ -14,6 +14,7 @@ import { demangle } from './artifact-demangle.mjs';
 import { readPeSecurity } from './artifact-pesec.mjs';
 import { readElfSecurity } from './artifact-elfsec.mjs';
 import { readMachoSecurity } from './artifact-machosec.mjs';
+import { readGoPclntab } from './artifact-gopclntab.mjs';
 
 const u8 = (b, o) => b[o];
 const u16 = (b, o) => b.readUInt16LE(o);
@@ -532,7 +533,7 @@ function readMachO(b, depth) {
   const is64 = magic === 0xcffaedfe;
   const r32 = (o) => b.readUInt32LE(o), r64 = (o) => Number(b.readBigUInt64LE(o));
   const cpu = r32(4), filetype = r32(12), ncmds = r32(16), flags = r32(24);
-  const segments = []; const dylibs = []; let id = null; const rpaths = []; let uuid = null, build = null, entry = null, signed = false, symtab = null, dysym = null, stubsSec = null;
+  const segments = []; const dylibs = []; let id = null; const rpaths = []; let uuid = null, build = null, entry = null, signed = false, symtab = null, dysym = null, stubsSec = null, textAddr = null;
   let codeSig = null, chainedFixups = false, exportsTrie = false;
   let o = is64 ? 32 : 28;
   const limitations = [];
@@ -541,7 +542,7 @@ function readMachO(b, depth) {
     const cmd = r32(o), size = r32(o + 4);
     if (size < 8) break;
     const str = (rel) => cstr(b, o + r32(o + rel), 1024);
-    if (cmd === 0x19 || cmd === 0x1) { const segname = fixed(b, o + 8, 16); const nsects = r32(o + (is64 ? 64 : 48)); const sects = []; let so = o + (is64 ? 72 : 56); for (let k = 0; k < nsects && k < 256; k += 1) { const sn = fixed(b, so, 16); sects.push(sn); if (is64 && sn === '__stubs') stubsSec = { addr: r64(so + 32), size: r64(so + 40), first: r32(so + 68), stub: r32(so + 72) }; so += is64 ? 80 : 68; } segments.push({ name: segname, vmaddr: is64 ? r64(o + 24) : r32(o + 24), vmsize: is64 ? r64(o + 32) : r32(o + 28), fileoff: is64 ? r64(o + 40) : r32(o + 32), filesize: is64 ? r64(o + 48) : r32(o + 36), maxprot: r32(o + (is64 ? 56 : 40)), initprot: r32(o + (is64 ? 60 : 44)), sections: sects }); }
+    if (cmd === 0x19 || cmd === 0x1) { const segname = fixed(b, o + 8, 16); const nsects = r32(o + (is64 ? 64 : 48)); const sects = []; let so = o + (is64 ? 72 : 56); for (let k = 0; k < nsects && k < 256; k += 1) { const sn = fixed(b, so, 16); sects.push(sn); if (is64 && sn === '__stubs') stubsSec = { addr: r64(so + 32), size: r64(so + 40), first: r32(so + 68), stub: r32(so + 72) }; if (sn === '__text' && textAddr == null) textAddr = is64 ? r64(so + 32) : r32(so + 24); so += is64 ? 80 : 68; } segments.push({ name: segname, vmaddr: is64 ? r64(o + 24) : r32(o + 24), vmsize: is64 ? r64(o + 32) : r32(o + 28), fileoff: is64 ? r64(o + 40) : r32(o + 32), filesize: is64 ? r64(o + 48) : r32(o + 36), maxprot: r32(o + (is64 ? 56 : 40)), initprot: r32(o + (is64 ? 60 : 44)), sections: sects }); }
     else if (cmd === 0xc || cmd === 0x18 || cmd === 0x1f || cmd === 0x20) dylibs.push({ name: str(8), weak: cmd === 0x18, reexport: cmd === 0x1f, version: ver32(r32(o + 16)) });
     else if (cmd === 0xd) id = { name: str(8), version: ver32(r32(o + 16)) };
     else if (cmd === 0x8000001c) rpaths.push(str(8));
@@ -583,7 +584,7 @@ function readMachO(b, depth) {
   }
   let security = null;
   try { security = readMachoSecurity(b, { codeSig, chainedFixups, exportsTrie }); } catch { security = null; }
-  return { format: 'mach-o', fat: false, class: is64 ? 64 : 32, cpu: MACHO_CPU[cpu] || cpu, filetype: MACHO_FILETYPES[filetype] || filetype, flags: { pie: Boolean(flags & 0x200000), twoLevel: Boolean(flags & 0x80), noHeapExec: Boolean(flags & 0x1000000) }, id, dylibs, rpaths, uuid, build, entry, signed, segments, imported: imported.slice(0, 3000), exported: exported.slice(0, 3000), stubs, counts: { imported: imported.length, exported: exported.length, dylibs: dylibs.length, stubs: stubs.length }, security, limitations };
+  return { format: 'mach-o', fat: false, textAddr, class: is64 ? 64 : 32, cpu: MACHO_CPU[cpu] || cpu, filetype: MACHO_FILETYPES[filetype] || filetype, flags: { pie: Boolean(flags & 0x200000), twoLevel: Boolean(flags & 0x80), noHeapExec: Boolean(flags & 0x1000000) }, id, dylibs, rpaths, uuid, build, entry, signed, segments, imported: imported.slice(0, 3000), exported: exported.slice(0, 3000), stubs, counts: { imported: imported.length, exported: exported.length, dylibs: dylibs.length, stubs: stubs.length }, security, limitations };
 }
 
 // ---------------------------------------------------------------- what Go and Rust leave behind
@@ -648,10 +649,20 @@ function interestingStrings(b) {
   };
 }
 
+// the Go function table (runtime.pclntab): only looked for when the Go build info is there
+function goFuncs(b, r) {
+  if (!r.go) return;
+  let textHint = null; // where runtime.text starts: the text section's virtual address
+  if (r.format === 'pe') { const t = (r.sections || []).find((s) => s.name === '.text'); if (t) textHint = r.imageBase + t.vaddr; }
+  else if (r.format === 'elf') { const t = (r.sections || []).find((s) => s.name === '.text'); if (t && t.addr) textHint = t.addr; }
+  else if (r.format === 'mach-o') textHint = r.textAddr ?? null;
+  try { r.goFuncs = readGoPclntab(b, r.format === 'mach-o' ? r.segments : r.sections, r.format, textHint); } catch { r.goFuncs = null; }
+}
+
 function readBinary(b, opts) {
-  if (b.length >= 2 && b[0] === 0x4d && b[1] === 0x5a) { const r = readPe(b, opts); r.go = readGo(b); r.rust = readRust(b, r.sections); r.strings = interestingStrings(b); return r; }
-  if (b.length >= 4 && b[0] === 0x7f && b.toString('latin1', 1, 4) === 'ELF') { const r = readElf(b); r.go = readGo(b); r.rust = readRust(b, r.sections); r.strings = interestingStrings(b); return r; }
-  if (b.length >= 4 && [0xfeedface, 0xfeedfacf, 0xcefaedfe, 0xcffaedfe, 0xcafebabe].includes(b.readUInt32BE(0))) { const r = readMachO(b, 0); if (!r.fat) { r.go = readGo(b); r.rust = readRust(b, null); r.strings = interestingStrings(b); } return r; }
+  if (b.length >= 2 && b[0] === 0x4d && b[1] === 0x5a) { const r = readPe(b, opts); r.go = readGo(b); goFuncs(b, r); r.rust = readRust(b, r.sections); r.strings = interestingStrings(b); return r; }
+  if (b.length >= 4 && b[0] === 0x7f && b.toString('latin1', 1, 4) === 'ELF') { const r = readElf(b); r.go = readGo(b); goFuncs(b, r); r.rust = readRust(b, r.sections); r.strings = interestingStrings(b); return r; }
+  if (b.length >= 4 && [0xfeedface, 0xfeedfacf, 0xcefaedfe, 0xcffaedfe, 0xcafebabe].includes(b.readUInt32BE(0))) { const r = readMachO(b, 0); if (!r.fat) { r.go = readGo(b); goFuncs(b, r); r.rust = readRust(b, null); r.strings = interestingStrings(b); } return r; }
   throw new Error('not a PE, ELF or Mach-O file');
 }
 

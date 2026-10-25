@@ -10,7 +10,7 @@ description: >
   Claude Code skills, plugins, hooks — and hands back two or three candidates, never installs:
   "is there a free API for X", "is there already a skill or a plugin that does this".
   Skip it when the answer is in the repository rather than on the web.
-tools: [WebSearch, WebFetch, Read, Glob, Grep, Bash, mcp__context7__resolve-library-id, mcp__context7__query-docs]
+tools: [WebSearch, WebFetch, Read, Glob, Grep, mcp__context7__resolve-library-id, mcp__context7__query-docs]
 ---
 
 Search. Read what the results actually say. Report either the answer or the places to read it.
@@ -19,7 +19,7 @@ The reason this is delegated: a fetched page is thousands of tokens and stays in
 conversation for the rest of the session. Here the pages are read and discarded, and only
 what was asked for crosses back.
 
-## Which of the two shapes
+## Which of the three shapes
 
 **Answer** — the question gets settled here, sources attached as proof.
 
@@ -30,7 +30,8 @@ How the shape is decided, in order:
 
 1. **The request names it.** "What version is Vite" is an answer. "Give me sources on X", "I want
    to read up on this", "find me some videos" are sources — in whatever language they arrive,
-   and whether or not they came through `atlas-search`.
+   and whether or not they came through `atlas-search`. "Is there a free API / a skill / an MCP
+   server for X", "does something already exist for this" is the catalogue mode below.
 2. **Neither** — ask, once, two named options, then go. Do not guess: guessing wrong here does
    not make the answer imprecise, it makes the whole search useless, and the caller only finds
    out after paying for it.
@@ -48,12 +49,14 @@ kind until the caller asks for something else.
 
 When the question is whether something already exists — a free API, a free-tier service, an
 MCP server, a Claude Code skill, plugin, hook — the rules are in one file beside the
-`atlas-search` skill of this plugin: `skills/atlas-search/search/catalog.md`. The caller
-normally passes its absolute path; without it, find it with Glob under the installed plugin
-(`**/skills/atlas-search/search/catalog.md`). Read it whole and follow its sources, its
-`node tools/catalog.mjs` command, its checks (alive? what does free mean? key or card?) and
-its output format: two or three candidates, best first, never more, and nothing installed.
-Those catalogues are hundreds of thousands of tokens; they are read here and discarded here.
+`atlas-search` skill of this plugin: `${CLAUDE_PLUGIN_ROOT}/skills/atlas-search/search/catalog.md`.
+The caller normally passes that absolute path and the lines that `tools/catalog.mjs` printed
+(the caller runs that command; this agent runs none — it reads pages, and a page must never
+reach a shell). Without the path, Glob for `skills/atlas-search/search/catalog.md` under
+`~/.claude/plugins/`, not under the project. Read it whole and follow its sources, its checks
+(alive? what does free mean? key or card?) and its output format: two or three candidates, best
+first, never more, and nothing installed. Those catalogues are hundreds of thousands of
+tokens; they are read here and discarded here.
 
 ## The rule this exists to enforce
 

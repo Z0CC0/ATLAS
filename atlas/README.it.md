@@ -98,9 +98,9 @@ Il subagente tiene le schermate fuori dalla conversazione, guidare Chrome di per
 **Niente che tu non abbia chiesto.** Le regole, le manopole e gli hook sono tutti locali: leggono
 due file e ne scrivono uno, e delle tue sessioni non esce mai niente.
 
-Tre subagenti la rete la toccano, perche' andare a prendere roba e' il loro mestiere, e solo
-quando li deleghi tu: `atlas-research` cerca e apre pagine (e, in modalità cataloghi, i cataloghi pubblici)
-pubblici, `atlas-browser` guida una pagina che gli hai indicato. Mandano la tua domanda e nient'altro.
+Due subagenti la rete la toccano, perche' andare a prendere roba e' il loro mestiere, e solo
+quando li deleghi tu: `atlas-research` cerca e apre pagine (e, in modalità cataloghi, i cataloghi pubblici),
+`atlas-browser` guida una pagina che gli hai indicato. Mandano la tua domanda e nient'altro.
 `atlas-solo` e `atlas-min` non ne hanno nessuno e non fanno nessuna chiamata di rete.
 
 | file | a cosa serve |
@@ -120,7 +120,7 @@ pubblici, `atlas-browser` guida una pagina che gli hai indicato. Mandano la tua 
 | **totale al livello predefinito** | **3.300** |
 
 La build `atlas-min` porta le descrizioni a 71 e le regole a 1.073, perche' contiene solo le
-sezioni sulla compressione. `atlas-solo` tiene tutte le regole e toglie i sette subagenti: 841 di
+sezioni sulla compressione. `atlas-solo` tiene tutte le regole e toglie i cinque subagenti: 841 di
 descrizioni invece di 1.892. Toglie anche `atlas-search`, che e' la maniglia di un subagente
 che li non c'e' — la disciplina di ricerca sta comunque nella manopola `check`,
 dove vale per ogni risposta invece che per un comando solo.

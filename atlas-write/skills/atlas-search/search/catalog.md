@@ -2,7 +2,9 @@
 
 Read by the `atlas-research` subagent when the question is "does something already exist for
 this": a free API, a free-tier service, an MCP server, a Claude Code skill, plugin or hook.
-The whole of it was the `atlas-catalog` subagent until 0.6.88; one searcher, two modes.
+The whole of it was the `atlas-catalog` subagent until 0.6.88; one searcher, two modes. The
+`node tools/catalog.mjs` command below is run by the CALLER (`atlas-search`), which hands its lines
+over: the agent that reads web pages runs no commands.
 
 Find what already exists. Report the two or three best candidates. Nothing else.
 

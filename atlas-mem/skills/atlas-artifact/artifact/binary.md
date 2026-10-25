@@ -63,6 +63,12 @@ paths and the registry paths of the crates that panic can mention: the crate lis
 `derived` from those paths and is a lower bound (a crate that never panics leaves no
 path); a binary built with the audit section carries the full list, and it is read.
 
+When the build info is there, `bin` also reads the Go function table (`runtime.pclntab`):
+every function's name and entry address, even on a binary linked with `-s -w`, so `callgraph`,
+`xrefs` and `cfg` say `main.main` or `net/http.(*Transport).dialConn` instead of `sub_…`.
+Tables in the Go 1.16–1.17, 1.18–1.19 and 1.20+ layouts are read; a 1.2–1.15 table is
+recognised and declared not read; files, line numbers and inlining are not reconstructed.
+
 ## Strings
 
 URLs, registry keys, Windows and POSIX paths found as text, with counts. A string is a

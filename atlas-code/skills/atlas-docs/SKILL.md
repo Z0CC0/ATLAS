@@ -4,7 +4,7 @@ description: >
 Keeps a project's documentation true to its code: regenerates what the source can derive,
   finds what went stale, writes only what the code supports. Angles: "map", "architecture
   overview"; "onboarding", "explain this repo"; "how does X work", "trace" (one feature end to
-  end); "translate", "i18n" (locale files in step with the source). Use for "atlas docs",
+  end); "translate", "locale files", "i18n" (in step with the source). Use for "atlas docs",
   "update the docs", "is the README still right", "document this" — in any language.
 ---
 

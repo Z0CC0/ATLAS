@@ -459,6 +459,68 @@ test('the Go and Rust readers and a hand-made ELF and Mach-O', async () => {
   assert.equal(m.flags.pie, true);
 });
 
+test('a hand-made Go pclntab (1.20 header, two functions) is read from spec, and noise is not', async () => {
+  const { readGoPclntab } = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-gopclntab.mjs')).href);
+  // header (72 bytes): magic, pad, minLC=1, ptrSize=8, nfunc=2, nfiles=0, textStart, five offsets
+  const T = Buffer.alloc(224, 0);
+  T.writeUInt32LE(0xfffffff1, 0); T[6] = 1; T[7] = 8;
+  const P = (o, v) => T.writeBigUInt64LE(BigInt(v), o);
+  P(8, 2); P(16, 0); P(24, 0x401000); P(32, 72); P(40, 96); P(48, 96); P(56, 96); P(64, 104);
+  T.write('main.main\0main.foo\0', 72, 'latin1'); // funcnametab at 72
+  // ftab at 104: (entryoff, funcoff) x2 + closing entry; funcoff relative to pclnOffset
+  T.writeUInt32LE(0x0, 104); T.writeUInt32LE(24, 108); T.writeUInt32LE(0x40, 112); T.writeUInt32LE(72, 116); T.writeUInt32LE(0x80, 120);
+  // _func at 104+24=128: entryoff, nameOff; _func at 104+72=176
+  T.writeUInt32LE(0x0, 128); T.writeInt32LE(0, 132); T.writeUInt32LE(0x40, 176); T.writeInt32LE(10, 180);
+  const buf = Buffer.concat([Buffer.alloc(16, 0xcc), T, Buffer.alloc(8, 0)]);
+  const g = readGoPclntab(buf, [{ name: '.gopclntab', off: 16, size: T.length }], 'elf');
+  assert.ok(g, 'table found');
+  assert.equal(g.version, 'go1.20+');
+  assert.equal(g.textStart, 0x401000);
+  assert.equal(g.textStartSource, 'header');
+  assert.equal(g.count, 2);
+  assert.deepEqual(g.functions, [{ name: 'main.main', addr: 0x401000 }, { name: 'main.foo', addr: 0x401040 }]);
+  // a header whose textStart reads 0 (unrelocated, as in a PIE or an ASLR PE) takes the text section's address
+  P(24, 0);
+  const g0 = readGoPclntab(Buffer.concat([Buffer.alloc(16, 0xcc), T]), [{ name: '.gopclntab', off: 16, size: T.length }], 'elf', 0x7000);
+  assert.equal(g0.textStart, 0x7000); assert.equal(g0.textStartSource, 'text-section'); assert.equal(g0.functions[1].addr, 0x7040);
+  // the magic alone, with garbage behind it, is not a table; a misaligned one is skipped
+  const noise = Buffer.alloc(256, 0x41); noise.writeUInt32LE(0xfffffff1, 8);
+  assert.equal(readGoPclntab(noise, [{ name: '.rdata', off: 0, size: 256 }], 'pe'), null);
+  assert.equal(readGoPclntab(Buffer.concat([Buffer.alloc(13, 0), T]), [{ name: '.gopclntab', off: 13, size: T.length }], 'elf'), null);
+  // the 1.2-1.15 magic is recognised and declared unread
+  const old = Buffer.alloc(64, 0); old.writeUInt32LE(0xfffffffb, 0); old[6] = 1; old[7] = 8;
+  const l = readGoPclntab(old, [{ name: '.gopclntab', off: 0, size: 64 }], 'elf');
+  assert.equal(l.version, 'go1.2-1.15'); assert.equal(l.count, 0); assert.match(l.limitation, /not read/);
+});
+
+test('bin names the Go functions of a stripped Go PE (gh.exe), or skips when it is not installed', async () => {
+  const gh = 'C:/Program Files/GitHub CLI/gh.exe';
+  if (!fs.existsSync(gh)) return;
+  // the whole table in-process (the full JSON of 40k+ names is larger than spawnSync's buffer)
+  const { readBinary } = await import(pathToFileURL(path.join(here, '..', 'tools', 'artifact-bin.mjs')).href);
+  const res = readBinary(fs.readFileSync(gh));
+  assert.ok(res.go && res.go.version, 'Go build info present');
+  assert.ok(res.goFuncs, 'pclntab found');
+  assert.ok(res.goFuncs.count > 1000, `count ${res.goFuncs.count}`);
+  assert.equal(res.goFuncs.functions.length, res.goFuncs.count);
+  const main = res.goFuncs.functions.find((f) => f.name === 'main.main');
+  assert.ok(main, 'main.main exists');
+  const text = res.sections.find((s) => s.name === '.text');
+  const rva = main.addr - res.imageBase;
+  assert.ok(rva >= text.vaddr && rva < text.vaddr + text.vsize, 'main.main inside .text');
+  // the command's summary keeps the count and a slice of names, not the whole table
+  const r = run('bin', gh);
+  assert.equal(r.code, 0, r.out + r.err);
+  const sum = r.json.result;
+  assert.equal(sum.goFuncs.count, res.goFuncs.count);
+  assert.ok(sum.goFuncs.functions.length <= 200);
+  assert.ok(r.json.coverage.scope.includes('Go pclntab'));
+  // cfg at main.main's offset is labelled with its name
+  const cfg = run('cfg', gh, '--rva', '0x' + rva.toString(16));
+  assert.equal(cfg.code, 0, cfg.out + cfg.err);
+  assert.equal(cfg.json.result.name, 'main.main');
+});
+
 test('observe refuses without the yes, and the inspector session speaks to a live Node', async () => {
   const dir = path.join(tmp, 'srcapp');
   const r = run('observe', dir);

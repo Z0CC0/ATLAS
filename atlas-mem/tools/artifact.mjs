@@ -667,6 +667,7 @@ function binText(rec) {
     }
   }
   if (r.go) L.push(`go  ${r.go.version || '?'}  ${r.go.main ? r.go.main.path : r.go.path || ''}  ${r.go.deps.length} deps  ${Object.entries(r.go.settings).filter(([k]) => /^(GOOS|GOARCH|CGO_ENABLED|vcs\.revision|-ldflags)$/.test(k)).map(([k, v]) => k + '=' + v).join(' ')}`);
+  if (r.goFuncs) { const g = r.goFuncs; const main = g.functions.find((f) => f.name === 'main.main'); L.push(g.count ? `go pclntab  ${g.count} functions named (${g.version} layout, textStart 0x${(g.textStart || 0).toString(16)} from ${g.textStartSource || 'header'})${main ? `; main.main 0x${main.addr.toString(16)}` : ''}` : `go pclntab  found (${g.version}) but not read`); }
   if (r.rust) L.push(`rust  ${r.rust.rustc ? JSON.stringify(r.rust.rustc) : '?'}  ${r.rust.crates.length} crates seen in paths${r.rust.auditable ? `, ${r.rust.auditable.packages.length} in the audit section` : ''}: ${r.rust.crates.slice(0, 10).map((c) => c.name + '@' + c.version).join(' ')}`);
   if (r.strings) { const st = r.strings; L.push(`strings  ${st.urls.length} urls, ${st.registry.length} registry keys, ${st.windowsPaths.length} windows paths, ${st.posixPaths.length} posix paths: ${st.urls.slice(0, 6).map((x) => x.value).join(' ')}`); }
   L.push(`coverage ${rec.coverage.status}: ${rec.coverage.scope}`);
@@ -727,11 +728,12 @@ function cmdBin(path) {
   } catch { /* entropy skipped */ }
   if (r.format === 'elf' && r.sections) { try { const d = readDwarf(buf, r.sections); if (d && d.functions.length) { r.dwarf = { producer: (d.units[0] || {}).producer || null, unit: (d.units[0] || {}).name || null, functionCount: d.functions.length, functions: d.functions.slice(0, 200).map((f) => ({ name: f.name, low: f.low, high: f.high })) }; limitations.push('DWARF: function names and PC ranges from .debug_info; the line-number program and types are not reconstructed'); } } catch { /* malformed DWARF: skip */ } }
   if (r.go && r.go.limitations) limitations.push(...r.go.limitations);
+  if (r.goFuncs) limitations.push(r.goFuncs.limitation || `Go pclntab: ${r.goFuncs.count} function names and entry addresses (${r.goFuncs.version} layout); line tables, files and inlining not read; 1.2-1.15 tables not read`);
   delete r.limitations;
   const subject = { name: basename(abs), path: abs, format: r.format, bytes: buf.length, sha256: sha256(buf) };
   const full = flags.detail === 'full';
-  const result = full ? r : { ...r, sections: r.sections ? r.sections.map((s) => ({ name: s.name, size: s.rawSize ?? s.size ?? s.filesize, flags: s.flags })) : undefined, imports: r.imports ? r.imports.map((i) => ({ dll: i.dll, count: i.count, names: i.names.slice(0, 40) })) : undefined, exports: r.exports ? { ...r.exports, names: r.exports.names.slice(0, 60), addrs: undefined } : r.exports, imported: r.imported ? r.imported.slice(0, 80) : undefined, exported: r.exported ? r.exported.slice(0, 80) : undefined, dotnet: r.dotnet ? { ...r.dotnet, types: r.dotnet.types.slice(0, 60), userStrings: r.dotnet.userStrings.slice(0, 60), pinvoke: r.dotnet.pinvoke.slice(0, 60) } : r.dotnet, segments: r.segments ? r.segments.map((s) => ({ ...s, sections: undefined })) : undefined, pdata: r.pdata ? { count: r.pdata.count, functions: r.pdata.functions.slice(0, 200) } : undefined, debug: r.debug, ehFrame: r.ehFrame ? { count: r.ehFrame.count, functions: r.ehFrame.functions.slice(0, 200) } : undefined, symtabCount: r.symtabCount, crypto: r.crypto, packing: r.packing, capabilities: r.capabilities, security: r.security, imphash: r.imphash };
-  const rec = record(subject, 'bin', { detail: full ? 'full' : 'summary' }, result, { limitations, coverage: { status: 'complete', scope: `${r.format} headers, sections, imports and exports${r.dotnet ? ', .NET metadata tables' : ''}${r.go ? ', Go build info' : ''}${r.rust ? ', Rust crate paths' : ''}${r.dwarf ? ', DWARF function names' : ''}, strings` } });
+  const result = full ? r : { ...r, sections: r.sections ? r.sections.map((s) => ({ name: s.name, size: s.rawSize ?? s.size ?? s.filesize, flags: s.flags })) : undefined, imports: r.imports ? r.imports.map((i) => ({ dll: i.dll, count: i.count, names: i.names.slice(0, 40) })) : undefined, exports: r.exports ? { ...r.exports, names: r.exports.names.slice(0, 60), addrs: undefined } : r.exports, imported: r.imported ? r.imported.slice(0, 80) : undefined, exported: r.exported ? r.exported.slice(0, 80) : undefined, dotnet: r.dotnet ? { ...r.dotnet, types: r.dotnet.types.slice(0, 60), userStrings: r.dotnet.userStrings.slice(0, 60), pinvoke: r.dotnet.pinvoke.slice(0, 60) } : r.dotnet, segments: r.segments ? r.segments.map((s) => ({ ...s, sections: undefined })) : undefined, pdata: r.pdata ? { count: r.pdata.count, functions: r.pdata.functions.slice(0, 200) } : undefined, debug: r.debug, ehFrame: r.ehFrame ? { count: r.ehFrame.count, functions: r.ehFrame.functions.slice(0, 200) } : undefined, symtabCount: r.symtabCount, crypto: r.crypto, packing: r.packing, capabilities: r.capabilities, security: r.security, imphash: r.imphash, goFuncs: r.goFuncs ? { ...r.goFuncs, functions: r.goFuncs.functions.slice(0, 200) } : r.goFuncs };
+  const rec = record(subject, 'bin', { detail: full ? 'full' : 'summary' }, result, { limitations, coverage: { status: 'complete', scope: `${r.format} headers, sections, imports and exports${r.dotnet ? ', .NET metadata tables' : ''}${r.go ? ', Go build info' : ''}${r.goFuncs && r.goFuncs.count ? ', Go pclntab function names' : ''}${r.rust ? ', Rust crate paths' : ''}${r.dwarf ? ', DWARF function names' : ''}, strings` } });
   let text = binText({ ...rec, result: r });
   if (r.dwarf) { text += `\n\nDWARF — ${r.dwarf.functionCount} functions${r.dwarf.producer ? ', built by ' + r.dwarf.producer : ''}${r.dwarf.unit ? ' (' + r.dwarf.unit + ')' : ''}:`; for (const f of r.dwarf.functions.slice(0, 40)) text += `\n  0x${(f.low >>> 0).toString(16)}${f.high != null ? '-0x' + (f.high >>> 0).toString(16) : ''}  ${f.name}`; }
   if (r.pdata) text += `\n\n.pdata (x64 exception table) — ${r.pdata.count} functions bounded; largest: ${r.pdata.functions.slice().sort((a, b) => b.size - a.size).slice(0, 5).map((f) => `0x${(f.begin >>> 0).toString(16)} (${f.size}B)`).join(', ')}`;
@@ -1244,8 +1246,9 @@ function cmdCfg(path) {
       nameByAddr = new Map((r.symtab || []).map((f) => [f.addr, f.name])); // static symbols (.symtab)
       for (const f of (r.exportedFuncs || [])) if (!nameByAddr.has(f.addr)) nameByAddr.set(f.addr, demangle(f.name)); // dynsym exports survive stripping
       const d = readDwarf(buf, r.sections); if (d) for (const f of d.functions) nameByAddr.set(f.low, f.name); // DWARF names take precedence
-      if (!nameByAddr.size) nameByAddr = null;
     }
+    if (r.goFuncs && r.goFuncs.count) { nameByAddr = nameByAddr || new Map(); for (const f of r.goFuncs.functions) { const a = r.format === 'pe' ? f.addr - r.imageBase : f.addr; if (a >= 0 && !nameByAddr.has(a)) nameByAddr.set(a, f.name); } } // Go pclntab: names on a stripped binary
+    if (nameByAddr && !nameByAddr.size) nameByAddr = null;
   } catch { nameByAddr = null; }
   const sym = buildSym(r, nameByAddr); // PE import (IAT) / PE export / ELF PLT stub / local function
   // the function's own name for the header
@@ -1437,6 +1440,7 @@ function enumFunctions(r, buf, abs) {
       for (const f of (r.symtab || [])) nameByAddr.set(f.addr, f.name);
       const d = readDwarf(buf, r.sections); if (d) for (const f of d.functions) nameByAddr.set(f.low, f.name);
     }
+    if (r.goFuncs) for (const f of r.goFuncs.functions) { const a = isPE ? f.addr - r.imageBase : f.addr; if (a >= 0 && !nameByAddr.has(a)) nameByAddr.set(a, f.name); } // Go pclntab: names survive stripping
   } catch { /* names optional */ }
   if (!isPE) for (const f of (r.exportedFuncs || [])) if (!nameByAddr.has(f.addr)) nameByAddr.set(f.addr, demangle(f.name)); // dynsym exports: named even when stripped
   const byVa = new Map();
@@ -1444,6 +1448,7 @@ function enumFunctions(r, buf, abs) {
   if (isPE && r.pdata) for (const f of r.pdata.functions) add(f.begin, f.size);
   else if (!isPE && r.ehFrame) for (const f of r.ehFrame.functions) add(f.low, f.size);
   if (!isPE) for (const f of (r.symtab || [])) add(f.addr, 0);
+  if (r.goFuncs) for (const f of r.goFuncs.functions) add(isPE ? f.addr - r.imageBase : f.addr, 0); // Go functions the unwind table misses
   const vas = [...byVa.values()].sort((a, b) => a.va - b.va);
   const entries = [];
   for (let i = 0; i < vas.length; i += 1) {
@@ -1536,6 +1541,7 @@ function cmdCallgraph(path) {
       for (const f of (r.symtab || [])) nameByAddr.set(f.addr, f.name);
       const d = readDwarf(buf, r.sections); if (d) for (const f of d.functions) nameByAddr.set(f.low, f.name);
     }
+    if (r.goFuncs) for (const f of r.goFuncs.functions) { const a = isPE ? f.addr - r.imageBase : f.addr; if (a >= 0 && !nameByAddr.has(a)) nameByAddr.set(a, f.name); } // Go pclntab: names survive stripping
   } catch { /* names optional */ }
   if (!isPE) for (const f of (r.exportedFuncs || [])) if (!nameByAddr.has(f.addr)) nameByAddr.set(f.addr, demangle(f.name)); // dynsym exports: named even when stripped
   const byVa = new Map(); // va -> { va, size }
@@ -1543,6 +1549,7 @@ function cmdCallgraph(path) {
   if (isPE && r.pdata) for (const f of r.pdata.functions) add(f.begin, f.size);
   else if (!isPE && r.ehFrame) for (const f of r.ehFrame.functions) add(f.low, f.size);
   if (!isPE) for (const f of (r.symtab || [])) add(f.addr, 0); // symbols fill gaps the unwind table misses
+  if (r.goFuncs) for (const f of r.goFuncs.functions) add(isPE ? f.addr - r.imageBase : f.addr, 0); // Go pclntab entries: the whole function set on a stripped Go binary
   if (!byVa.size) fail(isPE ? 'no .pdata unwind table and no symbols: functions cannot be enumerated' : 'no .eh_frame and no symbols: functions cannot be enumerated', 'not_found');
   // sort, derive an exclusive end (own size, else next start), map to file offsets, keep code-range only
   const vas = [...byVa.values()].sort((a, b) => a.va - b.va);

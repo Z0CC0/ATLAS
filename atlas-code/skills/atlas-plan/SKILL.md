@@ -4,9 +4,9 @@ description: >
 Turns a request into steps before any code is written, sized to the change, grounded in how
   the codebase already does things, and waits for a yes. Angles: "architecture", "design"
   (options, trade-offs); "X or Y", "decide" (independent voices, a verdict); "what does this
-  code do", "spec" (behaviour read from code); "ADR" (the decision written down); "build this",
-  "add a feature", "fix this bug properly", "from this doc" (the plan carried through tests,
-  review and commit, a yes before each). Use for "atlas plan", "plan this", "how would you
+  code do", "spec" (behaviour read from code); "record", "ADR" (the decision written down);
+  "build this", "add a feature", "fix this bug properly", "from this doc" (the plan carried
+  through tests, review and a commit, with a yes after the plan and before the commit). Use for "atlas plan", "plan this", "how would you
   build" — in any language.
 ---
 

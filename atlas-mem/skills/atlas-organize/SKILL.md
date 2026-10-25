@@ -4,7 +4,7 @@ description: >
 Tidy a local folder, any kind of file: select by content or criterion, copy, move, group
   into subfolders, or set aside what is not wanted. Four levels, from a plan that touches
   nothing to a move with the rest set aside. Every run leaves a manifest and can be undone.
-  Use for "atlas organize", "tidy this folder", "clear out my downloads", "keep only the 2025
+  Use for "atlas organize", "/atlas-organize", "tidy this folder", "clear out my downloads", "keep only the 2025
   invoices", "move these into a new folder", "clear some space" — or any ask, in any language,
   to sort, filter, archive or separate files in a folder.
 ---

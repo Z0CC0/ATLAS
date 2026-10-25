@@ -2,9 +2,10 @@
 name: atlas-ship
 description: >
 Gets finished work out: a pull request, a container image, a pipeline, a deploy, with the
-  checks before and the way back written down. Angles: "PR"; "deploy", "release", "rollout";
-  "docker", "compose"; "kubernetes", "helm"; "CI", "pipeline", "GitHub Actions"; "branch",
-  "rebase", "tag"; "monitoring", "alerts"; "installer"; "terraform". Anything irreversible:
+  checks before and the way back written down. Angles: "PR", "pull request"; "deploy",
+  "release", "rollout"; "docker", "compose", "container"; "kubernetes", "helm"; "CI", "pipeline",
+  "GitHub Actions"; "branch", "rebase", "tag"; "monitoring", "dashboard", "alerts"; "installer";
+  "terraform", "infrastructure". Anything irreversible:
   blast radius, way back, dry run, then a yes. Never pushes, publishes or deploys without a
   yes. Use for "atlas ship", "open a PR", "get this deployed", "set up CI" — in any language.
 ---

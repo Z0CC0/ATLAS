@@ -8,7 +8,7 @@ Reads what is inside a shipped artifact without running it: an installed Electro
   pseudo-code; a SQLite file; a source map; a pcap; the program alive for a few seconds only
   after a yes. Every fact with file and line, a confidence, what was not covered. Only software
   the person may inspect. Use for "atlas artifact", "what is in this app", "open this asar",
-  "what does this binary do", "read this database", "map this bundled line back" — in any
+  "what does this installed program do", "what does this binary do", "read this database", "map this bundled line back" — in any
   language.
 ---
 

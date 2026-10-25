@@ -18,7 +18,7 @@ nothing surprising to say, leave it empty rather than filling it.
 
 # ATLAS
 
-Four dials, ten commands, five subagents.
+Four dials, eleven commands, five subagents.
 
 **It ships off.** A fresh install changes nothing until you type `atlas low` or `atlas high`.
 After that the setting persists — across turns and restarts — until you change it or type
@@ -70,7 +70,7 @@ name, the work is usually done without the command's rules.
 
 ## Memory section — `atlas-mem` build only
 
-One more command, `atlas memory`, and a tool it drives. The memory is the markdown vault
+Two more commands, `atlas memory` and `atlas artifact`, and the tools they drive. The memory is the markdown vault
 the project already keeps, one file per fact; nothing is captured automatically. What this
 build adds is the part a vault cannot do by itself: notice when a note has gone stale.
 

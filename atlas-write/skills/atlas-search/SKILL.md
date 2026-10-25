@@ -23,11 +23,13 @@ now in front of both of you.
 
 **A catalogue question goes to the same subagent, in its catalogue mode.** "Is there a free API
 for X", "what could host this for nothing", "is there already a skill / a plugin / an MCP server
-that does this": delegate to `atlas-research` and pass it the absolute path of
-`search/catalog.md` beside this file (`${CLAUDE_PLUGIN_ROOT}/skills/atlas-search/search/catalog.md`),
-the file that holds the sources,
-the search command and the checks. It finds; the install command comes back as text, for the
-person to run.
+that does this": first run the catalogue command here, where no web page is in context —
+`node "${CLAUDE_PLUGIN_ROOT}/tools/catalog.mjs" <kind> "<two or three words>"` (`kind`: `skills`,
+`mcp`, `plugins`, `extras` or `all`; at most eight lines per source) — then delegate to
+`atlas-research` with those lines and the absolute path of `search/catalog.md` beside this
+file (`${CLAUDE_PLUGIN_ROOT}/skills/atlas-search/search/catalog.md`), the file that holds the
+sources and the checks. The agent reads pages and runs nothing. It finds; the install command
+comes back as text, for the person to run.
 
 **This command means the answer, unless the request asks for sources.** "Give me sources", "where
 can I read about this", "find me some videos", in any language: then it means the places to read —

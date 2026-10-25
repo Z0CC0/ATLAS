@@ -4,8 +4,8 @@ description: >
 How new code is written in this project's language and framework: the defaults, the choices
   that matter, the mistakes typical of the stack. One short file per stack, picked from the
   project's files: TypeScript/Node, React/Next, Vue/Nuxt, Angular, Python (Django, FastAPI),
-  ML, Go, Rust, Java/Spring, Kotlin/Android, Swift, C#/F#, PHP/Laravel, Ruby/Rails,
-  Dart/Flutter, C++, ArkTS, Perl, databases, HTTP APIs. Use before writing or changing code,
+  machine learning, Go, Rust, Java/Spring, Kotlin/Android, Swift, C#/F#, PHP/Laravel,
+  Ruby/Rails, Dart/Flutter, C++, ArkTS/HarmonyOS, Perl, databases, HTTP APIs. Use before writing or changing code,
   once per stack per conversation, and for "what is the idiomatic way" — in any language.
 ---
 
