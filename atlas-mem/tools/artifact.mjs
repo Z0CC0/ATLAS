@@ -1590,7 +1590,8 @@ function cmdCallgraph(path) {
   const resolveExternal = (off) => stubByOff.get(off) || thunkName(off); // a call lands on the stub's / thunk's first instruction
   // executable sections as file-offset ranges: a direct call into one of them that no table lists discovers a node
   const codeRanges = r.sections.filter((s) => (isPE ? (s.flags || []).includes('exec') : /^\.(text|init|fini|plt)|^__(text|stubs)/.test(s.name)) && secAddr(s) != null).map((s) => [secStart(s), secStart(s) + (isPE ? s.rawSize : s.size)]);
-  const g = buildCallGraph({ arch: ARCH, entries, decodeAt, resolveExternal, codeRanges });
+  const budgetMiB = Math.max(1, Math.min(256, Number(flags.budget || 8)));
+  const g = buildCallGraph({ arch: ARCH, entries, decodeAt, resolveExternal, codeRanges, maxBytes: budgetMiB * 1024 * 1024 });
   const nodes = entries.concat(g.discovered.map((off) => ({ va: offToVa(off) ?? off, off, end: off, name: null, discovered: true })));
   const nm = (i) => nodes[i].name || `sub_${nodes[i].va.toString(16)}`;
   const topImports = [...g.imports.entries()].sort((a, b) => b[1] - a[1]).slice(0, 12).map(([name, count]) => ({ name, count }));
@@ -1621,11 +1622,11 @@ function cmdCallgraph(path) {
   const subject = { name: basename(abs), path: abs, format: 'callgraph', bytes: buf.length, sha256: sha256(buf) };
   const limitations = [
     'edges are direct calls only (x86-64 `call rel32`, ARM64 `bl`): an indirect call through a register, an import thunk or a vtable has no static target and is counted, not drawn',
-    'an edge is kept only when its target lands on an enumerated function; a direct call into padding, a stub or data is counted as external',
+    'an edge is kept only when its target lands on an enumerated function or on a node discovered by a direct call into listed code (walked in a second pass, bounded by the next known start); a direct call into padding, a stub or data is counted as external',
     isPE ? 'functions come from the .pdata unwind table (and a sibling PDB / exports for names); a function absent from .pdata is not a node' : 'functions come from .eh_frame and the symbol tables; a function in neither is not a node',
-    g.truncated ? `the walk stopped at the ${(g.scannedBytes / 1024 / 1024).toFixed(0)} MiB budget: the graph is partial` : null,
+    g.truncated ? `the walk stopped at the ${budgetMiB} MiB budget (--budget <MiB> raises it): the graph is partial` : null,
   ].filter(Boolean);
-  const rec = record(subject, 'callgraph', { func: flags.func || null, rva: flags.rva || null }, result, { confidence: 'derived', coverage: { status: g.truncated ? 'partial' : 'complete', scope: `${entries.length} functions, ${g.edges.length} direct-call edges${sec0 ? ` in ${sec0.name}` : ''}` }, limitations });
+  const rec = record(subject, 'callgraph', { func: flags.func || null, rva: flags.rva || null, budget: budgetMiB }, result, { confidence: 'derived', coverage: { status: g.truncated ? 'partial' : 'complete', scope: `${entries.length} functions, ${g.edges.length} direct-call edges${sec0 ? ` in ${sec0.name}` : ''}` }, limitations });
   let text = `${subject.name}  ${ARCH}  ${entries.length} functions (${result.named} named)${g.discovered.length ? ` + ${g.discovered.length} discovered by direct calls (no table lists them)` : ''}, ${g.edges.length} direct-call edges`;
   text += `\nindirect calls: ${g.indirectCalls}   calls to imports (named stubs): ${importCalls}   direct calls leaving the set: ${g.external}`;
   if (topImports.length) text += `\n\nmost called imports:\n` + topImports.map((t) => `  ${t.count.toString().padStart(4)}  ${t.name}`).join('\n');

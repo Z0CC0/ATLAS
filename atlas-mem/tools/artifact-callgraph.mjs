@@ -6,7 +6,8 @@
  * that target back to the function that contains it. Honest by construction:
  *   - only direct calls are followed; an indirect call (through a register, an import thunk, a
  *     vtable) has no static target, so it is counted, not invented;
- *   - an edge exists only when both ends land on an enumerated function;
+ *   - an edge exists only when both ends land on an enumerated function, or on a node discovered
+ *     by a direct call into code that no table lists (those are walked too, in a second pass);
  *   - nothing is executed and the bytes are read as they are.
  */
 
@@ -30,7 +31,7 @@ function callTargetArm64(insn) {
  * @param {'x86-64'|'arm64'} p.arch
  * @param {Array<{va:number, off:number, end:number, name?:string}>} p.entries  function set, each with a file offset and an exclusive end
  * @param {(pos:number)=>({addr:number,len:number,text:string,mnem:string,bad?:boolean}|null)} p.decodeAt
- * @param {number} [p.maxBytes]  cap on total bytes walked (default 8 MiB)
+ * @param {number} [p.maxBytes]  cap on total bytes walked (default 8 MiB; `--budget <MiB>` at the command)
  * @returns {{edges:Array<[number,number]>, outDeg:Map<number,number>, inDeg:Map<number,number>, indirectCalls:number, external:number, scannedBytes:number, truncated:boolean}}
  */
 function buildCallGraph(p) {
@@ -59,13 +60,13 @@ function buildCallGraph(p) {
   const discovered = []; const discoveredIdx = new Map(); // file offset -> node index
   const discover = (off) => { let i = discoveredIdx.get(off); if (i === undefined) { i = p.entries.length + discovered.length; discovered.push(off); discoveredIdx.set(off, i); } return i; };
   let indirectCalls = 0, external = 0, scannedBytes = 0, truncated = false;
-  for (const e of byStart) {
-    if (scannedBytes >= maxBytes) { truncated = true; break; }
-    const from = e.i;
-    let pos = e.off; const stop = e.end;
+  const link = (from, to) => { const k = from + ',' + to; if (!edgeSet.has(k)) { edgeSet.add(k); edges.push([from, to]); outDeg.set(from, (outDeg.get(from) || 0) + 1); inDeg.set(to, (inDeg.get(to) || 0) + 1); } };
+  const walk = (from, start, stop, open) => {
+    let pos = start;
     let guard = 0;
     while (pos < stop && guard < 200000) {
       guard += 1;
+      if (open && pos !== start && discoveredIdx.has(pos)) break; // an open-ended walk stops where a node discovered on the way begins
       const d = p.decodeAt(pos);
       if (!d) break;
       const len = Math.max(1, d.len);
@@ -83,14 +84,29 @@ function buildCallGraph(p) {
               // thunk when the caller can name it, otherwise padding, data or an unlisted function
               const name = resolveExternal(t);
               if (name) imports.set(name, (imports.get(name) || 0) + 1);
-              else if (inCode(t)) { const d = discover(t); const k = from + ',' + d; if (!edgeSet.has(k)) { edgeSet.add(k); edges.push([from, d]); outDeg.set(from, (outDeg.get(from) || 0) + 1); inDeg.set(d, (inDeg.get(d) || 0) + 1); } }
+              else if (inCode(t)) link(from, discover(t));
               else external += 1;
-            } else { const k = from + ',' + to; if (!edgeSet.has(k)) { edgeSet.add(k); edges.push([from, to]); outDeg.set(from, (outDeg.get(from) || 0) + 1); inDeg.set(to, (inDeg.get(to) || 0) + 1); } }
+            } else link(from, to);
           }
         }
       }
       pos += len;
     }
+  };
+  for (const e of byStart) {
+    if (scannedBytes >= maxBytes) { truncated = true; break; }
+    walk(e.i, e.off, e.end);
+  }
+  // second pass: a discovered node is walked too, so its own callees enter the graph. Its extent is
+  // not in any table: it runs to the next enumerated start, or to the end of its code range, and a
+  // discovered node found on the way joins the queue (bounded by the same byte budget)
+  const nextStart = (off) => { let lo = 0, hi = starts.length - 1, best = -1; while (lo <= hi) { const mid = (lo + hi) >> 1; if (starts[mid] > off) { best = mid; hi = mid - 1; } else lo = mid + 1; } return best < 0 ? Infinity : starts[best]; };
+  const rangeEnd = (off) => { const r = codeRanges.find(([lo, hi]) => off >= lo && off < hi); return r ? r[1] : off; };
+  for (let q = 0; q < discovered.length; q += 1) {
+    if (scannedBytes >= maxBytes) { truncated = true; break; }
+    const off = discovered[q];
+    const later = discovered.filter((d) => d > off); // a sibling discovered after this one bounds it too
+    walk(p.entries.length + q, off, Math.min(nextStart(off), rangeEnd(off), later.length ? Math.min(...later) : Infinity), true);
   }
   return { edges, outDeg, inDeg, imports, discovered, indirectCalls, external, scannedBytes, truncated };
 }

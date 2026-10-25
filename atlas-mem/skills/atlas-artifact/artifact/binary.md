@@ -386,7 +386,9 @@ DWARF (ELF) or `nlist` (Mach-O); an unnamed function shows as `sub_<rva>`. A fun
 known size runs to the next enumerated start, never past the end of its own section. The summary ranks the hubs by fan-in
 (`topCallers`) and fan-out (`topCallees`). `--func <name>` or `--rva <hex>` returns the ego
 graph of one function — its direct callees and its callers — which is what the app's graph
-canvas draws. Honest: only direct calls are edges; an indirect call (register, import thunk,
+canvas draws. A direct call into listed code that no table names discovers a node; discovered
+nodes are walked in a second pass (each bounded by the next known start), so their callees are
+edges too. `--budget <MiB>` raises the 8 MiB walk budget on a large binary. Honest: only direct calls are edges; an indirect call (register, import thunk,
 vtable) has no static target, so it is counted (`indirectCalls`), never invented; a direct
 call that leaves the enumerated set is counted as `externalDirect`. On a very large binary the
 walk stops at an 8 MiB budget and says so (`truncated`).
