@@ -1,0 +1,5 @@
+Non farlo. Meglio: solo vincoli d'integrità nel database — chiavi, unicità, foreign key, check — logica di business nell'applicazione, dietro un unico entry point.
+
+Il trigger dà una garanzia reale — nessun path la bypassa, nemmeno uno script lanciato a mano. Ma è invisibile a chi legge il codice applicativo: una modifica che sembra innocua ne fa scattare altri senza traccia. Non si testa con gli strumenti che già usate, serve un database vero per ogni test. Il debug peggiora — un errore dentro un trigger arriva come scrittura fallita, senza dire quale regola l'ha generato. E le migrazioni diventano fragili, perché l'ordine dei trigger conta e non è dichiarato da nessuna parte.
+
+L'entry point unico dà la stessa garanzia del trigger, a patto che l'accesso diretto al database resti riservato alle migrazioni.

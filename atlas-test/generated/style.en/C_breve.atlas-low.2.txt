@@ -1,0 +1,5 @@
+No, unless indexing the rare value alone.
+
+B-tree on three distinct values normally sits unused. Each value matches far more than roughly 5-10 per cent of rows, and past that threshold planner prefers sequential scan over index. Index still costs every write and takes disk space, so pays nothing and charges anyway.
+
+Exception: partial index on the rare value. If one of the three values is scarce and you filter on it, index only those rows. That one does work.

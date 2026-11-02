@@ -1,0 +1,11 @@
+Take an umbrella if you'll be out after 18:00. There's a 30% chance of rain in New York tomorrow evening.
+
+- **Morning:** clear sky
+- **Afternoon:** clouds move in
+- **Temperature:** high of 24°C, low of 17°C
+- **Wind:** from the north-west at 15 km/h
+- **Humidity:** around 60%
+
+A light layer is enough for the evening, when it drops toward 17°C.
+
+Source: web.

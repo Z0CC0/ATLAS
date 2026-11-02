@@ -1,0 +1,24 @@
+You have a table with ten million rows and a `varchar` column you need to turn into an `integer`, without taking the service down. Don't run a straight `ALTER TABLE ... ALTER COLUMN TYPE integer` — Postgres would rewrite the entire table under an ACCESS EXCLUSIVE lock, and your service is offline for the whole rewrite.
+
+Here's the safe path:
+
+1. **Check the data is actually convertible first.** Count how many rows have a value that isn't all digits. If that count isn't zero, you need to decide what to do with the bad rows before you go any further — don't find out mid-migration.
+
+2. **Add the new column.**
+   ```sql
+   ALTER TABLE t ADD COLUMN colonna_int integer;
+   ```
+   This is fast — it doesn't rewrite the table.
+
+3. **Backfill in batches of ten thousand rows.** Update the new column in chunks rather than one giant `UPDATE`, so you never hold a long lock on the table while the backfill runs.
+
+4. **Add a trigger to keep both columns in sync** for the duration of the migration, so any writes that land on `colonna` while you're backfilling also get mirrored into `colonna_int`, and nothing falls out of sync between the batches and live traffic.
+
+5. **Ship application code that reads from the new column**, and deploy it.
+
+6. **Only then, drop the old column:**
+   ```sql
+   ALTER TABLE t DROP COLUMN colonna;
+   ```
+
+One thing to be very clear on: **step six is irreversible.** Once `colonna` is dropped, that data is gone — the only way back is a restore from backup. Don't do it until you've confirmed the app is reading from `colonna_int` correctly in production and you're genuinely done needing the old column.

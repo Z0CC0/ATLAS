@@ -1,0 +1,11 @@
+Cache dei prompt: conserva il prefisso già elaborato di una richiesta. Richieste successive con lo stesso inizio non ripagano quella parte.
+
+Funziona solo sul prefisso. Un carattere diverso all'inizio e da lì in poi zero riuso. Quindi stabile prima, variabile dopo — mai il contrario.
+
+Prima scrittura più cara di una lettura normale. Guadagno da seconda richiesta in poi, cresce coi turni.
+
+Conviene: conversazioni lunghe, contesto grande e stabile — istruzioni di sistema, documenti allegati, definizioni strumenti.
+
+Non conviene: richieste singole e diverse tra loro — solo scrittura, mai riletta.
+
+Attenzione: una voce di sistema che cambia ogni turno (es. orario) annulla il riuso di tutto ciò che segue.

@@ -1,0 +1,21 @@
+Debounce delays a call until activity stops for `ms` milliseconds — each new call cancels the pending one and restarts the timer.
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+`t` sits in the closure around the returned function, not inside it — one shared timer across calls. If it were declared inside the returned arrow function, each call would spawn its own timer and nothing would get cancelled, defeating the debounce.
+
+`clearTimeout(t)` runs before every `setTimeout` for the same reason: without it, old timers keep running and `fn` fires once per call instead of once after the burst.
+
+`...args` forwards whatever the debounced function was called with. Drop that and `fn` always runs with no arguments.
+
+This version returns nothing — `setTimeout` return values aren't useful to callers. If you need to know when `fn` actually ran (e.g. `await` the debounced result), wrap it in a Promise that resolves inside the timeout callback.
+
+If what you actually want is "run immediately, then ignore further calls for a while" — button double-click guards, scroll handlers — that's throttle, not debounce, and needs a different implementation.

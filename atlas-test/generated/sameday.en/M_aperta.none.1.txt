@@ -1,0 +1,18 @@
+Before you pick an architecture, you need to know a few things about this particular monolith, and it helps to be wary of a couple of common traps.
+
+**1. Find out which parts actually change.** Look at where changes really happen. Some parts of the monolith get touched all the time and others haven't moved in years. Splitting out the stable parts gains you nothing, so any separation should start from the areas that change.
+
+**2. Find where your transaction boundaries are.** If one operation has to be atomic across two pieces, and those pieces end up in two different services, you now have a distributed problem to solve. You don't have one today. Draw the lines so that each transaction stays inside one boundary.
+
+**3. Don't do a full rewrite alongside the old system.** This approach almost always fails. The old system keeps changing while you build, so the copy never catches up. Instead, strangle the monolith gradually:
+- put a router in front of it
+- move one piece at a time behind the router
+- keep the PHP system as the source of truth for each piece until the new version is verified
+
+**4. Count the operational cost of microservices honestly.** Each service needs its own releases, monitoring, logs, alerts and a person who looks after it. With fewer than five developers, that cost almost always outweighs the benefit.
+
+**5. Consider a modular monolith.** It rarely comes up, but it's often the right answer. You get sharp internal boundaries between modules and still ship one release. You also keep the option to extract a module into its own service on the day you genuinely need to. If you get the boundaries right from points 1 and 2, you can defer the microservices decision without closing it off.
+
+**6. Answer the question that actually decides it.** The deciding question isn't technical: **what must your team be able to do a year from now that it can't do today?** Maybe that's shipping one area independently, scaling one part, or letting more people work without stepping on each other. Pick the architecture that makes that specific thing possible, and nothing more.
+
+If you tell me how many developers you have and which parts of the PHP code change most often, I can help you work out where the first boundaries should go.

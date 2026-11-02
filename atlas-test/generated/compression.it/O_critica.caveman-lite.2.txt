@@ -1,0 +1,5 @@
+Vantaggio reale: nessun percorso salta la regola, nemmeno script eseguito a mano.
+
+Ma costo alto. Trigger invisibili a chi legge codice applicativo — modifica che sembra semplice ne attiva altre senza traccia. Non si testano con strumenti che team gia' usa, servono prove contro DB vero. Debug peggiore: errore dentro trigger arriva come fallimento scrittura, senza dire quale regola l'ha causato. Migrazioni fragili, perche' ordine dei trigger conta e non e' dichiarato da nessuna parte.
+
+Alternativa: DB tiene solo cio' che protegge integrita' — vincoli, chiavi esterne, unicita', controlli di dominio. Logica di business va nell'applicazione, dietro un solo punto di ingresso. Quel punto unico da' stessa garanzia del trigger, se accesso diretto al DB e' riservato alle migrazioni.

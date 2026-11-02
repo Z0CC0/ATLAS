@@ -1,0 +1,16 @@
+Both `let` and `const` are block scoped, unlike `var`.
+
+- **`let`:** You can reassign the name.
+- **`const`:** You cannot reassign the name. The value itself can still change. An object declared with `const` can change internally.
+
+```js
+let a = 1;
+a = 2;          // ok
+
+const b = 1;
+b = 2;          // TypeError
+
+const obj = { x: 1 };
+obj.x = 2;      // ok, the object changes internally
+obj = {};       // TypeError, the name cannot be reassigned
+```

@@ -1,0 +1,11 @@
+When you visit an HTTPS site, what's really happening is that ordinary HTTP is being sent through a tunnel encrypted by TLS — the "S" is that tunnel, not a different protocol underneath.
+
+The connection starts with your browser reaching out to the server and listing which TLS versions and cipher suites it's willing to use. The server picks one version and one cipher from that list, and along with its choice it sends over its certificate. That certificate is what ties a domain name to a public key, and it's signed by a certificate authority. Your browser checks that signature by following a chain of trust upward until it reaches a root certificate it already has stored — that's how it confirms the certificate is legitimate rather than forged.
+
+One thing worth being clear-eyed about here: the certificate only proves that whoever holds the matching private key controls that domain. It says nothing about who actually runs the site — no identity check on the operator, just domain control tied to a key.
+
+Once the certificate is validated, the client and server negotiate a session key — nowadays this is almost always done with an elliptic curve Diffie-Hellman exchange. That session key ends up being symmetric, not asymmetric, purely for cost reasons: asymmetric encryption is too computationally expensive to use for the actual flow of traffic, so it's used just to bootstrap trust and agree on a cheaper symmetric key for the real data.
+
+From that point on, everything sent between you and the server is both encrypted and authenticated. That means anyone sitting in the middle of the connection can neither read the traffic nor tamper with it undetected.
+
+One more detail depending on which version of TLS is in play: TLS 1.3 manages all of this negotiation in a single round trip, whereas TLS 1.2 needed two — so the more modern version gets you into that encrypted tunnel noticeably faster.

@@ -1,0 +1,1 @@
+const: name locked, can't reassign. Object made with const still mutable inside — you can change its properties, just not point the variable elsewhere. let: reassignable. Both, unlike var, scoped to the block they're declared in.

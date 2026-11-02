@@ -1,0 +1,31 @@
+x86 went through three phases. From 1978 to 1995 each chip added features to the architecture. From 1995 on, x86 was a translation layer over a different machine. After the Pentium 4, the focus moved from clock speed to more cores, and later to the risks of speculative execution.
+
+**Building the architecture (1978–1993)**
+
+The 8086 of 1978 was 16-bit. It grew out of the 8080 and could run 8080 code after recompiling the source, not the binaries.
+
+The 80286 of 1982 introduced protected mode. Once a program switched into it, the only way back to real mode was a reboot.
+
+The 80386 of 1985 was the big step. It brought 32-bit computing, paged virtual memory and virtual 8086 mode, which let old real-mode programs run inside the new protected environment.
+
+The 486 of 1989 put the first-level cache and the maths coprocessor on the same chip as the processor.
+
+The Pentium of 1993 was superscalar. It had two integer pipelines and could finish two instructions per cycle.
+
+**The break (1995)**
+
+The Pentium Pro of 1995 introduced out-of-order execution. It also translated x86 instructions into internal micro-operations. From then on, x86 was an interface, not the real machine underneath. That idea explains everything that followed.
+
+**Speed, 64-bit and cores (2000–2006)**
+
+The Pentium 4 of 2000 chased clock speed with a very long pipeline and hit the power wall: faster chips were using too much power.
+
+In 2003 AMD extended the architecture to 64-bit with AMD64, and Intel adopted the same instruction set. It was the first time the dominant extension to x86 did not come from Intel.
+
+From 2006, starting with the Core 2, the direction changed from higher clock speeds to more cores.
+
+Over the same generations, the vector extensions kept growing: MMX, then SSE, then AVX, then AVX-512.
+
+**Today**
+
+The complexity now sits in the layers below the instruction set: branch prediction, the cache hierarchy and speculative execution. In 2018, Spectre and Meltdown showed that speculative execution had carried a security cost nobody had priced.

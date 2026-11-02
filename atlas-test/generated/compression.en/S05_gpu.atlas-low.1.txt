@@ -1,0 +1,6 @@
+5080 usa Blackwell, GDDR7, banda ~960 GB/s, 360W.
+4080 usa Ada Lovelace, GDDR6X, banda ~717 GB/s, 320W.
+
+Connettore resta a 16 pin su entrambe.
+
+In rasterizzazione pura guadagno reale sul 4080 è solo 10-15%. Salto grosso sta nel frame generation, non nel rendering grezzo.

@@ -1,0 +1,9 @@
+File plus collector. App writes to local files, collector ships them elsewhere, app never waits on the write.
+
+Files alone: free, no dependency, but grep and rotation manual, disk fills without it, and searching across machines means connecting to each one.
+
+Managed service alone: instant search, alerts, retention, but you pay per volume, and at 1000 req/min volume grows fast — plus logs leave your infra, so strip personal data first.
+
+Database: search convenient, but log writes compete with request traffic for cache and connections app needs.
+
+Rule that always holds: log write must never sit in the request's critical path.

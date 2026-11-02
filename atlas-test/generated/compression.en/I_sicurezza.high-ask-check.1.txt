@@ -1,0 +1,7 @@
+No. Anything reaching the browser is readable — obfuscation breaks the moment someone opens dev tools or the network tab.
+
+Put the key server-side. Frontend calls your backend endpoint, backend calls the service.
+
+Rate-limit that endpoint — else it's a free proxy to burn your key.
+
+If the key's already been published, treat it as compromised now: rotate it, don't just delete it from code. It stays in repo history — anyone with a clone already has it.

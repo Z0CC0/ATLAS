@@ -1,0 +1,7 @@
+No. Tutto quello che arriva al browser è leggibile — offuscamento inutile, si apre devtools o si guarda la richiesta di rete e la chiave è lì.
+
+Chiave sul server. Frontend chiama un endpoint del tuo backend, il backend chiama il servizio esterno.
+
+Sull'endpoint serve rate limit — altrimenti chiunque lo usa gratis a spese della tua chiave.
+
+Se la chiave è già finita nel frontend/repo pubblicato: consideraluce compromessa, ruotala subito. Rimuoverla dal codice non basta — resta nella cronologia git, chiunque ha clonato il repo ce l'ha già.

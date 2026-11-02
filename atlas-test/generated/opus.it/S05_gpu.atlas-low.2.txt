@@ -1,0 +1,13 @@
+La 5080 è soprattutto un aggiornamento incrementale. Il salto grande riguarda la generazione di fotogrammi, non il rasterizzatore puro, dove il guadagno reale è del 10-15 per cento circa.
+
+Le differenze:
+
+**Architettura**: la 5080 usa Blackwell, la 4080 Ada Lovelace.
+
+**Memoria**: la 5080 monta GDDR7, la 4080 GDDR6X. La banda sale da circa 717 a circa 960 gigabyte al secondo.
+
+**Consumo dichiarato**: sale da 320 a 360 watt.
+
+**Connettore di alimentazione**: resta a 16 pin, quindi da questo lato non cambia nulla.
+
+Se usi la generazione di fotogrammi, la differenza si sente. Se giochi soprattutto in rasterizzazione, dalla 4080 il passaggio porta poco.

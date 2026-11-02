@@ -1,0 +1,9 @@
+Consistenza eventuale: dopo una scrittura le repliche non concordano subito, convergono entro tempo finito se le scritture si fermano. Stesso region tipicamente sotto il secondo, fra region diverse sale a secondi.
+
+Perché ti riguarda: è il prezzo della disponibilità. Un sistema a consistenza forte deve rifiutare richieste quando le repliche non si parlano tra loro — tu invece ottieni sempre una risposta, ma non sempre l'ultima verità.
+
+Il caso che ti tocca da vicino: utente scrive un commento, ricarica, non lo vede — ha letto da una replica non ancora aggiornata. Soluzione comune: la sessione che ha appena scritto legge dalla replica primaria, non tutte le sessioni.
+
+Non è un bug da correggere: è una scelta deliberata, la maggior parte dei sistemi che scalano la adotta apposta.
+
+Dove invece non va bene, e va riconosciuto subito: saldi di conto, disponibilità posti, unicità di un identificativo. Lì serve consistenza forte, non eventuale.

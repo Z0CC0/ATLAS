@@ -1,0 +1,19 @@
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+`t` must live in closure, not inside returned function — else every call gets own timer, no debounce happens.
+
+`clearTimeout` runs before every new `setTimeout`, else timers pile up, function fires more than once.
+
+Spread forwards args to `fn` — without it, called function receives nothing.
+
+This version returns nothing. Need return value, wrap in Promise.
+
+Need immediate-run-then-ignore instead of delay-then-run: that's throttle, different function.

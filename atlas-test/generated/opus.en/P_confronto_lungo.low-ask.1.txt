@@ -1,0 +1,11 @@
+Use local files plus a collector that ships them elsewhere, so your API never waits on a log write.
+
+The rule that always holds: writing the log must stay out of the request's critical path.
+
+Files alone cost nothing and add no dependency. But searching them means grep. Rotation has to be set up by hand, or the disk fills. Searching across several machines isn't possible either; you have to connect to each one.
+
+A managed service gives instant search, alerts and automatic retention. You pay by volume, though, and at a thousand requests a minute that volume grows fast. Your logs also leave your own infrastructure, so you have to strip personal data before they go.
+
+A database makes searching familiar and convenient. Writing logs into your application's own database, though, puts two very different workloads in competition. Under load, logs fill the caches and connections your real requests needed.
+
+The collector gives you the benefits of both. Writing to a local file is cheap and never blocks the request. The collector then forwards the logs to wherever you search them, whether that's a managed service or separate storage.

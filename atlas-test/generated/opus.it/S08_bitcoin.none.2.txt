@@ -1,0 +1,13 @@
+Bitcoin nasce nell'ambiente cypherpunk, cioè in quella comunità di crittografi e attivisti che da anni cercava di creare una moneta digitale indipendente dalle istituzioni. Prima di Bitcoin c'erano stati altri tentativi, come b-money e bit gold. Nessuno però aveva risolto il problema di fondo: stabilire in modo affidabile l'ordine delle transazioni.
+
+Nel 2008 esce un documento intitolato *Bitcoin: A Peer-to-Peer Electronic Cash System*. È firmato Satoshi Nakamoto, uno pseudonimo dietro cui non si è mai scoperto chi ci fosse. Il documento affronta la doppia spesa: con il denaro digitale, che si può copiare, bisogna impedire che la stessa moneta venga spesa due volte. Normalmente questo compito spetta a un ente centrale, per esempio una banca, che tiene il registro. Satoshi vuole farne a meno.
+
+La soluzione è una catena di blocchi, ordinata da una prova di lavoro. Ogni blocco raccoglie delle transazioni e si aggancia al precedente. Per aggiungerlo bisogna svolgere un calcolo costoso. Così riscrivere il passato diventa molto difficile: chi volesse modificare un blocco vecchio dovrebbe rifare la prova di lavoro per quel blocco e per tutti quelli venuti dopo. L'ordine delle transazioni si stabilisce quindi senza bisogno di un'autorità.
+
+Il primo blocco viene generato il 3 gennaio 2009. Contiene il titolo di un articolo del Times su un salvataggio bancario. Quel riferimento ha due funzioni. Dimostra che il blocco non può essere stato creato prima di quella data, quindi fa da marca temporale. Ed è anche una dichiarazione di intenti: il sistema nasce come alternativa a un sistema finanziario che deve essere salvato.
+
+Anche le regole di emissione sono fissate fin dall'inizio. Chi aggiunge un blocco riceve una ricompensa, che parte da 50 bitcoin e si dimezza ogni 210.000 blocchi, cioè circa ogni quattro anni. Per questo il totale dei bitcoin emessi tende a 21 milioni e non andrà mai oltre.
+
+Nel 2010 avviene la prima transazione commerciale documentata: due pizze pagate 10.000 bitcoin.
+
+Nel 2011 Satoshi smette di partecipare pubblicamente al progetto. I bitcoin che aveva accumulato non sono mai stati spostati.

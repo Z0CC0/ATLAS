@@ -1,0 +1,13 @@
+Nel 2008 compare in rete un documento firmato Satoshi Nakamoto — uno pseudonimo, dietro cui non si è mai riusciti a identificare con certezza chi ci fosse davvero. Si intitola "Bitcoin: A Peer-to-Peer Electronic Cash System" e affronta un problema preciso: come evitare la doppia spesa di una moneta digitale senza dover passare da un ente centrale che tenga il registro dei conti, come fa una banca.
+
+La soluzione proposta è una catena di blocchi, ordinata nel tempo grazie a una prova di lavoro. Il punto della prova di lavoro è che riscrivere il passato diventa costoso: per farlo bisognerebbe rifare il lavoro non solo su un blocco, ma su tutti quelli successivi.
+
+L'idea non nasce dal nulla: viene dall'ambiente cypherpunk, dove c'erano già stati tentativi come b-money e bit gold, che però non riuscivano a risolvere proprio il problema dell'ordinamento delle transazioni.
+
+Il progetto diventa concreto il 3 gennaio 2009, quando viene generato il primo blocco. Al suo interno c'è il titolo di un articolo del Times che parlava di un salvataggio bancario — un dettaglio che funziona sia da marca temporale (prova che il blocco non è stato creato prima di quella data) sia da dichiarazione di intenti, viste le circostanze in cui nasceva questa moneta alternativa.
+
+Il sistema di emissione è definito fin dall'inizio: la ricompensa per ogni blocco parte da 50 bitcoin e si dimezza circa ogni quattro anni (ogni 210.000 blocchi), così che il totale emesso tenda asintoticamente a 21 milioni di bitcoin, senza mai superarli.
+
+Nel 2010 avviene quella che è considerata la prima transazione commerciale documentata: qualcuno paga due pizze con 10.000 bitcoin.
+
+Satoshi Nakamoto smette di partecipare pubblicamente al progetto nel 2011, e da allora i bitcoin che gli vengono attribuiti non sono mai stati mossi.

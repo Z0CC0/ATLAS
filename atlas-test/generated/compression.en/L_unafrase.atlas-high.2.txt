@@ -1,0 +1,1 @@
+Yes. Same for tuple, dict, set, string — empty means falsy.

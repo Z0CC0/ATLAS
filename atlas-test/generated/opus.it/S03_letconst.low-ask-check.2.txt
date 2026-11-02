@@ -1,0 +1,7 @@
+*Conoscenza interna*
+
+Con `const` non puoi riassegnare il nome, ma il valore si può comunque modificare. Un oggetto dichiarato con `const` può quindi cambiare al suo interno.
+
+Con `let` puoi riassegnare il nome.
+
+Entrambi hanno ambito di blocco, a differenza di `var`.

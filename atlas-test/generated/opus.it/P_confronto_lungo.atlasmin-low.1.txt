@@ -1,0 +1,11 @@
+**File locali più raccoglitore** che li spedisce altrove: a mille richieste al minuto è la scelta ragionevole, perché l'applicazione non aspetta mai la scrittura del log.
+
+Regola che vale sempre: scrittura del log fuori dal percorso critico della richiesta.
+
+Perché nessuna delle tre da sola:
+
+File e basta: costo zero, nessuna dipendenza, ma si cerca solo con grep. Rotazione va configurata a mano, altrimenti disco si riempie. Con più macchine non esiste una ricerca unica, bisogna collegarsi a ognuna.
+
+Servizio gestito: ricerca immediata, allarmi, conservazione automatica, ma si paga per volume, e a mille richieste al minuto volume cresce in fretta. Log escono dalla tua infrastruttura, quindi vanno ripuliti dai dati personali prima di uscire.
+
+Database: ricerca comoda e nota, ma log nello stesso database dell'applicazione mettono in competizione due carichi molto diversi. Sotto carico riempiono cache e connessioni che servivano alle richieste vere.

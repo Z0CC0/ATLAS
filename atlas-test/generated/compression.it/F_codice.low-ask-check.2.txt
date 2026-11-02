@@ -1,0 +1,19 @@
+```javascript
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+`t` in chiusura, non dentro funzione restituita — altrimenti ogni chiamata timer proprio, debounce non avviene.
+
+`clearTimeout(t)` prima di ogni `setTimeout` — altrimenti timer si accumulano, funzione parte più volte.
+
+Argomenti inoltrati con spread (`...args`) — altrimenti funzione chiamata li riceve vuoti.
+
+Versione non restituisce niente. Serve valore di ritorno → serve Promise.
+
+Caso opposto — eseguire subito poi ignorare per periodo — throttle, funzione diversa.

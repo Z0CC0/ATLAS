@@ -1,0 +1,11 @@
+Orders need real transaction. Postgres give that, MySQL match on orders but weaker on data types and complex queries — no reason pick MySQL over Postgres here.
+
+Catalogue: MongoDB ease with variable schema, but multi-document transaction late-arrived and cost. Since orders demand transaction, MongoDB weak fit as core store.
+
+Text search: Postgres built-in search fine below million docs, weak above. Elasticsearch far better — relevance, synonym, typo tolerance — but not authoritative store, need feed from real DB. Adding Elasticsearch below million docs almost always premature.
+
+Analytics: Postgres carry up to tens of millions rows, then scan slow. ClickHouse far better, columnar scan orders of magnitude ahead — but weak on point update, no good for orders.
+
+Recommend: start Postgres alone, single store, four workload cover acceptable not outstanding. Add Elasticsearch or ClickHouse only when specific workload hit numbers above (million docs for search, tens of millions rows for analytics) — measured, not guessed. Usual end-state setup: Postgres authoritative, Elasticsearch and ClickHouse fed from it.
+
+Watch: each system add bring sync problem and data alignment problem. Real cost not license — people time keeping them up. Don't front-load complexity platform not need yet.

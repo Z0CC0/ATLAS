@@ -1,0 +1,19 @@
+**Primo passo:** scrivi in una frase cosa deve poter fare il team fra un anno che oggi non può. È la domanda che decide l'architettura, e non è una domanda tecnica.
+
+## Cosa raccogliere prima di decidere
+
+1. **Quali parti del monolite cambiano davvero.** Le parti stabili non guadagnano nulla se le spezzi. Tienile dove sono.
+2. **Dove sono i confini delle transazioni.** Se una transazione attraversa due servizi, diventa un problema distribuito. Taglia i confini in modo che ogni transazione resti dentro un solo servizio.
+3. **Quante persone ci lavorano.** Ogni microservizio richiede rilascio, monitoraggio, log, allarmi e una persona che se ne occupi. Con meno di cinque sviluppatori quel costo operativo supera quasi sempre il beneficio.
+
+## Le opzioni, dalla più consigliata
+
+- **Monolite modulare.** È l'opzione di cui si parla poco. Ha confini interni netti e un solo rilascio. Il giorno in cui un modulo deve davvero diventare un servizio a parte, lo estrai. Con un team piccolo di solito è la scelta giusta.
+- **Strangolamento progressivo.** Metti un router davanti al monolite e sposti un pezzo alla volta. Il vecchio sistema resta quello di riferimento finché il nuovo pezzo non è verificato. Funziona sia verso il monolite modulare sia verso i microservizi.
+- **Da evitare: la riscrittura completa in parallelo.** Fallisce quasi sempre, perché il vecchio sistema continua a cambiare e la copia non lo raggiunge mai.
+
+## Come si collega tutto
+
+La risposta al primo passo ti dice quali capacità servono. I punti 1 e 2 ti dicono quali pezzi vale la pena separare e dove tagliarli. Il punto 3 ti dice se reggi il costo di separarli come servizi o se conviene tenerli come moduli dentro lo stesso rilascio.
+
+**Da fare ora (2 minuti):** apri un file e scrivi due righe: "Fra un anno il team deve poter ___" e "Le parti del monolite che cambiano più spesso sono ___".

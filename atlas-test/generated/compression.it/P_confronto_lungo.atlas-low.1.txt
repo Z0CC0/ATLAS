@@ -1,0 +1,9 @@
+File locali più raccoglitore che spedisce altrove.
+
+A mille richieste al minuto file puri non bastano: ricerca e' solo grep, rotazione va configurata a mano o disco si riempie, e su piu' macchine bisogna collegarsi a ognuna per cercare.
+
+Servizio gestito darebbe ricerca immediata, allarmi, conservazione automatica — ma paghi per volume, e a quel traffico il volume cresce in fretta; in piu' i log escono dalla tua infrastruttura, quindi vanno ripuliti dai dati personali prima.
+
+Database va escluso: ricerca comoda, ma scrivere log nello stesso database dell'applicazione mette in competizione due carichi diversi, e sotto carico i log ti riempiono cache e connessioni che servivano alle richieste vere.
+
+Regola che vale sempre: la scrittura del log non deve stare nel percorso critico della richiesta. File locali piu' un raccoglitore rispettano questo — l'applicazione scrive locale e non aspetta mai la spedizione altrove.

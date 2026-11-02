@@ -1,0 +1,3 @@
+No, an index on a column with only three distinct values usually won't help you. On a low-cardinality column like that, the planner normally skips the B-tree index anyway — it prefers a sequential scan whenever the filter matches more than roughly 5-10% of the rows, and with just three values, any single value is almost certainly well above that threshold. So you'd be paying the write overhead and disk space the index costs without actually getting index scans in return.
+
+The one case where it's worth it is if one of those three values is rare — then a partial index built just on that rare value does work, since the planner can use it to target a small slice of the table instead of scanning everything.

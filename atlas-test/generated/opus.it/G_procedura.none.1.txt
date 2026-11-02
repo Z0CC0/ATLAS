@@ -1,0 +1,23 @@
+Non usare `ALTER TABLE ... ALTER COLUMN ... TYPE` direttamente. Su dieci milioni di righe riscrive tutta la tabella e tiene un lock ACCESS EXCLUSIVE per tutta la durata: il servizio resta fermo finché non ha finito.
+
+Conviene invece migrare con una colonna nuova, in sei passi:
+
+1. **Controlla i dati.** Conta le righe in cui la colonna contiene qualcosa di diverso da sole cifre. Ogni valore esistente deve essere convertibile in intero, quindi il conteggio deve dare zero. Se non è zero, sistema quelle righe prima di andare avanti.
+
+2. **Aggiungi la colonna nuova.**
+   ```sql
+   ALTER TABLE t ADD COLUMN colonna_int integer;
+   ```
+
+3. **Riempila a blocchi di diecimila righe alla volta.** In questo modo nessun lock sulla tabella dura a lungo.
+
+4. **Aggiungi un trigger che tenga allineate le due colonne** per tutta la migrazione. Così anche le scritture che arrivano nel frattempo finiscono in `colonna_int`.
+
+5. **Modifica il codice perché legga dalla colonna nuova e rilascialo.**
+
+6. **Solo a questo punto elimina la colonna vecchia.**
+   ```sql
+   ALTER TABLE t DROP COLUMN colonna;
+   ```
+
+Il sesto passo non si può annullare: dopo il `DROP` i dati della colonna vecchia si recuperano solo ripristinando un backup. Eseguilo solo quando il codice nuovo è in produzione e legge già da `colonna_int`.

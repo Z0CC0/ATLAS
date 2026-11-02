@@ -1,0 +1,7 @@
+Postgres, per un progetto piccolo.
+
+SELECT FOR UPDATE SKIP LOCKED regge fino a ~1000 lavori/minuto — sopra il bisogno tipico di un progetto piccolo. Lavoro nella stessa transazione dei dati: niente scritture annullate con lavoro già partito. Persistenza gratis, processo morto, coda intatta. Nessun servizio in più da gestire.
+
+Redis: più volume, latenza sub-millisecondo, ma servizio extra da monitorare/aggiornare, e persistenza da configurare — senza AOF, riavvio perde la coda.
+
+Passa a Redis solo quando il volume lo impone davvero.

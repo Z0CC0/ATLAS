@@ -1,0 +1,37 @@
+**Start with Postgres alone.** It's the only option here that covers all four of your workloads acceptably. Add Elasticsearch or ClickHouse later, and only when one specific workload is failing and you have numbers to show it.
+
+## Why Postgres is the base
+
+Your orders need real transactions. That's not negotiable, and Postgres provides them. It's not outstanding at any one of your four workloads, but it's acceptable at all of them:
+
+- **Orders:** full transactional guarantees.
+- **Catalogue:** handled fine.
+- **Text search:** built in, and good enough below about a million documents. It gets weak above that.
+- **Analytics:** fine up to tens of millions of rows. Beyond that, scans get slow.
+
+## The alternatives
+
+| Option | Where it's better | Why it can't replace Postgres |
+|---|---|---|
+| **MySQL** | Nowhere. It's equivalent on orders. | Weaker on data types and complex queries |
+| **MongoDB** | The catalogue is easier because it allows variable schemas | Multi-document transactions arrived late and are costly, which is a problem for orders |
+| **Elasticsearch** | Much better text search: relevance ranking, synonyms, tolerance of typos | It can't be your authoritative store. Another database has to feed it. |
+| **ClickHouse** | Much better analytics. Its columnar scans are orders of magnitude faster. | It's not suited to orders, because point updates are its weak spot |
+
+MySQL gives you nothing extra here. MongoDB would make the catalogue easier but make orders harder, and orders matter more.
+
+## Where this usually ends up
+
+The usual mature setup is **Postgres as the authoritative store, with Elasticsearch and ClickHouse fed from it**. Treat that as where you might end up, not where you start. Each extra system brings two problems:
+
+- keeping it in sync with Postgres
+- keeping its data consistent with Postgres
+
+The main cost of those systems isn't licences. It's the time your people spend keeping them running.
+
+## When to add each one
+
+- **Elasticsearch:** when your search corpus nears or passes a million documents, or when you can show that search quality (relevance, synonyms, typos) is hurting users. Below a million documents, adding it is almost always premature.
+- **ClickHouse:** when your analytics tables reach tens of millions of rows and you can measure that the queries have become too slow.
+
+Until one of those happens, a single Postgres database is the right choice.

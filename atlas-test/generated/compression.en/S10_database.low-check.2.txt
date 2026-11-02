@@ -1,0 +1,11 @@
+Start with Postgres alone, everything on it. Handles orders, catalogue, text search, and analytics acceptably, none outstandingly — but gives real transactions, non-negotiable on orders. MySQL matches it on orders, weaker on data types and complex queries, no reason to pick over Postgres.
+
+Text search: Postgres' built-in search good enough below a million documents, weak above. Elasticsearch far better — relevance, synonyms, typo tolerance — but not an authoritative store, needs feeding from another database. Adding it below a million documents almost always premature.
+
+Analytics: Postgres carries tens of millions of rows fine, past that scans get slow. ClickHouse far better, columnar scans orders of magnitude ahead — but not for orders, point updates are its weak spot.
+
+Catalogue: MongoDB makes variable schemas easier, but multi-document transactions arrived late and cost — against orders' non-negotiable transactions, weak fit as primary store.
+
+Usual setup once you outgrow single-Postgres: Postgres stays authoritative, Elasticsearch and ClickHouse fed from it for their specialties. Every system added brings a sync problem and a data alignment problem — the real cost isn't licence, it's the time of people keeping them up.
+
+Practical rule: start Postgres alone, add a system only when a specific workload demands it with numbers in hand, not preemptively.

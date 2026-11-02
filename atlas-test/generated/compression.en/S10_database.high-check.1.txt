@@ -1,0 +1,15 @@
+Four workloads, one honest comparison:
+
+Postgres: acceptable at all four, outstanding at none. Real transactions — non-negotiable for orders. Built-in text search, fine under a million documents, weak above. Analytics fine to tens of millions of rows, then scans slow.
+
+MySQL: equivalent to Postgres on orders, weaker on data types and complex queries. No reason to prefer it here.
+
+MongoDB: catalogue easier, variable schemas. Multi-document transactions late addition, costly. Not a fit for orders.
+
+Elasticsearch: far better text search — relevance, synonyms, typo tolerance. Not authoritative — must be fed from a real database, never the store of record.
+
+ClickHouse: far better analytics, columnar scans orders of magnitude ahead. Not for orders — point updates its weak spot.
+
+Standard setup: Postgres authoritative, Elasticsearch and ClickHouse fed from it. Cost of each added system: sync problem, data alignment problem, and the real cost — people's time keeping it up, not licences.
+
+Recommendation: start with Postgres alone. Add Elasticsearch or ClickHouse only when a specific workload demands it, numbers in hand. Elasticsearch below a million documents — almost always premature.

@@ -1,0 +1,15 @@
+HTTPS is HTTP sent inside a channel that TLS encrypts. A handshake sets up that channel:
+
+1. The client opens the connection and says which TLS versions and ciphers it supports.
+
+2. The server picks a cipher and a version, then sends its certificate. The certificate binds a domain name to a public key, and a certificate authority signs it.
+
+3. The client checks the signature by following the chain up to a root certificate it already holds.
+
+4. The client and server agree on a session key, today usually with an elliptic curve Diffie-Hellman exchange. The session key is symmetric because asymmetric encryption costs too much for real traffic.
+
+After the handshake, all traffic is encrypted and authenticated. Nobody in the middle can read it or change it.
+
+In TLS 1.3 the handshake takes one round trip. In TLS 1.2 it takes two.
+
+The certificate says nothing about who runs the site. It only proves that the domain controls that key.

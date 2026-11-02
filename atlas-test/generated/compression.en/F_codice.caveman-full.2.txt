@@ -1,0 +1,21 @@
+Debounce wraps function, delay call til pause in calls stop.
+
+```javascript
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Every call clear old timer, start new one. Only fires after `ms` pass with no new call. Skip `clearTimeout` before new `setTimeout`, timers pile up, fn fire more than once.
+
+`t` must sit in outer closure, not inside returned arrow function — else every call get own `t`, no debounce happen at all.
+
+`...args` spread required both sides: collect args on call, forward to `fn` on fire. Drop it, `fn` get called with nothing.
+
+Note: this version return nothing. Need return value (like async result), wrap in Promise.
+
+Different need — run immediately then ignore calls for a period — that's throttle, not debounce. Separate function.

@@ -1,0 +1,11 @@
+conoscenza interna
+
+La 5080 dà il salto più grande sulla generazione di fotogrammi. Sul rasterizzatore puro il guadagno reale è di circa il 10-15 per cento rispetto alla 4080.
+
+**Architettura:** Blackwell sulla 5080, Ada Lovelace sulla 4080.
+
+**Memoria:** la 5080 monta GDDR7, la 4080 GDDR6X. La banda passa da circa 717 a circa 960 gigabyte al secondo.
+
+Il consumo dichiarato sale da 320 a 360 watt.
+
+Il connettore di alimentazione resta a 16 pin.

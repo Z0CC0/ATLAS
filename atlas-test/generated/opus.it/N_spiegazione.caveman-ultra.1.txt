@@ -1,0 +1,16 @@
+**Consistenza eventuale**: dopo una scrittura, le repliche non concordano subito. Se le scritture si fermano, convergono entro un tempo finito. Nella stessa regione di solito serve meno di un secondo. Fra regioni diverse servono alcuni secondi.
+
+**Perché ti interessa**: il problema tocca chi legge subito dopo aver scritto. L'utente pubblica un commento, ricarica la pagina e il commento non c'è. Per lui è un bug, anche se il sistema funziona come previsto.
+
+**Da dove nasce**: dal compromesso con la disponibilità. Un sistema con consistenza forte deve rifiutare le richieste quando le repliche non comunicano tra loro. La consistenza eventuale invece continua a rispondere.
+
+**Soluzione comune**: fai leggere dalla replica primaria la sessione che ha appena scritto. Non serve farlo per tutte le sessioni. Così l'utente vede il suo commento e gli altri continuano a leggere dalle repliche.
+
+**Come considerarla**: non è un difetto da eliminare, è una scelta. La maggior parte dei sistemi che scalano la accetta di proposito.
+
+**Dove non va bene**: i casi sono pochi e facili da riconoscere:
+- saldi di conto
+- disponibilità di posti
+- unicità di un identificativo
+
+In questi casi serve la consistenza forte. Negli altri casi di solito la consistenza eventuale basta.

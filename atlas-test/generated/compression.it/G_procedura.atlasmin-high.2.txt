@@ -1,0 +1,17 @@
+Non fare `ALTER TABLE ALTER COLUMN TYPE` diretto: riscrive tutta la tabella tenendo un lock ACCESS EXCLUSIVE, quindi il servizio resta fermo per tutta la durata.
+
+Fai invece una migrazione a colonna parallela:
+
+1. Verifica che ogni valore esistente sia convertibile, contando le righe che non contengono solo cifre.
+
+2. `ALTER TABLE t ADD COLUMN colonna_int integer`.
+
+3. Riempi la colonna nuova a blocchi da diecimila righe per volta, non in un'unica operazione, per non tenere un lock lungo sulla tabella.
+
+4. Aggiungi un trigger che tenga allineate le due colonne per tutta la durata della migrazione.
+
+5. Cambia il codice per leggere dalla colonna nuova e rilascialo.
+
+6. Solo dopo aver verificato che tutto funziona: `ALTER TABLE t DROP COLUMN colonna`.
+
+Il passo 6 è irreversibile: una volta eliminata la colonna vecchia, i dati non tornano indietro senza un ripristino da backup.

@@ -1,0 +1,9 @@
+**Local files plus a collector** that ships them elsewhere, so the app never waits on a log write.
+
+**Rule that always holds:** writing the log must stay out of the request's critical path.
+
+Files alone: zero cost and no dependency. But search means grep, and you have to set up rotation by hand or the disk fills. You also can't search across several machines; you have to connect to each one.
+
+Managed service: instant search, alerts and automatic retention. But you pay by volume, and at 1,000 requests per minute the volume grows fast. The logs also leave your infrastructure, so strip personal data before they go.
+
+Database: search is familiar and convenient. But logs in the application's own database compete with it, two very different workloads on one system. Under load, logs fill caches and connections that real requests needed.

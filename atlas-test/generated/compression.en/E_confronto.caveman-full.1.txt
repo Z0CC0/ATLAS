@@ -1,0 +1,11 @@
+Postgres, for you.
+
+Table already handle up to ~1000 jobs/minute with SELECT FOR UPDATE SKIP LOCKED. Small project not hit that ceiling.
+
+Job live in same transaction as your data write. Data roll back, job never fire — no separate system to keep in sync, no dual-write bug.
+
+Persistence free. Process die, jobs still there, no config needed.
+
+Redis faster (sub-millisecond) and handle way more volume, but: one more service to run/monitor/upgrade, and persistence not automatic — without AOF enabled, restart wipe queued jobs.
+
+For small project, cost of Redis (extra ops burden, extra failure mode) buy nothing you need yet. Move to Redis when volume actually demand it, not before.

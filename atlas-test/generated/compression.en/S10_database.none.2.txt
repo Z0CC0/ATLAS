@@ -1,0 +1,16 @@
+For an orders + catalogue + text search + analytics platform, here's how I'd lay it out.
+
+**Start with Postgres, alone.** It's the only piece that's non-negotiable on day one: orders need real transactions, and Postgres gives you that outright. It also covers the other three workloads well enough to launch — built-in text search that's fine below a million documents, and analytics that hold up into the tens of millions of rows. It won't be *great* at any of the four, but "acceptable at everything" from one system is a much better starting position than four specialized systems with nothing running in production yet.
+
+MySQL isn't a real alternative here — same transactional guarantees as Postgres on orders, but weaker data types and weaker complex queries, so there's no upside to picking it over Postgres for this mix.
+
+**Don't reach for MongoDB just because the catalogue has variable schemas.** It's genuinely easier there, but the moment you need multi-document transactions (which an orders-adjacent catalogue often does), that support arrived late and it costs you. Postgres's JSONB columns cover "flexible schema" reasonably well without giving up transactions.
+
+**Add specialized systems only when a workload outgrows Postgres, with numbers to prove it — not preemptively:**
+
+- **Text search → Elasticsearch**, once you're past roughly a million documents or need relevance ranking, synonyms, typo tolerance that Postgres's search can't give you. Below that threshold, adding it is almost always premature. Important caveat: Elasticsearch is not a system of record — it has to be fed from Postgres, not replace it.
+- **Analytics → ClickHouse**, once your scans against tens of millions of rows start slowing down. Columnar storage puts it orders of magnitude ahead on that workload. But it's not for orders — point updates are its weak spot, so it stays purely analytical, fed from Postgres.
+
+**The end state most platforms converge on**: Postgres as the single authoritative store, with Elasticsearch and ClickHouse as read-side systems fed from it for their respective specialties.
+
+The catch to weigh before adding either one: every system you bolt on brings a synchronization problem (keeping it in sync with Postgres) and a data-alignment problem (keeping its model consistent with the source of truth). And the real cost isn't licensing — it's the ongoing engineering time to keep each one healthy. That's exactly why the practical rule is to add each piece only when a specific, measured workload demands it, not speculatively.

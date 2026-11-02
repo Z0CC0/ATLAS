@@ -1,0 +1,19 @@
+For a static site, set these six headers and leave out a seventh:
+
+```
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+Content-Security-Policy: default-src 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+X-Frame-Options: DENY
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+```
+
+- **Strict-Transport-Security** makes the browser use HTTPS. Set `max-age` to at least 31536000 seconds (one year) and add `includeSubDomains`.
+- **Content-Security-Policy** with `default-src 'self'` blocks scripts that third parties try to inject.
+- **X-Content-Type-Options: nosniff** stops the browser from guessing the content type.
+- **Referrer-Policy: strict-origin-when-cross-origin** stops your full URL path from leaking to other sites.
+- **Clickjacking:** set `X-Frame-Options: DENY` or put `frame-ancestors 'none'` in your Content-Security-Policy. Either one works. The example above uses both.
+- **Permissions-Policy** turns off camera, microphone and geolocation. Keep a feature in the list only if your site does not use it.
+
+**Leave out X-XSS-Protection.** It is deprecated. Modern browsers ignore it, and older versions of it introduced vulnerabilities.

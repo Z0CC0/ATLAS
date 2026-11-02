@@ -1,0 +1,15 @@
+Big rewrite question. Consider this:
+
+Know which part of monolith actually change. Stable parts gain nothing from split — don't touch them.
+
+Find where transaction boundaries sit. Transaction spanning two services become distributed problem — hard, avoid if possible.
+
+Skip full parallel rewrite. Old system keep changing, copy never catch up, almost always fail.
+
+Use progressive strangling instead: router in front, move one piece at time, old system stay authoritative until new piece verified.
+
+Microservices cost more in ops: every service want own releases, monitoring, logs, alerts, and someone to own it. Below five developers, that cost usually beats the benefit.
+
+Modular monolith is option most skip: sharp internal boundaries, one release, still can extract module later when genuinely needed.
+
+Real question not technical: what must team do in year that it can't do today. Architecture decision follow from that answer.

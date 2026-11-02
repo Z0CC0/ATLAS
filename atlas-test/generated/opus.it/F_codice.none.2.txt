@@ -1,0 +1,22 @@
+Ecco un debounce scritto a mano:
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Ci sono tre dettagli che lo fanno funzionare:
+
+- **`clearTimeout(t)` va chiamato prima di ogni nuovo `setTimeout`.** Senza, i timer si accumulano e la funzione parte più volte invece di una sola.
+- **`let t` sta nella chiusura, fuori dalla funzione restituita.** Se la metti dentro, ogni chiamata ha il suo timer e il debounce non avviene.
+- **Gli argomenti passano con lo spread (`...args`).** Senza, `fn` li riceve vuoti.
+
+Due limiti di questa versione:
+
+- **Non restituisce niente.** Se ti serve il valore di ritorno di `fn`, devi avvolgerla in una Promise.
+- **Serve per il caso "aspetta che smettano di chiamarla".** Se invece vuoi eseguirla subito e poi ignorare le chiamate per un certo periodo, ti serve un throttle, che è un'altra funzione.

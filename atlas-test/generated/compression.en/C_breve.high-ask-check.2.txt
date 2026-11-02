@@ -1,0 +1,1 @@
+No. Three values, B-tree won't get used — planner picks seq scan once a value covers more than ~5-10% of rows, and each of your three values covers roughly a third. Index still costs writes and disk. Worth it only as a partial index targeting the rare value, if one of the three is actually rare.

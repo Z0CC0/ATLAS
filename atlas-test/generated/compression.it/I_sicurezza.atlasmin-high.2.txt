@@ -1,0 +1,9 @@
+No: offuscamento inutile, riga aperta con devtools o richieste di rete.
+
+Chiave sul server. Frontend chiama endpoint del backend, backend chiama il servizio.
+
+Endpoint con rate limit, altrimenti uso gratuito della chiave altrui.
+
+Chiave già pubblicata: compromessa, va ruotata subito, non solo rimossa dal codice.
+
+Rimuoverla da un commit non basta: resta nella cronologia del repo, chi ha un clone ce l'ha già.

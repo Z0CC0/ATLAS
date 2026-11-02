@@ -1,0 +1,15 @@
+Sulla carta la 5080 cambia molto. Nei giochi senza generazione di fotogrammi il salto è piccolo.
+
+**Cosa cambia:**
+- **Architettura:** la 5080 usa Blackwell, la 4080 Ada Lovelace.
+- **Memoria:** la 5080 monta GDDR7, la 4080 GDDR6X. La banda di memoria sale da circa 717 a circa 960 GB/s.
+- **Consumo:** il consumo dichiarato sale da 320 a 360 W. Serve quindi un po' più di margine sull'alimentatore.
+
+**Cosa resta uguale:**
+- Il connettore di alimentazione resta a 16 pin, come sulla 4080.
+
+**Prestazioni reali:**
+- Il salto più grande riguarda la generazione di fotogrammi.
+- Sul rasterizzatore puro il guadagno reale è circa del 10-15%.
+
+**In pratica:** se hai già una 4080, il passaggio conviene solo se usi molto la generazione di fotogrammi. Se compri da zero, la 5080 è la scelta più recente, ma non aspettarti un salto enorme nel rendering tradizionale.

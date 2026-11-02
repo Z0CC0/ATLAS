@@ -1,0 +1,12 @@
+Zero-downtime approach, six steps.
+
+1. Count rows failing a digits-only check — confirms every value converts before touching anything.
+2. `ALTER TABLE t ADD COLUMN colonna_int integer` — new column, instant, no rewrite.
+3. Backfill in batches of 10k rows — keeps each transaction short, no long lock on the table.
+4. Trigger syncing old and new columns during migration — keeps writes consistent while backfill runs.
+5. Switch application code to read `colonna_int`, deploy.
+6. Only then: `ALTER TABLE t DROP COLUMN colonna`.
+
+Step 6 is irreversible — once dropped, data's gone without a backup restore.
+
+Skip all this and run `ALTER TABLE t ALTER COLUMN colonna TYPE integer` directly: full table rewrite under ACCESS EXCLUSIVE lock — service down for the whole rewrite. That's what steps 1–6 avoid.

@@ -1,0 +1,3 @@
+No. Su tre valori l'indice B-tree di norma resta inutilizzato — il planner sceglie scan sequenziale quando il filtro seleziona oltre il 5-10% delle righe, e con bassa cardinalità è sempre così. Nel frattempo l'indice costa scrittura e spazio comunque.
+
+Eccezione: indice parziale sul valore raro dei tre — lì funziona.

@@ -1,0 +1,7 @@
+Postgres, for now.
+
+`SELECT FOR UPDATE SKIP LOCKED` covers up to ~1000 jobs/min. Job sits in the same transaction as the data — can't start if the write rolls back. Persistence is free: process dies, queue's still there.
+
+Redis wins on volume and latency (sub-ms), but needs AOF configured or a restart wipes the queue, plus it's another service to run and maintain.
+
+Move to Redis only when volume actually demands it.

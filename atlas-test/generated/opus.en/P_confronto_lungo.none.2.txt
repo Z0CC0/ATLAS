@@ -1,0 +1,11 @@
+**Keep the logs in local files and run a collector that ships them somewhere else.** At a thousand requests a minute that's the sensible setup, and it keeps the application from ever waiting on a log write. Whatever you pick, one rule holds: writing a log line must never sit in the critical path of a request.
+
+Here's why each option on its own falls short:
+
+**Files only.** Free and no dependencies. But searching means grep, and you have to configure rotation yourself or the disk fills up. Once you run more than one machine, there's no way to search across them all. You have to log into each one.
+
+**Managed service.** You get instant search, alerts and automatic retention, but you pay by volume. At your traffic that volume grows fast. The logs also leave your own infrastructure, so you have to strip personal data before they're sent.
+
+**Your application's database.** Searching feels familiar and easy. The problem is that logging and serving requests are very different workloads, and they end up competing. Under load, logs fill the caches and use the connections your real requests needed. That slows the app down exactly when it's busiest.
+
+**Files plus a collector gives you the best parts of each.** The app does a cheap local write and moves on. The collector ships the logs in the background to wherever you want to search them. That can be a managed service, if you're OK with the cost and you strip personal data first. It can also be a separate store that isn't your app's database. Set up rotation on the local files so the disk never fills.

@@ -1,0 +1,7 @@
+Per un progetto piccolo conviene Postgres, non Redis.
+
+Con Postgres puoi gestire la coda direttamente con `SELECT FOR UPDATE SKIP LOCKED`, e questo regge tranquillamente fino a circa mille lavori al minuto — volume più che sufficiente per un progetto piccolo. Il vantaggio più importante è che il lavoro finisce nella stessa transazione dei dati: non puoi mai ritrovarti nella situazione in cui un job parte ma la scrittura che lo ha generato viene poi annullata. In più la persistenza è gratis: se il processo muore, la coda resta lì, pronta a riprendere.
+
+Redis ha senso solo quando il volume lo richiede davvero: regge molto più carico e ha latenza sotto il millisecondo, quindi è la scelta giusta quando Postgres inizia a starti stretto. Ma per un progetto piccolo porta con sé costi che non ti servono ancora: è un servizio in più da far girare, monitorare e aggiornare, e la persistenza non è automatica — se non attivi l'AOF, un riavvio ti fa perdere i lavori ancora in coda.
+
+Quindi: parti con Postgres, e passa a Redis solo quando i numeri reali del progetto lo giustificano.

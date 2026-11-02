@@ -1,0 +1,5 @@
+conoscenza interna
+
+Sì.
+
+Vale per ogni collezione vuota: lista, tupla, dizionario, insieme e stringa.

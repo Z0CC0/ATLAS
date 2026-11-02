@@ -1,0 +1,9 @@
+Local files, shipped out by a collector — not the managed service or the database, at this volume.
+
+Files: zero cost, no dependency. Search means grep, rotation you configure by hand or the disk fills. No cross-machine search — you connect to each box separately.
+
+Managed service: instant search, alerts, automatic retention. But billed by volume, and at 1k req/min that volume grows fast. Also the logs leave your infrastructure — strip personal data before they go.
+
+Database: search is familiar, convenient — but writing logs into the app's own DB pits two very different workloads against each other. Under load, logs eat the caches and connections the real requests need.
+
+So: write to local files, have a collector ship them elsewhere — the app never waits on a log write. Whatever you pick, the rule that always holds: the log write must never sit in the request's critical path.

@@ -1,0 +1,6 @@
+Yes. An empty list is falsy, so `if my_list:` runs only when the list has at least one item. The same is true of every empty collection: an empty list, tuple, dict, set or string is falsy.
+
+```python
+if not []:
+    print("empty")  # this runs
+```

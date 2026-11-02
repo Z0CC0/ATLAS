@@ -1,0 +1,26 @@
+Set six headers, and leave out X-XSS-Protection.
+
+Strict-Transport-Security: `max-age=31536000; includeSubDomains` at minimum. This makes the browser use HTTPS for your domain and all its subdomains.
+
+Content-Security-Policy: `default-src 'self'`. This blocks scripts injected from third-party origins.
+
+X-Content-Type-Options: `nosniff`. This stops the browser from guessing a file's content type.
+
+Referrer-Policy: `strict-origin-when-cross-origin`. Other sites see only your origin, not the full path of the page.
+
+X-Frame-Options: `DENY`. This protects against clickjacking. You can instead add `frame-ancestors 'none'` to the Content-Security-Policy.
+
+Permissions-Policy: if the site doesn't use the camera, microphone or geolocation, turn them off, for example `camera=(), microphone=(), geolocation=()`.
+
+Don't send X-XSS-Protection at all. It's deprecated, modern browsers ignore it, and in older browsers it created vulnerabilities.
+
+For example:
+
+```
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+Content-Security-Policy: default-src 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+X-Frame-Options: DENY
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+```

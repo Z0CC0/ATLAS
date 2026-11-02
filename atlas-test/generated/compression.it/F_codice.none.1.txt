@@ -1,0 +1,23 @@
+Ecco come si implementa il debounce in JavaScript vanilla:
+
+```javascript
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Alcuni punti chiave su questa implementazione:
+
+- **`clearTimeout` prima di ogni nuovo `setTimeout`**: è il cuore del meccanismo. Senza questa chiamata, ogni invocazione creerebbe un nuovo timer indipendente, e la funzione finirebbe per partire più volte invece che una sola dopo l'ultima chiamata.
+
+- **`t` deve vivere nella chiusura (closure)**, non dentro la funzione restituita. Se la dichiarassi all'interno della funzione ritornata, ogni chiamata avrebbe il proprio `t` locale e `clearTimeout` non avrebbe mai nulla da cancellare — il debounce semplicemente non funzionerebbe.
+
+- **Gli argomenti vanno inoltrati con lo spread** (`...args` in ingresso e in uscita). Se li ometti, `fn` verrebbe chiamata senza argomenti.
+
+- **Questa versione non restituisce nulla**: `fn` viene eseguita in modo asincrono dentro il `setTimeout`, quindi il valore di ritorno di `fn` va perso. Se ti serve recuperarlo, devi avvolgere il tutto in una `Promise`.
+
+- **Se invece ti serve il comportamento opposto** — eseguire subito la funzione e poi ignorare le chiamate successive per un certo periodo — quello è un **throttle**, non un debounce: sono due funzioni diverse con scopi diversi.

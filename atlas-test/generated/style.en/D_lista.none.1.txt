@@ -1,0 +1,10 @@
+For a site that only serves static pages you still want a small, fixed set of headers. Here is the list, with what each one does for you.
+
+- **Strict-Transport-Security**: set a max-age of at least 31536000 seconds and add includeSubDomains. This forces the browser onto HTTPS for your domain and everything under it.
+- **Content-Security-Policy**: start with default-src 'self'. This is the header that blocks third-party script injection, which matters even without server-side code.
+- **X-Content-Type-Options**: set it to nosniff, so the browser stops guessing content types and serves each file as the type you declared.
+- **Referrer-Policy**: set it to strict-origin-when-cross-origin. Other sites then see only your origin, never the full path of the page the visitor came from.
+- **X-Frame-Options**: set it to DENY, or add frame-ancestors 'none' to the Content-Security-Policy instead. Either one stops your pages from being framed for clickjacking.
+- **Permissions-Policy**: switch off camera, microphone and geolocation if the site does not use them. A static site almost never does.
+
+Leave out X-XSS-Protection. It is deprecated, modern browsers ignore it, and older versions introduced vulnerabilities of their own, so adding it only makes things worse.

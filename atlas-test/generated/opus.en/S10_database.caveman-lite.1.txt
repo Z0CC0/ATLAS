@@ -1,0 +1,29 @@
+**Start with Postgres alone.** Add Elasticsearch or ClickHouse later, and only when a specific workload shows the need in measured numbers.
+
+## Why Postgres first
+
+Postgres covers all four of your workloads acceptably. It is not outstanding at any of them. Orders decide the choice: they need real transactions, and Postgres gives you real transactions.
+
+- **Orders:** strong. It has full transactions.
+- **Catalogue:** acceptable.
+- **Text search:** built in. It is good enough below a million documents and weak above that.
+- **Analytics:** fine up to tens of millions of rows. Above that, scans get slow.
+
+## The alternatives
+
+- **MySQL:** equivalent to Postgres on orders. It is weaker on data types and complex queries, so it gives you no advantage here.
+- **MongoDB:** variable schemas make the catalogue easier. Multi-document transactions arrived late and are expensive, and orders depend on transactions. That makes MongoDB a poor fit for your main store.
+- **Elasticsearch:** far better at text search, with better relevance, synonyms and typo tolerance. It is not an authoritative store. It must be fed from another database and cannot replace that database.
+- **ClickHouse:** far better at analytics. Its columnar scans are orders of magnitude faster. It is not suitable for orders because point updates are its weak spot.
+
+## Where this usually ends up
+
+The usual mature setup is Postgres as the authoritative store, with Elasticsearch and ClickHouse fed from it. You do not need to build that on day one.
+
+Each system you add creates two problems: keeping it in sync and keeping its data aligned with Postgres. The real cost is not the licence. It is the time your people spend keeping each extra system running.
+
+## When to add each one
+
+- **Elasticsearch:** add it when the catalogue grows past about a million documents, or when you measure that search quality is not good enough. Below a million documents it is almost always premature.
+- **ClickHouse:** add it when analytics grows past tens of millions of rows and you measure that scans have become too slow.
+- **Neither:** stay on Postgres alone until one of those limits is real and measured.

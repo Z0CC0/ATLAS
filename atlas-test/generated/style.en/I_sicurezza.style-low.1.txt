@@ -1,0 +1,5 @@
+No. Anything that reaches the browser is readable, and obfuscation falls apart the moment someone opens the developer tools or looks at the network requests.
+
+The key belongs on the server. The frontend calls an endpoint on your own backend, and that endpoint calls the service with the key. Put a rate limit on that endpoint, or it becomes a free way for anyone to use your key.
+
+If the key has already shipped in the frontend, treat it as compromised and rotate it at once. Removing it from the code is not enough: it stays in the repository history, and anyone with a clone already has it.

@@ -1,0 +1,3 @@
+Yes. In Python an empty list is falsy, so `if not my_list:` is the idiomatic way to check for emptiness.
+
+The same rule applies to every empty collection, not just lists. An empty tuple, dict, set and string all evaluate to False in a boolean context, while any non-empty collection evaluates to True.

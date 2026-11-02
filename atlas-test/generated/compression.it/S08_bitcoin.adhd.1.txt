@@ -1,0 +1,11 @@
+Bitcoin nasce da un problema tecnico rimasto irrisolto per anni negli ambienti cypherpunk: come evitare la doppia spesa di una moneta digitale senza affidarsi a un ente centrale che tenga il registro delle transazioni. Prima di Bitcoin c'erano già stati tentativi in questa direzione, come b-money e bit gold, ma nessuno dei due riusciva a risolvere il problema di mettere le transazioni in un ordine condiviso e verificabile da tutti.
+
+La soluzione arriva nel 2008, quando compare un documento firmato da un certo Satoshi Nakamoto — uno pseudonimo dietro cui non si è mai riusciti a identificare chi ci sia davvero. Il testo si intitola "Bitcoin: A Peer-to-Peer Electronic Cash System" e propone un'idea semplice ma efficace: una catena di blocchi, ordinata non da un'autorità centrale ma da una prova di lavoro. Questo meccanismo rende costosissimo riscrivere la storia delle transazioni, perché chi volesse falsificare un blocco passato dovrebbe rifare da capo anche tutto il lavoro computazionale dei blocchi successivi.
+
+L'idea passa dalla teoria alla pratica il 3 gennaio 2009, quando viene generato il primo blocco della catena. Al suo interno Satoshi inserisce il titolo di un articolo del Times che parlava di un salvataggio bancario: un dettaglio che serve sia a certificare che quel blocco non poteva esistere prima di quella data, sia come una sorta di dichiarazione di intenti sul motivo per cui questo sistema doveva esistere.
+
+Il meccanismo economico è pensato per essere prevedibile: chi genera un blocco riceve una ricompensa che parte da 50 bitcoin e si dimezza ogni 210.000 blocchi, circa ogni quattro anni. Il risultato è che l'emissione totale tende verso un tetto di 21 milioni di bitcoin, mai superabile.
+
+Per un anno e mezzo circa Bitcoin resta un esperimento quasi solo teorico, finché nel 2010 avviene quella che è considerata la prima transazione commerciale documentata: due pizze pagate 10.000 bitcoin.
+
+Nel 2011 Satoshi smette di partecipare pubblicamente al progetto e sparisce, lasciando dietro di sé un'identità mai svelata. I bitcoin che si presume abbia minato nei primi tempi non sono mai stati mossi da allora.

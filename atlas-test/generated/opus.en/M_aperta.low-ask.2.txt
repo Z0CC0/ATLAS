@@ -1,0 +1,13 @@
+Start with the question that isn't technical: what must your team be able to do a year from now that it can't do today? That answer should drive the architecture. Before you pick one, find out two things:
+
+1. Which part of the monolith actually changes. Stable parts gain nothing from being split, so leave them alone.
+
+2. Where the transaction boundaries sit. A transaction that spans two services becomes a distributed problem, so draw service lines where transactions already end.
+
+On how to migrate: a full rewrite running in parallel with the old system almost always fails. The PHP code keeps changing and the copy never catches up. Use progressive strangling instead. Put a router in front, move one piece at a time, and keep the old system authoritative until each new piece is verified.
+
+On microservices: they cost more to operate. Every service needs its own releases, monitoring, logs, alerts, and a person who looks after it. With fewer than five developers, that cost almost always exceeds the benefit.
+
+**The option nobody mentions is a modular monolith.** It has sharp internal boundaries and one release, and you can still pull a module out into its own service the day that is genuinely needed.
+
+How many developers will work on the new service?

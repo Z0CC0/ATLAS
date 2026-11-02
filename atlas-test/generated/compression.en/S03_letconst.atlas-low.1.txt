@@ -1,0 +1,1 @@
+const stops name reassignment, not value mutation — object made with const still changes internally. let allows reassignment. both scoped to block, unlike var.

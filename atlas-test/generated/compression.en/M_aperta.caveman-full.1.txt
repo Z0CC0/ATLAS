@@ -1,0 +1,15 @@
+Before pick architecture:
+
+**What actually changes.** Find which parts of monolith change often. Stable parts gain nothing split out — leave them alone.
+
+**Transaction boundaries.** See where transactions sit now. Transaction spanning two services become distributed transaction problem. Don't split across a boundary that needs atomicity.
+
+**Skip full parallel rewrite.** Rewriting whole thing alongside old system almost always fail — old system keep changing, copy never catch up.
+
+**Strangle instead.** Put router in front old system, move one piece at time, keep old one authoritative until new piece verified.
+
+**Count operational cost.** Microservices cost more ops: each service want own releases, monitoring, logs, alerts, someone to own it. Below five developers, that cost usually exceed benefit.
+
+**Consider modular monolith.** Sharp internal boundaries, one release, but option to extract module later when genuinely needed. Nobody mention this option — worth considering.
+
+**Real question isn't technical.** Ask: what must team do in year that it cannot do today? Answer to that decides architecture, not tech preference.

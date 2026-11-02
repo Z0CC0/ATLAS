@@ -1,0 +1,9 @@
+When you visit a site over HTTPS, you're really just talking HTTP — but that conversation happens inside a channel encrypted by TLS, so nobody watching the wire can read or tamper with it.
+
+Here's how that channel gets set up. Your browser opens the connection and tells the server which TLS versions and cipher suites it's willing to use. The server picks one of each and sends back its certificate. That certificate is what ties a domain name to a public key, and it's signed by a certificate authority — your browser checks that signature by following the chain of trust up to a root certificate it already has stored. This is what proves you're talking to the key belonging to that domain, not an impostor.
+
+One thing worth being clear on: the certificate only vouches for the domain-to-key binding. It says nothing about who actually runs the site — no identity check beyond "this domain controls this key."
+
+Once the certificate checks out, your browser and the server agree on a session key — nowadays usually via an elliptic curve Diffie-Hellman exchange. That session key is symmetric, because asymmetric encryption is too expensive to use for the actual bulk traffic. From that point on, everything you send and receive is encrypted and authenticated, so it can't be read or altered by anyone sitting in the middle.
+
+One practical improvement worth knowing: TLS 1.3 got this whole handshake down to a single round trip, versus two round trips in TLS 1.2 — so newer connections start faster.

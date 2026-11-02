@@ -1,0 +1,9 @@
+Eventual consistency: write lands, replicas disagree briefly, converge within a finite time once writes stop. Same-region convergence: under a second. Cross-region: seconds.
+
+Trade is against availability. Strong consistency instead refuses requests when replicas can't reach each other.
+
+Hits you specifically right after your own write — post a comment, reload, comment's gone. Fix: route that session's reads to the primary that took the write, not the whole read pool.
+
+Not a bug to chase out — a deliberate choice most systems at scale make.
+
+Don't accept it for: account balances, seat availability, identifier uniqueness.

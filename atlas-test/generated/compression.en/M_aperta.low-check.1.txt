@@ -1,0 +1,11 @@
+Before choosing architecture, work out which parts of the monolith actually change — the stable parts gain nothing from being split off.
+
+Next, map where transaction boundaries sit. A transaction spanning two services turns into a distributed problem, and that's a much harder failure mode than anything code-organization solves.
+
+Skip the "rewrite in parallel" plan — the old system keeps changing while you build, and the copy never catches up. It almost always fails. Strangle progressively instead: put a router in front, move one piece at a time, keep the old system authoritative until each new piece is verified.
+
+Weigh the operational cost of microservices honestly — every service wants its own releases, monitoring, logs, alerts, and someone responsible for it. Below five developers, that cost almost always exceeds the benefit.
+
+Consider the modular monolith — sharp internal boundaries, one release, and the option to extract a module later if it's genuinely needed. It's usually the right default and rarely gets mentioned.
+
+Last, the real question isn't technical: what does the team need to be able to do a year from now that it can't do today? That answer should drive the architecture, not the reverse.

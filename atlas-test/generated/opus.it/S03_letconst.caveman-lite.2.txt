@@ -1,0 +1,22 @@
+Entrambi hanno ambito di blocco, a differenza di `var`: esistono solo dentro il blocco `{ }` in cui li dichiari.
+
+La differenza sta nella riassegnazione:
+
+- **`let`** permette di riassegnare il nome.
+- **`const`** impedisce di riassegnare il nome, ma non impedisce di modificare il valore.
+
+```javascript
+let contatore = 1;
+contatore = 2;          // ok
+
+const max = 10;
+max = 20;               // TypeError: Assignment to constant variable.
+```
+
+Per questo motivo un oggetto dichiarato con `const` può cambiare al suo interno:
+
+```javascript
+const utente = { nome: "Anna" };
+utente.nome = "Luca";   // ok: modifichi il contenuto
+utente = {};            // TypeError: riassegni il nome
+```

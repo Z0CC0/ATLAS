@@ -1,0 +1,1 @@
+5080 usa architettura Blackwell, 4080 Ada Lovelace, con memoria GDDR7 contro GDDR6X: banda passante sale da circa 717 a circa 960 GB/s. Assorbimento dichiarato passa da 320 a 360W, connettore resta a 16 pin in entrambe. Il salto vero non è in rasterizzazione pura, lì il guadagno reale è sull'ordine del 10-15%, ma nel frame generation, dove la differenza è molto più marcata.

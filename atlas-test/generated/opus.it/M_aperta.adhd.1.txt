@@ -1,0 +1,25 @@
+**Prima di scegliere l'architettura, scrivi in una frase cosa deve poter fare il team fra un anno che oggi non può.** È la domanda che decide, e non è tecnica. Il resto serve a capire quale architettura ti ci porta.
+
+## 1. Cosa sapere del monolite
+
+1. **Quali parti cambiano davvero.** Spezzare una parte stabile non ti fa guadagnare niente. Conviene separare solo le zone che toccate spesso.
+2. **Dove finiscono le transazioni.** Se una transazione attraversa due servizi, diventa un problema distribuito. Tieni ogni transazione dentro lo stesso confine.
+
+## 2. Come arrivare al nuovo sistema
+
+- **Da evitare:** riscrivere tutto da zero, in parallelo al vecchio. Non funziona quasi mai: il vecchio sistema continua a cambiare e la copia non lo raggiunge mai.
+- **Da fare:** sostituirlo un pezzo alla volta.
+  1. Metti un router davanti al monolite.
+  2. Sposta un pezzo alla volta.
+  3. Finché il pezzo nuovo non è verificato, fa fede il vecchio.
+
+## 3. Quale architettura
+
+| Opzione | Quando conviene |
+|---|---|
+| **Monolite modulare** | Confini interni netti e un solo rilascio. Estrai un modulo come servizio solo quando serve davvero. È l'opzione di cui si parla meno. |
+| **Microservizi** | Costano di più da gestire: ogni servizio richiede rilascio, monitoraggio, log, allarmi e una persona che se ne occupa. Con meno di cinque sviluppatori, quel costo supera quasi sempre il beneficio. |
+
+Se il team ha meno di cinque persone, parti dal monolite modulare. Sposta i pezzi con il router e tieni l'estrazione di un servizio per le parti che cambiano spesso.
+
+**Prossimo passo (2 minuti):** scrivi la frase su cosa deve poter fare il team fra un anno, poi elenca le 3 parti del monolite che avete modificato di più negli ultimi mesi.

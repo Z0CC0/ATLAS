@@ -1,0 +1,17 @@
+Use closure variable to hold timer ID, cancel and reset it on every call:
+
+```javascript
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+`t` lives in outer closure, not inside returned function — if it were inside, each call gets own timer and debouncing never happens. `clearTimeout(t)` must run before each new `setTimeout`, else old timers pile up and function fires more than once. Spread `...args` forwards arguments to `fn`; skip it and `fn` gets nothing.
+
+Note: this returns nothing. Need return value → wrap in Promise.
+
+Different need — run immediately, then ignore calls for a period — that's throttle, not debounce, different function.

@@ -1,0 +1,9 @@
+Local files, shipped out by a collector — that's the right call at this volume.
+
+Files alone: zero cost, no dependency. But search means grep, and rotation you configure by hand or the disk fills. No cross-machine search — you connect to each box separately.
+
+Managed service: instant search, alerts, automatic retention. Cost scales with volume, and at a thousand requests a minute that volume grows fast. Logs also leave your infrastructure, so personal data must be stripped before they go out.
+
+Database: search is familiar and convenient, but logs would share the app's own database — competing with real traffic. Under load, logs fill the caches and connections your requests need.
+
+The rule that decides it: the log write must never sit in the request's critical path. Files plus a collector satisfies that — the app writes locally and moves on; the collector ships logs elsewhere on its own time.

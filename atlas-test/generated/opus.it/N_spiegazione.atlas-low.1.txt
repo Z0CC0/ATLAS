@@ -1,0 +1,13 @@
+Dopo una scrittura le repliche non concordano subito, ma convergono entro un tempo finito se le scritture si fermano.
+
+Perché ti interessa: compromesso con disponibilità. Sistema che pretende consistenza forte deve rifiutare richieste quando repliche non si parlano. Accettando consistenza eventuale, continui a rispondere.
+
+Dove lo senti: chi legge subito dopo aver scritto. Utente pubblica commento, ricarica pagina, e non lo vede.
+
+Soluzione comune: leggere dalla replica primaria solo per la sessione che ha appena scritto, non per tutte.
+
+Quanto dura: su repliche nella stessa regione di solito sotto il secondo, fra regioni diverse sale a secondi.
+
+Non è difetto da eliminare ma scelta. Maggior parte dei sistemi che scalano la accetta di proposito.
+
+Casi dove non è accettabile sono pochi e riconoscibili: saldi di conto, disponibilità di posti, unicità di un identificativo. Lì serve consistenza forte, altrove quasi sempre no.

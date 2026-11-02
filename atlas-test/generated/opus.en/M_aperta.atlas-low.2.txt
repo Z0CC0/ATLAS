@@ -1,0 +1,17 @@
+Start with the question that decides it, and it isn't technical: what must your team be able to do a year from now that it can't do today? Architecture should answer that. It shouldn't answer a fashion.
+
+Before choosing, map two things in the monolith.
+
+**Which parts actually change.** Stable parts gain nothing from being split, so leave them where they are.
+
+**Where transaction boundaries sit.** A transaction spanning two services becomes a distributed problem, so draw service lines where transactions already end, not through them.
+
+Then choose how to migrate. A full rewrite running in parallel with the old system almost always fails: the old one keeps changing and the copy never catches up. Strangle it progressively instead:
+
+1. Put a router in front.
+2. Move one piece at a time.
+3. Keep the old system authoritative until each new piece is verified.
+
+On shape, weigh operational cost honestly. Every microservice wants releases, monitoring, logs, alerts, and a person who looks after it. With fewer than five developers, that cost almost always exceeds the benefit.
+
+The option nobody mentions is the modular monolith: sharp internal boundaries, one release, and the freedom to extract a module the day it's genuinely needed. For a small team rewriting PHP, it's usually the sensible default. It also keeps the door to services open without paying for them up front.

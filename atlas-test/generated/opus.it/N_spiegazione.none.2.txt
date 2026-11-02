@@ -1,0 +1,31 @@
+**Consistenza eventuale** significa che, dopo una scrittura, le copie dei dati (le repliche) non sono subito d'accordo tra loro. Se poi le scritture si fermano, arrivano a coincidere entro un tempo finito. Per un momento, quindi, repliche diverse possono darti risposte diverse, ma alla fine si allineano.
+
+## Perché esiste
+
+È un compromesso con la disponibilità. Un sistema che pretende consistenza forte deve rifiutare le richieste quando le repliche non riescono a parlarsi, perché non può garantire che tutte vedano lo stesso dato. Chi accetta la consistenza eventuale continua invece a rispondere, anche se per un po' qualche risposta non è aggiornata.
+
+Per questo non va trattata come un difetto da eliminare. È una scelta, e la maggior parte dei sistemi che scalano la fa apposta.
+
+## Dove te ne accorgi
+
+Il caso tipico riguarda chi legge subito dopo aver scritto. Un utente pubblica un commento, ricarica la pagina e il commento non c'è. La scrittura è andata a buon fine, ma la lettura è arrivata a una replica che non l'ha ancora ricevuta. Per l'utente sembra un errore.
+
+Di solito si risolve così: la sessione che ha appena scritto legge dalla replica primaria. Tutti gli altri continuano a leggere dalle repliche normali. Chi ha scritto vede subito la propria modifica, e il resto del traffico mantiene i vantaggi delle repliche.
+
+## Quanto dura il disallineamento
+
+Tra repliche nella stessa regione di solito si allineano in meno di un secondo. Tra regioni diverse si sale a qualche secondo. Nella maggior parte dei casi è una finestra breve, ma abbastanza lunga da causare il problema del commento che "sparisce".
+
+## Quando non va bene
+
+I casi in cui non è accettabile sono pochi e facili da riconoscere:
+
+- **saldi di conto**
+- **disponibilità di posti**
+- **unicità di un identificativo**
+
+In questi casi una lettura non aggiornata può portare a una decisione sbagliata che non si può correggere dopo.
+
+## Perché dovrebbe interessarti
+
+Ti aiuta a capire dove serve davvero la consistenza forte e dove no. Nella maggior parte dei dati puoi accettare la consistenza eventuale e guadagnare in disponibilità e scalabilità. Nel caso di chi rilegge subito ciò che ha scritto basta la lettura dalla primaria per quella sessione. La garanzia forte ti serve solo per quei pochi casi dell'elenco sopra.

@@ -1,0 +1,11 @@
+Prima di scegliere l'architettura, parti da una domanda sola: quale parte del monolite cambia davvero. Le parti stabili non guadagnano nulla dall'essere spezzate, quindi non vale la pena disegnare confini di servizio attorno a codice che non si muove da anni.
+
+Subito dopo devi mappare dove stanno i confini delle transazioni. Se una transazione oggi attraversa quella che diventerebbe la linea tra due servizi, hai appena creato un problema di consistenza distribuita che prima non esisteva — e questo va scoperto prima di disegnare i confini, non dopo.
+
+Sulla strategia di migrazione: non tentare una riscrittura completa in parallelo al vecchio sistema. Quasi sempre fallisce, perché il monolite continua a ricevere modifiche mentre lo scrivi da capo, e la copia nuova non lo raggiunge mai. L'alternativa che funziona è lo strangolamento progressivo: metti un router davanti al sistema esistente, sposta un pezzo alla volta, e lasci che il vecchio resti autorevole finché il nuovo pezzo non è verificato in produzione.
+
+Sui microservizi, sii onesto sul costo operativo: ogni servizio in più vuole la sua pipeline di rilascio, monitoraggio, log, allarmi, e qualcuno che se ne occupi quando squilla il telefono alle tre di notte. Sotto i cinque sviluppatori questo costo supera quasi sempre il beneficio che ne ricavi — è un conto che va fatto con il team che hai, non con quello che vorresti avere.
+
+C'è un'opzione di mezzo che raramente viene proposta ma che spesso è quella giusta: il monolite modulare. Confini interni netti tra i moduli, un solo rilascio da gestire, e la possibilità concreta di estrarre un modulo il giorno in cui ne avrai davvero bisogno — senza pagare fin da subito il costo operativo di tanti servizi separati.
+
+Alla fine, però, la domanda che decide tutto non è tecnica: è cosa deve poter fare il tuo team fra un anno che oggi non può fare. È quella risposta, non l'architettura in sé, a dirti se vale la pena spezzare qualcosa adesso o se il monolite modulare ti porta dove devi andare senza il costo extra.

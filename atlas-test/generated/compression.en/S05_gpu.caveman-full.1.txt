@@ -1,0 +1,5 @@
+RTX 5080 vs RTX 4080:
+
+5080 use Blackwell architecture, 4080 use Ada Lovelace. 5080 pair with GDDR7 memory, 4080 with GDDR6X — bandwidth jump about 717 GB/s to about 960 GB/s. Rated power draw rise 320W to 360W, power connector stay 16-pin on both.
+
+Real-world: rasterization gain only about 10-15%, not huge. Biggest jump come from frame generation, not raw rendering power.

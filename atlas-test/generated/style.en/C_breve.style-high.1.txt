@@ -1,0 +1,5 @@
+No, not as plain B-tree index.
+
+Planner picks sequential scan when filter matches more than roughly 5-10 per cent of rows. Three values: almost any filter exceeds that, index normally unused. Still costs writes and disk space.
+
+Exception: partial index on rare value, which does work.

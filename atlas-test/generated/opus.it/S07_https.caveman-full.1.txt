@@ -1,0 +1,24 @@
+HTTPS è HTTP che viaggia dentro un canale cifrato da TLS. Le richieste e le risposte HTTP restano le stesse. Cambia il tubo in cui passano.
+
+**Come si apre il canale**
+
+1. Il client apre la connessione. Dichiara quali versioni di TLS e quali cifrari supporta.
+2. Il server sceglie la versione e il cifrario. Poi manda il proprio certificato.
+3. Il client verifica il certificato. Il certificato lega un nome di dominio a una chiave pubblica ed è firmato da un'autorità di certificazione. Il client controlla la firma e risale la catena fino a una radice che ha già in memoria.
+4. Client e server concordano una chiave di sessione. Oggi lo fanno tipicamente con uno scambio Diffie-Hellman su curve ellittiche.
+
+**Perché una chiave simmetrica**
+
+La chiave di sessione è simmetrica perché la cifratura asimmetrica costa troppo per il traffico vero. La crittografia asimmetrica serve solo per l'apertura del canale. Il traffico vero usa la chiave simmetrica, che è più economica.
+
+**Cosa ottieni**
+
+Da quel punto in poi il traffico è cifrato e autenticato. Chi sta in mezzo non lo può leggere né modificare.
+
+**TLS 1.2 e 1.3**
+
+TLS 1.2 chiede due giri di andata e ritorno per aprire il canale. TLS 1.3 ne chiede uno solo, quindi la connessione parte prima.
+
+**Limite da conoscere**
+
+Il certificato non dice nulla su chi gestisce il sito. Dice solo che quel dominio controlla quella chiave. Il lucchetto quindi garantisce che parli davvero con quel dominio, non che il dominio sia affidabile.

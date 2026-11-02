@@ -1,0 +1,15 @@
+For a static site, set these on every response:
+
+**Strict-Transport-Security**: `max-age=31536000; includeSubDomains` — forces the browser onto HTTPS.
+
+**Content-Security-Policy**: `default-src 'self'` — blocks third-party script injection.
+
+**X-Content-Type-Options**: `nosniff` — stops the browser from guessing content types.
+
+**Referrer-Policy**: `strict-origin-when-cross-origin` — keeps the full path from leaking to other sites.
+
+**Clickjacking protection**: either `X-Frame-Options: DENY`, or `frame-ancestors 'none'` inside your CSP.
+
+**Permissions-Policy**: disable camera, microphone, and geolocation if you don't use them.
+
+Skip **X-XSS-Protection** — it's deprecated, modern browsers ignore it, and older browser versions actually had vulnerabilities in the header itself.

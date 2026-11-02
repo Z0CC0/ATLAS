@@ -1,0 +1,111 @@
+{
+  "name": "atlas-max",
+  "version": "0.1.0",
+  "description": "Four independent dials — compression (low/high), rigour (ask), check and silent — plus ten subagents that keep searches, logs, pages and big files out of your conversation. Compresses without losing a fact, and refuses to start building before the goal is clear. This variant is everything ATLAS ships: coding, documents and the memory. Install it instead of atlas-code and atlas-mem, never beside them.",
+  "author": {
+    "name": "ZoCCo"
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/atlas-activate.js\" --part 1",
+            "timeout": 5,
+            "statusMessage": "ATLAS"
+          },
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/atlas-activate.js\" --part 2",
+            "timeout": 5,
+            "statusMessage": "ATLAS"
+          },
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/atlas-activate.js\" --part 3",
+            "timeout": 5,
+            "statusMessage": "ATLAS"
+          }
+        ]
+      },
+      {
+        "matcher": "compact",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/atlas-precompact.js\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/atlas-tracker.js\"",
+            "timeout": 5,
+            "statusMessage": "ATLAS"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash|PowerShell|Write|Edit|MultiEdit|NotebookEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/atlas-guard.js\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/atlas-guard.js\"",
+            "timeout": 5
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/atlas-signals.js\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Grep|Read",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/atlas-labels.js\"",
+            "timeout": 5
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/atlas-precompact.js\"",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

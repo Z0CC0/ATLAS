@@ -1,0 +1,7 @@
+Here's how the RTX 5080 stacks up against the RTX 4080:
+
+The 5080 is built on Nvidia's newer Blackwell architecture, while the 4080 runs on the previous-gen Ada Lovelace. That generational jump brings faster memory too: the 5080 uses GDDR7 versus the 4080's GDDR6X, which pushes memory bandwidth from around 717 GB/s up to about 960 GB/s — a solid boost that helps at higher resolutions and with heavier textures.
+
+Power draw goes up a bit as well, from 320W to 360W, but you don't need a new power supply setup for it — both cards still use the same 16-pin connector.
+
+Where you'll actually notice the difference matters, though. If you're expecting a big leap in traditional rasterized gaming performance, temper expectations: the real-world gain there is only around 10-15%. The much bigger jump shows up in frame generation, where the 5080 pulls significantly ahead — so the card's biggest advantage comes through most in workflows or games that lean on that feature, rather than in raw horsepower.

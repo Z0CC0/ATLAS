@@ -1,0 +1,31 @@
+Use `let` when a variable needs a new value later. Use `const` when the name should always point to the same value.
+
+**`let` allows reassignment:**
+```js
+let count = 1;
+count = 2; // fine
+```
+
+**`const` prevents reassigning the name:**
+```js
+const max = 10;
+max = 20; // TypeError
+```
+
+**`const` does not stop you from changing the value itself.** An object declared with `const` can still change inside:
+```js
+const user = { name: "Ana" };
+user.name = "Luca";  // fine: the object changes
+user = {};           // TypeError: the name cannot point to a new object
+```
+
+**Both are block scoped, unlike `var`.** A `let` or `const` declared inside `{ }` exists only in that block:
+```js
+if (true) {
+  let a = 1;
+  const b = 2;
+  var c = 3;
+}
+console.log(c); // 3
+console.log(a); // ReferenceError
+```

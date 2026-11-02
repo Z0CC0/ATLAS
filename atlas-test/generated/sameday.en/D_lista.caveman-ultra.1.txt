@@ -1,0 +1,21 @@
+Set these six headers. Omit a seventh.
+
+- **`Strict-Transport-Security: max-age=31536000; includeSubDomains`**: forces browser onto HTTPS. Use max-age 31536000 seconds or more.
+- **`Content-Security-Policy: default-src 'self'`**: blocks third-party script injection.
+- **`X-Content-Type-Options: nosniff`**: stops browser guessing content type.
+- **`Referrer-Policy: strict-origin-when-cross-origin`**: full path does not leak to other sites.
+- **`X-Frame-Options: DENY`**: blocks clickjacking. Alternative: add `frame-ancestors 'none'` inside Content-Security-Policy.
+- **`Permissions-Policy`**: turns off camera, microphone, geolocation. Use only if site does not need them.
+
+Combined:
+
+```
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+Content-Security-Policy: default-src 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+X-Frame-Options: DENY
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+```
+
+**Omit `X-XSS-Protection`.** Deprecated. Modern browsers ignore it. Older browser versions introduced vulnerabilities through it.

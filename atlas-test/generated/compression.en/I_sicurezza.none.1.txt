@@ -1,0 +1,7 @@
+No — anything that reaches the browser can be read, and obfuscating it doesn't change that. Open dev tools, or just watch the network requests, and the key is right there no matter how you've mangled it in the frontend code.
+
+The right setup is: the key lives on your server, and your frontend calls an endpoint on that server, which then calls the actual service using the key. The browser never sees it.
+
+Put a rate limit on that endpoint too — without one, anyone can hit it as much as they want and effectively use your key for free.
+
+And if this key has already gone out in frontend code at any point, treat it as compromised right now and rotate it — don't just remove it and move on. Removing it from the latest commit isn't enough either: it's still sitting in your git history, so anyone who already cloned the repo still has it.

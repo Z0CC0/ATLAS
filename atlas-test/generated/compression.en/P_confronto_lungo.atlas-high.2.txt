@@ -1,0 +1,9 @@
+Local files, plus a shipper (Fluent Bit / Vector / Filebeat) forwarding to wherever you search — managed service or self-hosted store.
+
+Files alone: zero cost, no dependency, but grep-only search and manual rotation, disk fills otherwise. No cross-machine search — connect to each box separately.
+
+Managed service directly: instant search, alerts, retention, but cost scales with volume, and at 1k req/min volume grows fast. Logs leave your infra — strip personal data first.
+
+App's own database: familiar search, but log writes compete with real request traffic for cache and connections — under load logs starve the requests that need those resources.
+
+At this volume, write to local files, ship async via collector. App never blocks on a log write — that's the rule that always holds: logging must never sit in the request's critical path.

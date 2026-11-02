@@ -1,0 +1,15 @@
+Direct rewrite: DDL that changes a column type on Postgres/MySQL rewrites the whole table under an ACCESS EXCLUSIVE lock — with ten million rows that's downtime for however long the rewrite takes. Do it in steps instead:
+
+1. **Check convertibility first.** Count how many rows in the varchar column aren't all digits. If that count isn't zero, stop and clean up the data before touching schema.
+
+2. **Add the new column.** `ALTER TABLE t ADD COLUMN colonna_int integer` — on its own this is fast, no rewrite, since it's just adding a nullable column.
+
+3. **Backfill in batches of 10,000 rows.** Don't do it in one UPDATE — that would hold a long lock. Loop over the table in chunks, committing between batches, so production traffic keeps flowing.
+
+4. **Add a trigger** that keeps `colonna` and `colonna_int` in sync while the backfill runs, so any row written during the migration doesn't fall out of step between the two columns.
+
+5. **Switch the app to read from `colonna_int`, and ship it.** Once you're confident the new column is correct and complete, deploy the code change.
+
+6. **Only then, drop the old column:** `ALTER TABLE t DROP COLUMN colonna`.
+
+Be careful with step 6 — it's irreversible. Once `colonna` is dropped, that data is gone unless you restore from backup. Don't run it until you're sure the new column is fully validated and the new code path has been running cleanly in production.

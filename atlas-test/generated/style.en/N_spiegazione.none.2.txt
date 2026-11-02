@@ -1,0 +1,7 @@
+Eventual consistency means that when you write to a replicated system, the copies do not all agree right away. They converge within a finite time once the writes stop. In practice that window is short: under a second between replicas in the same region, rising to seconds when replicas sit in different regions.
+
+The reason systems accept this is a trade against availability. A system that demands strong consistency has to refuse requests whenever its replicas cannot talk to each other. Most systems that scale choose to keep answering instead, so eventual consistency is a deliberate choice rather than a defect to be eliminated.
+
+Why you should care: it bites whoever reads right after writing. The classic case is a user who posts a comment, reloads the page, and does not see it. The usual fix is narrow. The session that just wrote reads from the primary replica for a while, while everyone else keeps reading from the replicas.
+
+The cases where eventual consistency is unacceptable are few and easy to recognise: account balances, seat availability, and uniqueness of an identifier. For those, pay the availability cost and demand strong consistency. For everything else, accept the lag and handle the read-after-write case for the writer.

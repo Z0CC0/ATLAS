@@ -1,0 +1,3 @@
+5080 runs Blackwell, 4080 runs Ada Lovelace — one generation apart. Memory jumps too: GDDR7 replaces GDDR6X, bandwidth climbs from around 717 to about 960 GB/s. Power draw goes up a bit, 320 to 360 watts, but connector stays 16-pin, no change there.
+
+Real question is what that buys. In pure rasterisation, gain sits around 10-15%, solid but not dramatic. Where 5080 pulls ahead is frame generation — that's the biggest jump, well past what raw horsepower numbers suggest.

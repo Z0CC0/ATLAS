@@ -1,0 +1,12 @@
+Direct `ALTER TABLE ALTER COLUMN TYPE`: full table rewrite, ACCESS EXCLUSIVE lock, service down entire duration. Don't.
+
+Instead, online migration:
+
+1. Count rows not all-digits — verify every value convertible.
+2. `ALTER TABLE t ADD COLUMN colonna_int integer` — new column, no rewrite.
+3. Backfill in batches of 10k rows — avoids long lock.
+4. Trigger syncing old/new column during migration — keeps both in step.
+5. Ship code reading from new column.
+6. Only then: `ALTER TABLE t DROP COLUMN colonna`.
+
+Step 6 irreversible — data gone without backup restore. Verify steps 1–5 fully before dropping.

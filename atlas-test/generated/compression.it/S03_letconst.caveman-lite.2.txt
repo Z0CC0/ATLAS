@@ -1,0 +1,1 @@
+const stop rename of variable, but not stop change of value inside object. Object made with const still change inside. let allow rename. Both let and const scope to block, var not.

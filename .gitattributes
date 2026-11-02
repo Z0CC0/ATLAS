@@ -1,0 +1,5 @@
+# Hooks are measured in bytes against a 10 KB cap: a CRLF checkout on Windows would push
+# them over it and fail their own tests. Text files stay LF on every platform.
+* text=auto eol=lf
+*.wasm binary
+*.png binary

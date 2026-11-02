@@ -1,0 +1,18 @@
+Start from the problem you have, not from a target architecture.
+
+**1. Find what actually changes.** Look at which parts of the monolith get touched often. Stable parts gain nothing from being split, so leave them where they are.
+
+**2. Map transaction boundaries.** A transaction that spans two services becomes a distributed problem. Draw each service boundary so that every transaction stays inside one service.
+
+**3. Don't do a parallel full rewrite.** A full rewrite running beside the old system almost always fails. The old system keeps changing, so the copy never catches up.
+
+**4. Strangle it progressively instead:**
+1. Put a router in front of the monolith.
+2. Move one piece at a time behind the router.
+3. Keep the old system authoritative until you have verified the new piece.
+
+**5. Count the operations cost of microservices.** Every service needs its own releases, monitoring, logs, alerts and a person who looks after it. Below five developers, this cost almost always exceeds the benefit.
+
+**6. Consider a modular monolith.** It is the option nobody mentions. You get sharp internal boundaries and one release. You can still extract a module on the day you genuinely need to.
+
+**7. The deciding question is not technical.** Ask what your team must be able to do a year from now that it cannot do today. Pick the architecture that makes that possible, and nothing bigger.

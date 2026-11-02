@@ -1,0 +1,11 @@
+Sconsiglio di metterci tutta la logica di business. Il vantaggio c'è: nessun percorso applicativo può saltare la regola, nemmeno uno script lanciato a mano. Il prezzo però è alto.
+
+Chi legge il codice applicativo non vede i trigger. Una modifica che sembra semplice ne attiva altre, senza lasciare traccia.
+
+Non potete testarli con gli strumenti che già usate. Servono test che girano contro un database vero.
+
+Il debug peggiora. Un errore dentro un trigger arriva come fallimento della scrittura e non dice quale regola l'ha causato.
+
+Le migrazioni diventano fragili, perché l'ordine dei trigger conta e non è dichiarato da nessuna parte.
+
+Alternativa: nel database tenete solo ciò che protegge l'integrità, cioè vincoli, chiavi esterne, unicità e controlli di dominio. La logica di business va nell'applicazione, dietro **un solo punto di ingresso**. Ottenete la stessa garanzia del trigger, a patto che **l'accesso diretto al database sia riservato alle migrazioni**.

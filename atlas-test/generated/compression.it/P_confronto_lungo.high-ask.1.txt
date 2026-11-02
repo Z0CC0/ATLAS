@@ -1,0 +1,11 @@
+File locali più un raccoglitore (agent/collector) che spedisce altrove: a mille richieste al minuto è la scelta giusta, l'applicazione non aspetta mai la scrittura del log.
+
+Perché non le altre due da sole:
+
+File puri: costo zero, nessuna dipendenza, ma ricerca solo con grep, rotazione manuale (altrimenti disco pieno), e su più macchine niente ricerca centralizzata — ti colleghi a ognuna.
+
+Servizio gestito diretto: ricerca immediata, allarmi, retention automatica, ma paghi a volume — a mille richieste/min cresce in fretta — e i log escono dalla tua infrastruttura, quindi vanno ripuliti dai dati personali prima.
+
+Database applicativo: ricerca comoda e nota, ma log e app competono sullo stesso database; sotto carico i log ti mangiano cache e connessioni che servivano alle richieste vere.
+
+Regola che vale sempre: la scrittura del log non sta mai nel percorso critico della richiesta.

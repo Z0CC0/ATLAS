@@ -1,0 +1,31 @@
+L'API non rallenta per una query lenta. Il problema è che **il connection pool si esaurisce**: le connessioni si perdono una alla volta finché non ne resta nessuna libera.
+
+## Cosa succede
+
+Nel middleware in `db/session.py:47` la connessione viene rilasciata solo quando la richiesta va a buon fine. Se l'handler solleva un'eccezione, `release()` non viene mai eseguito. La connessione resta occupata finché non scade il timeout.
+
+Dopo qualche centinaio di richieste fallite il pool è vuoto, e ogni richiesta successiva resta in attesa di una connessione libera. Per questo vedi latenze che crescono fino al blocco invece di errori immediati.
+
+## Come sistemarlo
+
+Avvolgi l'acquisizione in un `try/finally`. Così la connessione viene rilasciata anche quando l'handler va in errore:
+
+```python
+conn = pool.acquire()
+try:
+    return handler(conn, request)
+finally:
+    pool.release(conn)
+```
+
+## Non aumentare `pool_size` come soluzione
+
+Aumentare `pool_size` sembra risolvere, ma nasconde soltanto il problema. Il pool si esaurisce più tardi, ma le connessioni continuano a perdersi. Aumentalo solo dopo aver applicato la correzione, e solo se il carico reale lo richiede.
+
+## Verifica
+
+Per riprodurre il comportamento prima e dopo la modifica, esegui:
+
+```
+pytest tests/test_pool.py -k exhaustion -x
+```

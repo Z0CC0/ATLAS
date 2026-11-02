@@ -1,0 +1,29 @@
+L'x86 nasce poco prima degli anni Ottanta. L'**8086** del 1978 è un processore a 16 bit. Intel lo progetta come evoluzione dell'8080 e ne mantiene la compatibilità a livello di sorgente: il codice esistente si può riassemblare senza riscriverlo. Questa scelta fissa il tema dei quarant'anni successivi. Ogni generazione aggiunge qualcosa, ma non rompe con il passato.
+
+## Anni Ottanta: protezione e 32 bit
+
+L'**80286** del 1982 introduce la modalità protetta, cioè la base per sistemi operativi che isolano i programmi tra loro. Il passaggio però ha un limite: una volta entrati in modalità protetta, per tornare alla modalità reale serve riavviare il processore.
+
+L'**80386** del 1985 è il vero salto di quegli anni. Porta i 32 bit e la memoria virtuale paginata. Aggiunge anche la modalità virtuale 8086, che permette di eseguire i vecchi programmi dentro un sistema protetto. Il 386 risolve così il problema lasciato aperto dal 286.
+
+Il **486** del 1989 porta dentro il chip la cache di primo livello e il coprocessore matematico. Prima erano componenti esterni.
+
+## Anni Novanta: il processore cambia natura
+
+Il **Pentium** del 1993 è superscalare. Ha due pipeline intere e può ritirare due istruzioni per ciclo.
+
+Il cambiamento più profondo arriva con il **Pentium Pro** del 1995. Questo processore introduce l'esecuzione fuori ordine. Traduce inoltre le istruzioni x86 in micro-operazioni interne. Da quel momento x86 diventa un'interfaccia, non più la macchina reale che la esegue. Il set di istruzioni resta, ma sotto c'è un motore diverso.
+
+## Anni Duemila: il muro e la svolta
+
+Il **Pentium 4** del 2000 punta tutto sulla frequenza, con una pipeline lunghissima. Questa strada si ferma contro il muro del consumo.
+
+Nel 2003 **AMD** estende l'architettura a 64 bit con AMD64, e Intel adotta lo stesso set di istruzioni. È la prima volta che l'estensione dominante di x86 non viene da Intel.
+
+Dal 2006, con il **Core 2**, la direzione cambia: la crescita non viene più dalla frequenza, ma dal numero di core.
+
+Nel frattempo le estensioni vettoriali crescono per generazioni: MMX, poi SSE, poi AVX, infine AVX-512.
+
+## Oggi
+
+Oggi la complessità sta negli strati sotto l'interfaccia: la predizione dei salti, la gerarchia di cache e l'esecuzione speculativa. Nel 2018 **Spectre e Meltdown** mostrano che l'esecuzione speculativa aveva un costo di sicurezza che nessuno aveva considerato. Quel costo nasce proprio dal meccanismo che per vent'anni aveva reso x86 più veloce.

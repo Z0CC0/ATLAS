@@ -1,0 +1,9 @@
+Usually no. With only three distinct values, PostgreSQL's planner normally won't use a B-tree index on that column. When a filter matches more than roughly 5–10% of the rows, it picks a sequential scan instead. The index still slows down writes and takes disk space, so you pay for it without getting faster reads.
+
+One exception: if one value is rare, a partial index on that value does get used.
+
+```sql
+CREATE INDEX orders_failed_idx ON orders (id) WHERE status = 'failed';
+```
+
+Queries that filter on `status = 'failed'` will use it. Queries on the common values will keep using a sequential scan.

@@ -1,0 +1,9 @@
+Usually no.
+
+With only three values, a B-tree index normally goes unused. The planner prefers a sequential scan whenever the filter selects more than roughly 5-10 per cent of the rows, and each of three values usually matches far more than that. You still pay for the index on every write and in disk space.
+
+**The exception:** if one value is rare and you often query for it, a partial index on just that value does work:
+
+```sql
+CREATE INDEX idx_orders_failed ON orders (status) WHERE status = 'failed';
+```

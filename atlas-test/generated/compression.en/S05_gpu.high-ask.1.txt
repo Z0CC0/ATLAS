@@ -1,0 +1,1 @@
+5080: Blackwell, GDDR7, ~960GB/s bandwidth, 360W. 4080: Ada Lovelace, GDDR6X, ~717GB/s, 320W. Same 16-pin connector both. Raw rasterisation gain only 10-15%; real leap in frame generation, not rendering.

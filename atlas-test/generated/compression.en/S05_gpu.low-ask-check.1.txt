@@ -1,0 +1,1 @@
+5080 runs Blackwell architecture, 4080 runs Ada Lovelace. Memory type differs: GDDR7 vs GDDR6X, pushing bandwidth from ~717 GB/s to ~960 GB/s. Power draw rises from 320W to 360W; connector stays 16-pin. Raw rasterisation gain sits around 10-15% only — real leap comes from frame generation.

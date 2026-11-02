@@ -1,0 +1,7 @@
+Postgres.
+
+At thousand jobs/minute or less, `SELECT FOR UPDATE SKIP LOCKED` handles it, and job insert shares transaction with data write, so no job fires on rolled-back write. Process dies, queue survives, no config needed.
+
+Redis wins on volume (well past that) and latency (sub-millisecond), but costs a service to run and monitor, and loses queued jobs on restart unless AOF configured.
+
+Small project: Postgres. Switch to Redis when volume genuinely demands it.

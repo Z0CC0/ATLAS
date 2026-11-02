@@ -1,0 +1,15 @@
+Sia `let` che `const` hanno **ambito di blocco**: esistono solo dentro il blocco `{ }` in cui li dichiari. In questo sono diversi da `var`.
+
+La differenza tra i due sta nella riassegnazione:
+
+- **`let`** ti permette di riassegnare il nome a un altro valore.
+- **`const`** non ti permette di riassegnare il nome. Però non rende immutabile il valore: se dichiari un oggetto con `const`, puoi comunque cambiarne il contenuto.
+
+```js
+let contatore = 1;
+contatore = 2;          // ok
+
+const utente = { nome: "Anna" };
+utente.nome = "Luca";   // ok: cambia il contenuto dell'oggetto
+utente = {};            // errore: non puoi riassegnare il nome
+```

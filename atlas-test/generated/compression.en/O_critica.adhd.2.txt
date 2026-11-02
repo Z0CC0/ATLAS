@@ -1,0 +1,9 @@
+I'd push back on that.
+
+The appeal is real: a trigger can't be bypassed, not even by someone running a raw script against the database. But that guarantee comes at a cost that's easy to underestimate.
+
+Triggers are invisible to anyone reading the application code — a change that looks like a simple update can silently fire other rules, with nothing in the codebase pointing to it. They also fall outside the testing tools your team already uses; you'd need tests that run against a real database instead of the usual unit-test setup. Debugging gets worse too: when a trigger fails, what you see is just a failed write, with no indication of which rule caused it. And migrations become fragile, because trigger execution order matters but isn't declared anywhere — it's implicit in creation order or naming tricks.
+
+A better split: keep the database responsible only for what protects integrity — constraints, foreign keys, uniqueness, domain checks. Put the actual business logic in the application, behind a single entry point that everything goes through. That entry point gives you the same "can't be bypassed" guarantee the trigger promised, as long as you enforce that direct database access is reserved for migrations only — no scripts, no ad hoc writes outside that path.
+
+You get the same protection, but the logic stays readable, testable with your normal tools, and debuggable when it breaks.

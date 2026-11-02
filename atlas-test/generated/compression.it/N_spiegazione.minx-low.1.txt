@@ -1,0 +1,11 @@
+**Consistenza eventuale:** dopo una scrittura le repliche non concordano subito, ma convergono entro tempo finito se le scritture si fermano.
+
+Ti interessa perché colpisce chi legge subito dopo aver scritto. Utente pubblica commento, ricarica pagina, non lo vede.
+
+Finestra di disaccordo di solito breve: sotto il secondo fra repliche nella stessa regione, sale a secondi fra regioni diverse.
+
+Non difetto da eliminare ma scelta. Compromesso con disponibilità: sistema che pretende consistenza forte deve rifiutare richieste quando repliche non si parlano. Per questo maggior parte dei sistemi che scalano la accetta di proposito.
+
+Soluzione comune al commento sparito: leggere dalla replica primaria solo per sessione che ha appena scritto, non per tutte.
+
+Casi dove non accettabile sono pochi e riconoscibili: saldi di conto, disponibilità di posti, unicità di un identificativo.

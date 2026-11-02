@@ -1,0 +1,17 @@
+Debounce: fires after calls stop for `ms`.
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+`t` closure-scoped, not inside returned function — else each call gets own timer, no debounce. `clearTimeout` before every `setTimeout`, else timers pile up, fn fires multiple times. Spread forwards args — drop it, fn gets nothing.
+
+Returns nothing. Need return value → wrap in Promise.
+
+Opposite need — run immediately, ignore repeats for a while — that's throttle, different function.

@@ -1,0 +1,13 @@
+Settimana variabile a New York: si parte col sereno, a metà settimana arriva la pioggia e il caldo cresce verso il weekend.
+
+- **Lunedì:** sereno, massima 24°, minima 17°.
+- **Martedì:** nuvoloso, 22° di massima e 16° di minima. In serata è prevista pioggia debole.
+- **Mercoledì:** è la giornata peggiore, con pioggia per gran parte del giorno. Massima 19°, minima 15°.
+- **Giovedì:** tornano le schiarite, con 21° di massima e 14° di minima.
+- **Venerdì:** sereno, 25° di massima e 16° di minima.
+- **Sabato:** sereno e caldo, 28° di massima e 19° di minima.
+- **Domenica:** ancora caldo, 26° di massima e 18° di minima, ma nel pomeriggio sono previsti temporali.
+
+Pioverà in modo significativo in due giorni, mercoledì e domenica. Il weekend sarà il periodo più caldo della settimana. Sabato è la giornata migliore per stare all'aperto. Domenica conviene organizzarsi per la mattina.
+
+*Fonte: previsioni dal web.*

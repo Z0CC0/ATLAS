@@ -1,0 +1,11 @@
+Eventual consistency: after a write, replicas disagree briefly, then converge — given no more writes, within a bounded time. Same region, under a second. Across regions, seconds.
+
+Why it exists: the alternative is refusing requests. A system demanding strong consistency has to reject reads/writes when replicas can't reach each other. Eventual consistency trades that immediate agreement for availability.
+
+Why you'd care: it hits whoever reads right after writing. User posts a comment, reloads, comment's gone — read hit a replica that hasn't caught up yet.
+
+Fix: route that user's own next reads to the primary (or the replica they wrote to), not everyone's reads. Session-level, not global.
+
+Not a bug to chase out — a deliberate tradeoff most systems that scale choose on purpose.
+
+Where it's not acceptable: account balances, seat availability, uniqueness checks (usernames, emails). There, you need strong consistency, accept the availability cost.

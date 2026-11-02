@@ -1,0 +1,1 @@
+`const` block reassign name, not value change inside. Object with `const`: internal properties still change. `let` allow reassign. Both block scope, `var` not.

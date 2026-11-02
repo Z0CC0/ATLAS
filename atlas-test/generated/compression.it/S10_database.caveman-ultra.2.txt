@@ -1,0 +1,13 @@
+Postgres unico DB regge tutti e quattro carichi, ottimo in nessuno.
+
+**Ordini**: Postgres transazioni serie, non negoziabile. MySQL equivalente qui ma piu' debole su tipi dato e query complesse.
+
+**Catalogo**: Mongo semplifica con schemi variabili, ma transazioni multi-documento arrivate tardi, costano.
+
+**Ricerca testuale**: Postgres integrata, ok sotto 1M documenti, debole sopra. Elasticsearch molto superiore (rilevanza, sinonimi, tolleranza errori battitura), ma non archivio autorevole — va alimentato da altro DB, non sostituirlo.
+
+**Analisi**: Postgres regge fino decine milioni righe poi scansioni lente. ClickHouse molto superiore, scansioni colonnari ordini grandezza avanti. Non serve per ordini: aggiornamenti puntuali suo punto debole.
+
+**Configurazione tipica**: Postgres come archivio autorevole, Elasticsearch e ClickHouse alimentati da li'. Ogni sistema aggiunto porta problema sincronizzazione + allineamento dati. Costo vero non licenza, tempo persone che li tengono in piedi.
+
+**Regola pratica**: parti solo con Postgres. Aggiungi sistema quando carico specifico lo impone con numeri alla mano. Elasticsearch prima del milione documenti quasi sempre prematuro.

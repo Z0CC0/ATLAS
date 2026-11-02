@@ -1,0 +1,9 @@
+A mille richieste/minuto: file locali + raccoglitore che spedisce altrove, così app mai in attesa scrittura log.
+
+Solo file: ricerca solo grep, rotazione manuale o disco pieno. Su più macchine niente ricerca centralizzata — collegarsi a ognuna.
+
+Solo servizio gestito: ricerca immediata, allarmi, conservazione automatica — ma a questo volume costo sale in fretta. Log escono da tua infrastruttura: ripulire dati personali prima.
+
+Solo database: ricerca comoda e nota, ma stesso database applicazione mette log e richieste vere in competizione — sotto carico log riempiono cache e connessioni che servivano richieste vere.
+
+Regola sempre valida: scrittura log mai nel percorso critico della richiesta.

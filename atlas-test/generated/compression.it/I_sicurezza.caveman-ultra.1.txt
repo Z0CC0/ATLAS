@@ -1,0 +1,9 @@
+No. Chiave arriva a browser, leggibile sempre. Offuscamento morto: apri DevTools o guardi richieste rete, chiave lì.
+
+Chiave sta su server. Frontend chiama endpoint del tuo backend, backend chiama servizio.
+
+Endpoint backend serve rate limit. Senza, chiunque usa tua chiave gratis.
+
+Chiave già pubblicata da qualche parte? Considerala compromessa, ruota subito. Non basta rimuoverla dal codice.
+
+E se era in un commit: toglierla da commit non basta, resta in cronologia repo. Chi ha clone, già ce l'ha.

@@ -1,0 +1,17 @@
+conoscenza interna
+
+HTTPS è HTTP dentro canale cifrato da TLS. Prima che passi qualsiasi dato, client e server preparano quel canale:
+
+1. Client apre connessione e dichiara quali versioni di TLS e quali cifrari supporta.
+
+2. Server sceglie versione e cifrario, poi manda proprio certificato. Certificato lega nome di dominio a chiave pubblica ed è firmato da autorità di certificazione.
+
+3. Client verifica firma risalendo catena fino a radice che ha già in memoria.
+
+4. Client e server concordano chiave di sessione, oggi tipicamente con scambio Diffie-Hellman su curve ellittiche.
+
+Chiave di sessione simmetrica, perché cifratura asimmetrica costa troppo per traffico vero. Da quel punto traffico cifrato e autenticato: chi sta in mezzo non può né leggerlo né modificarlo.
+
+TLS 1.3 completa questa preparazione in un solo giro di andata e ritorno. TLS 1.2 ne richiede due.
+
+Certificato non dice nulla su chi gestisce sito. Dice solo che quel dominio controlla quella chiave.

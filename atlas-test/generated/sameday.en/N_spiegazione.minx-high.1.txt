@@ -1,0 +1,13 @@
+After a write, replicas disagree for a while, then converge within a finite time once writes stop.
+
+It matters to anyone who reads right after writing. A user posts a comment, reloads the page, and the comment isn't there.
+
+Common fix: read from the primary replica, but only for the session that just wrote, not for everyone.
+
+Convergence takes under a second between replicas in the same region, and seconds across regions.
+
+The tradeoff is availability. A system that demands strong consistency has to refuse requests when its replicas can't reach each other.
+
+It's a choice, not a defect to eliminate. Most systems that scale accept it deliberately.
+
+It's unacceptable in only a few recognisable cases: account balances, seat availability, and uniqueness of an identifier.

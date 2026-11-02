@@ -1,0 +1,5 @@
+No, not worth it usually.
+
+3 distinct values means each value cover ~33% rows. Planner prefer sequential scan once filter select more than roughly 5-10% rows, so B-tree index sit unused most queries. Meanwhile index still cost write overhead and disk space, pure downside.
+
+Exception: partial index on rare value works, if one of three values rare enough (under that 5-10% threshold), index only that value.

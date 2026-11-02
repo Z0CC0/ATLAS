@@ -1,0 +1,15 @@
+For a static site, you don't need much beyond a solid header baseline:
+
+Set **Strict-Transport-Security** with a max-age of at least 31536000 seconds plus `includeSubDomains` — this forces browsers onto HTTPS.
+
+Add a **Content-Security-Policy** with `default-src 'self'`, which is what actually blocks third-party script injection.
+
+Set **X-Content-Type-Options: nosniff** so the browser doesn't try to guess content types.
+
+Set **Referrer-Policy: strict-origin-when-cross-origin** so the full path of your pages doesn't leak to other sites when someone clicks a link out.
+
+Against clickjacking, use either **X-Frame-Options: DENY** or `frame-ancestors 'none'` inside your CSP.
+
+Add a **Permissions-Policy** that switches off camera, microphone, and geolocation if the site doesn't use them.
+
+One thing to leave out: **X-XSS-Protection**. It's deprecated — modern browsers ignore it, and in older browsers it actually introduced vulnerabilities, so don't set it.

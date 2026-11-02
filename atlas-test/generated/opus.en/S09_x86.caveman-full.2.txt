@@ -1,0 +1,24 @@
+x86 history splits into three phases. First, chip gains missing basics. Next, chip becomes a translator over a hidden machine. Last, gains come from parallelism and deep internal machinery.
+
+**Phase 1: building the foundation (1978–1989)**
+
+- **8086 (1978)**: 16 bit. Grows out of 8080 and stays source-level compatible with it. That choice sets pattern for everything after: new chip carries old code forward.
+- **80286 (1982)**: introduces protected mode. Flaw: no way back to real mode without reboot. Half-step, not full solution.
+- **80386 (1985)**: real turning point. Brings 32 bit and paged virtual memory. Virtual 8086 mode lets old real-mode software run inside protected environment, which fixes 286 dead end.
+- **486 (1989)**: pulls first-level cache and maths coprocessor onto chip. Parts that sat outside CPU now live inside.
+
+**Phase 2: x86 becomes an interface (1993–2000)**
+
+- **Pentium (1993)**: superscalar. Two integer pipelines can retire two instructions per cycle. Speed now comes from parallelism inside one core, not only from clock.
+- **Pentium Pro (1995)**: key break. Introduces out-of-order execution. Translates x86 instructions into internal micro-operations. From here x86 is interface only, not real machine underneath. Old instruction set survives as contract. Engine below is free to change.
+- **Pentium 4 (2000)**: chases frequency with very long pipeline. Hits power wall. Raising clock no longer pays.
+
+**Phase 3: new owners, new direction (2003–today)**
+
+- **AMD64 (2003)**: AMD extends architecture to 64 bit. Intel adopts same instruction set. First time dominant extension does not come from Intel.
+- **Core 2 (2006)**: after power wall, direction shifts from frequency to core count. More cores, not faster clock.
+- **Vector extensions**: grow across generations: MMX, then SSE, then AVX, then AVX-512. Each widens work done per instruction.
+- **Today**: complexity sits in layers below instruction set: branch prediction, cache hierarchy, speculative execution. This follows from Pentium Pro shift. Visible x86 changes little, hidden machine does heavy lifting.
+- **Spectre and Meltdown (2018)**: show that speculative execution carried security cost nobody had priced. Hidden machine built for speed turns out to leak.
+
+**Thread through all of it:** compatibility is fixed constraint, from 8086 source compatibility to AMD64. Pentium Pro turned x86 into interface over a hidden engine, and that engine kept getting deeper. Frequency was main performance lever until power wall. After that, gains came from wider vectors, more cores and smarter speculation. Spectre and Meltdown then showed that speculation has its own price.

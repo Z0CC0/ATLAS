@@ -1,0 +1,11 @@
+For a small project, go with Postgres.
+
+The practical reason is that your jobs and your data can live in the same transaction. If you insert a row and enqueue a job in one transaction and that transaction rolls back, the job never fires — there's no window where a job runs against data that never actually got committed. That's a correctness guarantee you don't get for free with Redis.
+
+You also don't have to think about durability. If the process crashes, the queue is sitting safely on disk in the same database you're already backing up — nothing extra to configure. Redis can do this too, but only if you remember to turn on AOF; skip that and a restart quietly drops whatever was queued.
+
+Using `SELECT ... FOR UPDATE SKIP LOCKED` as your dequeue mechanism, Postgres comfortably handles up to about a thousand jobs a minute, which covers the vast majority of small projects.
+
+The tradeoff: Redis is faster (sub-millisecond latency) and scales to much higher throughput. But it's another moving part — another service to deploy, monitor, and keep patched. For a small project, that operational cost usually isn't worth paying yet.
+
+So: start with Postgres, and move to Redis later if your job volume actually grows past what a single-transaction queue can handle — not before.

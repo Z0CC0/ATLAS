@@ -1,0 +1,11 @@
+At a thousand requests a minute, write the logs to local files and run a collector that ships them somewhere else. Your application never waits on a log write, and you still get search in one place.
+
+**The rule behind the choice:** writing a log must never sit in the critical path of a request. Whatever you choose, a request shouldn't slow down because a log line is being written.
+
+**How the three options compare:**
+
+- **Files on their own** cost nothing and add no dependency. The trouble is searching them. You're limited to grep, and if you run several machines you can't search across them at all. You have to connect to each one. You also have to set up rotation yourself, or the disk fills.
+- **A managed service** gives you instant search, alerts and automatic retention. But you pay by volume, and at your traffic the volume grows fast. Your logs also leave your own infrastructure, so you have to strip personal data before they're sent.
+- **The application's own database** makes searching familiar and convenient. But logging and serving requests are two very different workloads, and they end up competing. Under load, the logs take up caches and connections that your real requests needed. That's the worst time for it to happen.
+
+**What files plus a collector gives you:** writing to a local file is cheap and doesn't block the request. The collector handles shipping the logs out, and search happens wherever they end up. You still need to configure rotation on the local files. If a managed service is the destination, strip personal data before it goes and keep an eye on volume costs.

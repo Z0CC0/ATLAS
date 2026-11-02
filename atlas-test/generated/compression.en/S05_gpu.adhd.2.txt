@@ -1,0 +1,7 @@
+If you're weighing a 5080 against a 4080, here's what actually changes:
+
+The 5080 is built on Nvidia's newer Blackwell architecture, while the 4080 uses Ada Lovelace. On the memory side, the 5080 moves to GDDR7 instead of the 4080's GDDR6X, and that bump pushes memory bandwidth from around 717 GB/s up to about 960 GB/s.
+
+Power draw goes up too — rated consumption rises from 320W on the 4080 to 360W on the 5080 — but the power connector doesn't change; both still use the 16-pin connector, so no cabling headaches there.
+
+As for real-world performance: don't expect a huge leap in traditional rasterized gaming. That gain is modest, in the 10-15% range. The much bigger jump shows up in frame generation, where the 5080 pulls ahead by a wider margin than raw rendering alone would suggest — so if you're relying on frame-gen features, the difference feels a lot larger than the rasterization numbers imply.

@@ -1,0 +1,1 @@
+Sì. Vale per liste, tuple, dizionari, insiemi e stringhe: vuoti, sono falsi.

@@ -1,0 +1,15 @@
+2008: documento firmato Satoshi Nakamoto, pseudonimo mai identificato. Titolo: "Bitcoin: A Peer-to-Peer Electronic Cash System".
+
+Problema: doppia spesa senza ente centrale che tenga registro.
+
+Soluzione: catena di blocchi, ordine dato da prova di lavoro. Prova di lavoro rende costoso riscrivere passato — servirebbe rifarla per ogni blocco successivo.
+
+3 gennaio 2009: primo blocco generato. Dentro, titolo articolo del Times su salvataggio bancario — marca temporale e dichiarazione di intenti insieme.
+
+Ricompensa per blocco parte da 50 bitcoin, si dimezza ogni 210.000 blocchi (~4 anni). Totale emesso tende a 21 milioni, non oltre.
+
+2010: prima transazione commerciale documentata, due pizze pagate 10.000 bitcoin.
+
+2011: Satoshi smette partecipazione pubblica. Suoi bitcoin mai spostati.
+
+Origine progetto: ambiente cypherpunk, dopo tentativi precedenti (b-money, bit gold) che non risolvevano l'ordinamento.

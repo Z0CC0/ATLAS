@@ -1,0 +1,35 @@
+**Recommendation: start with Postgres by itself.** Add Elasticsearch or ClickHouse later, and only when one specific workload needs it and you have numbers that show it.
+
+## The options
+
+**Postgres** is the only option here that handles all four workloads. It does each one acceptably, though none of them outstandingly.
+- **Orders:** it gives you real transactions, and for orders those are not negotiable.
+- **Catalogue:** acceptable.
+- **Text search:** built in. It's good enough below about a million documents and weak above that.
+- **Analytics:** it holds up to tens of millions of rows. Past that, the scans get slow.
+
+**MySQL** is as good as Postgres on orders, but weaker on data types and complex queries. It has no advantage over Postgres for your mix of workloads.
+
+**MongoDB** makes the catalogue easier because it supports variable schemas. The catch is orders: multi-document transactions arrived late and they cost you. Orders are the part you can't compromise on, so that's a poor trade.
+
+**Elasticsearch** is far better than Postgres at text search. It handles relevance, synonyms and typos. It is not an authoritative store, though. It has to be fed from another database, not replace it.
+
+**ClickHouse** is far better at analytics. Its columnar scans are orders of magnitude faster. It's not suitable for orders, because point updates are its weak spot.
+
+## How they fit together
+
+Elasticsearch and ClickHouse don't compete with Postgres; they sit beside it. The usual setup at scale is:
+
+- **Postgres** as the authoritative store, holding orders and the catalogue
+- **Elasticsearch**, fed from Postgres, for search
+- **ClickHouse**, fed from Postgres, for analytics
+
+## Why not build all of that on day one
+
+Every system you add brings two problems: keeping it in sync with Postgres, and keeping the data aligned across systems. The real cost of specialised systems isn't the licence. It's the time of the people who keep them running.
+
+In practice:
+- **Add Elasticsearch** when search quality becomes a measured problem, typically once you're above a million documents. Adding it below that is almost always premature.
+- **Add ClickHouse** when your analytics go past tens of millions of rows and the scans are measurably slow.
+
+Until one of those happens, Postgres alone covers orders, catalogue, search and analytics, and you have only one system to run.

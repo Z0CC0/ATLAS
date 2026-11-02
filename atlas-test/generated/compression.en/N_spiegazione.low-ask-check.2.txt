@@ -1,0 +1,13 @@
+Eventual consistency: after write, replicas disagree briefly, converge in finite time once writes stop.
+
+Trade is against availability. Strong consistency forces refusal of requests when replicas can't talk to each other — no compromise possible.
+
+Matters right when you read after your own write: post comment, reload, comment missing. Replica served you hasn't caught up yet.
+
+Fix, not full strong consistency: your session reads from primary replica after its own write. Everyone else still reads normal replicas.
+
+Convergence, same region: under a second. Cross-region: seconds.
+
+Not a defect to chase out — deliberate choice, made by most systems that scale.
+
+Where unacceptable, few, recognisable: account balances, seat availability, uniqueness of an identifier. There, demand strong consistency, accept the availability cost.

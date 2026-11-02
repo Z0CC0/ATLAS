@@ -1,0 +1,24 @@
+Set these six headers on every response, and leave out `X-XSS-Protection`:
+
+```
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+Content-Security-Policy: default-src 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+X-Frame-Options: DENY
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+```
+
+**What each one does**
+
+1. **Strict-Transport-Security** makes the browser use HTTPS. Set `max-age` to at least 31536000 seconds (one year) and add `includeSubDomains`.
+2. **Content-Security-Policy** with `default-src 'self'` blocks scripts injected from third-party sources.
+3. **X-Content-Type-Options: nosniff** stops the browser from guessing the content type of a file.
+4. **Referrer-Policy: strict-origin-when-cross-origin** stops the full path of your URLs from being sent to other sites.
+5. **Clickjacking protection:** use `X-Frame-Options: DENY` or `frame-ancestors 'none'` inside the CSP. One is enough. The block above sets both, which is harmless.
+
+**Permissions-Policy:** turns off camera, microphone and geolocation. Only set it if your site doesn't use them. If a page needs one of them, remove it from the list.
+
+**Don't set X-XSS-Protection.** It's deprecated. Modern browsers ignore it, and older browsers that support it had vulnerabilities caused by it.
+
+Next: add the block above to your server or host's headers config and reload one page. Check the response headers in the browser's DevTools Network tab.

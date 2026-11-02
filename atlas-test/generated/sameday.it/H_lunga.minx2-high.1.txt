@@ -1,0 +1,11 @@
+La cache salva il prefisso già elaborato di una richiesta. Le richieste successive che iniziano allo stesso modo non lo ripagano per intero.
+
+Vale solo per il prefisso: basta un carattere diverso all'inizio e da lì in poi non c'è più riuso. Quindi metti prima le parti stabili e dopo quelle che cambiano, non il contrario.
+
+Scrivere in cache costa più di una lettura normale, quindi la prima richiesta costa di più. Il guadagno arriva dalla seconda in poi e cresce con il numero di turni.
+
+**Conviene** su conversazioni lunghe con un contesto grande e stabile: istruzioni di sistema, documentazione allegata, definizioni degli strumenti.
+
+**Non conviene** su richieste singole e diverse fra loro: paghi la scrittura e non rileggi mai.
+
+Attenzione: una voce di sistema che cambia a ogni turno, come un orario, annulla il riuso di tutto quello che viene dopo.

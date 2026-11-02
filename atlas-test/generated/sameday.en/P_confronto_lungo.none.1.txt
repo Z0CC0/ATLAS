@@ -1,0 +1,18 @@
+At your volume, write logs to **local files and run a collector that ships them somewhere else**. That way the application never waits on a log write.
+
+Whatever you choose, one rule holds: **writing a log must never be part of handling the request.** Here's how the three options compare against that rule and your traffic.
+
+**Files alone.** They cost nothing and add no dependencies. The downsides:
+- Searching means grep.
+- You have to set up rotation yourself, or the disk fills up.
+- If you run more than one machine, you can't search them all at once. You have to log into each one.
+
+**A managed service.** You get instant search, alerts and automatic retention. The downsides:
+- You pay by volume, and at a thousand requests a minute the volume grows fast.
+- Your logs leave your own infrastructure, so you have to strip personal data before sending them.
+
+**The database.** Searching is familiar and convenient. But if the logs go into the application's own database, two very different workloads compete for it. Under load, the logs use up caches and connections that real requests needed. You'd be slowing down the thing the logs are supposed to help you watch.
+
+**Why files plus a collector works:** the application only appends to a local file, which is quick and doesn't depend on anything else. The collector then ships those files wherever you want to search them, in the background.
+
+That destination can be a managed service if you want its search and alerts. The collector is also a good place to strip personal data before anything leaves your infrastructure. Whatever you pick, set up rotation on the local files so the disk doesn't fill.

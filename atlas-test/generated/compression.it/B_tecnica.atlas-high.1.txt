@@ -1,0 +1,20 @@
+La causa: esaurimento del connection pool, non query lente.
+
+In `db/session.py:47` la connessione si rilascia solo sul percorso di successo. Se l'handler solleva eccezione, `release()` non viene mai raggiunto — connessione occupata fino a timeout. Dopo qualche centinaio di richieste fallite il pool si svuota, ogni richiesta successiva attende. Per questo latenze crescenti, non errori immediati.
+
+Fix: avvolgere in try/finally.
+
+```python
+conn = pool.acquire()
+try:
+    return handler(conn, request)
+finally:
+    pool.release(conn)
+```
+
+Aumentare `pool_size` maschera il problema, non lo elimina — sposta solo più avanti il momento dell'esaurimento. Aumentalo solo dopo il fix, se il carico reale lo richiede.
+
+Riproduzione prima/dopo:
+```
+pytest tests/test_pool.py -k exhaustion -x
+```

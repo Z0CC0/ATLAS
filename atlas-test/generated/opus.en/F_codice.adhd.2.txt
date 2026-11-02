@@ -1,0 +1,33 @@
+Paste this in and wrap the function you want to debounce:
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+## How to use it
+
+```js
+const onResize = debounce(() => console.log('resized'), 200);
+window.addEventListener('resize', onResize);
+```
+
+`fn` runs once, `ms` milliseconds after the last call. Each new call inside that window resets the timer.
+
+## Three details the code depends on
+
+1. **`clearTimeout(t)` runs before every new `setTimeout`.** If you remove it, the timers stack up and `fn` fires more than once.
+2. **`let t` sits in the outer function, not in the returned one.** That way every call shares one timer. If you move `t` inside the arrow function, each call gets its own timer and nothing is debounced.
+3. **`...args` passes the arguments through.** Without the spread, `fn` is called with nothing.
+
+## Limits
+
+- **It returns nothing.** The debounced function gives back `undefined`. If you need `fn`'s return value, you have to wrap this in a Promise.
+- **Wrong tool for "run now, then ignore for a while".** That behaviour is a throttle, which is a separate function.
+
+Next: wrap one handler you already have, such as a search input's `input` event, and type quickly to check that it fires once.

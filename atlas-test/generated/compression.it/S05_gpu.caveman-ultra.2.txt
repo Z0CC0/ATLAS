@@ -1,0 +1,3 @@
+5080 usa Blackwell, 4080 usa Ada Lovelace. Memoria: GDDR7 contro GDDR6X, banda sale da circa 717 a circa 960 GB/s. Consumo dichiarato sale da 320 a 360 watt, connettore resta 16 pin.
+
+Differenza vera: nel rasterizzatore puro guadagno solo 10-15%. Salto grande sta nella generazione di fotogrammi, non nel motore grafico classico.

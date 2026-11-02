@@ -1,0 +1,26 @@
+Start by counting the values that won't convert. If the count isn't 0, stop and fix those rows first:
+
+```sql
+SELECT count(*) FROM t WHERE colonna !~ '^[0-9]+$';
+```
+
+Don't run `ALTER TABLE t ALTER COLUMN colonna TYPE integer` directly. It rewrites the whole table while holding an ACCESS EXCLUSIVE lock, so the service is down until the rewrite finishes. On ten million rows that is a long outage.
+
+Do it in six steps:
+
+1. **Check the data.** Run the count above. Only continue when it returns 0.
+2. **Add the new column:**
+   ```sql
+   ALTER TABLE t ADD COLUMN colonna_int integer;
+   ```
+3. **Fill it in batches of 10,000 rows.** Small batches never hold a long lock on the table, so the service keeps running while this happens.
+4. **Add a trigger that keeps `colonna` and `colonna_int` in step.** Rows written while the migration runs then land in both columns.
+5. **Change your code to read from `colonna_int`, then ship it.**
+6. **Only after step 5 is live, drop the old column:**
+   ```sql
+   ALTER TABLE t DROP COLUMN colonna;
+   ```
+
+**Step 6 can't be undone.** Once the column is dropped, the only way to get the data back is to restore from backup. Wait until the code from step 5 is running in production and working before you run it.
+
+Next: run the step 1 count query and check whether it returns 0.

@@ -1,0 +1,13 @@
+Eventual consistency: after a write, replicas don't agree right away, but they converge within a finite time once writes stop.
+
+It matters to anyone who reads right after writing. A user posts a comment, reloads and doesn't see it.
+
+Common fix: read from the primary replica for the session that just wrote, not for everyone.
+
+Typical convergence: under a second across replicas in one region, seconds across regions.
+
+The trade is against availability. A system demanding strong consistency must refuse requests when replicas can't talk.
+
+It's a choice, not a defect to eliminate. Most systems that scale accept it deliberately.
+
+Unacceptable only in a few recognisable cases: account balances, seat availability, uniqueness of an identifier.

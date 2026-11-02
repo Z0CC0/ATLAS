@@ -1,0 +1,5 @@
+No.
+
+B-tree ignored on low-cardinality columns. Planner picks sequential scan once filter selects above ~5-10% of rows — three distinct values guarantees that. Index still costs writes, disk space.
+
+Exception: partial index on the rare value works.

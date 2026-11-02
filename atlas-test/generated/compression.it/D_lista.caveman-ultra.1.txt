@@ -1,0 +1,15 @@
+Sito statico, questi header servi:
+
+**Strict-Transport-Security**: max-age almeno 31536000 secondi, includeSubDomains. Forza browser usare HTTPS.
+
+**Content-Security-Policy**: default-src 'self'. Blocca iniezione script terze parti.
+
+**X-Content-Type-Options**: nosniff. Impedisce browser indovinare tipo contenuto.
+
+**Referrer-Policy**: strict-origin-when-cross-origin. Evita far uscire percorso completo verso altri siti.
+
+**X-Frame-Options**: DENY, oppure frame-ancestors 'none' dentro la CSP. Protezione clickjacking.
+
+**Permissions-Policy**: spegni camera, microfono, geolocalizzazione se sito non usa.
+
+**X-XSS-Protection**: omettilo, deprecato. Browser moderni ignorano, versioni vecchie introduceva vulnerabilità.

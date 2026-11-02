@@ -1,0 +1,3 @@
+No. Bassa cardinalità (tre valori): il B-tree di norma resta inutilizzato. Il planner sceglie sequential scan quando il filtro seleziona oltre il 5-10% delle righe — con tre valori, sempre così. L'indice costa comunque scrittura e spazio, senza ritorno.
+
+Eccezione: indice parziale sul valore raro, se uno dei tre è marginale rispetto agli altri.

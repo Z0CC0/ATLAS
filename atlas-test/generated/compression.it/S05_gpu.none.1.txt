@@ -1,0 +1,5 @@
+Se stai guardando la RTX 5080 rispetto alla 4080, il salto più concreto non è tanto nella potenza bruta di rasterizzazione, ma nella generazione di fotogrammi: è lì che la differenza si sente davvero.
+
+Sotto il cofano cambiano diverse cose: la 5080 passa all'architettura Blackwell (contro Ada Lovelace della 4080) e monta memoria GDDR7 invece di GDDR6X, il che porta la banda di memoria da circa 717 a circa 960 GB/s. Il consumo dichiarato sale un po', da 320 a 360 watt, ma il connettore di alimentazione resta lo stesso, a 16 pin, quindi non serve cambiare alimentatore per quello.
+
+Sul fronte delle prestazioni pure in rasterizzazione, però, non aspettarti un balzo enorme: il guadagno reale è nell'ordine del 10-15%. Se il tuo uso è soprattutto gaming tradizionale senza generazione di fotogrammi, la differenza pratica è più contenuta di quanto i numeri di banda o l'architettura nuova potrebbero far pensare.

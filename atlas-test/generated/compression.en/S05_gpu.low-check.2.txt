@@ -1,0 +1,1 @@
+5080 built on Blackwell, 4080 on Ada Lovelace. 5080 GDDR7, 4080 GDDR6X — bandwidth ~717 to ~960 GB/s. Power draw 320W to 360W, same 16-pin connector. Raw rasterisation gain only 10-15%, real leap in frame generation.

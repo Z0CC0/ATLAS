@@ -1,0 +1,11 @@
+In 2008, someone (or a group) using the pseudonym Satoshi Nakamoto — an identity that's never been uncovered — published a paper called "Bitcoin: A Peer-to-Peer Electronic Cash System." It addressed a specific problem: how do you let people spend digital money without a central authority (a bank, say) keeping the official ledger, while still preventing someone from spending the same coin twice?
+
+The answer was a chain of blocks, each one ordered using "proof of work." The effect of that mechanism is that rewriting history becomes expensive — if you wanted to alter a block from the past, you'd have to redo the costly work not just for that block but for every block that came after it, which quickly becomes impractical.
+
+The system went live on 3 January 2009, when the first block was mined. Embedded in it was the headline of a Times newspaper article about a bank bailout — a detail that both proved the block wasn't created earlier than that date and doubled as a comment on the financial system Bitcoin was positioning itself against.
+
+New bitcoin enter circulation as a reward for mining, starting at 50 bitcoin per block and cut in half every 210,000 blocks — roughly every four years. Because of this halving schedule, total supply approaches a ceiling of 21 million bitcoin and will never exceed it.
+
+The first known real-world purchase came in 2010: someone paid 10,000 bitcoin for two pizzas. Not long after, in 2011, Nakamoto stopped participating publicly and hasn't been heard from since. The bitcoin associated with Nakamoto have sat untouched ever since.
+
+None of this came out of nowhere — Bitcoin built on ideas from the cypherpunk movement, including earlier proposals like b-money and bit gold. Those had similar goals but never cracked the problem of how to get everyone to agree on the order of transactions — which is precisely the piece Nakamoto's proof-of-work chain solved.

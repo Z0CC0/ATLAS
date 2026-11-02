@@ -1,0 +1,1 @@
+Yes — an empty list is falsy in a boolean context. This holds for every empty collection: list, tuple, dict, set, and string.

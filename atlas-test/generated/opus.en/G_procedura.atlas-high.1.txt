@@ -1,0 +1,16 @@
+Don't use a direct `ALTER TABLE ALTER COLUMN TYPE`. It rewrites the whole table while holding an ACCESS EXCLUSIVE lock, so the service is down for as long as the rewrite takes. Do it in six steps instead:
+
+1. Make sure every existing value can be converted. Count the rows whose value is not all digits. The count should be zero before you go on.
+2. Add the new column:
+   ```sql
+   ALTER TABLE t ADD COLUMN colonna_int integer;
+   ```
+3. Fill `colonna_int` in batches of 10,000 rows, so no long lock is held on the table.
+4. Add a trigger that keeps the two columns in step while the migration runs.
+5. Change the code to read from `colonna_int`, and ship it.
+6. Only after step 5 is live, drop the old column:
+   ```sql
+   ALTER TABLE t DROP COLUMN colonna;
+   ```
+
+Step 6 can't be undone. Once the column is dropped, its data comes back only if you restore from backup. Until then, every earlier step can be rolled back, because the old column is still there.

@@ -1,0 +1,3 @@
+Not worth it, generally.
+
+Three distinct values, planner picks sequential scan — B-tree skipped when selectivity above ~5-10%. Index costs writes and disk without payoff. Exception: partial index on the rare value, if one of the three is uncommon — that's selective enough to use.

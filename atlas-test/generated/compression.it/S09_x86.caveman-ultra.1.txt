@@ -1,0 +1,23 @@
+1978, 8086: 16 bit, evoluzione 8080, compatibile a livello sorgente.
+
+1982, 80286: modalita' protetta arriva. Difetto: tornare a modalita' reale serve riavvio.
+
+1985, 80386: 32 bit, memoria virtuale paginata, modalita' virtuale 8086.
+
+1989, 486: cache primo livello e coprocessore matematico integrati nel chip.
+
+1993, Pentium: superscalare, due pipeline intere, due istruzioni per ciclo.
+
+1995, Pentium Pro: esecuzione fuori ordine, istruzioni x86 tradotte in micro-operazioni interne. Da qui x86 diventa interfaccia, non piu' macchina reale sotto.
+
+2000, Pentium 4: punta su frequenza, pipeline lunghissima, sbatte contro muro consumo.
+
+2003: AMD estende a 64 bit con AMD64. Intel adotta stesso set istruzioni. Prima volta estensione dominante non viene da Intel.
+
+Dal 2006, Core 2: direzione cambia, da frequenza a numero nuclei.
+
+Nel frattempo estensioni vettoriali crescono per generazioni: MMX, SSE, AVX, AVX-512.
+
+Oggi complessita' sta negli strati sotto: predizione salti, gerarchia cache, esecuzione speculativa.
+
+2018: Spectre e Meltdown mostrano che esecuzione speculativa aveva costo sicurezza mai considerato.

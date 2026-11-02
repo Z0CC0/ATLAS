@@ -1,0 +1,7 @@
+No, low cardinality column (three values) normally not worth B-tree index.
+
+Planner picks sequential scan when filter matches more than roughly 5-10% of rows — with only three values, each value covers big chunk of table, so index rarely used.
+
+Index still cost you writes and disk space, even when unused.
+
+Exception: partial index on rare value, if one of three values much less common than others — that works.

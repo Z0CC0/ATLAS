@@ -1,0 +1,7 @@
+No. Anything sent to the browser can be read — obfuscation breaks the moment someone opens dev tools or watches the network requests.
+
+Keep the key on the server. Have the frontend call your own backend endpoint, and let that backend call the third-party service with the key.
+
+Put a rate limit on that endpoint — without one, it's a free tunnel to spend your key's quota.
+
+If this key has already shipped to the frontend at any point, treat it as compromised now and rotate it. Deleting it from the code isn't enough — it stays in your git history, and anyone who already cloned the repo already has it.

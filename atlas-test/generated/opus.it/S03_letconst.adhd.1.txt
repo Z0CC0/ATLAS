@@ -1,0 +1,16 @@
+Usa `const` se il nome non deve mai puntare a un valore diverso. Usa `let` se devi riassegnarlo.
+
+**`let`** permette di riassegnare il nome:
+```js
+let n = 1;
+n = 2; // ok
+```
+
+**`const`** impedisce di riassegnare il nome, ma non di modificare il valore:
+```js
+const utente = { nome: "Anna" };
+utente.nome = "Luca";  // ok: l'oggetto può cambiare al suo interno
+utente = {};           // errore: riassegnazione del nome
+```
+
+**In comune:** entrambi hanno ambito di blocco, a differenza di `var`. Esistono solo dentro le `{ }` in cui li dichiari.

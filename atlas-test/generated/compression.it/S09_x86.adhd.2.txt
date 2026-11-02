@@ -1,0 +1,21 @@
+Nel 1978 Intel presenta l'8086, un processore a 16 bit pensato come evoluzione dell'8080: chi aveva già codice per l'8080 poteva "portarlo" a livello di sorgente, non era un salto nel vuoto. È il punto di partenza di tutta la famiglia.
+
+Passano quattro anni e nel 1982 arriva l'80286, che introduce la modalità protetta — un modo di far girare il processore con gestione della memoria e protezione più sofisticate. Il problema è che si tratta di un biglietto di sola andata: una volta entrati in modalità protetta, tornare a quella reale richiedeva un riavvio della macchina. Un limite che si sarebbe sentito parecchio.
+
+Il vero salto arriva nel 1985 con l'80386: si passa ai 32 bit, arriva la memoria virtuale paginata, e soprattutto viene risolto il problema del 286 con la modalità virtuale 8086, che permette di eseguire codice vecchio in un ambiente protetto senza dover ripartire da zero.
+
+Nel 1989 il 486 non cambia l'architettura ma la sua realizzazione fisica: cache di primo livello e coprocessore matematico finiscono dentro lo stesso chip, invece di essere componenti separati.
+
+Con il Pentium del 1993 comincia la corsa al parallelismo interno: è superscalare, cioè ha due pipeline intere capaci di ritirare due istruzioni per ciclo di clock.
+
+Il salto concettuale più importante arriva nel 1995 col Pentium Pro: introduce l'esecuzione fuori ordine e comincia a tradurre le istruzioni x86 in micro-operazioni interne. È il momento in cui x86 smette di essere "la macchina" e diventa un'interfaccia: quello che il programmatore vede e quello che il silicio fa davvero sotto cominciano a separarsi.
+
+Nel 2000 il Pentium 4 scommette tutto sulla frequenza di clock, con una pipeline lunghissima — e sbatte contro il muro del consumo energetico, il limite fisico che quella strada non poteva superare.
+
+Nel 2003 arriva una svolta di tutt'altro tipo: è AMD, non Intel, a estendere l'architettura a 64 bit con AMD64, e questa volta è Intel ad adottare lo stesso insieme di istruzioni. È la prima volta che l'estensione dominante di x86 non nasce in casa Intel.
+
+Dal 2006, con il Core 2, la direzione cambia ancora: non più rincorrere la frequenza, ma aumentare il numero di nuclei.
+
+Parallelamente a tutto questo, generazione dopo generazione crescono le estensioni vettoriali — MMX, poi SSE, poi AVX, poi AVX-512 — un filone che corre a fianco dell'evoluzione principale.
+
+Oggi la vera complessità di x86 non sta più nell'insieme di istruzioni che si scrive, ma negli strati sotto: predizione dei salti, gerarchia di cache, esecuzione speculativa. Ed è proprio lì che nel 2018 Spectre e Meltdown hanno mostrato qualcosa di inatteso: l'esecuzione speculativa, che per decenni aveva significato solo prestazioni, portava con sé un costo di sicurezza a cui nessuno aveva davvero pensato prima.

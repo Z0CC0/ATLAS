@@ -1,0 +1,11 @@
+Prima di scegliere l'architettura, capisci quale parte del monolite cambia davvero: le parti stabili non guadagnano nulla dall'essere spezzate via.
+
+Poi mappa i confini delle transazioni. Se una transazione oggi attraversa quello che vorresti diventasse due servizi, hai già un problema distribuito prima ancora di scrivere codice.
+
+Non tentare la riscrittura completa in parallelo al sistema esistente — fallisce quasi sempre, perché il vecchio continua a cambiare e la copia non lo raggiunge mai. Meglio lo strangolamento progressivo: router davanti, un pezzo alla volta migrato, il vecchio resta autorevole finché il nuovo non è verificato.
+
+Sui microservizi, occhio al costo operativo: ogni servizio vuole rilascio, monitoraggio, log, allarmi, una persona che se ne occupa. Sotto i cinque sviluppatori quel costo supera quasi sempre il beneficio.
+
+Considera anche l'opzione poco citata: monolite modulare — confini interni netti, un solo rilascio, e la possibilità di estrarre un modulo il giorno che serve davvero.
+
+E la domanda che conta davvero non è tecnica: cosa deve poter fare il tuo team fra un anno che oggi non può? La risposta a quella determina l'architettura, non il contrario.

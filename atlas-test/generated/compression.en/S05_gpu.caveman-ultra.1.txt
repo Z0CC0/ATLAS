@@ -1,0 +1,7 @@
+5080 use Blackwell, GDDR7 memory. 4080 use Ada Lovelace, GDDR6X.
+
+Bandwidth: 5080 hit ~960 GB/s vs 4080's ~717 GB/s.
+
+Power draw: 5080 pull 360W rated, 4080 320W. Same 16-pin connector both.
+
+Rasterization gain modest, 10-15%. Real leap frame generation — that's where 5080 pull ahead most.

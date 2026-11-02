@@ -1,0 +1,7 @@
+The RTX 5080 is the newer card. It moves from the 4080's Ada Lovelace architecture to Blackwell, and it swaps the 4080's GDDR6X memory for GDDR7. The faster memory raises bandwidth from about 717 GB/s to about 960 GB/s.
+
+The performance gain depends on what you're doing. The biggest jump is in frame generation. In games where you use it, the 5080 pulls clearly ahead. In plain rasterisation without frame generation, it's only about 10–15% faster.
+
+The 5080 also uses a bit more power. Its rated draw goes from 320 W to 360 W, so check that your power supply has some headroom. The connector is still the same 16-pin plug, so no new cable or adapter is needed.
+
+If you already have a 4080, the upgrade makes sense mainly if you care about frame generation. For raw rasterisation, the gain is small.

@@ -1,0 +1,36 @@
+L'x86 di oggi mantiene l'interfaccia del 1978. Sotto quell'interfaccia, però, la macchina è stata ricostruita più volte.
+
+## 1. Le origini: 16 bit (1978)
+- **8086 (1978)**: processore a 16 bit, evoluzione dell'8080.
+- È compatibile con l'8080 a livello di sorgente, non di binario. Fin dall'inizio x86 dà molta importanza a non rompere il codice esistente.
+
+## 2. Anni Ottanta: protezione e 32 bit
+- **80286 (1982)**: introduce la modalità protetta. Ha un limite pesante: una volta entrati in modalità protetta, per tornare alla modalità reale bisogna riavviare.
+- **80386 (1985)**: è il vero salto. Porta tre novità:
+  1. i 32 bit
+  2. la memoria virtuale paginata
+  3. la modalità virtuale 8086, che permette di far girare il vecchio codice dentro il nuovo ambiente protetto
+- **486 (1989)**: integra nel chip la cache di primo livello e il coprocessore matematico, due componenti che prima stavano fuori.
+
+## 3. Anni Novanta: il processore cambia natura
+- **Pentium (1993)**: è superscalare. Ha due pipeline intere e può ritirare due istruzioni per ciclo.
+- **Pentium Pro (1995)**: è la svolta più profonda. Introduce l'esecuzione fuori ordine e traduce le istruzioni x86 in micro-operazioni interne.
+- **La conseguenza**: da qui x86 diventa un'interfaccia, non è più la macchina reale che esegue il codice. Il programmatore vede x86, ma il chip esegue altro.
+
+## 4. Anni Duemila: finisce la corsa alla frequenza
+- **Pentium 4 (2000)**: punta tutto sulla frequenza, con una pipeline lunghissima. Si scontra con il limite del consumo.
+- **AMD64 (2003)**: AMD estende l'architettura a 64 bit e Intel adotta lo stesso insieme di istruzioni. Per la prima volta l'estensione dominante non arriva da Intel.
+- **Core 2 (2006)**: la direzione cambia. Si smette di aumentare la frequenza e si aumenta il numero di nuclei.
+
+## 5. Le estensioni vettoriali
+In parallelo alle altre evoluzioni, le istruzioni vettoriali crescono per generazioni successive:
+**MMX → SSE → AVX → AVX-512**
+
+## 6. Oggi
+- La complessità sta negli strati sotto l'interfaccia:
+  1. predizione dei salti
+  2. gerarchia di cache
+  3. esecuzione speculativa
+- **Spectre e Meltdown (2018)** dimostrano che l'esecuzione speculativa aveva un costo di sicurezza che nessuno aveva considerato.
+
+**In sintesi:** dal Pentium Pro in poi, x86 conta come contratto con il software più che come descrizione dell'hardware. Le innovazioni più importanti sono avvenute sotto quel contratto, e lì sono emersi anche i problemi di sicurezza.

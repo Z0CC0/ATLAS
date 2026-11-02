@@ -1,0 +1,10 @@
+At thousand requests/minute, use local files plus collector that ships logs elsewhere.
+
+Why: writing log must never sit in critical path of request.
+
+- Files alone: zero cost, no dependency, but grep for search and manual rotation setup — disk fills if forget.
+- Multiple machines with files: no unified search, must connect to each one separately.
+- Managed service alone: instant search, alerts, automatic retention — but cost scales with volume, and at your rate volume grows fast. Also logs leave your infrastructure, so must strip personal data first.
+- Database: search convenient, but log writes compete with real application workload — under load, logs fill caches and connections your actual requests need.
+
+Collector pattern gets you: app writes to local files (fast, no dependency, never blocks request), collector reads and ships to wherever you want centralized search/retention — separately, off critical path. Best of both, without app waiting on log write.

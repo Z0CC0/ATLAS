@@ -1,0 +1,15 @@
+conoscenza interna
+
+**Domanda decisiva, non tecnica: cosa deve poter fare il team fra un anno che oggi non può.** Architettura segue da lì.
+
+Prima di decidere servono due dati.
+
+Quali parti del monolite cambiano davvero: parti stabili non guadagnano nulla dall'essere spezzate.
+
+Dove stanno i confini delle transazioni: transazione che attraversa due servizi diventa problema distribuito.
+
+Conta la dimensione del team. Microservizi costano di più in operatività: ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupa. Sotto cinque sviluppatori quel costo supera quasi sempre il beneficio.
+
+Opzione poco citata: **monolite modulare**. Confini interni netti, un solo rilascio, possibilità di estrarre un modulo il giorno che serve davvero.
+
+Sul come migrare, evita riscrittura completa in parallelo al vecchio sistema: fallisce quasi sempre, perché il vecchio continua a cambiare e la copia non lo raggiunge mai. Alternativa: strangolamento progressivo. Router davanti, un pezzo spostato per volta, vecchio autorevole finché il nuovo non è verificato.

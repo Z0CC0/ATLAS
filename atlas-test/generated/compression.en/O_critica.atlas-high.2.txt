@@ -1,0 +1,3 @@
+Trigger-based logic gives real guarantee, no bypass, not even hand-run scripts. Cost: invisible to code readers, one change fires others silently, no trace. Needs real-DB tests, not team's normal tools. Debugging: failed write, no rule name. Migrations fragile, trigger order matters, declared nowhere.
+
+Better split: DB holds only integrity — constraints, FKs, uniqueness, domain checks. Business logic in app, behind single entry point. Same bypass-proof guarantee, if direct DB access stays reserved to migrations.

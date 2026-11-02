@@ -1,0 +1,13 @@
+Before architecture: find what actually changes in the monolith. Stable parts gain nothing from splitting — don't touch them.
+
+Map transaction boundaries. A transaction spanning two services becomes a distributed problem.
+
+Skip parallel rewrite. Old system keeps changing, copy never catches up, almost always fails.
+
+Strangle instead: router in front, move one piece at a time, old system stays authoritative until new piece verified.
+
+Microservices cost more ops — each wants releases, monitoring, logs, alerts, an owner. Below five developers that cost usually beats the benefit.
+
+Consider the modular monolith: sharp internal boundaries, one release, extract a module later if genuinely needed.
+
+Real question isn't technical: what must the team do in a year that it can't do today. Answer that first, architecture follows.

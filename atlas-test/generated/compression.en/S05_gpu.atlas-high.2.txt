@@ -1,0 +1,1 @@
+5080 runs Blackwell, 4080 Ada Lovelace. 5080 has GDDR7, 4080 GDDR6X — bandwidth ~717→960 GB/s. Power draw 320→360W, same 16-pin connector. Raw rasterization gain: only 10-15%. Real leap: frame generation, not rasterization.

@@ -1,0 +1,31 @@
+Don't change the type in place. Add a new integer column next to the old one, move the data over, then remove the old column last.
+
+A direct `ALTER TABLE ... ALTER COLUMN ... TYPE` rewrites the whole table and holds an ACCESS EXCLUSIVE lock the entire time. With ten million rows, your service is down until the rewrite finishes.
+
+Follow these steps in this order:
+
+1. Check that every existing value can be converted. Count the rows whose value is not all digits. Don't continue until that count is zero or you've decided what to do with those rows.
+
+   ```sql
+   SELECT count(*) FROM t WHERE colonna !~ '^[0-9]+$';
+   ```
+
+2. Add the new column:
+
+   ```sql
+   ALTER TABLE t ADD COLUMN colonna_int integer;
+   ```
+
+3. Fill `colonna_int` in batches of ten thousand rows, so no long lock is held on the table.
+
+4. Add a trigger that keeps the two columns in step while the migration runs, so rows written during the backfill aren't missed.
+
+5. Change your code to read from `colonna_int`, and ship it.
+
+6. Only after that, drop the old column:
+
+   ```sql
+   ALTER TABLE t DROP COLUMN colonna;
+   ```
+
+**Step 6 cannot be undone.** Once you drop the column, the data comes back only if you restore from backup. Until you run it, the old column is your way back, so don't drop it until the new code has run in production and you're sure the new column is correct.

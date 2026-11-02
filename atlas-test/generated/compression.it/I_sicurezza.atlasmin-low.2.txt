@@ -1,0 +1,9 @@
+No.
+
+Chiave nel browser leggibile sempre, offuscamento inutile, si vede in devtools o nelle richieste di rete.
+
+Chiave sta sul server. Frontend chiama endpoint del tuo backend, backend chiama il servizio.
+
+Endpoint serve rate limit, altrimenti diventa uso gratuito della chiave altrui.
+
+Se chiave gia' pubblicata: compromessa, va ruotata subito, non solo tolta dal codice. Toglierla da un commit non basta, resta nella cronologia del repo, chiunque abbia un clone la possiede gia'.

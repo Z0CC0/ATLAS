@@ -1,0 +1,7 @@
+Diretto ALTER TABLE ALTER COLUMN TYPE riscrive intera tabella tenendo ACCESS EXCLUSIVE lock — servizio fermo per tutta durata. Con dieci milioni righe, inaccettabile in produzione.
+
+Percorso corretto, in ordine:
+
+Prima verifica che ogni valore esistente sia convertibile: conta righe che non contengono solo cifre. Poi aggiungi colonna nuova, senza toccare quella esistente: `ALTER TABLE t ADD COLUMN colonna_int integer`. Riempila a blocchi da diecimila righe per volta, per non tenere lock lungo su tabella. Aggiungi trigger che tiene allineate due colonne durante migrazione, così scritture concorrenti non perdono dati. Poi cambia codice per leggere da colonna nuova, e rilascialo. Solo a quel punto, sesto passo: elimina colonna vecchia, `ALTER TABLE t DROP COLUMN colonna`.
+
+Sesto passo irreversibile: una volta eliminata colonna, dati non tornano senza ripristino da backup. Non farlo finché non sei certo che codice nuovo funzioni in produzione da tempo sufficiente.

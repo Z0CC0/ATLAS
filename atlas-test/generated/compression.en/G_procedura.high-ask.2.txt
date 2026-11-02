@@ -1,0 +1,12 @@
+Not a direct ALTER TABLE ALTER COLUMN TYPE — full table rewrite, ACCESS EXCLUSIVE lock, service down whole duration.
+
+Steps:
+
+1. Count rows failing digit-only check — catches non-convertible values first.
+2. `ALTER TABLE t ADD COLUMN colonna_int integer` — new column, no rewrite.
+3. Backfill in batches of 10k rows — avoids long lock.
+4. Trigger syncing old/new column during migration — keeps both in step.
+5. Ship code reading from new column.
+6. `ALTER TABLE t DROP COLUMN colonna` — only after step 5 confirmed working.
+
+Step 6 irreversible: dropped data unrecoverable without backup restore.

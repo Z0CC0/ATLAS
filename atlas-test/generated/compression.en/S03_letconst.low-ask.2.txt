@@ -1,0 +1,1 @@
+let permits reassigning value bound to name; const blocks that, only that — value itself can still mutate. Object made with const changes internally fine, just can't rebind name to something else. Both block scoped, unlike var.

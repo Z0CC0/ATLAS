@@ -1,0 +1,14 @@
+Entrambi hanno ambito di blocco, a differenza di `var`. Cambia la riassegnazione.
+
+`let` permette di riassegnare il nome.
+
+`const` impedisce di riassegnare il nome, ma non di modificare il valore: un oggetto dichiarato con `const` può cambiare al suo interno.
+
+```js
+let n = 1;
+n = 2;          // ok
+
+const o = { a: 1 };
+o.a = 2;        // ok, l'oggetto cambia al suo interno
+o = {};         // TypeError
+```

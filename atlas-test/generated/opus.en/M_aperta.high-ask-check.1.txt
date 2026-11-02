@@ -1,0 +1,23 @@
+internal knowledge
+
+Before choosing an architecture, find out what your team must be able to do a year from now that it cannot do today. That question is not technical, and it decides the rest.
+
+**Map your monolith first:**
+
+Which parts actually change. Stable parts gain nothing from being split.
+
+Where transaction boundaries sit. A transaction spanning two services becomes a distributed problem.
+
+**How you migrate:**
+
+Avoid a full rewrite running in parallel with the old system. It almost always fails, because the old system keeps changing and the copy never catches up.
+
+Use progressive strangling instead. Put a router in front and move one piece at a time. The old system stays authoritative until the new one is verified.
+
+**Target architecture:**
+
+Microservices cost more to operate. Every service needs its own releases, monitoring, logs, alerts and a person who looks after it.
+
+With fewer than five developers, that cost almost always exceeds the benefit.
+
+A modular monolith is the option nobody mentions. It has sharp internal boundaries and one release. You can still extract a module the day you genuinely need to.

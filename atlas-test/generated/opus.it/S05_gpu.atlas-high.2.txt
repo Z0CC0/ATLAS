@@ -1,0 +1,9 @@
+La 5080 va circa il 10-15% più veloce della 4080 nel rendering classico (rasterizzazione). Il salto più grande è nella generazione di fotogrammi.
+
+Architettura: Blackwell sulla 5080, Ada Lovelace sulla 4080.
+
+Memoria: GDDR7 sulla 5080, GDDR6X sulla 4080, con banda da circa 717 a circa 960 GB/s.
+
+Consumo dichiarato: 360 W contro 320 W.
+
+Connettore di alimentazione: 16 pin su entrambe.

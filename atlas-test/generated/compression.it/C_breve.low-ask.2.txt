@@ -1,0 +1,3 @@
+No. Bassa cardinalità, tre valori: planner sceglie scan sequenziale se filtro seleziona più ~5-10% righe — con solo tre valori distinti, quasi sempre caso. Indice B-tree normale qui: costo scrittura e spazio senza beneficio, di norma ignorato dal planner.
+
+Eccezione: indice parziale sul valore raro (WHERE colonna = 'valore_raro') — quello funziona, perché seleziona pochissime righe.

@@ -1,0 +1,5 @@
+Two GPUs differ across architecture, memory, power, and where gains actually show up.
+
+RTX 5080 runs Blackwell architecture with GDDR7 memory; RTX 4080 runs Ada Lovelace with GDDR6X. Memory bandwidth rises from about 717 GB/s (4080) to about 960 GB/s (5080). Rated power draw goes from 320W to 360W. Power connector stays 16-pin on both.
+
+On raw rasterisation, gain is modest — around 10-15%. Biggest jump is in frame generation, not rasterisation.

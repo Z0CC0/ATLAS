@@ -1,0 +1,9 @@
+La consistenza eventuale è la garanzia che, dopo una scrittura, le repliche del tuo sistema non concordano subito — ma se le scritture si fermano, convergono tutte sullo stesso valore entro un tempo finito. Non è un bug: è una scelta di design che la maggior parte dei sistemi che devono scalare adotta di proposito.
+
+Il motivo per cui te ne dovresti preoccupare è questo compromesso: un sistema che vuole consistenza forte deve rifiutare le richieste quando le repliche non riescono a parlarsi tra loro, sacrificando quindi disponibilità. Chi accetta la consistenza eventuale accetta invece di poter rispondere sempre, al prezzo di una finestra in cui non tutti vedono la stessa cosa.
+
+Dove questo ti tocca concretamente è il caso classico "leggo subito dopo aver scritto": un utente pubblica un commento, ricarica la pagina, e per un attimo non lo vede — perché la richiesta di lettura è finita su una replica che non ha ancora ricevuto l'aggiornamento. La soluzione comune non è abbandonare la consistenza eventuale ovunque, ma essere selettivi: fai leggere dalla replica primaria solo la sessione che ha appena scritto, non tutte le altre sessioni/utenti. Così risolvi il problema percepito da chi ha appena agito, senza pagare il costo della consistenza forte su tutto il traffico.
+
+Sui tempi: se le repliche sono nella stessa regione, la convergenza tipicamente avviene sotto il secondo; tra regioni geograficamente distanti puoi arrivare all'ordine dei secondi. Per la maggior parte dei casi d'uso è una finestra trascurabile.
+
+Dove invece NON è accettabile, e va riconosciuto in anticipo: saldi di conto, disponibilità di posti (es. prenotazioni), e unicità di un identificativo. Qui la possibilità che due letture vedano stati diversi porta a errori concreti (doppie prenotazioni, saldi sbagliati, id duplicati), quindi serve consistenza forte anche al costo della disponibilità.

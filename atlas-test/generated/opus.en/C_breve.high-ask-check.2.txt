@@ -1,0 +1,9 @@
+*internal knowledge*
+
+Usually not. With only three distinct values, the planner normally won't use a B-tree index on that column.
+
+If the filter matches more than roughly 5–10% of the rows, the planner chooses a sequential scan instead.
+
+Even when the index goes unused, it still slows down writes and takes up disk space.
+
+The exception is when one value is rare. A partial index covering only that value does get used.

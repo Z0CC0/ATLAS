@@ -1,0 +1,11 @@
+La consistenza eventuale vuol dire questo: quando scrivi qualcosa su un sistema distribuito, le repliche di quel dato non si allineano all'istante. Convergono entro un tempo finito, ma solo se le scritture smettono di arrivare.
+
+Perché ti riguarda: se pubblichi un commento e ricarichi subito la pagina, puoi non vederlo. Sei tu che leggi la replica sbagliata, quella che non ha ancora ricevuto l'aggiornamento.
+
+Il motivo per cui i sistemi lo fanno è un compromesso con la disponibilità. Un sistema a consistenza forte, quando le repliche non riescono a parlarsi tra loro, deve rifiutare le richieste piuttosto che rischiare di restituire un dato vecchio. La consistenza eventuale invece risponde sempre, anche a costo di risposte temporaneamente disallineate.
+
+La soluzione comune al tuo caso — il commento che non vedi appena pubblicato — è instradare le letture della sessione che ha appena scritto verso la replica primaria, non farlo per tutte le sessioni.
+
+Sui tempi: fra repliche nella stessa regione la convergenza è sotto il secondo; fra regioni diverse sale a qualche secondo.
+
+Non è un bug da correggere. È una scelta deliberata che la maggior parte dei sistemi che devono scalare fa consapevolmente. I casi dove non va bene sono pochi e li riconosci facilmente: saldi di conto, disponibilità di posti, unicità di un identificativo. Lì serve consistenza forte.

@@ -1,0 +1,3 @@
+RTX 5080 usa architettura Blackwell, RTX 4080 usa Ada Lovelace. La 5080 ha memoria GDDR7 (vs GDDR6X), con banda passante circa 960 GB/s contro 717 GB/s. Consumo dichiarato sale da 320 a 360 watt, ma connettore alimentazione resta 16 pin su entrambe.
+
+Salto prestazionale piu' grande e' su generazione fotogrammi (frame generation), non su rasterizzazione pura — li' guadagno reale e' solo 10-15%.

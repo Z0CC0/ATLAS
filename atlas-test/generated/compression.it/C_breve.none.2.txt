@@ -1,0 +1,3 @@
+No, di norma non conviene. Su una colonna con solo tre valori distinti la cardinalità è troppo bassa: l'ottimizzatore preferisce quasi sempre una scansione sequenziale, perché con un filtro che seleziona più del 5-10% circa delle righe (e con solo tre valori distinti, ogni valore ne selezionerà tipicamente molto più di così) leggere la tabella in ordine è più efficiente che saltare qua e là dietro un indice B-tree. In pratica l'indice esisterebbe ma verrebbe ignorato dal planner, mentre continueresti a pagarne il costo in scrittura e spazio su disco a ogni insert/update.
+
+L'unica eccezione sensata è se uno dei tre valori è molto raro rispetto agli altri due: in quel caso puoi creare un indice parziale solo su quel valore raro, che lì sì viene usato efficacemente.

@@ -1,0 +1,5 @@
+No. Bassa cardinalita' tre valori, planner scarta B-tree quasi sempre.
+
+Motivo: filtro seleziona piu' del 5-10% righe tipico, sequential scan vince. Indice costa scrittura piu' spazio senza uso, spreco puro.
+
+Eccezione: indice parziale su valore raro (WHERE colonna = 'raro') funziona bene, solo quel sottoinsieme piccolo indicizzato.

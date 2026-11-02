@@ -1,0 +1,81 @@
+# How x86 evolved, from 1978 to today
+
+**The short version:** x86 started as a 16-bit chip. It grew through protected mode, 32 bits, on-chip cache and superscalar execution. Then, with the Pentium Pro, the instruction set became an interface over a very different machine. Since then, most of the progress has happened underneath that interface.
+
+---
+
+## 1. The foundations (1978–1985)
+
+**8086 (1978).** This is where x86 begins. It is a 16-bit processor that grew out of the 8080. It is compatible with the 8080 at the source level, so old programs could be recompiled for it instead of rewritten. That habit of keeping compatibility is the main thread through everything that follows.
+
+**80286 (1982).** This chip introduced **protected mode**. The flaw: once the processor entered protected mode, it could not return to real mode without a reboot. The feature existed, but it was awkward to use alongside older software.
+
+**80386 (1985).** This is the most important early step. It brought three things at once:
+- **32-bit** processing
+- **paged virtual memory**
+- **virtual 8086 mode**, which let old 16-bit programs run inside the new protected environment
+
+The 386 fixed the 286's trap. You no longer had to choose between the new mode and old software.
+
+---
+
+## 2. Putting more on the chip, and doing more per cycle (1989–1993)
+
+**486 (1989).** Two parts that used to sit outside the processor moved onto the chip:
+- the **first-level cache**
+- the **maths coprocessor**
+
+**Pentium (1993).** It is **superscalar**. It has two integer pipelines, so it can retire two instructions per cycle instead of one. This was the start of getting speed from parallelism inside the chip, not only from a faster clock.
+
+---
+
+## 3. The turning point: x86 becomes an interface (1995)
+
+**Pentium Pro (1995).** This is the most important change in the whole history, even if it is the least visible. It introduced two things:
+- **out-of-order execution**: the chip runs instructions in whatever order keeps it busy, not strictly the order the program lists them
+- **translation into micro-operations**: x86 instructions are converted into internal micro-operations before they execute
+
+**What this means:** from here on, x86 is an interface and no longer the real machine underneath. Programs still speak x86, but the hardware executing them is something else, hidden behind the translation layer. That is how compatibility and new designs could coexist from then on.
+
+---
+
+## 4. The frequency race and the power wall (2000)
+
+**Pentium 4 (2000).** Intel chased clock frequency with a **very long pipeline**. The approach hit the **power wall**: pushing frequency higher cost too much power to keep going. That dead end sets up the next two shifts.
+
+---
+
+## 5. 64 bits, and a change in who leads (2003)
+
+**AMD64 (2003).** AMD extended the architecture to 64 bits, and Intel adopted the same instruction set.
+
+**Why it matters:** this was the first time the dominant x86 extension did not come from Intel.
+
+---
+
+## 6. From faster cores to more cores (2006 onward)
+
+**Core 2 (2006).** After the power wall, the direction changed from **frequency** to **core count**. Performance now came from adding cores, not from raising the clock.
+
+**Vector extensions.** Across the generations, x86 kept adding wider vector instructions, which process many data values with one instruction:
+1. MMX
+2. SSE
+3. AVX
+4. AVX-512
+
+---
+
+## 7. Today: the complexity lives below the surface
+
+The instruction set is the visible part. The real engineering is in the layers underneath:
+- **branch prediction**: guessing which way the code will go before it knows
+- **the cache hierarchy**: several levels of fast memory feeding the cores
+- **speculative execution**: doing work ahead of time on those guesses
+
+**Spectre and Meltdown (2018)** exposed the cost of that approach. Speculative execution, one of the main sources of speed since out-of-order designs, turned out to carry a security cost that nobody had priced in.
+
+---
+
+## The pattern in one line
+
+Compatibility never broke, from 8080 source code to AMD64. To make that possible, x86 turned into a stable front over an engine that keeps changing, and in 2018 that engine's hidden cleverness showed a cost of its own.

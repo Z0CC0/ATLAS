@@ -1,0 +1,15 @@
+Per un sito di sole pagine statiche servono questi:
+
+**Strict-Transport-Security**: max-age almeno 31536000 con includeSubDomains, obbliga il browser a usare HTTPS.
+
+**Content-Security-Policy**: default-src 'self', blocca iniezione di script di terze parti.
+
+**X-Content-Type-Options**: nosniff, impedisce al browser di indovinare il tipo di contenuto.
+
+**Referrer-Policy**: strict-origin-when-cross-origin, evita che il percorso completo esca verso altri siti.
+
+**X-Frame-Options**: DENY (oppure frame-ancestors 'none' dentro la CSP), contro il clickjacking.
+
+**Permissions-Policy**: spegni camera, microfono e geolocalizzazione se non li usi.
+
+X-XSS-Protection va omesso: è deprecato, i browser moderni lo ignorano e nelle versioni vecchie introduceva vulnerabilità.

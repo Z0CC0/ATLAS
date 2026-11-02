@@ -1,0 +1,1 @@
+Sì, vale per ogni collezione vuota: liste, tuple, dict, set e stringhe.

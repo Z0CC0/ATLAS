@@ -1,0 +1,5 @@
+No — put only integrity checks in database triggers, not business logic.
+
+Trigger catches every path, even a hand-run script — real advantage. But it's invisible in application code: a simple-looking change fires others with no trace. Not testable with the team's usual tools; needs a real database to test against. Debugging is worse — an error inside a trigger shows up as a failed write, no clue which rule fired. Migrations get fragile too, since trigger order matters and is declared nowhere.
+
+Keep constraints, foreign keys, uniqueness, domain checks in the database — that's what protects integrity. Put business logic in the application, behind a single entry point. Same guarantee as the trigger, as long as direct database access stays reserved to migrations.

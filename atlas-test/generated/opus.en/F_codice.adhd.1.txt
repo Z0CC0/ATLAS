@@ -1,0 +1,28 @@
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+
+// usage
+const onResize = debounce(() => console.log('resized'), 200);
+window.addEventListener('resize', onResize);
+```
+
+`fn` runs only after the calls have stopped for `ms` milliseconds.
+
+## Why each line matters
+
+1. **`let t` sits outside the returned function.** It lives in the closure, so every call shares the same timer. If you move it inside, each call gets its own timer and nothing is debounced.
+2. **`clearTimeout(t)` runs before each new `setTimeout`.** This cancels the pending timer. If you skip it, timers pile up and `fn` fires more than once.
+3. **`(...args)` and `fn(...args)` pass the arguments through.** Without the spread, `fn` gets called with no arguments.
+
+## Limits
+
+- **No return value.** The debounced function always returns `undefined`. If you need `fn`'s result, wrap the timer in a Promise.
+- **Wrong tool for "run now, then ignore for a while."** That behaviour is a throttle, which is a different function.
+
+Next: paste the function into your file and wrap one handler with it, such as an input's `keyup` event.

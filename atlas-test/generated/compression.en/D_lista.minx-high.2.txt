@@ -1,0 +1,15 @@
+Set six headers, and leave out a seventh.
+
+Strict-Transport-Security with max-age of at least 31536000 and includeSubDomains, so the browser always uses HTTPS.
+
+Content-Security-Policy with default-src 'self'. This is the header that blocks third-party script injection.
+
+X-Content-Type-Options: nosniff, so the browser does not guess the content type.
+
+Referrer-Policy: strict-origin-when-cross-origin, so the full path does not leak to other sites.
+
+X-Frame-Options: DENY, or frame-ancestors 'none' inside the Content-Security-Policy, to stop clickjacking.
+
+Permissions-Policy turning off camera, microphone and geolocation, if the site does not use them.
+
+**Do not set X-XSS-Protection.** It is deprecated. Modern browsers ignore it, and older ones had vulnerabilities because of it.

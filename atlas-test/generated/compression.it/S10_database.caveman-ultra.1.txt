@@ -1,0 +1,15 @@
+Ordini, catalogo, ricerca, analisi: nessun DB solo fa tutto bene.
+
+**Postgres**: base scelta. Transazioni serie per ordini, non negoziabile. Catalogo ok. Ricerca testuale integrata ma sotto milione documenti, sopra debole. Analisi ok fino decine milioni righe, poi scansioni lente. Regge tutti e quattro accettabile, nessuno eccellente.
+
+**MySQL**: alternativa per ordini, equivalente Postgres li. Ma piu' debole su tipi dato e query complesse. Nessun vantaggio su Postgres qui.
+
+**MongoDB**: catalogo con schemi variabili piu' semplice. Ma transazioni multi-documento arrivate tardi, costano. Per ordini rischio.
+
+**Elasticsearch**: ricerca testuale superiore, rilevanza, sinonimi, tolleranza errori battitura. Non archivio autorevole, va alimentato da altro DB, non sostituisce.
+
+**ClickHouse**: analisi superiore, scansioni colonnari ordini grandezza avanti. Non per ordini, aggiornamenti puntuali punto debole.
+
+Configurazione tipica: Postgres autorevole, Elasticsearch e ClickHouse alimentati da li. Ma ogni sistema aggiunto porta sincronizzazione e allineamento dati da gestire, e costo vero non e' licenza, e' tempo persone che tengono su i sistemi.
+
+Regola pratica: parti Postgres solo. Aggiungi Elasticsearch o ClickHouse solo quando carico specifico impone, con numeri alla mano — non prima. Elasticsearch prima milione documenti quasi sempre prematuro.

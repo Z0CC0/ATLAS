@@ -1,0 +1,5 @@
+Usually no: with only three distinct values, a normal B-tree index mostly goes unused.
+
+When a filter matches more than roughly 5-10% of rows, the planner picks a sequential scan instead. The index still costs you on every write and takes up disk space.
+
+The exception is when one value is rare. A partial index on just that value does work.

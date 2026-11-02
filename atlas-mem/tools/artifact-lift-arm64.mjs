@@ -1,0 +1,191 @@
+/**
+ * ATLAS — lift an ARM64 (A64) function's basic blocks to low-level pseudo-C. Our own, over
+ * our own disassembler and CFG, the ARM64 counterpart of the x86-64 lifter. A64 is a clean
+ * three-operand RISC: a register holds the expression last written to it, substituted into
+ * later uses; a store, a call and a return are the statements; the branch condition is
+ * recovered from a flag-setting compare (`subs`/`ands` into the zero register, i.e. `cmp`/
+ * `tst`) and the `b.<cond>` kind, or straight from `cbz`/`cbnz`/`tbz`/`tbnz`. The zero
+ * register reads as 0; `sp` stays the symbolic frame base. Memory reads back as array and
+ * field access from the address shape. Nothing is executed.
+ */
+
+const BIN = { add: '+', sub: '-', and: '&', orr: '|', eor: '^', lsl: '<<', lsr: '>>', asr: '>>', lslv: '<<', lsrv: '>>', asrv: '>>', mul: '*', udiv: '/', sdiv: '/' };
+// condition codes interpreted against a `cmp a, b` (a - b)
+const CC = {
+  eq: (a, b) => `${a} == ${b}`, ne: (a, b) => `${a} != ${b}`,
+  lt: (a, b) => `${a} < ${b}`, le: (a, b) => `${a} <= ${b}`, gt: (a, b) => `${a} > ${b}`, ge: (a, b) => `${a} >= ${b}`,
+  cs: (a, b) => `${a} >= ${b}`, hs: (a, b) => `${a} >= ${b}`, cc: (a, b) => `${a} < ${b}`, lo: (a, b) => `${a} < ${b}`,
+  hi: (a, b) => `${a} > ${b}`, ls: (a, b) => `${a} <= ${b}`, mi: (a, b) => `(${a} - ${b}) < 0`, pl: (a, b) => `(${a} - ${b}) >= 0`,
+};
+
+const canon = (r) => (/^w(\d+)$/.test(r) ? 'x' + r.slice(1) : (r === 'wsp' ? 'sp' : (r === 'wzr' ? 'xzr' : r)));
+const isGpr = (r) => /^(x\d+|w\d+|sp|wsp|xzr|wzr)$/.test(r);
+const FRAME = (r) => r === 'sp' || r === 'wsp';
+
+/** Split an operand string on commas that are not inside `[ ]`. */
+function splitOps(s) {
+  const out = []; let d = 0, cur = '';
+  for (const ch of s) {
+    if (ch === '[') d += 1; else if (ch === ']') d -= 1;
+    if (ch === ',' && d === 0) { out.push(cur.trim()); cur = ''; } else cur += ch;
+  }
+  if (cur.trim()) out.push(cur.trim());
+  return out;
+}
+function parse(text) { const sp = text.indexOf(' '); return { mnem: sp < 0 ? text : text.slice(0, sp), ops: sp < 0 ? [] : splitOps(text.slice(sp + 1)) }; }
+
+function liftBlock(insns, sym, liveOut, inEnv, noSpill) {
+  const env = new Map(inEnv || []); // canonical reg -> expression (seeded from a predecessor)
+  const stmts = [];
+  let cmp = null;
+  const rd = (r) => { if (r === 'xzr' || r === 'wzr') return '0'; const c = canon(r); return env.has(c) ? env.get(c) : r; };
+  const wr = (r, e) => { if (r === 'xzr' || r === 'wzr') return; env.set(canon(r), e); };
+  const isMem = (t) => t && t.startsWith('[');
+  const subReg = (s) => s.replace(/\b(x\d+|w\d+|sp)\b/g, (t) => (FRAME(t) ? t : rd(t)));
+  const deref = (memTok) => {
+    const wb = memTok.endsWith('!');
+    const inner = memTok.replace(/^\[/, '').replace(/\]!?$/, '');
+    const parts = splitOps(inner);
+    const base = parts[0];
+    let text;
+    if (parts.length >= 2) {
+      const idx = parts[1];
+      if (/^(x\d+|w\d+)$/.test(idx)) text = `${FRAME(base) ? base : rd(base)}[${rd(idx)}]`;
+      else { const off = idx.replace(/^#?/, ''); text = FRAME(base) ? `*(${base} + ${off})` : `${rd(base)}->field_${off.replace('0x', '')}`; }
+    } else text = `*${FRAME(base) ? base : rd(base)}`;
+    if (wb && parts[1]) wr(base, `(${rd(base)} + ${parts[1]})`); // pre-indexed writeback
+    return text;
+  };
+  const val = (t) => { if (t == null) return '?'; if (isMem(t)) return deref(t); if (t === 'xzr' || t === 'wzr') return '0'; if (isGpr(t)) return rd(t); return t; };
+  // the two slots of an ldp/stp: the pair is at [base+off] and [base+off+8]
+  const pairSlots = (t) => {
+    const inner = t.replace(/^\[/, '').replace(/\]!?$/, ''); const parts = splitOps(inner);
+    const base = parts[0]; const p1 = parts[1];
+    const n = p1 && /^-?0x/.test(p1) ? parseInt(p1.replace(/^-?0x/, ''), 16) * (p1[0] === '-' ? -1 : 1) : 0;
+    const o2 = n + 8; const tok2 = o2 === 0 ? `[${base}]` : `[${base}, ${o2 < 0 ? '-0x' + (-o2).toString(16) : '0x' + o2.toString(16)}]`;
+    return [deref(t.replace(/!$/, '')), deref(tok2)];
+  };
+
+  for (let k = 0; k < insns.length; k += 1) {
+    const ins = insns[k]; const { mnem, ops } = parse(ins.text || '');
+    const last = k === insns.length - 1;
+    const base = mnem.replace(/s$/, ''); // adds->add, subs->sub, ands->and
+    if (mnem === 'nop') continue;
+    if (/^(b|b\.|cbz|cbnz|tbz|tbnz|br|ret|eret)/.test(mnem) && last) break; // terminator; cond handled below
+    if (mnem === 'ret' || mnem === 'br' || mnem === 'eret') break;
+    // NEON / SIMD: a vector-register operand (vN[.arr] or qN) or a {..} register list. Vector
+    // registers are not env-tracked (like the x86 xmm path), so render a statement and never
+    // let the scalar mov/ldr/str handlers below swallow a vector destination into the env.
+    {
+      const isVec = (t) => t && /^(v\d+(\.\w+)?|q\d+)$/.test(t);
+      if (ops[0] && (isVec(ops[0]) || ops[0].startsWith('{') || (ops[1] && (isVec(ops[1]) || ops[1].startsWith('{'))))) {
+        const mem = ops.find(isMem);
+        if ((ops[0].startsWith('{') || isVec(ops[0])) && /^st/.test(mnem) && mem) { stmts.push(`${deref(mem)} = ${ops[0]};`); continue; }
+        if (/^ld/.test(mnem) && mem) { stmts.push(`${ops[0]} = ${deref(mem)};`); continue; }
+        if (/^str/.test(mnem) && mem) { stmts.push(`${deref(mem)} = ${ops[0]};`); continue; }
+        if ((mnem === 'mov' || mnem === 'fmov' || mnem === 'orr' || mnem === 'dup') && ops.length === 2) { stmts.push(`${ops[0]} = ${val(ops[1])};`); continue; }
+        const acc = /^(fml[as]|ml[as]|[su]?dot|usdot|sqrdml[as]h|[su]?[qr]*adal?p?)$/.test(mnem); // dst is also an accumulator source
+        const args = (acc ? ops : ops.slice(1)).map(val).join(', ');
+        stmts.push(`${ops[0]} = ${mnem}(${args});`); continue;
+      }
+    }
+    if (mnem === 'mov') { wr(ops[0], val(ops[1])); continue; }
+    if (mnem === 'movz') { const sh = ops[2] && /lsl (\d+)/.exec(ops[2]); wr(ops[0], sh ? `(${ops[1]} << ${sh[1]})` : ops[1]); continue; }
+    if (mnem === 'movn') { wr(ops[0], `(~${ops[1]})`); continue; }
+    if (mnem === 'movk') { env.delete(canon(ops[0])); continue; } // partial insert: opaque
+    if (mnem === 'adrp' || mnem === 'adr') { wr(ops[0], `&${ops[1]}`); continue; }
+    if ((mnem === 'cmp' || mnem === 'subs' || mnem === 'adds' || mnem === 'cmn') && (ops[0] === 'xzr' || ops[0] === 'wzr' || mnem === 'cmp' || mnem === 'cmn')) {
+      const o = mnem === 'cmp' || mnem === 'cmn' ? ops : ops.slice(1); cmp = { a: val(o[0]), b: val(o[1]) }; continue;
+    }
+    if ((mnem === 'tst' || mnem === 'ands') && (ops[0] === 'xzr' || ops[0] === 'wzr' || mnem === 'tst')) {
+      const o = mnem === 'tst' ? ops : ops.slice(1); cmp = { a: val(o[0]), b: val(o[1]), test: true }; continue;
+    }
+    // multiply-accumulate: madd = Ra + Rn*Rm, msub = Ra - Rn*Rm (also the widening smaddl/umaddl)
+    if (/^[su]?m(add|sub)l?$/.test(mnem) && ops.length === 4) {
+      const prod = `(${val(ops[1])} * ${val(ops[2])})`;
+      wr(ops[0], /sub/.test(mnem) ? `(${val(ops[3])} - ${prod})` : `(${val(ops[3])} + ${prod})`); continue;
+    }
+    // multiply-negate, and widening/high multiplies rendered as the product
+    if (/^(mneg|[su]mull|[su]mnegl)$/.test(mnem) && ops.length === 3) {
+      const prod = `(${val(ops[1])} * ${val(ops[2])})`; wr(ops[0], /neg/.test(mnem) ? `(-${prod})` : prod); continue;
+    }
+    if (/^[su]mulh$/.test(mnem) && ops.length === 3) { wr(ops[0], `mulhi(${val(ops[1])}, ${val(ops[2])})`); continue; }
+    if (BIN[base] && ops.length >= 3) {
+      const [d, n, m] = ops; let rhs = val(m);
+      if (ops[3] && /(lsl|lsr|asr) (\d+)/.test(ops[3])) { const s = /(lsl|lsr|asr) (\d+)/.exec(ops[3]); rhs = `(${rhs} ${s[1] === 'lsl' ? '<<' : '>>'} ${s[2]})`; }
+      const a = val(n);
+      if ((base === 'orr' || base === 'eor') && a === '0') { wr(d, rhs); continue; } // 0 | x  /  0 ^ x  ->  x
+      if ((base === 'orr' || base === 'eor') && rhs === '0') { wr(d, a); continue; }
+      if (base === 'and' && (a === '0' || rhs === '0')) { wr(d, '0'); continue; } // x & 0 -> 0
+      wr(d, `(${a} ${BIN[base]} ${rhs})`); continue;
+    }
+    if (base === 'add' || base === 'sub') { wr(ops[0], `(${val(ops[1])} ${base === 'add' ? '+' : '-'} ${val(ops[2])})`); continue; }
+    if (/^ldr/.test(mnem)) { wr(ops[0], deref(ops[1])); continue; }
+    if (/^str/.test(mnem)) { stmts.push(`${deref(ops[1])} = ${val(ops[0])};`); continue; }
+    if (mnem === 'ldp') { const [a, b2] = pairSlots(ops[2]); wr(ops[0], a); wr(ops[1], b2); continue; }
+    if (mnem === 'stp') { const [a, b2] = pairSlots(ops[2]); stmts.push(`${a} = ${val(ops[0])};`); stmts.push(`${b2} = ${val(ops[1])};`); continue; }
+    if (/^(csel|csinc|csinv|csneg|cset|csetm)$/.test(mnem)) {
+      const cc = ops[ops.length - 1]; const c = cmp && CC[cc] ? CC[cc](cmp.a, cmp.b) : `cc_${cc}`;
+      if (mnem === 'cset') { wr(ops[0], `(${c} ? 1 : 0)`); continue; }
+      if (mnem === 'csetm') { wr(ops[0], `(${c} ? -1 : 0)`); continue; }
+      const n = val(ops[1]), m = val(ops[2]);
+      const f = mnem === 'csinc' ? `(${m} + 1)` : mnem === 'csinv' ? `(~${m})` : mnem === 'csneg' ? `(-${m})` : m;
+      wr(ops[0], `(${c} ? ${n} : ${f})`); continue;
+    }
+    // cinc/cinv/cneg: the condition picks the transformed source, else the source unchanged
+    if (/^(cinc|cinv|cneg)$/.test(mnem) && ops.length === 3) {
+      const cc = ops[2]; const c = cmp && CC[cc] ? CC[cc](cmp.a, cmp.b) : `cc_${cc}`; const n = val(ops[1]);
+      const t = mnem === 'cinc' ? `(${n} + 1)` : mnem === 'cinv' ? `(~${n})` : `(-${n})`;
+      wr(ops[0], `(${c} ? ${t} : ${n})`); continue;
+    }
+    if (mnem === 'bl' || mnem === 'blr') {
+      const named = sym && sym(ins);
+      let t;
+      if (named) t = named;
+      else if (mnem === 'blr') t = `(*${val(ops[0])})`;
+      else { const m = /([+-])0x([0-9a-f]+)/.exec(ops[0] || ''); t = (m && ins.addr != null) ? 'sub_0x' + ((ins.addr + parseInt(m[2], 16) * (m[1] === '-' ? -1 : 1)) >>> 0).toString(16) : 'sub_' + (ops[0] || 'fn').replace(/[^\w]/g, '_'); }
+      stmts.push(`x0 = ${t}(...);`); for (let i = 0; i <= 17; i += 1) env.delete('x' + i); continue;
+    }
+    if (mnem === 'neg') { wr(ops[0], `(-${val(ops[1])})`); continue; }
+    if (mnem === 'mvn') { wr(ops[0], `(~${val(ops[1])})`); continue; }
+    // byte/bit reverse, count leading zeros/signs, reverse bits: named intrinsic of the source
+    if (mnem === 'rev') { wr(ops[0], `bswap(${val(ops[1])})`); continue; }
+    if (/^(rev16|rev32|clz|cls|rbit)$/.test(mnem) && ops.length === 2) { wr(ops[0], `${mnem}(${val(ops[1])})`); continue; }
+    // rotate-right (and its extract alias): no C operator, render as the intrinsic
+    if (mnem === 'ror' && ops.length === 3) { wr(ops[0], `rotr(${val(ops[1])}, ${val(ops[2])})`); continue; }
+    if (mnem === 'extr' && ops.length === 4) { wr(ops[0], `extr(${val(ops[1])}, ${val(ops[2])}, ${val(ops[3])})`); continue; }
+    // scalar floating-point: FP registers are rendered, not folded (like the x86 SSE moves);
+    // a general-register destination (e.g. fcvtzs x0, d0) is still tracked in the env
+    {
+      const put = (d, e) => { if (isGpr(d)) wr(d, e); else stmts.push(`${d} = ${e};`); };
+      const FBIN = { fadd: '+', fsub: '-', fmul: '*', fdiv: '/' };
+      if (FBIN[mnem] && ops.length === 3) { put(ops[0], `(${val(ops[1])} ${FBIN[mnem]} ${val(ops[2])})`); continue; }
+      if (mnem === 'fnmul' && ops.length === 3) { put(ops[0], `(-(${val(ops[1])} * ${val(ops[2])}))`); continue; }
+      if (/^fn?m(add|sub)$/.test(mnem) && ops.length === 4) { const p = `(${val(ops[1])} * ${val(ops[2])})`; const b = /sub/.test(mnem) ? `(${val(ops[3])} - ${p})` : `(${val(ops[3])} + ${p})`; put(ops[0], /^fn/.test(mnem) ? `(-${b})` : b); continue; }
+      if (mnem === 'fneg') { put(ops[0], `(-${val(ops[1])})`); continue; }
+      if (mnem === 'fabs') { put(ops[0], `fabs(${val(ops[1])})`); continue; }
+      if (mnem === 'fsqrt') { put(ops[0], `sqrt(${val(ops[1])})`); continue; }
+      if (mnem === 'fmov' && ops.length === 2) { put(ops[0], val(ops[1])); continue; }
+      if (/^(fcvt|fcvtz[su]|fcvta[su]|fcvtm[su]|fcvtp[su]|fcvtn[su]|scvtf|ucvtf|frint[a-z]+)/.test(mnem) && ops.length >= 2) { put(ops[0], `${mnem}(${val(ops[1])})`); continue; }
+      if (mnem === 'fcmp' || mnem === 'fcmpe') { cmp = { a: val(ops[0]), b: /^#?0\.0$/.test(ops[1]) ? '0' : val(ops[1]), test: false }; continue; }
+    }
+    stmts.push(`// ${ins.text}`);
+  }
+
+  // spill the registers this block defined to a non-trivial expression (no cross-block liveness yet)
+  const endsRet = insns.length && /^(ret|eret)\b/.test(insns[insns.length - 1].text || ''); // keep the return value visible
+  for (const [r, e] of env) if (e !== r && !FRAME(r) && (!liveOut || liveOut.has(r) || (endsRet && r === 'x0')) && !(noSpill && noSpill.has(r))) stmts.push(`${r} = ${e};`);
+
+  const term = insns[insns.length - 1]; let cond = null;
+  if (term) {
+    const { mnem, ops } = parse(term.text || '');
+    if (/^b\./.test(mnem)) { const cc = mnem.slice(2); cond = { text: cmp && CC[cc] ? CC[cc](cmp.a, cmp.b) : `cc_${cc}` }; }
+    else if (mnem === 'cbz') cond = { text: `${val(ops[0])} == 0` };
+    else if (mnem === 'cbnz') cond = { text: `${val(ops[0])} != 0` };
+    else if (mnem === 'tbz') cond = { text: `(${val(ops[0])} & (1 << ${ops[1]})) == 0` };
+    else if (mnem === 'tbnz') cond = { text: `(${val(ops[0])} & (1 << ${ops[1]})) != 0` };
+  }
+  return { stmts, cond, outEnv: new Map(env) };
+}
+
+export { liftBlock };

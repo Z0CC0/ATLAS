@@ -1,0 +1,9 @@
+No. Offuscamento non conta: quel che arriva al browser è leggibile, DevTools o log di rete lo mostrano subito.
+
+Chiave sul backend. Frontend chiama un endpoint tuo, l'endpoint chiama il servizio.
+
+Quell'endpoint serve rate limit — altrimenti chiunque usa la tua chiave gratis.
+
+Chiave già pubblicata: compromessa, va ruotata subito, non solo tolta dal codice.
+
+Rimuoverla da un commit non basta: resta nella cronologia del repo, chi ha un clone ce l'ha già.

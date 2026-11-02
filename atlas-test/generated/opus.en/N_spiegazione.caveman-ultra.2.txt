@@ -1,0 +1,14 @@
+**Eventual consistency:** after a write, replicas do not agree right away. They converge within a finite time, provided writes stop.
+
+**Why it exists:** it trades against availability. Strong consistency forces a system to refuse requests when replicas cannot talk to each other. Eventual consistency keeps the system answering.
+
+**Where it hurts you:** reads right after a write. Your user posts a comment, reloads, and does not see it. Same region, replicas usually converge in under a second. Across regions, convergence takes seconds.
+
+**Common fix:** route reads to the primary replica only for the session that just wrote. Everyone else keeps reading from replicas.
+
+**Why care:** treat it as a design choice, not a defect to remove. Most systems that scale accept it on purpose. Your job is to know where it is unacceptable. Those cases are few and easy to spot:
+- account balances
+- seat availability
+- identifier uniqueness
+
+Use strong consistency there. Accept eventual consistency everywhere else.

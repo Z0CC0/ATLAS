@@ -1,0 +1,11 @@
+The RTX 5080's biggest gain over the 4080 is frame generation, not raw rasterisation.
+
+Rasterisation: real gain in the order of 10-15 per cent.
+
+Architecture: 5080 Blackwell, 4080 Ada Lovelace.
+
+Memory: GDDR7 on 5080, GDDR6X on 4080; bandwidth from about 717 to about 960 GB/s.
+
+Rated power draw: 320 W on 4080, 360 W on 5080.
+
+Power connector: 16 pins on both.

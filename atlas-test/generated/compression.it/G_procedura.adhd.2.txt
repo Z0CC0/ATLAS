@@ -1,0 +1,23 @@
+Non puoi farlo con un `ALTER TABLE ALTER COLUMN TYPE` diretto: su dieci milioni di righe riscriverebbe l'intera tabella tenendo un lock ACCESS EXCLUSIVE per tutta la durata dell'operazione, quindi il servizio resterebbe fermo finché non finisce. In produzione questo non è accettabile, serve un percorso a più passaggi che non blocchi mai la tabella a lungo.
+
+Prima di tutto verifica che la conversione sia effettivamente possibile: conta quante righe della colonna varchar contengono valori non composti solo da cifre, così sai già se e dove la migrazione romperebbe dei dati prima ancora di iniziare.
+
+A quel punto aggiungi una colonna nuova, integer, accanto a quella vecchia:
+
+```sql
+ALTER TABLE t ADD COLUMN colonna_int integer;
+```
+
+Poi riempi questa colonna nuova a blocchi da diecimila righe per volta, non tutta insieme, in modo da non tenere mai un lock lungo sulla tabella intera mentre scrivi.
+
+Mentre la migrazione è in corso, per evitare che le scritture applicative facciano diventare le due colonne disallineate, aggiungi un trigger che le tenga sincronizzate: ogni scrittura sulla colonna vecchia si riflette automaticamente su quella nuova.
+
+Una volta che il backfill è completo e il trigger garantisce l'allineamento, cambia il codice dell'applicazione perché legga dalla colonna nuova, e rilascialo.
+
+Solo a questo punto, come ultimo passo e non prima, elimini la colonna vecchia:
+
+```sql
+ALTER TABLE t DROP COLUMN colonna;
+```
+
+Tieni presente che questo sesto passo è irreversibile: una volta eliminata la colonna i dati che conteneva non tornano indietro se non ripristinando da un backup. Fallo solo quando sei sicuro che tutto il codice legge ormai dalla colonna nuova e che non serve più tornare indietro.

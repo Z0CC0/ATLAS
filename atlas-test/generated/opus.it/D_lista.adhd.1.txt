@@ -1,0 +1,25 @@
+Aggiungi questi sei header a ogni risposta del sito:
+
+```
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+Content-Security-Policy: default-src 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+X-Frame-Options: DENY
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+```
+
+**A cosa serve ciascuno:**
+
+1. **Strict-Transport-Security**: obbliga il browser a usare HTTPS. Il `max-age` deve essere almeno 31536000 secondi (un anno) e va accompagnato da `includeSubDomains`.
+2. **Content-Security-Policy** con `default-src 'self'`: blocca gli script di terze parti iniettati nella pagina. Tra tutti è quello che protegge di più.
+3. **X-Content-Type-Options: nosniff**: impedisce al browser di indovinare il tipo di un file invece di usare quello che dichiari tu.
+4. **Referrer-Policy: strict-origin-when-cross-origin**: quando un utente passa a un altro sito, quel sito non riceve il percorso completo della pagina di provenienza.
+5. **Protezione dal clickjacking**: usa `X-Frame-Options: DENY` oppure `frame-ancestors 'none'` dentro la CSP. Basta uno dei due. Nel blocco sopra li trovi entrambi, puoi toglierne uno.
+6. **Permissions-Policy**: spegne camera, microfono e geolocalizzazione. Tienila così solo se il sito non usa nessuna di queste funzioni.
+
+**Da non mettere:** `X-XSS-Protection`. È deprecato e i browser moderni lo ignorano. Nelle versioni vecchie dei browser creava vulnerabilità invece di chiuderle.
+
+Tempo: circa 10 minuti per incollarli nella configurazione del server o dell'hosting.
+
+Prossimo passo: carica il sito e controlla che non ci siano errori CSP nella console del browser. Se un'immagine o un font caricato da un altro dominio viene bloccato, la causa è `default-src 'self'`.

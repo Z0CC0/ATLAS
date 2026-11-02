@@ -1,0 +1,5 @@
+No. Tutto quello che arriva al browser e' leggibile, offuscamento inutile — devtools o richieste di rete lo smontano subito.
+
+Chiave sul server. Frontend chiama endpoint del tuo backend, backend chiama il servizio. Endpoint con rate limit, altrimenti chiave sfruttabile gratis da chiunque.
+
+Se e' gia' su GitHub o simili: compromessa, ruotala subito. Rimuoverla dal commit non basta, resta nella cronologia — chi ha un clone ce l'ha gia'.

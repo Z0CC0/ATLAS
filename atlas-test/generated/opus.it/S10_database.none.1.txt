@@ -1,0 +1,26 @@
+**Parti da Postgres da solo.** È l'unico dei candidati che copre tutti e quattro i carichi in modo accettabile. Non eccelle in nessuno, ma a te serve che uno faccia da base. Gli altri sistemi li aggiungi dopo, solo quando un carico specifico lo richiede e hai i numeri per dimostrarlo.
+
+## Come si comporta ogni opzione sui tuoi quattro carichi
+
+| | Ordini | Catalogo | Ricerca testuale | Analisi |
+|---|---|---|---|---|
+| **Postgres** | Transazioni serie | Accettabile | Integrata, basta sotto il milione di documenti | Regge fino a decine di milioni di righe |
+| **MySQL** | Equivalente a Postgres | Più debole su tipi di dato e query complesse | — | Più debole sulle query complesse |
+| **MongoDB** | Transazioni multi-documento arrivate tardi e costose | Più semplice con schemi variabili | — | — |
+| **Elasticsearch** | Non è un archivio autorevole | — | Molto superiore: rilevanza, sinonimi, tolleranza ai refusi | — |
+| **ClickHouse** | Non adatto: gli aggiornamenti puntuali sono il suo punto debole | — | — | Molto superiore: le scansioni colonnari sono avanti di ordini di grandezza |
+
+## Cosa guida la scelta
+
+**Gli ordini decidono l'archivio principale.** Sugli ordini le transazioni non sono negoziabili. Per questo restano Postgres o MySQL. Tra i due, MySQL è alla pari sugli ordini ma perde su tipi di dato e query complesse, che ti servono per catalogo e analisi. MongoDB ti semplificherebbe il catalogo, ma le transazioni multi-documento sono arrivate tardi e costano, proprio dove non puoi permetterti compromessi.
+
+**Elasticsearch e ClickHouse non sostituiscono il database principale, lo affiancano.** Nessuno dei due può fare da archivio autorevole. Elasticsearch va alimentato da un altro database. ClickHouse non gestisce bene gli ordini. La configurazione tipica, quando la piattaforma cresce, è questa: Postgres come archivio autorevole, con Elasticsearch e ClickHouse alimentati da Postgres.
+
+## Quando aggiungere un sistema
+
+- **Elasticsearch:** quando la ricerca supera il milione di documenti, perché lì la ricerca integrata di Postgres diventa debole. Aggiungerlo prima è quasi sempre prematuro.
+- **ClickHouse:** quando l'analisi supera le decine di milioni di righe e le scansioni su Postgres diventano lente.
+
+## Il costo da mettere in conto
+
+Ogni sistema che aggiungi porta con sé due problemi: tenerlo sincronizzato e mantenere i dati allineati con l'archivio principale. Il costo vero non è la licenza, ma il tempo delle persone che devono tenerlo in piedi. Per questo conviene rimandare ogni aggiunta finché i numeri non la rendono necessaria.

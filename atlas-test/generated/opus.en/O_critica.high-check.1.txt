@@ -1,0 +1,15 @@
+internal knowledge
+
+Not all of it. Real upside: no application path skips the rule, not even a script run by hand. But cost high.
+
+Invisible to anyone reading application code: simple-looking change fires others, no trace.
+
+Not testable with team's current tools; tests need a real database.
+
+Debugging worse: error inside trigger arrives as failed write, not saying which rule caused it.
+
+Migrations fragile: trigger order matters, declared nowhere.
+
+Instead: database keeps only what protects integrity (constraints, foreign keys, uniqueness, domain checks). Business logic lives in application, behind **single entry point**.
+
+That entry point gives same guarantee as trigger, **as long as direct database access is reserved to migrations**.

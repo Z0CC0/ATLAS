@@ -1,0 +1,15 @@
+HTTPS è semplicemente HTTP, lo stesso protocollo con cui il browser chiede e riceve le pagine web, che però viaggia dentro un canale cifrato da TLS. Il lavoro interessante lo fa TLS, e succede tutto all'inizio della connessione.
+
+**1. Il client si presenta.** Il tuo browser apre la connessione e dichiara quali versioni di TLS e quali cifrari è in grado di usare.
+
+**2. Il server sceglie e si identifica.** Il server risponde scegliendo il cifrario e la versione e manda il proprio certificato. Il certificato lega un nome di dominio a una chiave pubblica ed è firmato da un'autorità di certificazione.
+
+**3. Il client controlla il certificato.** Il browser verifica la firma risalendo la catena di certificati fino a una radice che ha già in memoria. Se la catena arriva a una radice di cui si fida, il certificato è valido.
+
+**4. Si concorda una chiave di sessione.** Client e server si mettono d'accordo su una chiave da usare per il resto della conversazione. Oggi di solito lo fanno con uno scambio Diffie-Hellman su curve ellittiche. Questa chiave è simmetrica, cioè la stessa per cifrare e decifrare, perché la cifratura asimmetrica costa troppo per gestire il traffico vero e proprio.
+
+**5. Da qui in poi il traffico è protetto.** Tutto quello che passa è cifrato e autenticato. Chi sta in mezzo non può leggerlo e non può modificarlo.
+
+**Quanto costa in tempo:** con TLS 1.3 questa fase iniziale richiede un solo giro di andata e ritorno tra client e server. Con TLS 1.2 ne servivano due.
+
+**Un limite da conoscere:** il certificato non dice nulla su chi gestisce il sito. Dice solo che quel dominio controlla quella chiave. Il lucchetto nel browser quindi ti garantisce che stai parlando davvero con quel dominio e che nessuno può leggere o alterare la conversazione. Non ti dice se chi sta dietro al sito è affidabile.

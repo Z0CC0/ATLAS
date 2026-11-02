@@ -1,0 +1,13 @@
+After a write, replicas disagree briefly, converge within finite time once writes stop.
+
+Trade: availability. Strong consistency refuses requests when replicas can't reach each other.
+
+Hits you right after your own write — post comment, reload, gone.
+
+Fix: route that session's reads to primary, not everyone's.
+
+Convergence same-region <1s, cross-region seconds.
+
+Not a defect. Deliberate choice, most systems at scale.
+
+Unacceptable: balances, seat availability, unique IDs.

@@ -1,0 +1,11 @@
+Eventual consistency means that when you write data to a system with multiple replicas, they don't all update at once — after the write, the copies disagree for a moment, but they converge to the same state within a finite time, as long as new writes stop coming in.
+
+Why accept this at all? Because the alternative costs you something else: availability. A system that insists on strong consistency has to refuse requests whenever its replicas can't talk to each other. Eventual consistency is the trade you make to keep answering requests even when parts of the system are out of sync.
+
+Where you'll actually feel it: someone posts a comment, reloads the page, and doesn't see their own comment. That's the classic case — reading right after writing, before the replicas have caught up. The usual fix isn't to abandon eventual consistency everywhere, just to special-case that session: route the person who just wrote to read from the primary replica, while everyone else keeps reading from whichever replica is nearest or least loaded.
+
+In practice the lag is small. Replicas in the same region typically converge in under a second; across regions it stretches to a few seconds. So most of the time nobody notices — only the writer, right at that moment, if they check back at the wrong instant.
+
+It helps to think of this as a deliberate design choice, not a bug you're supposed to eventually eliminate. Most systems that need to scale accept it on purpose, because demanding strong consistency everywhere would mean rejecting requests under any network hiccup.
+
+That said, there are a handful of cases where eventual consistency is genuinely the wrong choice, and they're easy to spot: account balances, seat availability, and anything that needs a unique identifier guaranteed not to collide. There, the cost of disagreement is too high, and you want strong consistency even at the price of availability.

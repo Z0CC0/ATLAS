@@ -1,0 +1,5 @@
+Both stop reassignment differently and share block scope, unlike var.
+
+let lets you reassign the variable later. const doesn't — once set, that name can't point to a new value.
+
+But const only locks the binding, not the value itself. If the value is an object, its properties can still change; you just can't make the const name refer to a different object.

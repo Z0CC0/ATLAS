@@ -1,0 +1,3 @@
+No, di norma non conviene: su una colonna con solo tre valori distinti l'indice B-tree tipicamente non viene nemmeno usato dal planner. Con una cardinalità così bassa, un filtro su uno di quei valori seleziona in genere ben più del 5-10% delle righe (soglia oltre la quale il planner preferisce comunque una scansione sequenziale), quindi l'indice resta inutilizzato — ma continui comunque a pagarne il costo in scrittura e spazio, senza alcun beneficio in lettura.
+
+L'eccezione è se uno dei tre valori è raro (es. pochi record su milioni): in quel caso un indice parziale definito solo su quel valore raro funziona bene, perché lì il filtro seleziona davvero una piccola frazione delle righe.

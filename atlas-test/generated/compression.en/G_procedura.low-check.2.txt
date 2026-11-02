@@ -1,0 +1,5 @@
+A direct ALTER TABLE ALTER COLUMN TYPE rewrites whole table under ACCESS EXCLUSIVE lock — service down entire duration. Skip that.
+
+Check first every existing value convertible: count rows not all digits, e.g. `SELECT COUNT(*) FROM t WHERE colonna !~ '^[0-9]+$'`. Add new column: `ALTER TABLE t ADD COLUMN colonna_int integer`. Fill it in batches of ten thousand rows, so no long lock held on table. Add trigger keeping two columns in step during migration, so writes hitting old column stay in sync with new one while backfill runs. Once filled, change code to read from new column, ship it. Only then drop old column: `ALTER TABLE t DROP COLUMN colonna`.
+
+That last step irreversible — once dropped, data doesn't come back without restore from backup.

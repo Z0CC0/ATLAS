@@ -1,0 +1,27 @@
+A static site needs six headers. Leave out a seventh, X-XSS-Protection.
+
+**Set these:**
+
+- **`Strict-Transport-Security: max-age=31536000; includeSubDomains`** makes the browser always use HTTPS. The max-age is one year, and you shouldn't set it lower than that.
+- **`Content-Security-Policy: default-src 'self'`** blocks injected third-party scripts. This is the most important header on the list.
+- **`X-Content-Type-Options: nosniff`** stops the browser from guessing a file's content type.
+- **`Referrer-Policy: strict-origin-when-cross-origin`** sends other sites only your origin, so your full URL paths don't leak.
+- **`X-Frame-Options: DENY`** protects against clickjacking. You can get the same result by adding `frame-ancestors 'none'` to your CSP.
+- **`Permissions-Policy: camera=(), microphone=(), geolocation=()`** turns off these features. A static site almost certainly doesn't use them.
+
+**Leave this out:**
+
+- **`X-XSS-Protection`** is deprecated. Modern browsers ignore it, and in older browsers it actually introduced vulnerabilities.
+
+Here's how that looks in nginx, for example:
+
+```nginx
+add_header Strict-Transport-Security "max-age=31536000; includeSubDomains" always;
+add_header Content-Security-Policy "default-src 'self'; frame-ancestors 'none'" always;
+add_header X-Content-Type-Options "nosniff" always;
+add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+add_header X-Frame-Options "DENY" always;
+add_header Permissions-Policy "camera=(), microphone=(), geolocation=()" always;
+```
+
+If your pages load fonts, analytics or images from other domains, `default-src 'self'` will block them. You'll need to add those domains to the relevant CSP directives.

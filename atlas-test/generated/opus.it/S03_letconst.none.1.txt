@@ -1,0 +1,27 @@
+Sia `let` che `const` hanno **ambito di blocco**: una variabile dichiarata dentro un blocco `{ ... }` esiste solo lì dentro. `var` invece non si comporta così.
+
+La differenza sta nella riassegnazione.
+
+**`let` permette di riassegnare la variabile:**
+
+```js
+let contatore = 1;
+contatore = 2; // ok
+```
+
+**`const` non permette di riassegnare il nome:**
+
+```js
+const limite = 10;
+limite = 20; // TypeError
+```
+
+`const` blocca solo il legame fra il nome e il valore, non il valore stesso. Se il valore è un oggetto, puoi comunque cambiarne il contenuto:
+
+```js
+const utente = { nome: "Anna" };
+utente.nome = "Luca";   // ok: modifichi l'oggetto
+utente = { nome: "Sara" }; // TypeError: riassegni il nome
+```
+
+Quindi `const` significa "questo nome indicherà sempre la stessa cosa", non "questa cosa non cambierà mai".

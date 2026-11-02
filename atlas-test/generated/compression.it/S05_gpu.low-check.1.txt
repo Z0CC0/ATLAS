@@ -1,0 +1,3 @@
+5080 usa Blackwell, 4080 Ada Lovelace. 5080 ha memoria GDDR7, 4080 GDDR6X — banda sale da ~717 a ~960 GB/s. Consumo dichiarato sale da 320 a 360W, connettore resta 16 pin.
+
+Salto vero non è in rasterizzazione pura (lì guadagno reale ~10-15%), ma in generazione fotogrammi: lì sta gran parte del miglioramento percepito.

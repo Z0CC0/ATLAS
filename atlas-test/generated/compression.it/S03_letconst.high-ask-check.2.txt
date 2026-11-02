@@ -1,0 +1,1 @@
+`const` blocca riassegnazione del nome, non del valore: un oggetto o array dichiarato con `const` resta modificabile internamente (puoi cambiarne le proprietà), solo non puoi puntare il nome a un nuovo valore. `let` invece permette la riassegnazione. Entrambi hanno scope di blocco, a differenza di `var`.

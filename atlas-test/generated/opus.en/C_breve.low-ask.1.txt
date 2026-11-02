@@ -1,0 +1,5 @@
+Usually no.
+
+With only three values, each value usually matches a large share of the rows. When a filter selects more than roughly 5-10 per cent of the rows, the planner prefers a sequential scan, so it normally won't use a B-tree index on that column. You still pay for the index in slower writes and extra disk space.
+
+The exception is when one value is rare. A partial index on that value does get used.

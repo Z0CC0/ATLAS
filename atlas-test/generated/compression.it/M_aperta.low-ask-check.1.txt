@@ -1,0 +1,11 @@
+Prima domanda da farti, prima di tutto: quale parte del monolite cambia davvero. Parti stabili non guadagnano nulla da essere spezzate — isolarle sarebbe solo costo in più senza ritorno.
+
+Seconda: dove stanno i confini delle transazioni. Transazione che attraversa due servizi diventa problema distribuito. Questo, più della tecnologia, decide dove puoi tagliare senza creare guai.
+
+Riscrivere tutto da zero in parallelo al vecchio sistema fallisce quasi sempre: il vecchio continua a cambiare, la copia non lo raggiunge mai. Alternativa che funziona: strangolamento progressivo. Router davanti, sposti un pezzo alla volta, il vecchio resta autorevole finché il nuovo non è verificato.
+
+Sui microservizi: il costo non è tecnico, è operativo. Ogni servizio vuole rilascio proprio, monitoraggio, log, allarmi, una persona che se ne occupa. Sotto i cinque sviluppatori quel costo supera quasi sempre il beneficio — vale la pena saperlo prima di scegliere la forma finale.
+
+Opzione che si cita poco e che spesso è quella giusta: monolite modulare. Confini interni netti, un solo rilascio, e la possibilità di estrarre un modulo il giorno in cui serve davvero — non prima.
+
+Ma la domanda che decide tutto non è tecnica: cosa deve poter fare il tuo team fra un anno che oggi non può fare. La risposta a quella determina se vale la pena pagare il costo dei microservizi o se il monolite modulare basta.

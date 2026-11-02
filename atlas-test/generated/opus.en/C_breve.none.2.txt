@@ -1,0 +1,13 @@
+Usually not. On a column with only three distinct values, a regular B-tree index normally goes unused. The planner picks a sequential scan whenever the filter matches more than about 5–10% of the rows. With three values, most filters match far more than that, so reading the whole table beats jumping back and forth through the index.
+
+You also pay for the index even when it's never used. Every insert, update and delete has to maintain it, and it takes up disk space.
+
+There's one exception. If one of the three values is rare and that's the one you filter on (say, `status = 'failed'` in a table where almost everything is `'done'`), a partial index on that value does work:
+
+```sql
+CREATE INDEX ON orders (id) WHERE status = 'failed';
+```
+
+It only stores the few matching rows, so it stays small and cheap to maintain. The planner uses it because that filter is selective.
+
+So skip the ordinary index. Add a partial one only if you often query the rare value.

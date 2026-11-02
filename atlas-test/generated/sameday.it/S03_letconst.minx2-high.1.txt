@@ -1,0 +1,11 @@
+`const` impedisce di riassegnare il nome, `let` invece permette la riassegnazione.
+
+`const` non impedisce di modificare il valore: un oggetto dichiarato con `const` può cambiare al suo interno.
+
+```js
+const o = { a: 1 };
+o.a = 2;   // ok
+o = {};    // errore
+```
+
+Entrambi hanno ambito di blocco, a differenza di `var`.

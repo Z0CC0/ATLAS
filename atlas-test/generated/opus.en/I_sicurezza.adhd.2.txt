@@ -1,0 +1,16 @@
+**No.** Put the key on your server, not in the frontend.
+
+Obfuscation doesn't protect it. Anything that reaches the browser can be read. Someone only has to open the developer tools or look at the network requests to get it.
+
+**How to set it up:**
+
+1. Store the key on your server only.
+2. Have your frontend call an endpoint on your own backend. That endpoint then calls the service using the key.
+3. Add a rate limit to that endpoint. Without one, anyone can use it to run requests on your key for free.
+
+**If the key was ever published** (in a deployed frontend or a public repo), treat it as compromised:
+
+1. Rotate it now, before you do anything else.
+2. Don't count on removing it from the code or from a commit. It stays in the repository history, and anyone who already cloned the repo has it.
+
+**Next:** check whether the key has ever been in a deployed build or a pushed commit. If it has, rotate it first.

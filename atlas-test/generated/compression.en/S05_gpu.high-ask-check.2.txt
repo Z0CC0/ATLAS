@@ -1,0 +1,9 @@
+5080 vs 4080: architecture jump — Blackwell vs Ada Lovelace.
+
+Memory: GDDR7 vs GDDR6X, bandwidth ~717→~960 GB/s.
+
+Power: 320→360W rated draw, same 16-pin connector.
+
+Real gains: raw rasterisation only ~10-15%, not huge. Biggest leap is frame generation — that's where the 5080 actually pulls ahead.
+
+Bottom line: not a rasterisation monster upgrade, but faster memory and much stronger frame-gen performance for a bit more power draw.

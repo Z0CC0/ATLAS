@@ -1,0 +1,5 @@
+No, usually not. On a column with so few distinct values, the database normally won't use a B-tree index at all.
+
+When a filter matches more than roughly 5–10% of the rows, the planner chooses a sequential scan over the index. You'd still pay for the index in slower writes and extra disk space.
+
+The exception is when one of the values is rare. A partial index on just that value does get used.

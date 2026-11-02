@@ -1,0 +1,13 @@
+Eventual consistency: after write, replicas don't agree right away — converge within finite time once writes stop.
+
+Trade against availability: system demanding strong consistency must refuse requests when replicas can't talk to each other.
+
+Hits whoever reads right after writing — post comment, reload, comment gone.
+
+Common fix: route session that just wrote to primary replica, not everyone.
+
+Convergence same region under a second, cross-region rises to seconds.
+
+Not defect to eliminate — choice, accepted deliberately by most systems built to scale.
+
+Unacceptable only in few recognizable cases: account balances, seat availability, uniqueness of identifier.

@@ -1,0 +1,9 @@
+Local files, shipped out by a collector.
+
+At 1000 req/min: files direct — grep by hand, rotation manual, no fill-disk safety net, no cross-machine search, connect to each box separately.
+
+Managed service — instant search, alerts, retention, but cost scales with your volume, and volume here is high. Logs leave your infra, so strip personal data first.
+
+Database — search is convenient but shares your app's connections and caches; under load the two workloads fight, and logs can starve the real requests.
+
+Fix: write to local files, run a collector (Fluent Bit, Vector, whatever) that tails and ships elsewhere. App never blocks on the log write — that's the rule that always holds: logging must never sit in the request's critical path.

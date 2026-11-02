@@ -1,0 +1,15 @@
+Sito statico serve HTML/CSS/JS, no dinamico, no cookie sessione: header giusti puntano su HTTPS forzato e blocco iniezione script.
+
+**Strict-Transport-Security**: `max-age=31536000; includeSubDomains` — obbliga browser a usare HTTPS.
+
+**Content-Security-Policy**: `default-src 'self'` — blocca script terze parti iniettati.
+
+**X-Content-Type-Options**: `nosniff` — impedisce browser indovinare tipo contenuto.
+
+**Referrer-Policy**: `strict-origin-when-cross-origin` — evita far uscire percorso completo verso altri siti.
+
+**X-Frame-Options**: `DENY` (o `frame-ancestors 'none'` dentro CSP) — contro clickjacking.
+
+**Permissions-Policy**: spegni camera, microfono, geolocalizzazione se non usati.
+
+**X-XSS-Protection**: da omettere. Deprecato, browser moderni ignorano, versioni vecchie introducevano vulnerabilità.

@@ -1,0 +1,12 @@
+Mai `ALTER TABLE ... ALTER COLUMN TYPE` diretto: riscrive tutta la tabella, lock ACCESS EXCLUSIVE, servizio fermo per l'intera durata.
+
+Percorso sicuro:
+
+Prima, verifica convertibilità: conta righe con valori non solo cifre.
+Poi `ALTER TABLE t ADD COLUMN colonna_int integer`.
+Backfill a blocchi da diecimila righe — evita lock lungo.
+Trigger che allinea le due colonne durante la migrazione.
+Codice aggiornato a leggere da `colonna_int`, rilascio.
+Solo dopo: `ALTER TABLE t DROP COLUMN colonna` (vecchia).
+
+Ultimo passo irreversibile: droppata la colonna, dati persi senza restore da backup.

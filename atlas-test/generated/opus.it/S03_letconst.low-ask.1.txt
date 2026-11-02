@@ -1,0 +1,5 @@
+La differenza sta nella riassegnazione: una variabile dichiarata con `let` si può riassegnare, una con `const` no.
+
+`const` blocca solo il nome, non il valore. Un oggetto dichiarato con `const` può quindi cambiare al suo interno.
+
+In comune hanno l'ambito di blocco, a differenza di `var`.

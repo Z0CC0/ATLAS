@@ -1,0 +1,10 @@
+Non con `ALTER TABLE t ALTER COLUMN colonna TYPE integer` diretto: riscrive tutta tabella tenendo ACCESS EXCLUSIVE lock, servizio fermo per tutta durata. Con dieci milioni di righe: migrazione a colonna parallela.
+
+1. Verifica convertibilità: conta righe che non contengono solo cifre.
+2. Aggiungi colonna nuova: `ALTER TABLE t ADD COLUMN colonna_int integer`.
+3. Riempi a blocchi da diecimila righe per volta, per non tenere lock lungo su tabella.
+4. Trigger che tiene allineate due colonne durante migrazione.
+5. Cambia codice per leggere da colonna nuova, rilascia.
+6. Solo dopo: elimina colonna vecchia, `ALTER TABLE t DROP COLUMN colonna`.
+
+Passo sei irreversibile: una volta eliminata colonna, dati non tornano senza ripristino da backup.

@@ -1,0 +1,17 @@
+Don't put all of it in triggers. Put integrity rules in the database, put business logic in the application, and send every write through one entry point. You get the same guarantee without the costs listed below.
+
+**What you gain with triggers:** no application path can skip the rule, not even a script someone runs by hand. That benefit is real.
+
+**What it costs you:**
+1. **Nobody can see them.** Triggers don't appear in the application code, so a change that looks simple can fire other triggers and leave no trace.
+2. **Your current tests won't reach them.** The team's usual tools can't test triggers. You'd need tests that run against a real database.
+3. **Debugging gets harder.** When a trigger fails, you only see a failed write. It doesn't tell you which rule caused it.
+4. **Migrations become fragile.** Trigger order matters, and nothing declares that order.
+
+**Where each rule goes:**
+- **Database:** only the rules that protect integrity: constraints, foreign keys, uniqueness and domain checks.
+- **Application:** all business logic, behind one entry point that every write has to go through.
+
+The single entry point is as hard to bypass as a trigger, with one condition: only migrations get direct access to the database. If people or scripts can still write to tables directly, the guarantee breaks.
+
+Next: list who and what writes to the database directly today. That list tells you whether you can restrict direct access to migrations only.

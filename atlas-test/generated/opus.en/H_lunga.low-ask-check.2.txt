@@ -1,0 +1,11 @@
+internal knowledge
+
+Cache stores already-processed prefix of a request. Later requests starting with same prefix don't pay to process it again.
+
+Reuse covers only the prefix. One different character near the start, and nothing from that point on gets reused. So put stable parts first and changing parts after, never the reverse. **A system line that changes every turn, such as a clock, kills reuse of everything after it.**
+
+Writing to the cache costs more than a normal read, so first request costs more than it would without caching. Savings begin on the second request and grow with each turn.
+
+Where it pays off: long conversations with a large stable context, such as system instructions, attached documentation and tool definitions. You pay that write once and read it back on every turn.
+
+Where it doesn't: single requests that each differ from the others. **You pay for the write and never read it back.**

@@ -1,0 +1,7 @@
+Not the whole logic, no.
+
+Real gain: no path around rule, not even manual script.
+
+Cost: trigger invisible in app code, one change fires others with no trace. Not testable with team's usual tools, needs real DB in test loop. Errors surface as failed write, no indication which rule tripped. Migrations get fragile, trigger order matters and isn't declared anywhere.
+
+Better split: DB keeps only integrity — constraints, foreign keys, uniqueness, domain checks. Business logic sits in app, behind single entry point. Same bypass-proof guarantee, as long as direct DB access stays reserved to migrations.

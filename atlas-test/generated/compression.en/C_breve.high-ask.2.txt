@@ -1,0 +1,3 @@
+No. Three distinct values means each filter hits roughly a third of rows — planner picks sequential scan over B-tree past ~5-10% selectivity, so the index sits unused while still costing writes and disk space on every insert/update.
+
+Exception: partial index on just the rare value, if one exists — that one gets used.

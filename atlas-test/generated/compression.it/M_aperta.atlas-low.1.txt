@@ -1,0 +1,11 @@
+Prima cosa da avere: quale parte del monolite cambia davvero. Parti stabili non guadagnano nulla da spezzarle.
+
+Seconda: dove stanno confini delle transazioni. Transazione che attraversa due servizi diventa problema distribuito.
+
+Riscrittura completa in parallelo al vecchio sistema fallisce quasi sempre — vecchio continua cambiare, copia non lo raggiunge mai. Alternativa: strangolamento progressivo. Router davanti, sposti un pezzo per volta, vecchio resta autorevole finché nuovo non è verificato.
+
+Poi conto operativo. Microservizi costano di più — ogni servizio vuole rilascio, monitoraggio, log, allarmi, una persona che se ne occupa. Sotto cinque sviluppatori quel costo supera quasi sempre beneficio.
+
+Opzione poco citata: monolite modulare. Confini interni netti, un solo rilascio, possibilità estrarre modulo il giorno che serve davvero.
+
+Domanda decisiva non è tecnica: cosa deve poter fare il team fra un anno che oggi non può.

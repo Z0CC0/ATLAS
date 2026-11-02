@@ -1,0 +1,30 @@
+For a site that only serves static pages, set these six headers and leave out a seventh.
+
+**Set these:**
+
+1. **`Strict-Transport-Security: max-age=31536000; includeSubDomains`** makes the browser always use HTTPS. Use a max-age of at least 31536000 seconds (one year), and include subdomains.
+
+2. **`Content-Security-Policy: default-src 'self'`** stops injected third-party scripts from running. This is the most important one.
+
+3. **`X-Content-Type-Options: nosniff`** stops the browser from guessing a file's content type. It uses the type your server declares.
+
+4. **`Referrer-Policy: strict-origin-when-cross-origin`** keeps your full URL path from being sent to other sites when visitors follow links away from yours.
+
+5. **`X-Frame-Options: DENY`** protects against clickjacking. You can get the same effect by adding `frame-ancestors 'none'` to your Content-Security-Policy instead.
+
+6. **`Permissions-Policy`** turns off the camera, microphone and geolocation. Include it if your site doesn't use them.
+
+**Leave this out:**
+
+- **`X-XSS-Protection`** is deprecated. Modern browsers ignore it, and older implementations of it introduced vulnerabilities.
+
+Put together, the headers look like this:
+
+```
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+Content-Security-Policy: default-src 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+X-Frame-Options: DENY
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+```

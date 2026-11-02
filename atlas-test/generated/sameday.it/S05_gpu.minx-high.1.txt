@@ -1,0 +1,9 @@
+Il salto più grande è nella generazione di fotogrammi, non nel rasterizzatore puro. Lì il guadagno reale è intorno al 10-15%.
+
+Architettura: la 5080 è Blackwell, la 4080 Ada Lovelace.
+
+Memoria: GDDR7 contro GDDR6X. La banda sale da circa 717 a circa 960 GB/s.
+
+Consumo dichiarato: sale da 320 a 360 watt.
+
+Connettore di alimentazione: sempre a 16 pin.

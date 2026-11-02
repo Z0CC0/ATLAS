@@ -1,0 +1,11 @@
+conoscenza interna
+
+Usa file locali più un raccoglitore che li spedisce altrove. Così l'applicazione non aspetta mai la scrittura del log.
+
+Regola sempre valida: la scrittura del log non deve stare nel percorso critico della richiesta.
+
+**Solo file:** costo zero e nessuna dipendenza. La ricerca però è solo grep e non funziona su più macchine: devi collegarti a ognuna. La rotazione va configurata a mano, altrimenti il disco si riempie.
+
+**Servizio gestito:** ricerca immediata, allarmi e conservazione automatica. Si paga per volume, e a mille richieste al minuto il volume cresce in fretta. I log escono dalla tua infrastruttura, quindi vanno ripuliti dai dati personali prima di uscire.
+
+Database: ricerca comoda e nota. Se scrivi i log nello stesso database dell'applicazione, metti in competizione due carichi molto diversi. Sotto carico i log riempiono cache e connessioni che servivano alle richieste vere.

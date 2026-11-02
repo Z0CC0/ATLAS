@@ -1,0 +1,11 @@
+Dopo una scrittura, repliche non concordano subito ma convergono entro tempo finito, se scritture si fermano.
+
+Perché ti interessa: tocca chi legge subito dopo aver scritto. Utente pubblica commento, ricarica, non lo vede.
+
+Soluzione comune: leggere da replica primaria solo per sessione che ha appena scritto, non per tutte.
+
+Convergenza tipica: sotto il secondo fra repliche stessa regione, secondi fra regioni diverse.
+
+Compromesso con disponibilità: sistema che pretende consistenza forte deve rifiutare richieste quando repliche non si parlano. Quindi **scelta, non difetto da eliminare**: maggior parte dei sistemi che scalano la accetta di proposito.
+
+Casi dove non è accettabile: pochi, riconoscibili. Saldi di conto, disponibilità posti, unicità di identificativo.

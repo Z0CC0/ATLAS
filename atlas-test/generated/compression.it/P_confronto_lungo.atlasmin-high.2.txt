@@ -1,0 +1,11 @@
+File locali più raccoglitore che spedisce altrove.
+
+Scrittura log mai nel percorso critico della richiesta.
+
+File da solo: costo zero, ricerca solo grep, rotazione manuale, niente ricerca cross-macchina.
+
+Servizio gestito da solo: a mille richieste/min costo cresce in fretta, log da ripulire da dati personali prima di uscire.
+
+Database: log e app competono per cache e connessioni sotto carico — scarta.
+
+Con file+raccoglitore: app scrive locale (zero costo, zero attesa), raccoglitore spedisce al servizio gestito per ricerca/allarmi/conservazione, senza bloccare le richieste vere.

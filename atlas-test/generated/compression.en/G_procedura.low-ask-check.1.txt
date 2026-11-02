@@ -1,0 +1,13 @@
+Don't run a direct `ALTER TABLE t ALTER COLUMN colonna TYPE integer` — on Postgres that rewrites the whole table under an ACCESS EXCLUSIVE lock, so with ten million rows the service is down for the entire rewrite. Do it as an online migration instead.
+
+Start by checking the data is actually safe to convert: count how many rows in `colonna` are not all digits. That tells you upfront whether the cast will even work.
+
+Add the new column: `ALTER TABLE t ADD COLUMN colonna_int integer`. This alone is cheap, no rewrite.
+
+Backfill `colonna_int` in batches of ten thousand rows rather than one big UPDATE, so no single transaction holds a long lock on the table.
+
+While the backfill runs, put a trigger on the table that keeps `colonna` and `colonna_int` in sync, so any row written during the migration doesn't fall out of step with the one the batches haven't reached yet.
+
+Once `colonna_int` is fully populated, switch the application code to read from it and deploy that.
+
+Only then, as the last step, drop the old column: `ALTER TABLE t DROP COLUMN colonna`. Be sure before you do — this step is irreversible, the data isn't coming back without a restore from backup.

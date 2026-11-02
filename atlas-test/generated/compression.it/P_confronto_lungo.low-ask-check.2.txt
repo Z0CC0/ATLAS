@@ -1,0 +1,11 @@
+Con un migliaio di richieste al minuto la scelta ragionevole: file locali + raccoglitore che spedisce altrove. Cosi' l'applicazione non aspetta mai la scrittura del log.
+
+Perche' non le altre due da sole:
+
+File puro — costo zero, nessuna dipendenza, ma ricerca solo grep e rotazione va configurata a mano (altrimenti disco pieno). Su piu' macchine niente ricerca centralizzata: ti colleghi a ognuna singolarmente.
+
+Servizio gestito puro — ricerca immediata, allarmi, conservazione automatica, ma paghi per volume e a mille richieste/min il volume cresce in fretta. Inoltre i log escono dalla tua infrastruttura: vanno ripuliti da dati personali prima di uscire.
+
+Database — ricerca comoda e nota, ma se scrivi i log nello stesso database dell'app metti in competizione due carichi molto diversi. Sotto carico i log riempiono cache e connessioni che servivano alle richieste vere.
+
+Regola che vale sempre, qualunque combinazione scegli: la scrittura del log non deve stare nel percorso critico della richiesta.

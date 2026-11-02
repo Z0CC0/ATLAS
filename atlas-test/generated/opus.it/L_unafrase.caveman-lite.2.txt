@@ -1,0 +1,6 @@
+Sì. In Python una lista vuota vale `False` in un contesto booleano. La stessa regola vale per tutte le collezioni vuote: lista, tupla, dizionario, insieme e stringa.
+
+```python
+if not []:
+    print("la lista è vuota")
+```

@@ -1,0 +1,22 @@
+Migrazione va fatta senza mai bloccare la tabella con un `ALTER TABLE ... ALTER COLUMN TYPE` diretto: quel comando riscrive tutta la tabella tenendo un lock ACCESS EXCLUSIVE, quindi il servizio resterebbe fermo per l'intera durata su dieci milioni di righe. La strada sicura è una migrazione a fasi, senza downtime:
+
+**1. Verifica preliminare** — controlla che ogni valore esistente nella colonna varchar sia effettivamente convertibile in integer, contando quante righe contengono caratteri diversi dalle cifre. Se ce ne sono, vanno gestite (pulite o escluse) prima di procedere.
+
+**2. Nuova colonna** — aggiungi la colonna definitiva col tipo corretto:
+```sql
+ALTER TABLE t ADD COLUMN colonna_int integer;
+```
+Questa operazione da sola è veloce, non riscrive i dati esistenti.
+
+**3. Backfill a blocchi** — popola la nuova colonna copiando i valori convertiti, ma non in un'unica transazione: procedi a blocchi da diecimila righe alla volta, così non tieni mai un lock lungo sulla tabella intera e il servizio continua a rispondere normalmente durante la migrazione.
+
+**4. Trigger di allineamento** — mentre il backfill è in corso, aggiungi un trigger che tenga sincronizzate le due colonne: ogni scrittura sulla colonna vecchia deve riflettersi sulla nuova, altrimenti le righe scritte dopo l'inizio del backfill e prima del completamento rischiano di rimanere disallineate.
+
+**5. Switch applicativo** — cambia il codice dell'applicazione perché legga (e scriva) dalla colonna nuova, e rilascia questa modifica in produzione. A questo punto la colonna vecchia è solo un residuo mantenuto dal trigger.
+
+**6. Pulizia finale, solo dopo che tutto il resto è stabile** — elimina la colonna vecchia:
+```sql
+ALTER TABLE t DROP COLUMN colonna;
+```
+
+⚠️ **Attenzione**: questo sesto passaggio è irreversibile. Una volta eliminata la colonna, i dati che conteneva non sono più recuperabili se non ripristinando da un backup. Eseguilo solo quando sei certo che il codice in produzione non fa più riferimento alla colonna vecchia e il backfill è confermato completo e corretto — meglio lasciarlo "in quarantena" qualche giorno prima di droppare.

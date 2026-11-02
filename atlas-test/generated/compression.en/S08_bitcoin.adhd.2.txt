@@ -1,0 +1,11 @@
+Bitcoin traces back to a 2008 paper titled *Bitcoin: A Peer-to-Peer Electronic Cash System*, signed by Satoshi Nakamoto — a name behind which no real identity has ever been confirmed. The problem the paper set out to solve was double spending: how do you stop the same digital money from being spent twice if there's no central authority keeping the official ledger?
+
+The answer was a chain of blocks, each one ordered by proof of work. Because each block requires real computational effort to produce, and each new block builds on the one before it, rewriting history isn't just a matter of altering one block — you'd have to redo the work for every block that came after it too. That's what makes the chain trustworthy without needing anyone in charge of it.
+
+The chain started for real on 3 January 2009, when the first block was mined. Embedded in it was the headline of a Times article about a bank bailout — a detail that did double duty: it proved the block couldn't have been created before that date, and it read as a quiet statement about exactly the kind of financial system Bitcoin was proposing an alternative to.
+
+New bitcoin enter circulation as a reward to whoever mines each block. That reward started at 50 bitcoin and is designed to halve every 210,000 blocks — roughly every four years — so the total supply creeps toward a ceiling of 21 million and never exceeds it.
+
+The first known time bitcoin was used to actually buy something was in 2010, when someone paid 10,000 bitcoin for two pizzas. Satoshi, meanwhile, drifted out of public involvement in 2011, and the bitcoin associated with them have sat untouched ever since.
+
+None of this happened in a vacuum. Bitcoin grew out of the cypherpunk movement, a community focused on privacy and cryptography-based systems, which had already tried and failed to crack this problem — proposals like b-money and bit gold ran into the same wall: nobody had worked out how to get independent parties to agree on the order of transactions without a central referee. Bitcoin's proof-of-work chain was the piece that finally made that agreement possible.

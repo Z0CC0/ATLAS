@@ -1,0 +1,1 @@
+5080 usa architettura Blackwell, 4080 Ada Lovelace. Memoria GDDR7 contro GDDR6X, banda passa da circa 717 a circa 960 GB/s. Consumo dichiarato 320W contro 360W, connettore alimentazione stesso, 16 pin. Salto piu' grande sta nella generazione di fotogrammi, non nel rasterizzatore puro — li' il guadagno reale e' solo 10-15%.

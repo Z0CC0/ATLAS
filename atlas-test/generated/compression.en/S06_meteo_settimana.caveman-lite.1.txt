@@ -1,0 +1,13 @@
+New York weather, this week:
+
+- **Monday**: clear, 24° (low 17)
+- **Tuesday**: cloudy, 22° (low 16), light rain in evening
+- **Wednesday**: rain most of day, 19° (low 15)
+- **Thursday**: brighter spells, 21° (low 14)
+- **Friday**: clear, 25° (low 16)
+- **Saturday**: clear and warm, 28° (low 19)
+- **Sunday**: thunderstorms in afternoon, 26° (low 18)
+
+Two days with significant rain: Wednesday and Sunday. Weekend is warmest stretch of the week.
+
+Source: web.

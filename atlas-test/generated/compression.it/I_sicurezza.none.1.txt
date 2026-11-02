@@ -1,0 +1,5 @@
+No. Qualsiasi cosa finisca nel bundle che arriva al browser è leggibile: l'offuscamento non protegge niente, basta aprire gli strumenti per sviluppatori o guardare le richieste di rete e la chiave salta fuori in chiaro.
+
+La chiave deve restare sul server. Il frontend chiama un endpoint del tuo backend, e solo il backend contatta il servizio esterno usando la chiave. Quell'endpoint però deve avere un rate limit: senza, chiunque può usarlo come proxy gratuito per consumare la tua chiave a piacimento.
+
+Un'altra cosa: se questa chiave è già finita nel frontend (quindi già pubblicata), considerala compromessa e ruotala subito, non basta toglierla dal codice. E se è mai stata committata, rimuoverla dall'ultimo commit non serve a niente: resta nella cronologia del repository, e chiunque abbia già clonato il repo ce l'ha comunque.

@@ -1,0 +1,15 @@
+The RTX 5080 is a moderate step up from the 4080. The biggest gain is in frame generation. In raw rasterisation, the 5080 is only about **10–15% faster**.
+
+**What changed:**
+
+1. **Architecture:** Blackwell on the 5080, Ada Lovelace on the 4080.
+2. **Memory:** GDDR7 instead of GDDR6X. Bandwidth rises from about **717 GB/s to about 960 GB/s**.
+3. **Frame generation:** this is the biggest jump. Games that support it gain far more than the raster numbers suggest.
+4. **Power:** rated draw rises from **320 W to 360 W**, so it needs 40 W more.
+5. **Power connector:** it's still **16-pin**, so your cabling stays the same.
+
+**What this means for you:**
+- If you already own a 4080 and mostly play games without frame generation, the 10–15% gain is modest.
+- If you play games that use frame generation, the 5080 makes a much bigger difference.
+
+Next: check whether the games you play most support frame generation. That tells you which case applies to you.

@@ -1,0 +1,31 @@
+Prompt caching lets the model skip work it has already done. When a request starts with exactly the same content as an earlier one, the processed version of that shared beginning, the **prefix**, is kept. The next request reuses it instead of paying to process it again.
+
+## How it works
+
+The cache only matches the **prefix**. Reuse runs from the start of the request up to the first difference. If a single character near the top changes, nothing after that point is reused, even if everything else is the same.
+
+That leads to the main rule for structuring requests: **put the stable parts first and the changing parts last.** Something like:
+
+1. System instructions
+2. Tool definitions
+3. Attached documentation
+4. The conversation so far
+5. The new user message
+
+If this order is reversed and something that changes sits near the top, the cache almost never gets used.
+
+## The cost trade-off
+
+Caching isn't free up front. **Writing to the cache costs more than a normal read**, so the first request that creates the entry is more expensive than it would be without caching. You start saving from the **second request** onward, and the savings grow with each turn that reuses the same prefix.
+
+## When it pays off
+
+- **Long conversations with a large stable context.** Examples are a big system prompt, attached documentation and many tool definitions. You pay once to write them, then every turn reads them cheaply.
+
+## When it doesn't
+
+- **Single requests that differ from each other.** You pay the extra write cost and never read the entry back, so you end up paying more than without caching.
+
+## A common mistake
+
+Watch for a **line in the system prompt that changes every turn**, such as a current timestamp or clock. It sits near the top, so it breaks the prefix match on every request. Everything after it is processed again at full cost, including documentation and tool definitions that never changed. If you need that information, put it at the end of the request, after the stable parts.

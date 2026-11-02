@@ -1,0 +1,7 @@
+Tomorrow in New York the morning will be clear and the afternoon cloudy, with a 30% chance of rain after 18:00. Take an umbrella if you'll be out in the evening.
+
+- **Temperature:** high of 24 °C and low of 17 °C. Wear something light during the day and bring a layer for the evening.
+- **Wind:** from the north-west at 15 km/h.
+- **Humidity:** around 60%.
+
+These figures come from a web source.

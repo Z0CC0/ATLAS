@@ -1,0 +1,11 @@
+Per una piattaforma che deve gestire ordini, catalogo, ricerca testuale e analisi, non esiste un singolo database "migliore in tutto" — la scelta dipende da cosa privilegi in ciascun carico.
+
+**Se cerchi un solo database:** Postgres è l'opzione più sensata. Regge tutti e quattro i carichi in modo accettabile, e soprattutto dà transazioni serie — cosa che sugli ordini non è negoziabile, quindi qui non hai davvero alternative valide (MySQL è equivalente sugli ordini, ma più debole su tipi di dato e query complesse, quindi non è un vantaggio). Per il catalogo Postgres va bene; MongoDB semplificherebbe la gestione di schemi variabili, ma le sue transazioni multi-documento sono arrivate tardi e costano, quindi non è chiaramente meglio se già usi Postgres per gli ordini. Sulla ricerca testuale, Postgres ha il full-text integrato: sufficiente sotto il milione di documenti, debole sopra. Sull'analisi regge fino a decine di milioni di righe, poi le scansioni rallentano.
+
+**Quando Postgres da solo non basta più**, i due specialisti da considerare sono:
+- **Elasticsearch** per la ricerca testuale, dove è molto superiore su rilevanza, sinonimi e tolleranza agli errori di battitura. Ma non è un archivio autorevole: va sempre alimentato da un altro database, non lo sostituisce.
+- **ClickHouse** per l'analisi, con scansioni colonnari ordini di grandezza più veloci. Non serve però per gli ordini: gli aggiornamenti puntuali sono il suo punto debole.
+
+**La configurazione tipica**, quando serve, è: Postgres come archivio autorevole, con Elasticsearch e ClickHouse alimentati da lì per i rispettivi carichi.
+
+**Il consiglio pratico**: parti da solo Postgres, e aggiungi un sistema specializzato solo quando un carico specifico lo impone con numeri alla mano — per esempio, aggiungere Elasticsearch prima del milione di documenti è quasi sempre prematuro. Ogni sistema che aggiungi porta con sé un problema di sincronizzazione e uno di allineamento dei dati, e il vero costo di questi sistemi non è la licenza ma il tempo delle persone che li devono tenere in piedi. Quindi la domanda giusta non è "quale stack scegliere oggi", ma "quando i numeri reali mi diranno che Postgres non basta più su un carico specifico".

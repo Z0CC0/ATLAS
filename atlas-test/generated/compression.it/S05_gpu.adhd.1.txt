@@ -1,0 +1,5 @@
+La differenza principale è che la 5080 monta l'architettura Blackwell mentre la 4080 è ancora Ada Lovelace, e questo si porta dietro anche il cambio di memoria: GDDR7 sulla 5080 contro GDDR6X sulla 4080. Di conseguenza la banda di memoria sale da circa 717 a circa 960 GB/s.
+
+Sul fronte dei consumi la 5080 dichiara 360 W contro i 320 W della 4080, quindi consuma di più, ma il connettore di alimentazione resta lo stesso: 16 pin su entrambe.
+
+La cosa importante da sapere se stai valutando l'acquisto è dove si vede davvero il salto prestazionale: il grosso del guadagno della 5080 arriva dalla generazione dei fotogrammi (quindi tecnologie come il frame generation), non dalla potenza bruta di rasterizzazione. Se guardi solo il rasterizzatore puro, cioè le prestazioni "grezze" senza trucchi di generazione dei frame, il miglioramento reale è molto più contenuto, nell'ordine del 10-15%.

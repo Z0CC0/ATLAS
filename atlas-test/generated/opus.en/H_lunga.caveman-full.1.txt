@@ -1,0 +1,22 @@
+Prompt caching saves the part of a request that the model has already processed, called the prefix. A later request that starts the same way does not pay to process that prefix again.
+
+**Only the prefix gets reused.** Matching is from the start of the request. If one character differs near the start, nothing after that point is reused. So order matters:
+
+- Put stable content first: system instructions, attached documentation, tool definitions.
+- Put changing content after it: the user's new message, per-turn data.
+
+If you put the changing parts first, nothing gets reused.
+
+**Watch for small changes near the top.** A system line that changes every turn, such as a clock or timestamp, stops reuse of everything after it. Move that line to the end or remove it.
+
+**Cost profile:**
+
+- Writing to the cache costs more than a normal read, so the first request is more expensive.
+- Savings start on the second request.
+- Savings grow with each turn that reuses the same prefix.
+
+**When it pays off:** long conversations with a large stable context, such as big system instructions, long attached docs or many tool definitions. You pay the write once and read it back many times.
+
+**When it does not pay off:** single requests that differ from each other. You pay the extra write cost but never read the cache back, so it only adds cost.
+
+**Quick test:** caching helps when many requests share a large identical start. If each request is different, skip it.

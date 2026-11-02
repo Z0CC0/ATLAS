@@ -1,0 +1,8 @@
+Bad idea for main logic. Triggers give real guarantee — nobody bypass rule, not even manual script. But cost high:
+
+- Invisible to code readers. Change look simple, fires other triggers, no trace.
+- Not testable with team's normal tools. Need tests against real DB.
+- Debugging bad. Trigger error just show up as failed write, no clue which rule caused it.
+- Migrations fragile. Trigger order matters, declared nowhere.
+
+Better split: DB keep only integrity stuff — constraints, foreign keys, uniqueness, domain checks. Business logic goes in application, behind single entry point. That entry point give same guarantee as trigger, as long as direct DB access stay reserved for migrations only.

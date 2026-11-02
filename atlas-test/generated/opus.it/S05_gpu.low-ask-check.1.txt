@@ -1,0 +1,9 @@
+Conoscenza interna.
+
+La 5080 va un po' più veloce della 4080 nei giochi, ma la differenza grossa sta nella generazione di fotogrammi, non nel rasterizzatore puro. Lì il guadagno reale è nell'ordine del 10-15 per cento.
+
+Cambia l'architettura: la 5080 usa Blackwell, la 4080 Ada Lovelace.
+
+Cambia anche la memoria: GDDR7 sulla 5080, GDDR6X sulla 4080. La banda sale da circa 717 a circa 960 gigabyte al secondo.
+
+Il consumo dichiarato passa da 320 a 360 watt. Il connettore di alimentazione resta a 16 pin, quindi non serve un cavo diverso.

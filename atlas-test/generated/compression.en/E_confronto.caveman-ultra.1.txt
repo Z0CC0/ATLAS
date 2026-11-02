@@ -1,0 +1,7 @@
+Postgres better for you. Thousand jobs/minute enough for small project.
+
+Job and data write same transaction, so job never start if write rollback. Free persistence: process die, queue survive. Redis need AOF config or restart lose queue, plus one more service to run and monitor.
+
+Redis win on volume (way more) and latency (sub-millisecond), but small project not need that.
+
+Move to Redis only when volume actually demand it.

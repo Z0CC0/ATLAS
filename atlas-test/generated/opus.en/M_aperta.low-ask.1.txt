@@ -1,0 +1,13 @@
+Start with what your team must be able to do a year from now that it can't do today. That question decides the architecture. The technical questions come after it.
+
+Next, find out which parts of the monolith actually change. Stable parts gain nothing from being split out, so leave them alone.
+
+Then map where the transaction boundaries sit. A transaction that spans two services becomes a distributed problem. Wherever you draw a service line, try not to cut through one.
+
+Don't rewrite the whole thing in parallel with the old system. That approach almost always fails: the old system keeps changing and the copy never catches up.
+
+Strangle it progressively instead. Put a router in front, move one piece at a time, and keep the PHP system authoritative until each new piece is verified.
+
+Count the operational cost of microservices honestly. Every service needs releases, monitoring, logs, alerts and a person who looks after it. With fewer than five developers, that cost almost always exceeds the benefit.
+
+Also consider the **modular monolith**, the option people rarely mention. It gives you sharp internal boundaries and a single release, and you can still extract a module the day you genuinely need to. For a small team, or when you're unsure where the boundaries are, it's usually the safer target.

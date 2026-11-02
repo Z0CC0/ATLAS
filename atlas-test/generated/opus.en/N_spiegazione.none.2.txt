@@ -1,0 +1,30 @@
+**Eventual consistency** means that after you write data, your database's copies (replicas) don't all agree right away. If writes stop, they will all end up with the same data within a finite time. For a while, though, different replicas can give different answers to the same question.
+
+## Why systems work this way
+
+It's a trade against availability. A system that demands strong consistency has to refuse requests whenever its replicas can't talk to each other. Eventual consistency keeps serving requests and lets the replicas catch up afterwards.
+
+So it isn't a defect to be eliminated. It's a choice, and most systems that scale make it on purpose.
+
+## Why you should care
+
+The people it affects are the ones who read right after they write. A user posts a comment, reloads the page, and doesn't see it. They may assume the post failed and submit it again.
+
+The gap is usually short:
+- **Replicas in the same region:** usually under a second
+- **Replicas in different regions:** it can take seconds
+
+That's short, but a reload can easily happen inside that window.
+
+## The common fix
+
+For the session that just wrote, read from the primary replica. Everyone else keeps reading from the other replicas as usual. The person who made the change sees it straight away, and you don't give up the benefits of eventual consistency for all your other traffic.
+
+## When it's not acceptable
+
+These cases are few, and they're easy to recognise:
+- **Account balances**
+- **Seat availability**
+- **Uniqueness of an identifier**
+
+In these cases, two replicas that disagree even briefly can cause real harm. For example, the same seat could be sold twice or an ID could be issued twice. Use strong consistency for these, and accept eventual consistency almost everywhere else.

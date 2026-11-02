@@ -1,0 +1,9 @@
+Eventual consistency is a property of systems that keep copies of your data on several machines, called replicas. When you write, the replicas do not all agree right away. They converge within a finite time once writes stop. The gap is usually small: under a second between replicas in the same region, rising to seconds when the replicas sit in different regions.
+
+You should care because the gap bites the person who reads immediately after writing. The classic case is a user who posts a comment, reloads the page, and does not see it. Their write went to one replica and their read came from another that had not caught up yet.
+
+The common fix is narrow. The session that just wrote reads from the primary replica for a while. Everyone else keeps reading from whichever replica is closest. You do not pay the cost of routing all traffic to the primary just to protect the one person who is likely to notice the lag.
+
+It helps to understand why systems accept this at all. The trade is against availability. A system that demands strong consistency has to refuse requests whenever the replicas cannot talk to each other. A system that accepts eventual consistency keeps answering, and catches up later. For most workloads, a brief stale read is far better than an outage. That is why eventual consistency is not a defect to eliminate but a deliberate choice, and most systems that scale make it on purpose.
+
+The cases where it is unacceptable are few and recognisable. Account balances, seat availability, and the uniqueness of an identifier all break if two replicas disagree even briefly. Two people could buy the same seat, or spend the same money twice. For those, you need strong consistency on that specific path and accept the availability cost there. Everywhere else, design for the lag: handle the read-after-write case for the writer, and let the rest converge.

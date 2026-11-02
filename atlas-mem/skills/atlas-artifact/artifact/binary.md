@@ -1,0 +1,478 @@
+# A compiled file — PE, .NET, ELF, Mach-O, and what Go and Rust leave in them
+
+`bin <file>` reads the tables the operating system's loader reads, the same way, and
+nothing more: no instruction is decoded, nothing is run. What comes back is what the file
+declares about itself, each item at a file offset.
+
+## Windows: PE
+
+Machine and bitness, whether it is a program or a library, the subsystem (console or
+window), the link timestamp (or the note that the field holds a build hash, as every .NET
+assembly does), the sections with their permissions (a section both writable and
+executable is its own line), the imports by DLL with the function names, the exports by
+name, the version resource (product, version, company), the manifest (the execution level
+it asks for, DPI awareness) and the hardening flags the linker set: ASLR and high-entropy
+ASLR, NX, Control Flow Guard, an Authenticode signature present or not. A shipped program
+without ASLR or NX, or with a writable code section, is a `high` for `atlas-secure`.
+
+A PE's debug directory names the matching PDB: `bin` reports the PDB file name, its GUID and
+age (the signature a symbol server keys on), so you know exactly which `.pdb` to fetch and that
+it matches this build. A 64-bit PE also carries a `.pdata` exception table (an array of RUNTIME_FUNCTION entries):
+`bin` reads it to bound every function by `[begin, end)` RVA and reports the count — a function
+table even when the binary has no symbols (e.g. node.exe: 68,335 functions).
+
+## .NET inside a PE
+
+When the file carries a CLR header, the metadata is read from its tables: runtime
+version, assembly name and version, the assemblies it references, the modules it imports
+natively, the types (namespace, name, how many methods, public or not), the method count,
+every P/Invoke (which managed method calls which native function in which DLL), the user
+strings, and the entry method. The types and strings are paged (sixty in the summary,
+all with `--detail full`). The bodies of the methods are not decoded here; that is a
+later reader.
+
+When an ELF carries DWARF debug info (`.debug_info` + `.debug_abbrev`, i.e. built with `-g`
+and not stripped), `bin` lists the real function names and their PC ranges, and the producer
+(compiler) — a `DWARF` section after the headers. The line-number program and the type graph
+are not reconstructed.
+
+An ELF's `.eh_frame` (DWARF call-frame info) is also read: each FDE bounds a function by
+`[pc_begin, pc_begin+range)`, so `bin` reports a function table even on a stripped ELF — the
+counterpart of the PE `.pdata` table.
+
+## Linux: ELF
+
+Class, type (a shared object is also what a PIE executable looks like), machine, the
+interpreter, the libraries it needs with `rpath`/`runpath`, the symbols it imports and
+exports, the segments and sections, and the hardening the headers show: PIE, a
+non-executable stack, RELRO, a stack canary (the `__stack_chk_fail` import), fortified
+calls, whether it is stripped, segments both writable and executable.
+
+## macOS: Mach-O
+
+Thin or fat (every slice listed by CPU); CPU, file type, the platform with minimum OS and
+SDK, the dylibs it loads (weak and re-exported marked) with their versions, `rpath`
+entries, UUID, a code signature present or not, PIE, imported and exported symbols.
+
+Functions are enumerated from `LC_FUNCTION_STARTS` (ULEB128 deltas from `__TEXT`), which a
+stripped binary keeps, so `callgraph`, `xrefs` and `cfg` work on a Mach-O with no symbol table.
+Names come from the `nlist` symbols when present (the C leading underscore removed: `_main` is
+`main`); `LC_MAIN`'s entry offset is read relative to `__TEXT`'s file offset. A direct call to a
+`__stubs` slot is named through the indirect symbol table. Verified on jq 1.7 for arm64 and
+x86-64 (stripped, chained fixups): 1,569 / 1,537 functions, about 2,000 / 2,500 named import
+calls, 883 strings referenced; a fat file is listed slice by slice and not walked.
+
+## Go and Rust, in any of the three
+
+A Go binary carries its build information: the Go version, the main module, every
+dependency with version and checksum, the build settings (OS, architecture, cgo, the VCS
+revision). All of it `observed`. A Rust binary keeps the compiler's commit in its panic
+paths and the registry paths of the crates that panic can mention: the crate list is
+`derived` from those paths and is a lower bound (a crate that never panics leaves no
+path); a binary built with the audit section carries the full list, and it is read.
+
+When the build info is there, `bin` also reads the Go function table (`runtime.pclntab`):
+every function's name and entry address, even on a binary linked with `-s -w`, so `callgraph`,
+`xrefs` and `cfg` say `main.main` or `net/http.(*Transport).dialConn` instead of `sub_…`.
+Tables in the Go 1.16–1.17, 1.18–1.19 and 1.20+ layouts are read; a 1.2–1.15 table is
+recognised and declared not read; files, line numbers and inlining are not reconstructed.
+
+## Strings
+
+URLs, registry keys, Windows and POSIX paths found as text, with counts. A string is a
+string: that the program contains a URL does not mean it ever requests it, and the report
+says so.
+
+## .NET method bodies: `cil`
+
+For a .NET assembly, `cil <file.dll>` goes past the headers into the code: it decodes the
+CIL (the bytecode the runtime runs) of each method to a readable listing, the way `ildasm`
+shows it. The opcode table is from the specification (ECMA-335, Partition III), so every
+instruction is named; a method call, a field access, a `newobj` has its token resolved to
+`Type::member` through the metadata; a `ldstr` shows the string. `--type <name>` or
+`--method <name>` narrows it; `--max` caps how many bodies come back; the rest page.
+
+`--pseudo` lifts the method to readable pseudo-C# instead of the instruction listing: CIL
+is a stack machine, so the lift simulates the evaluation stack — each push is an
+expression, each pop consumes one, a store or a void call or a return is a statement — and
+a call pops the right number of arguments because the method's signature (how many
+parameters, and whether it has a receiver) is read from the metadata. So
+`ThrowArgumentNullException` comes back as `throw new ArgumentNullException(GetArgumentName(arg0));`.
+Branch targets get a label and a `goto`; full if/while structuring is a decompiler's job
+and is not done, so the output is straight-line pseudocode with labels. On the core
+library, 7,176 methods lifted to 91,448 statements with no crash.
+
+Every run reports its coverage: how many method bodies were decoded and how many fully,
+with any opcode the reader did not know listed (on the whole .NET core library and four
+more assemblies, 42,949 methods, 100%, no unknown opcode). A native method, a runtime
+method or an abstract one has no byte stream and is said to have none. A fat method body's
+exception-handler clauses are listed — `.catch`/`.finally`/`.fault`/`.filter` with the try and
+handler IL ranges — though they are not folded into the pseudo-C# structure.
+
+## Native code: `disasm` (x86-64 and ARM64)
+
+`disasm <file>` decodes the native instructions of a program's code sections; it picks the
+decoder from the file's architecture. The x86-64 side reads the instructions. The opcode
+maps, the prefixes, the ModR/M and SIB bytes are from the specification (Intel SDM Vol. 2,
+AMD64 Vol. 3), so the length of every instruction is computed exactly: get a length wrong
+by one byte and the whole stream after it turns to noise, so length is the thing the reader
+is built around. The listing starts at the entry point, where the bytes are sure to be
+real code (`--at <hexoffset>` for elsewhere, `--count` for how many); each line is an
+address, the mnemonic and its operands, the way `objdump` or a disassembler shows them.
+
+The coverage number is a linear sweep of the code sections: the share of instructions that
+decoded to a known opcode. A code section also holds data (jump tables, padding, constants)
+and x86 decodes almost any bytes as some instruction, so this number bounds the
+unknown-opcode rate rather than proving every boundary; the entry-point listing is where
+real code is read and checked. Measured on three real binaries (a C++ `node.exe`, a Go
+`git-lfs.exe`, an ELF addon): over 99% decoded, the classic prologue (`push rbp`,
+`mov rbp, rsp`, `sub rsp, …`) and the stack-canary pattern read back correctly.
+
+### ARM64 (A64)
+
+The ARM64 side is simpler and surer: every A64 instruction is a fixed 32 bits, 4-byte
+aligned, so there is no length to get wrong and no desync is possible. The decoder (from
+the Arm Architecture Reference Manual, DDI 0487) picks the top-level group from four bits
+and sub-decodes by bit field: the integer, memory and branch instructions are rendered with
+their operands (`stp x29, x30, [sp, -0x10]!`, `adrp x3, …` then `ldr x3, [x3, …]`, `bl`,
+`ret`), and the scalar-FP / SIMD group is recognised as a class but named coarsely (`~`).
+The coverage is the share of words that are an allocated encoding; on a real ARM64 binary,
+100% allocated, nothing unaligned, the prologue and GOT-load patterns read back correctly.
+
+### The control-flow graph: `cfg`
+
+`cfg <file> [--at <hexoffset>]` recovers one function's control-flow graph from the
+disassembly: from the entry it follows the flow (fall-through and the resolved direct
+branch targets) by recursive descent, splits the instructions into basic blocks at every
+branch and branch target, draws the edges, and marks a back-edge as a loop. This is the
+skeleton every decompiler builds before expressions and structuring; it is ours, over our
+own x86-64 and ARM64 decoders. The output is the blocks with their instructions and their
+successors (`-> if-taken L_… | fall L_…`, `(loop)` on a back-edge).
+
+`cfg --pseudo` lifts the CFG one step further, to low-level pseudo-C. It works on x86-64 and
+on ARM64 (A64): the ARM64 lift folds the three-operand RISC the same way (a register holds
+its last expression, `cmp`/`tst` is a `subs`/`ands` into the zero register, the condition
+comes from `b.<cond>`/`cbz`/`cbnz`/`tbz`/`tbnz`, `sp` is the frame base, loads and stores read
+as array/field access). The full middle-end now runs on ARM64 too: liveness (dead spills dropped), dead-store
+elimination, stack-frame recovery (`*(sp + 0x30)` → `local_30`), points-to struct recovery
+(objects merged by origin across registers, args `x0`..`x7`), and API-anchored type recovery
+(a `bl`/`blr` to a resolved `name@plt`/`name@stub`/`dll!name` types the argument registers
+`x0`..`x7` and the return `x0` from the prototype table). So an ARM64 function recovers the
+same shape as x86-64. The rest of this section describes x86-64, and applies to ARM64 with
+the A64 register names.
+Within a block
+it folds expressions — a register holds the expression last assigned to it, substituted
+into later uses, so a `mov`/`add`/`neg` chain collapses into one statement — and it recovers
+the branch condition from the preceding `cmp`/`test` and the conditional-jump kind
+(`test esi, esi` + `je` becomes `if (esi == 0)`). A memory write is `*(addr) = …`, a call is
+`rax = sub_…(…)`, a return is `return rax;`. There is no type recovery and no cross-block
+value tracking, so registers are the variables.
+
+The blocks are then structured. Over the dominator and post-dominator trees (Cooper-Harvey-
+Kennedy iterative data flow) a two-way block becomes `if (…) { … } else { … }` merging at its
+immediate post-dominator, and a natural loop (a back-edge whose target dominates its source)
+becomes `while (…)` or `for (;;)` with `break`/`continue`. A labelled `goto` survives only
+where the flow is irreducible or leaves its region — the honest fallback, never a wrong
+nesting. `cfg --pseudo --goto` keeps the old flat listing with labels for comparison.
+
+A `cfg` of an x86-64 function that ends a block in an indirect `jmp` also tries to recover the
+switch jump table behind it — the MSVC absolute-pointer table (`jmp [base+idx*8]`) or the
+GCC/Clang PIC offset table (`movsxd off,[base+idx*4]; add; jmp`). When the table base, the
+bound and every entry read cleanly from the image and land inside the code, the resolved case
+targets are listed as a note; otherwise the block is left as-is (the CFG is never mutated on a
+guess).
+
+Call targets are named across the three formats. A PE import through the address table (the
+slots a `call [rip+x]` lands on) shows its `dll!function`, and in the pseudo-C reads
+`rax = KERNEL32.MultiByteToWideChar(...)`. A PE direct call to one of the file's own exports
+shows `module!export`. An ELF direct call to a procedure-linkage-table stub shows `name@plt`,
+read from `.rela.plt` and `.dynsym` (with `.plt.sec` handled for CET builds). A Mach-O direct
+call to a lazy-binding stub shows `name@stub`, read from `__stubs` through the indirect symbol
+table into the symbol table. What is not an import, export or stub stays an offset.
+
+Types are recovered where they can be anchored. A resolved import call is ground truth: a
+compact table of common Win32 / C-runtime / ntdll prototypes (from the public API headers,
+a specification) gives each `call dll!func` its parameter types in rcx/rdx/r8/r9 and its
+return type in rax under the Microsoft x64 convention. The call is annotated in place
+(`rax = (ULONG)ADVAPI32.EventRegister(/* LPCGUID, PENABLECALLBACK, PVOID, PREGHANDLE */)`),
+the prototypes are listed above the function, and a forward pass carries a type along `mov`
+copies (across blocks, since a non-volatile register survives a call) and marks sign from a
+signed vs unsigned jump. A typed value stored into a stack slot types that slot, so the
+locals get a declaration line (`HANDLE local_30`) when a typed value reaches them. A type
+that is not anchored stays `?` — honest, not guessed. User structs and a fully-typed C are
+still the frontier, and the prototype table is compact, so the typing is as wide as the
+table.
+
+The stack frame is recovered too (the first middle-end pass). A compiler keeps a function's
+locals at a fixed offset from the stack or frame pointer; each distinct slot is renamed to a
+variable (`*(rsp+0x30)` → `local_30`, `*(rbp+0x10)` → `arg_10`), the slots are listed as the
+function's locals, and the compiler boilerplate is annotated rather than left as noise — the
+stack-protector cookie (`// stack canary: set` / `: check`) and the frame set-up / tear-down.
+The pass renames and comments, it never deletes a statement.
+
+Values flow across blocks (the second and third middle-end passes). A backward liveness
+data-flow (live-in = use ∪ (live-out − def), to a fixpoint over the CFG) finds which registers
+each block actually leaves live; the lift then keeps only the live writes at a block's end and
+drops the dead ones, so the spill noise is gone. A value used only inside a memory address is
+substituted into that address, so no bare register is left without a visible definition. Then
+a value a block computes is forwarded into the block that uses it, along a strictly linear
+chain (one successor, one predecessor) so the value has exactly one path and can never be
+duplicated across a branch; a register the block only passes through untouched is not carried.
+The zeroing idiom `xor r, r` / `sub r, r` reads as `r = 0`. The passes are conservative: an
+unmodelled instruction marks its registers used and nothing defined, so a write is dropped
+only when the register is provably dead.
+
+Memory access reads as array and field access, from the shape of the address: `[base+index*
+scale]` becomes `base[index]`, `[base+disp]` becomes `base->field_<disp>`, `[base]` becomes
+`*base`. This names the offsets off a pointer as fields and the scaled index as an array
+subscript — the observed layout, not an invented named type; the frame base and rip-relative
+globals are left flat for the other passes.
+
+The register state is width-canonical: it is keyed on the 64-bit register, so writing `eax`
+kills the old value of `rax` and zero-extends into the top half, writing `al` is a partial
+write that leaves a wider read opaque, and `inc rax` is seen by a later read of `eax`. A value
+that merges from two paths (a phi) is handled correctly through the register variable: each
+path materialises its value into the register and the merge reads it, with the right kill
+semantics — no stale value crosses the join.
+
+A dead-store elimination pass then removes a spill `X = expr;` whose value every reader
+inlined (so X is read nowhere else) when the right-hand side has no call, with register names
+canonicalised so a value spilled as `rax` and read as `eax` is kept. This drops the leftover
+spill noise and the dead parts of the compiler's boilerplate.
+
+An intra-procedural points-to pass groups the field accesses by the *object*, not the
+register. Each pointer value carries an origin tag — an incoming argument (`arg0`..`arg3`), a
+call's return, a global, or a pointer loaded from another object's field (`arg0.f0`) — and the
+tag propagates through copies and interior-pointer arithmetic, so `[rcx+8]` and, after
+`mov rax, rcx`, `[rax+0x10]` fall on the same object and merge into one `struct arg0_t`; two
+different arguments stay two structs. A merge of disagreeing origins clears the tag (no false
+merge). When no object can be tagged, the pass falls back to grouping by register.
+
+For each pointer with two or more distinct fields, a `struct` declaration is synthesised above
+the function. Each
+field's type is inferred: a pointer when the field's value is itself dereferenced or indexed,
+otherwise an integer whose width is the access size recovered from the instruction (`mov eax,
+[rcx+0x24]` makes `field_24` 32-bit, `mov rdx, [rcx+0x28]` makes `field_28` 64-bit; the widest
+access wins). It is labelled approximate: the offsets are observed (a gap shows as the offset
+comment) and the base register may hold different objects at different points. Arrays are
+noted too: an indexed access `[base+index*scale]` is reported as `base[]` with the element
+type from the scale and access width (`[r8+rcx*8]` → `int64_t r8[]`). A field called
+indirectly (`call [base+disp]`) is typed as a function pointer (`void (*field_N)()`), an
+observed fact, not a guess — useful for vtables and callbacks. This is the honest step toward
+the real frontier (points-to plus full type inference), not that frontier.
+
+What `cfg` does not do: an indirect jump or call (through a register, a jump table, a
+virtual call) has no resolved target, so a block only it reaches is missing. The field names
+are offsets and the layout is what was observed off a register (which may hold different
+objects at different points), not a reconstructed struct with real member types and names —
+that stays the frontier.
+
+## Android: `dex`
+
+`dex <file.apk | .dex>` reads an Android program. An `.apk` is a ZIP; its `classes*.dex`
+are pulled out (stored or deflated) and read the same way as a bare `.dex`. The container
+is a set of pools (strings, types, prototypes, fields, methods, classes), read from the
+DEX format specification; then each method's Dalvik bytecode is decoded to a readable
+listing, register by register, with every pool index resolved to a name: `const-class`,
+`const-string "…"`, `invoke-direct {v1, v2}, Type;.method`, `throw`. `--class` or
+`--method` narrows it, `--max` caps the bodies, the rest page.
+
+Dalvik is register-based and its instructions are 16-bit code units, so (like ARM64) there
+is no length to get wrong. Coverage is how many method bodies decoded fully, with any
+unknown opcode listed. Measured on a real DEX (the Android API compiled to Dalvik, 6,376
+classes, 63,630 methods): 55,481 method bodies, 100%, no unknown opcode.
+
+`dex --pseudo` lifts each method to readable pseudo-Java. Dalvik is register-based with its
+pool references already resolved, so the lift is a forward substitution over the registers:
+a register holds the expression last written to it, substituted into later uses; a
+`new-instance` plus its `<init>` fold into `new Type(args)`, an `invoke` whose result a
+`move-result` takes folds the call into the destination, a field or array store and a return
+and a throw are the statements. So the android.jar stub comes back as
+`throw new RuntimeException("Stub!");`. Branch targets get a label and a `goto`; full
+if/while structuring is not done.
+
+The try/catch regions of a method are listed (`try <range> -> catch <Type>@addr`, the finally
+as catch-all). What is not done: the debug line info, and if/while structuring of the
+pseudo-Java. A register's value is not tracked across blocks.
+
+## Java: `jvm`
+
+`jvm <file.class>` (alias `class`) reads a Java `.class`: the constant pool, this/super class
+and interfaces, fields, and each method's Code attribute. It decodes the JVM bytecode and,
+with `--pseudo`, lifts the operand stack back to pseudo-Java expressions — loads/stores as
+`vN`, arithmetic as operators, `getfield`/`putfield` as `obj.field`, `invoke*` as calls,
+`if*`/`goto`/`switch` as structured control flow through the shared structurizer (default) or a
+labelled goto with `--goto`. `--method NAME` filters, `--max N` caps the methods decoded. A
+constant-pool index is resolved to its name or string. Not done: a call's arity is unknown, so
+arguments show as `(...)`; the StackMapTable, exception tables and generics signatures are not used.
+
+## Python: `pyc`
+
+`pyc <file.pyc>` reads a CPython `.pyc`: the magic (which gives the Python version), then the
+marshalled top-level code object and every nested one (functions, comprehensions). It
+disassembles the wordcode and resolves each argument — `LOAD_CONST` to the constant,
+`LOAD_NAME`/`LOAD_GLOBAL` to the name, `LOAD_FAST`/`STORE_FAST` to the local, `COMPARE_OP` and
+`BINARY_OP` to the operator, the jumps to an absolute offset. `--method NAME` filters,
+`--max N` caps the code objects. `--pseudo` lifts it further to pseudo-Python — assignments,
+operator expressions, calls with their arguments, and `if`/loops through the shared structurizer
+(`--goto` keeps the flat labelled form). Opcode numbers change between Python versions; this reader
+knows the maps for 3.11 / 3.12 / 3.13 and labels an unknown version's opcodes as `<op N>`.
+Inline cache slots are skipped; the line table, exception table and the marshalled objects'
+live values are not reconstructed.
+
+## WebAssembly: `wasm`
+
+`wasm <file.wasm>` reads a module from its bytes per the WebAssembly core specification: the
+sections (type, import, function, table, memory, global, export, start, element, code,
+data), the function signatures, the imports and exports, and each function's code. `--func
+name` filters, `--max N` caps how many bodies are shown, `--text` prints them.
+
+`wasm --pseudo` lifts each function to structured pseudocode. Wasm is a stack machine with
+already-structured control flow (block / loop / if / else / end with labelled `br`), so the
+lift reads cleaner than a native one: the stack is turned back into expressions
+(`local.get`/`const`/arith fold into one line), a load/store becomes `mem[addr]`, a `call`
+uses the imported or exported name, and the blocks become real `if`/`loop` with indentation
+— no CFG recovery needed. A function with no export or import name shows as `funcN` (the
+custom "name" section is not applied); SIMD (v128) and the `0xFC`/`0xFD`/`0xFE`-prefixed
+instructions are listed but not folded into operators.
+
+## EVM: `evm`
+
+`evm <file>` reads Ethereum Virtual Machine bytecode (raw bytes, or a hex string with or
+without `0x`) per the EVM opcode list: the instruction stream with program-counter offsets
+and JUMPDEST labels, the 4-byte function selectors pulled from the dispatcher
+(`PUSH4 <sel> … EQ … JUMPI`), and the Solidity metadata solc appends (compiler version,
+IPFS/Swarm hash). `evm --pseudo` lifts the stack back to pseudo-Solidity: `storage[k]`,
+`mem[a]`, `msg.sender`, `calldata[x]`, binary operators, and a `goto`/`if … goto` wherever a
+constant `PUSH` gives the jump target. A computed jump target comes off the stack at run
+time and is left as the expression. The names behind the selector hashes need a signature
+database, which is not shipped; the hashes are reported as-is.
+
+## Windows debug symbols: `pdb`
+
+`pdb <file.pdb>` reads a Microsoft PDB: the MSF container and stream directory, the DBI stream
+header, and the CodeView symbol records in the symbol-record stream. It lists the named
+functions (S_PUB32 public symbols and S_GPROC32/S_LPROC32 procedures) with their section:offset
+and, when the section-headers substream is present, their RVA — so a stripped-looking `exe`
+regains real names from its sibling `.pdb`. `--method NAME` filters, `--max N` caps. The type
+stream (TPI) and line information are not reconstructed.
+
+For a PE or ELF, `bin` also reports the Shannon entropy of each section and a packing verdict:
+a near-8 entropy means compressed or encrypted, a packer-style section name (UPX/themida/vmp…)
+or very few imports over executable code add to it. A high-entropy section is a signal, not
+proof — a resource or an embedded archive is high-entropy too.
+
+For a PE or ELF, `bin` also groups the imported API names into capabilities — what the code
+*can* do: RWX memory, process injection, dynamic API resolution (LoadLibrary/GetProcAddress),
+anti-debug, keylogging, registry persistence, service control, networking, crypto API, token
+privilege, screen capture. Each capability lists the exact imported APIs that triggered it.
+This is a triage signal observed from the import table, not proof the code runs those paths —
+a JIT engine imports VirtualProtect, a loader imports GetProcAddress, both for honest reasons.
+
+For a PE, `bin` reports an `imphash` — the import-table fingerprint, computed the pefile way
+("dll.func" entries in table order, lowercased, comma-joined, MD5'd). Two builds linked the
+same way share it even when the code differs, so it clusters related samples. For an ELF or
+Mach-O there is no standard imphash, so `bin` reports an `import-symbol-hash` over the sorted
+imported-symbol names instead, labelled distinctly so it is never read as a real imphash.
+
+## Call graph: `callgraph`
+
+`callgraph <file>` (PE, ELF or Mach-O, x86-64 or arm64) builds the caller→callee graph over the
+functions already enumerated from the unwind tables and symbols (`.pdata` on PE, `.eh_frame`
+plus `.symtab`/DWARF on ELF, `LC_FUNCTION_STARTS` plus `nlist` on Mach-O). It walks each function from its real entry and reads the target
+of every *direct* call — x86-64 `call rel32`, ARM64 `bl` — then maps that target back to the
+function that contains it. Names come from a sibling `.pdb` (PE), the exports, `.symtab`/
+DWARF (ELF) or `nlist` (Mach-O); an unnamed function shows as `sub_<rva>`. A function with no
+known size runs to the next enumerated start, never past the end of its own section. The summary ranks the hubs by fan-in
+(`topCallers`) and fan-out (`topCallees`). `--func <name>` or `--rva <hex>` returns the ego
+graph of one function — its direct callees and its callers — which is what the app's graph
+canvas draws. A direct call into listed code that no table names discovers a node; discovered
+nodes are walked in a second pass (each bounded by the next known start), so their callees are
+edges too. `--budget <MiB>` raises the 8 MiB walk budget on a large binary. Honest: only direct calls are edges; an indirect call (register, import thunk,
+vtable) has no static target, so it is counted (`indirectCalls`), never invented; a direct
+call that leaves the enumerated set is counted as `externalDirect`. On a very large binary the
+walk stops at an 8 MiB budget and says so (`truncated`).
+
+## String cross-references: `xrefs`
+
+`xrefs <file>` (PE, ELF or Mach-O, x86-64 or arm64) maps which function points at which string literal.
+It extracts the printable-ASCII strings from the data sections (with their virtual address),
+then walks each enumerated function and reads every instruction that forms a string's address
+directly — x86-64 `lea reg, [rip+disp]` and `mov reg, imm64`, ARM64 the `adrp`+`add` pair — and
+links the function to the string when the address hits a string start. Default output ranks the
+most-referenced strings and names the functions that use them; `--func <name>` / `--rva <hex>`
+lists one function's strings; `--str <substr>` finds who references the strings matching a
+substring; `--min <n>` sets the minimum string length. Names come from the same PDB / symbols as
+`callgraph`. Honest: only direct address-forming patterns are followed (a string reached through
+a table, a GOT slot or a runtime computation is not attributed); strings are printable-ASCII
+runs, so UTF-16 and obfuscated strings are missed, and a binary that packs its string data with
+no terminators (Rust `.rodata`) reports long merged runs whose start still carries the edge.
+
+## PE security and provenance metadata
+
+For a PE, `bin` also reports a `security` block with the provenance and hardening metadata:
+- `rich`: the Rich header — the MSVC toolchain fingerprint the linker stamps between the DOS
+  stub and the PE header, XOR-masked by a key. Each record is a tool (product id + name where
+  known), the build number, and how many objects that tool produced. A binary with a trimmed
+  DOS stub has no Rich header and the field is absent.
+- `loadConfig`: whether Control Flow Guard is actually instrumented (`cfgInstrumented`,
+  `cfgFunctionTable`), whether the build is shadow-stack aware (`rfInstrumented`), the raw
+  `guardFlags`, and whether a stack `securityCookie` is set. This is the truth of the load-
+  config directory, stronger than the DLL-characteristics bit alone.
+- `delayImports`: DLLs loaded lazily through the delay-import table — dependencies the normal
+  import table does not list.
+- `authenticode`: whether a signature certificate is embedded, its size, and a best-effort
+  `signerHint` — a common name scanned out of the PKCS#7 DER. The signature is **not** verified
+  and the hint may be a CA in the chain, not the leaf signer; it says a certificate is present,
+  not that it is valid or trusted.
+
+For an ELF, `bin` reports a `security` block from the notes and version sections:
+- `buildId`: the `.note.gnu.build-id` — what a symbol server keys on.
+- `cet` (x86-64) / `aarch64`: the GNU program properties — whether the toolchain marked the
+  binary for Intel CET (`ibt`, `shstk`) or AArch64 `bti` / `pac`, the hardware control-flow
+  hardening. Absent means the marker is not there, which usually means the feature is off.
+- `needVersions`: the libraries and symbol versions the binary needs (`.gnu.version_r`), which
+  pin the minimum glibc / library versions it will load against.
+Little-endian ELF only. A big-endian ELF is read for everything else but its security notes
+are skipped.
+
+For a Mach-O, `bin` reports a `security` block from the load commands and the code signature:
+- `codeSignature`: whether an embedded signature is present, its size, whether it is `adhoc`
+  (self-hash only, effectively unsigned), whether `hardenedRuntime` is set, and the
+  `entitlementKeys` of the embedded entitlements plist — what the process is allowed to do
+  (JIT, debugging, disabled library validation…). The signature is **not** verified.
+- `chainedFixups` / `exportsTrie`: whether the binary uses the modern dyld chained-fixups and
+  export-trie formats.
+
+## Crypto constants: `crypto`
+
+`crypto <file>` scans the raw bytes for the fixed constant tables of well-known primitives —
+the AES S-box and its inverse, the SHA-256/512 init and round constants, the MD5/SHA-1 initial
+state, the CRC-32 table and polynomials, the Base64 / Base64url alphabets, the ChaCha/Salsa
+`"expand 32-byte k"` string, Blowfish and Keccak constants — and reports each with its offset.
+These constants are public, fixed facts of each algorithm, so a match is strong evidence the
+file embeds that primitive. `bin` also surfaces a short list. A hit is embedded data at an
+offset, not proof the code executes it, and a table-free or custom implementation is not seen.
+
+## Network captures: `pcap`
+
+`pcap <file>` reads a libpcap or pcapng capture: the link type and byte order from the
+header, then every packet record. It decodes the common stack — Ethernet (with VLAN tags),
+IPv4 / IPv6, TCP / UDP / ICMP — and summarises the protocol counts and the conversations
+(source and destination address and port, ordered by packet count). It also reads the
+application layer best-effort: an HTTP/1.x request (method + Host + path) or status line, a
+DNS / mDNS / LLMNR question (kind, type, name), DHCP (message type), the HTTP/2 connection
+preface, and TLS (ClientHello SNI, ServerHello, certificate subject CN) — per packet under `applications`
+and, for a message split across segments, from the reassembled stream under `streams`. TCP
+streams are reassembled per direction by sequence number (up to 64 KB per flow, stopping at a
+gap or sequence wrap), so a request whose Host header or a ClientHello whose SNI falls in a
+later segment is still read. `--max N` caps how many individual packets the JSON lists.
+A conversation is still counted by packet. Useful for reversing a wire protocol from a
+capture without a live tap.
+
+## Not yet
+
+Expression reconstruction's last native frontier is user-struct and full type recovery (API
+prototypes already type the call sites). Firmware is read by header only. On `pcap` the
+application layer covers HTTP/1.x, DNS and the TLS ClientHello; other L7 protocols, and a
+flow with a missing middle segment, are not reconstructed.

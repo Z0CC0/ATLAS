@@ -1,0 +1,11 @@
+Dopo una scrittura le repliche non concordano subito, ma convergono entro un tempo finito se le scritture si fermano.
+
+Ti riguarda quando leggi subito dopo aver scritto: l'utente pubblica un commento, ricarica la pagina e non lo vede.
+
+La soluzione comune è leggere dalla replica primaria solo per la sessione che ha appena scritto, non per tutte.
+
+Ritardo tipico: sotto il secondo tra repliche nella stessa regione, qualche secondo tra regioni diverse.
+
+Il compromesso è con la disponibilità: un sistema che pretende consistenza forte deve rifiutare le richieste quando le repliche non si parlano. Quindi non è un difetto da eliminare ma una scelta, e la maggior parte dei sistemi che scalano la accetta di proposito.
+
+Non è accettabile solo in pochi casi riconoscibili: saldi di conto, disponibilità di posti, unicità di un identificativo.

@@ -1,0 +1,36 @@
+**Eventual consistency** means that right after a write, the copies of your data (replicas) don't all agree yet. If writes stop, they catch up with each other within a finite time.
+
+## How long the gap lasts
+
+- **Replicas in the same region:** under a second
+- **Replicas in different regions:** a few seconds
+
+## Why systems accept it
+
+It's a trade against availability. A system that requires strong consistency has to refuse requests whenever its replicas can't talk to each other. A system that allows eventual consistency keeps answering.
+
+So eventual consistency is a choice, not a defect you need to remove. Most systems that scale accept it on purpose.
+
+## Why you should care
+
+The person it affects is the one who reads right after they write:
+
+1. A user posts a comment
+2. They reload the page
+3. Their comment isn't there, because the read went to a replica that hasn't caught up
+
+To them, that looks like a bug.
+
+**The usual fix:** send reads to the primary replica only for the session that just wrote. Everyone else keeps reading from the replicas, so you keep the scaling benefit.
+
+## When it's not acceptable
+
+There are only a few of these cases, and they're easy to spot:
+
+- **Account balances**
+- **Seat availability**
+- **Unique identifiers**
+
+In these cases, even a short disagreement between replicas causes real damage, like overdrafts, double-booked seats, or duplicate IDs. They need strong consistency.
+
+**Next step:** find one place in your app where a user writes something and then sees it right away. Check whether that read goes to the primary or to a replica.

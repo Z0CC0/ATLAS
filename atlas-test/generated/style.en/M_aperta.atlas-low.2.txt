@@ -1,0 +1,11 @@
+Start from what actually changes. Stable parts of monolith gain nothing from being split, so map which code moves often and which has not been touched in years.
+
+Then find where transaction boundaries sit. A transaction that today spans two tables inside one PHP process becomes a distributed problem the moment those tables live behind two services.
+
+Do not plan a full rewrite running in parallel with old system. It almost always fails: old one keeps changing, copy never catches up. Alternative is progressive strangling: router in front, move one piece at a time, old system stays authoritative until new piece is verified.
+
+Count your team before choosing microservices. Every service wants releases, monitoring, logs, alerts and a person who looks after it. Below five developers that operational cost almost always exceeds benefit.
+
+Option nobody mentions: modular monolith. Sharp internal boundaries, one release, and ability to extract a module the day it is genuinely needed, not before.
+
+Deciding question not technical: what must team be able to do a year from now that it cannot do today. Answer that first, architecture follows from it.

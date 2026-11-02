@@ -1,0 +1,1 @@
+No, skip it. On 3 distinct values planner mostly pick sequential scan, not B-tree — each value likely >5-10% of rows, so index not used. Index still cost writes and disk space for nothing. Exception: partial index on rare value, that work fine.

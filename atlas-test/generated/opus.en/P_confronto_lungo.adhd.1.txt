@@ -1,0 +1,29 @@
+**Use local files plus a collector that ships them elsewhere.** At a thousand requests a minute, your app writes to a local file and never waits on the log. A separate process moves the lines off the machine.
+
+One rule applies whichever option you pick: **writing a log must never sit in the critical path of a request.**
+
+## Why the other two lose at your volume
+
+**Files alone**
+- They cost nothing and depend on nothing.
+- Search is `grep`.
+- You have to set up rotation yourself, or the disk fills.
+- You can't search across several machines at once. You have to log into each one.
+
+**Managed service alone**
+- You get instant search, alerts and automatic retention.
+- You pay by volume, and at a thousand requests a minute the volume grows fast.
+- Your logs leave your own infrastructure, so you have to strip personal data before they go.
+
+**The application's own database**
+- Search is familiar and convenient.
+- Logs and real requests are two very different workloads, and they end up competing.
+- Under load, logs fill the caches and connections your real requests needed. This is the worst of the three.
+
+## The setup
+
+1. The app writes logs to a local file, with log rotation set up so the disk can't fill.
+2. A collector reads that file and ships the lines to one central place, so you can search all machines together.
+3. If that central place is a managed service, remove personal data before shipping, and watch the bill as your traffic grows.
+
+**Next:** check whether your app writes logs synchronously inside the request handler. If it does, fix that first.

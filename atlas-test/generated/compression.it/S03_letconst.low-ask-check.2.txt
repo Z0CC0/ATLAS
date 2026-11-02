@@ -1,0 +1,1 @@
+const blocca riassegnazione del nome, non modifica del valore. Oggetto dichiarato con const può comunque cambiare al suo interno. let invece permette riassegnazione. Entrambi hanno ambito di blocco, a differenza di var.

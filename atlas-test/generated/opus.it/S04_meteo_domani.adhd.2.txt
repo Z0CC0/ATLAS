@@ -1,0 +1,11 @@
+Domani a New York porta una giacca leggera o un ombrello se esci la sera.
+
+- **Mattina:** cielo sereno.
+- **Pomeriggio:** arrivano le nuvole.
+- **Dopo le 18:** 30% di probabilità di pioggia.
+- **Temperature:** massima 24 °C, minima 17 °C.
+- **Vento e umidità:** vento da nord-ovest a 15 km/h, umidità intorno al 60%.
+
+Se hai cose da fare all'aperto, falle entro il pomeriggio.
+
+_Fonte: dati meteo presi dal web._

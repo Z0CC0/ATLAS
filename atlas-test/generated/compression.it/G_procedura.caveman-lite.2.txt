@@ -1,0 +1,15 @@
+Un `ALTER TABLE ALTER COLUMN TYPE` diretto riscrive tutta la tabella tenendo un lock `ACCESS EXCLUSIVE`: con dieci milioni di righe il servizio resta fermo per tutta la durata dell'operazione. In produzione va evitato, e si procede invece con una migrazione a più fasi:
+
+1. **Verifica dei dati**: prima di tutto controlla quante righe della colonna varchar non contengono solo cifre — sono i valori che non si convertirebbero in integer. Se ce ne sono, vanno gestiti prima di procedere.
+
+2. **Nuova colonna**: aggiungi una colonna separata con `ALTER TABLE t ADD COLUMN colonna_int integer`. Questa operazione da sola è veloce e non blocca la tabella a lungo.
+
+3. **Backfill a blocchi**: popola la nuova colonna a blocchi di diecimila righe per volta, non in un'unica transazione. In questo modo eviti di tenere un lock lungo sull'intera tabella mentre migri dieci milioni di righe.
+
+4. **Trigger di sincronizzazione**: mentre il backfill è in corso, aggiungi un trigger che mantenga allineate le due colonne (varchar e integer) per ogni scrittura che arriva nel frattempo, così i dati restano coerenti fino al taglio finale.
+
+5. **Switch applicativo**: quando il backfill è completo, cambia il codice dell'applicazione per leggere dalla colonna nuova e rilascialo in produzione.
+
+6. **Rimozione della colonna vecchia**: solo dopo che il nuovo codice è in produzione e stabile, elimina la colonna originale con `ALTER TABLE t DROP COLUMN colonna`.
+
+**Attenzione**: il passo 6 è irreversibile. Una volta eliminata la colonna vecchia, quei dati non si recuperano se non ripristinando da un backup. Assicurati che tutto funzioni correttamente con la colonna nuova prima di eseguirlo, e che esista un backup recente.

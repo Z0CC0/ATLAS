@@ -1,0 +1,15 @@
+Bitcoin grew out of the cypherpunk scene. The people there had wanted digital money for years. Earlier designs such as b-money and bit gold got close, but none of them solved one problem: how to agree on the order of transactions.
+
+**The problem.** Digital money is easy to copy, so the same coin can be spent twice. The usual fix is a central body that keeps the ledger and decides which payment came first. Bitcoin set out to prevent this double spending without any such central body.
+
+**The paper.** In 2008 a paper appeared, signed Satoshi Nakamoto. The paper was titled *Bitcoin: A Peer-to-Peer Electronic Cash System*. The name is a pseudonym, and nobody has ever identified who used it.
+
+**The solution.** Transactions are grouped into blocks, and each block links to the one before it, forming a chain. A proof of work fixes the order of the blocks. Each block costs computing effort to produce. If someone wanted to rewrite a past block, they would have to redo the work for that block and for every block after it. That makes changing history expensive, so the order holds without anyone in charge.
+
+**The first block.** The network started on 3 January 2009 with its first block. That block contains the headline of a Times article about a bank bailout. The headline proves the block was not created before that date. It also states the project's intent: money that does not depend on banks and bailouts.
+
+**The supply.** New bitcoin enter circulation as a reward for producing blocks. The reward started at 50 bitcoin. It halves every 210,000 blocks, which takes roughly four years. Because of this, the total ever issued approaches 21 million and never goes past it.
+
+**First real use.** The first documented commercial transaction came in 2010: someone paid 10,000 bitcoin for two pizzas.
+
+**Satoshi leaves.** Satoshi stopped taking part publicly in 2011. The bitcoin Satoshi held have never been moved.

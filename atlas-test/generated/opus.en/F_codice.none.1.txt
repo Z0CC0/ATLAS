@@ -1,0 +1,28 @@
+Here's a debounce you can drop into any project:
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Usage:
+
+```js
+const onResize = debounce(() => console.log('resized'), 200);
+window.addEventListener('resize', onResize);
+```
+
+It works because of three details:
+
+- **`let t` sits in the closure, outside the returned function.** Every call shares the same timer. If you declared `t` inside the arrow function, each call would get its own timer and nothing would be debounced.
+- **`clearTimeout(t)` runs before every new `setTimeout`.** This cancels the pending call each time a new one comes in. Without it, timers pile up and `fn` fires more than once.
+- **`...args` passes the arguments through.** The spread hands the event or values on to `fn`. Without it, `fn` would receive nothing.
+
+This version doesn't return anything. If you need `fn`'s return value, wrap it in a Promise.
+
+If you want the opposite behaviour, where the function runs right away and then ignores calls for a while, you need a throttle. That's a different function.

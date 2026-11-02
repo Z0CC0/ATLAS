@@ -1,0 +1,5 @@
+Debounce with a closure holding the timer:
+
+function debounce(fn, ms) { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); }; }
+
+t must sit outside the returned function — inside it, each call gets its own timer, nothing debounces. clearTimeout before every setTimeout, else timers pile up and fn fires multiple times. Spread the args through, else fn gets called with nothing. This returns nothing — need a Promise if you want the result. Opposite need, fire now then ignore for a while, is throttle, a separate function.

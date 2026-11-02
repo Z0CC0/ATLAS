@@ -1,0 +1,1 @@
+const stops you reassigning name, not modifying value — object made with const still changes internally. let lets you reassign. both block scoped, unlike var.

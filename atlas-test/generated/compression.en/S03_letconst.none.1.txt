@@ -1,0 +1,3 @@
+In JavaScript, both `let` and `const` are block scoped — unlike `var`, they only exist inside the `{ }` where they're declared.
+
+The real difference between them is about reassignment, not mutability. With `let`, you can reassign the variable to a new value later. With `const`, you can't reassign the name once it's set — but that only locks the binding, not the value itself. So if you declare an object with `const`, you can't point that name to a different object afterward, but you can still change what's inside it (add properties, update fields, etc.), since that's modifying the object internally rather than reassigning the variable.

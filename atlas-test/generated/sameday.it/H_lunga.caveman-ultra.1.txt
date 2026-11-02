@@ -1,0 +1,16 @@
+**Come funziona**
+
+La cache conserva il prefisso di una richiesta già elaborato. Le richieste successive con lo stesso inizio non ripagano quel prefisso per intero.
+
+Il riuso vale solo sul prefisso. Basta un carattere diverso all'inizio e da quel punto in poi il riuso si ferma. Per questo le parti stabili vanno messe prima e quelle che cambiano dopo.
+
+Occhio alle voci di sistema che cambiano a ogni turno, per esempio un orario. Annullano il riuso di tutto quello che viene dopo.
+
+**Costi**
+
+Scrivere nella cache costa più di una lettura normale, quindi la prima richiesta costa di più. Il risparmio parte dalla seconda richiesta e cresce con il numero di turni.
+
+**Quando conviene**
+
+- **Sì:** nelle conversazioni lunghe con un contesto grande e stabile, come istruzioni di sistema, documentazione allegata e definizioni di strumenti.
+- **No:** nelle richieste singole e diverse fra loro. Lì paghi la scrittura nella cache e poi non la rileggi mai.

@@ -1,0 +1,3 @@
+Not worth it. On three distinct values the planner treats it as low cardinality and skips the B-tree — a sequential scan wins whenever the filter matches more than roughly 5-10% of rows, which with only three values it almost always does. Meanwhile the index still costs you on every write and takes disk space, for no read benefit.
+
+The one case where it pays off: a partial index on just the rare value, if one of your three values is genuinely uncommon. That the planner will actually use.

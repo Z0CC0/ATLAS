@@ -1,0 +1,24 @@
+HTTPS è HTTP dentro un canale cifrato da TLS. Prima di mandare dati HTTP, client e server fanno un handshake TLS.
+
+**Handshake**
+
+1. Il client apre la connessione. Dichiara le versioni di TLS e i cifrari che supporta.
+2. Il server sceglie versione e cifrario. Poi manda il proprio certificato.
+3. Il client controlla il certificato. Il certificato lega un nome di dominio a una chiave pubblica ed è firmato da un'autorità di certificazione. Il client verifica la firma risalendo la catena fino a una radice che ha già in memoria.
+4. Client e server concordano una chiave di sessione. Oggi lo fanno tipicamente con uno scambio Diffie-Hellman su curve ellittiche.
+
+**Perché una chiave simmetrica**
+
+La cifratura asimmetrica costa troppo per il traffico vero. Per questo la chiave di sessione è simmetrica.
+
+**Dopo l'handshake**
+
+Da qui in poi il traffico è cifrato e autenticato. Chi sta in mezzo non può leggerlo né modificarlo.
+
+**Velocità**
+
+TLS 1.3 chiude lo scambio in un solo giro di andata e ritorno. TLS 1.2 ne richiede due.
+
+**Limite da conoscere**
+
+Il certificato non dice nulla su chi gestisce il sito. Dice solo che quel dominio controlla quella chiave. Quindi il lucchetto ti garantisce il dominio, non l'onestà di chi c'è dietro.

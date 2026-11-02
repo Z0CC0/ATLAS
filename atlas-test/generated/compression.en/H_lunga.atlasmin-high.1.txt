@@ -1,0 +1,3 @@
+Prompt caching keeps the already-processed prefix of a request, so later requests starting the same way skip reprocessing it. Only the prefix counts: one different character at the start kills reuse from that point on, so stable parts (system instructions, docs, tool definitions) go first, changing parts after — reverse order breaks caching entirely.
+
+Writing to the cache costs more than a normal read, so the first request is pricier. Gain starts from the second request, growing with turn count. Pays off on long conversations with large stable context. Doesn't pay off on single, mutually-different requests — you pay the write, never read it back. A system line that changes every turn (a clock, e.g.) kills reuse of everything after it.

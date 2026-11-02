@@ -1,0 +1,5 @@
+No. Qualsiasi cosa arrivi al browser è leggibile: basta aprire gli strumenti per sviluppatori o guardare le richieste di rete, e l'offuscamento non serve a niente contro questo.
+
+La chiave deve stare sul server. Il frontend chiama un endpoint del tuo backend, e solo quest'ultimo chiama il servizio esterno usando la chiave. Sull'endpoint del backend metti un rate limit, altrimenti diventa un modo gratuito perché chiunque lo trovi usi la tua chiave a sbafo.
+
+Se la chiave è già finita nel frontend (anche solo per test), considerala già compromessa: va ruotata subito, non basta rimuoverla dal codice. E se è finita in un commit, toglierla da lì non risolve: resta nella cronologia del repository, e chiunque abbia clonato il repo ce l'ha già.

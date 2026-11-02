@@ -1,0 +1,7 @@
+Closure-based debounce, no library:
+
+```js
+function debounce(fn, ms) { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); }; }
+```
+
+Call clearTimeout before every new setTimeout — else timers pile up, fn fires more than once. `t` must live in closure, not inside returned function — else every call gets own timer, no debouncing happens. Forward args with spread — else called fn receives nothing. This version returns nothing; need Promise if return value matters. For opposite case — run immediately, then ignore for a period — that's throttle, different function.

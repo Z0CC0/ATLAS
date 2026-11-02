@@ -1,0 +1,21 @@
+Direct `ALTER TABLE ALTER COLUMN TYPE` rewrites entire table under an ACCESS EXCLUSIVE lock — service down for whole duration. Avoid that. Do it in six steps instead:
+
+1. **Verify convertibility first.** Count rows where the column isn't all digits (e.g. `WHERE colonna !~ '^[0-9]+$'`). If that count isn't zero, stop and fix the data before touching schema.
+
+2. **Add the new column** without a lock-heavy rewrite:
+   ```sql
+   ALTER TABLE t ADD COLUMN colonna_int integer;
+   ```
+
+3. **Backfill in batches of 10,000 rows**, not all at once — each batch commits separately so no long lock sits on the table.
+
+4. **Add a trigger** that keeps `colonna` and `colonna_int` in sync for any rows written during the migration, so nothing falls out of step between the backfill and cutover.
+
+5. **Deploy code that reads from `colonna_int`**, ship it, confirm it's healthy in production.
+
+6. **Only then, drop the old column:**
+   ```sql
+   ALTER TABLE t DROP COLUMN colonna;
+   ```
+
+**This last step is irreversible** — once dropped, that data is gone unless you restore from backup. Don't run it until you're confident the new column has been correct and stable in production for a while.

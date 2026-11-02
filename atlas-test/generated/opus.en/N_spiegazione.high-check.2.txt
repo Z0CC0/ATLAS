@@ -1,0 +1,15 @@
+internal knowledge
+
+Eventual consistency: after write, replicas disagree for a while, but converge within finite time once writes stop.
+
+Price paid for availability. Strong consistency must refuse requests when replicas cannot talk to each other.
+
+Who it hurts: whoever reads right after writing. User posts comment, reloads, does not see it.
+
+Common fix: read from primary replica for the session that just wrote, not for everyone.
+
+Convergence usually under one second across replicas in the same region. Across regions, rises to seconds.
+
+Not a defect to eliminate. A choice: most systems that scale accept it deliberately.
+
+Unacceptable only in few, recognisable cases: account balances, seat availability, identifier uniqueness.

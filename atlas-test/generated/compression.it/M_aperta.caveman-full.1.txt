@@ -1,0 +1,19 @@
+Prima di scegliere architettura, guarda questo, in ordine:
+
+**Cosa cambia davvero.** Mappa parti monolite che cambiano spesso vs stabili. Parti stabili non guadagnano niente da split — sprecheresti lavoro.
+
+**Confini transazioni.** Trova dove stanno oggi. Transazione che attraversa due servizi diventa problema distribuito (2PC, saga, compensazioni). Se boundary di un modulo taglia transazione critica, quel modulo non si stacca pulito.
+
+**No riscrittura parallela big-bang.** Fallisce quasi sempre: vecchio sistema continua a cambiare mentre scrivi copia, copia non lo raggiunge mai. Resta indietro per sempre.
+
+**Strangolamento progressivo invece.** Router davanti, sposti un pezzo alla volta, vecchio resta autorevole finché nuovo non verificato in produzione. Rischio basso, rollback per pezzo.
+
+**Costo operativo microservizi.** Ogni servizio vuole: rilascio suo, monitoraggio suo, log suoi, allarmi suoi, persona che se ne occupa. Non è costo teorico, è costo reale ricorrente.
+
+**Sotto 5 sviluppatori — quasi sempre non conviene.** Costo operativo microservizi supera beneficio quasi sempre sotto quella soglia team.
+
+**Monolite modulare — opzione sottovalutata.** Confini interni netti (moduli separati in codice, non processi separati), un solo rilascio, un solo deploy pipeline. Estrai modulo in servizio separato il giorno che serve davvero — non prima.
+
+**Domanda decisiva non è tecnica.** È: cosa deve poter fare team fra un anno che oggi non può? Risposta a questa domanda guida scelta, non pattern di moda o preferenza tecnologica.
+
+Ordine pratico: rispondi a "cosa cambia" e "dove tagliano transazioni" prima, poi guarda dimensione team — probabile che risposta sia monolite modulare + strangolamento graduale, non split completo subito.

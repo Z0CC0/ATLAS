@@ -1,0 +1,22 @@
+Ecco come farlo senza fermare il servizio.
+
+Prima di tutto verifica che i dati esistenti siano compatibili: conta quante righe nella colonna varchar contengono caratteri diversi da cifre. Se quel numero non è zero, la migrazione si ferma qui finché non decidi come trattare quei valori.
+
+Poi crea una colonna nuova invece di convertire quella esistente sul posto:
+```sql
+ALTER TABLE t ADD COLUMN colonna_int integer;
+```
+Questo è importante perché un `ALTER TABLE ALTER COLUMN TYPE` diretto sulla colonna esistente riscrive l'intera tabella tenendo un lock ACCESS EXCLUSIVE per tutta la durata: con dieci milioni di righe il servizio resterebbe bloccato per l'intera operazione. Va evitato.
+
+Riempi la colonna nuova a blocchi, ad esempio diecimila righe alla volta, non con un `UPDATE` unico su tutta la tabella. Aggiorni un blocco, committi, passi al successivo: così non tieni mai un lock lungo, e il servizio continua a rispondere tra un blocco e l'altro.
+
+Nel frattempo aggiungi un trigger che mantenga sincronizzate le due colonne: ogni scrittura sulla vecchia colonna varchar deve aggiornare automaticamente anche quella nuova, così i dati scritti durante la migrazione non restano disallineati.
+
+Quando il backfill è completo e le due colonne sono allineate, cambi il codice applicativo perché legga dalla colonna nuova, e rilasci quella modifica.
+
+Solo dopo, come ultimo passo, elimini la colonna vecchia:
+```sql
+ALTER TABLE t DROP COLUMN colonna;
+```
+
+Attenzione: questo sesto passo è irreversibile. Una volta eliminata la colonna vecchia, i dati non tornano indietro se non ripristinando da un backup. Fallo solo quando sei sicuro che il codice in produzione non la usi più e che il periodo di osservazione post-rilascio sia trascorso senza problemi.

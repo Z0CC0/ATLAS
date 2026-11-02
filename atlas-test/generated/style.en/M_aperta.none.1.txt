@@ -1,0 +1,16 @@
+Before you pick an architecture, answer two questions about the monolith you already have.
+
+**First, find out which parts actually change.** Look at the commit history and see where the work really lands. The stable parts gain nothing from being split, so leave them alone. Only the pieces that change often are candidates for anything new.
+
+**Second, map where the transaction boundaries sit.** A transaction that stays inside one service is cheap. The same transaction spanning two services becomes a distributed problem, with all the failure modes that implies. If your hot spots and your transactions overlap, that tells you where you cannot cut.
+
+Then decide how you will get from here to there, because the migration path matters more than the target.
+
+- **A full rewrite running in parallel with the old system almost always fails.** The old one keeps changing while you build the copy, and the copy never catches up.
+- **Progressive strangling works.** Put a router in front, move one piece at a time, and keep the old system authoritative until the new piece is verified. You can stop at any point and still have a working product.
+
+On the target itself, be honest about what microservices cost. Every service wants its own releases, monitoring, logs, alerts and a person who looks after it. Below five developers that operational cost almost always exceeds the benefit. If your team is smaller than that, microservices will slow you down rather than free you.
+
+The option nobody mentions is the modular monolith. You keep one release, but you draw sharp internal boundaries between modules. That gives you most of the clarity people want from services, with none of the operational overhead. And you keep the option to extract a module into its own service the day it is genuinely needed, not before.
+
+The deciding question is not technical. Ask what your team must be able to do a year from now that it cannot do today. If the answer is "ship one area faster without breaking the others", a modular monolith with a strangler in front probably gets you there. If the answer is "let separate teams release independently" and you have the people to run it, then extracting those specific pieces is justified. Start from that answer and let the architecture follow.

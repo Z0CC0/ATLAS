@@ -1,0 +1,36 @@
+## Cos'è la consistenza eventuale
+
+Dopo una scrittura, le repliche dei tuoi dati possono non essere d'accordo per un po'. Non concordano subito, ma **convergono entro un tempo finito**, a patto che le scritture si fermino.
+
+Quanto dura quel "po'":
+- **repliche nella stessa regione:** di solito meno di un secondo
+- **repliche in regioni diverse:** si arriva a qualche secondo
+
+## Perché esiste: è una scelta, non un difetto
+
+Il compromesso è con la **disponibilità**. Un sistema che pretende consistenza forte deve rifiutare le richieste quando le repliche non riescono a comunicare tra loro. Un sistema a consistenza eventuale continua a rispondere.
+
+Per questo la maggior parte dei sistemi che scalano la accetta di proposito. Non devi eliminarla: devi gestirla.
+
+## Perché dovrebbe interessarti
+
+Il problema lo vede chi legge subito dopo aver scritto. Scenario tipico:
+
+1. L'utente pubblica un commento
+2. Ricarica la pagina
+3. Il commento non c'è
+
+Per l'utente sembra un bug, anche se il sistema funziona come previsto.
+
+**La soluzione comune:** la sessione che ha appena scritto legge dalla replica primaria. Tutte le altre sessioni continuano a leggere dalle repliche normali. Così chi ha scritto vede subito il proprio commento e tu non perdi i vantaggi delle repliche.
+
+## Quando invece non va bene
+
+I casi in cui non è accettabile sono pochi e facili da riconoscere:
+- **saldi di conto**
+- **disponibilità di posti**
+- **unicità di un identificativo**
+
+In questi casi serve la consistenza forte, con il costo di dover a volte rifiutare richieste.
+
+**Prossimo passo:** elenca i dati del tuo sistema e segna quali rientrano in quei tre casi. Tutto il resto può convivere con la consistenza eventuale.

@@ -1,0 +1,15 @@
+Sei header da impostare, più uno da non mettere:
+
+`Strict-Transport-Security` con `max-age` di almeno 31536000 secondi e `includeSubDomains`. Obbliga il browser a usare HTTPS.
+
+`Content-Security-Policy: default-src 'self'` blocca l'iniezione di script di terze parti.
+
+`X-Content-Type-Options: nosniff` impedisce al browser di indovinare il tipo di contenuto.
+
+`Referrer-Policy: strict-origin-when-cross-origin` evita che il percorso completo arrivi ad altri siti.
+
+`X-Frame-Options: DENY`, oppure `frame-ancestors 'none'` dentro la `Content-Security-Policy`, protegge dal clickjacking.
+
+`Permissions-Policy` spegne camera, microfono e geolocalizzazione. Usalo solo per le funzioni che il sito non usa.
+
+**Non mettere `X-XSS-Protection`.** È deprecato e i browser moderni lo ignorano. Nelle versioni vecchie introduceva vulnerabilità.

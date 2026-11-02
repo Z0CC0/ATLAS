@@ -1,0 +1,21 @@
+Debounce ferma esecuzione fino a quando chiamate smettono per ms millisecondi.
+
+```javascript
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+`clearTimeout` prima di ogni `setTimeout` obbligatorio: senza, timer si accumulano, funzione parte più volte.
+
+`t` sta nella chiusura esterna, non dentro funzione restituita: dentro, ogni chiamata avrebbe proprio timer, debounce non avverrebbe.
+
+Argomenti passati con spread (`...args`): senza, funzione chiamata riceve argomenti vuoti.
+
+Questa versione non ritorna niente. Serve valore di ritorno → serve Promise.
+
+Caso opposto — eseguire subito poi ignorare per periodo — è throttle, funzione diversa.

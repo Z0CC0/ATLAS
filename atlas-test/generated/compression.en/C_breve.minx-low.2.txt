@@ -1,0 +1,7 @@
+No, usually not.
+
+On a low-cardinality column the planner normally won't use a B-tree index. It picks a sequential scan when the filter matches more than roughly 5-10 per cent of the rows.
+
+The index still costs extra work on every write and takes up disk space.
+
+The exception is a partial index on the rare value. That one does get used.

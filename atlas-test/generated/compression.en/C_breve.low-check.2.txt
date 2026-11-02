@@ -1,0 +1,3 @@
+No. On three distinct values the B-tree normally goes unused — planner picks a sequential scan whenever a filter matches roughly 5-10% or more of rows, and each of your three values easily clears that. Meanwhile the index still costs you writes and disk space, so it's a straight loss.
+
+Exception: a partial index on just the rare value, if one of the three is uncommon — that one works.

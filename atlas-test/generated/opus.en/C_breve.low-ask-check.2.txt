@@ -1,0 +1,7 @@
+internal knowledge
+
+No, in most cases. A B-tree index on a column with only three values usually goes unused. Each value typically matches a large share of the rows, and the planner switches to a sequential scan once a filter selects more than about 5–10% of the rows.
+
+You still pay for the index on every write and in disk space, so it costs you without speeding anything up.
+
+The exception is when one of the three values is rare. A partial index covering only that value does get used.

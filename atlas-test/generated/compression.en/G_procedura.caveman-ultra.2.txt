@@ -1,0 +1,25 @@
+**Warning:** Step 6 below (dropping the old column) is irreversible — once dropped, the data doesn't come back without a restore from backup. Don't run it until you're fully confident in the migration.
+
+Don't touch the column type directly. A plain `ALTER TABLE ALTER COLUMN TYPE` rewrites the entire table under an ACCESS EXCLUSIVE lock — with ten million rows that means the service is down for the whole rewrite.
+
+Instead, do it in six steps:
+
+1. **Check convertibility first.** Count how many rows in the varchar column are *not* all-digits. If that count isn't zero, the migration can't proceed until those rows are cleaned up or handled.
+
+2. **Add the new column** without touching the old one:
+   ```sql
+   ALTER TABLE t ADD COLUMN colonna_int integer;
+   ```
+   This is a fast metadata-only change, no table rewrite.
+
+3. **Backfill in batches of 10,000 rows** at a time, rather than one big `UPDATE`. This avoids holding a long lock on the table for the whole population.
+
+4. **Add a trigger** that keeps `colonna` and `colonna_int` in sync for any writes that happen during the migration — so rows touched after your batch pass still stay consistent.
+
+5. **Ship the code change** to read from `colonna_int` instead of the old column, once it's fully populated and trustworthy.
+
+6. **Only then, drop the old column:**
+   ```sql
+   ALTER TABLE t DROP COLUMN colonna;
+   ```
+   Again — this step is irreversible. If you need the old data back afterward, your only path is a backup restore.

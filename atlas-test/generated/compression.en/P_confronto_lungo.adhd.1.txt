@@ -1,0 +1,9 @@
+At a thousand requests a minute, keep logging out of the critical path — that's the rule that decides everything else here.
+
+Write logs to local files. It costs nothing, has no dependency, and the application never has to wait on the write. Pair it with a collector that ships those files elsewhere on its own schedule, so nothing about handling a request depends on the log actually leaving the machine.
+
+Skip the database. Log writes would compete with your real request traffic for the same caches and connections, and under load that's exactly the workload that gets squeezed.
+
+Skip a managed logging service as the direct write target too — at this volume the cost adds up fast, and you'd also need to strip personal data before anything leaves your infrastructure. That's still worth doing, but downstream, from the collector, not from the request path.
+
+The two weaknesses of plain files — grep-only search and no cross-machine view — is exactly what the collector fixes: it can forward into a managed service or a database for search, retention, and alerts, once the data is already off the app.

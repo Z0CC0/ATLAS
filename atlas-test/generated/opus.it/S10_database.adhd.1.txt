@@ -1,0 +1,27 @@
+**Parti con Postgres da solo.** Aggiungi un altro sistema solo quando un carico specifico lo richiede e hai i numeri che lo dimostrano.
+
+## Confronto per carico
+
+| Carico | Postgres | Alternativa specializzata |
+|---|---|---|
+| **Ordini** | Transazioni serie. Sugli ordini non sono negoziabili | MySQL è equivalente. ClickHouse non va bene: gli aggiornamenti puntuali sono il suo punto debole |
+| **Catalogo** | Accettabile | MongoDB lo semplifica con schemi variabili, ma le transazioni multi-documento sono arrivate tardi e costano |
+| **Ricerca testuale** | Integrata, sufficiente sotto il milione di documenti, debole sopra | Elasticsearch è molto superiore su rilevanza, sinonimi e tolleranza agli errori di battitura |
+| **Analisi** | Regge fino a decine di milioni di righe, poi le scansioni diventano lente | ClickHouse è molto superiore: le scansioni colonnari sono avanti di ordini di grandezza |
+
+Postgres regge tutti e quattro i carichi in modo accettabile, ma nessuno in modo eccellente. MySQL non ti dà vantaggi: sugli ordini è pari, su tipi di dato e query complesse è più debole.
+
+## Quando aggiungere qualcosa
+
+1. **Elasticsearch**: quando superi il milione di documenti da cercare. Prima di quella soglia è quasi sempre prematuro.
+2. **ClickHouse**: quando l'analisi supera le decine di milioni di righe e le scansioni rallentano.
+3. **In entrambi i casi** Postgres resta l'archivio autorevole. Elasticsearch e ClickHouse ricevono i dati da Postgres, non lo sostituiscono. Elasticsearch non può essere un archivio autorevole.
+
+La configurazione a cui si arriva di solito è: Postgres, più Elasticsearch e ClickHouse alimentati da Postgres.
+
+## Il costo reale
+
+- Ogni sistema che aggiungi porta due problemi: la sincronizzazione e l'allineamento dei dati.
+- Il costo vero dei sistemi specializzati non è la licenza. È il tempo delle persone che devono tenerli in funzione.
+
+Prossimo passo: conta quanti documenti hai nel catalogo e quante righe hanno le tabelle che usi per l'analisi. Con questi due numeri sai subito se ti serve solo Postgres o anche Elasticsearch o ClickHouse.

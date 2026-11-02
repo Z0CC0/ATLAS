@@ -1,0 +1,13 @@
+Bitcoin came out of the cypherpunk scene, which had wanted digital money outside institutional control for a long time. Earlier attempts such as b-money and bit gold came close. None of them solved one key problem: how to agree on the order of transactions without a referee.
+
+That problem is double spending. Digital money is only data, so what stops someone from spending the same coin twice? The usual answer is a central body that keeps the ledger and decides which payment came first. The goal was to do without that central body.
+
+In 2008 a paper appeared titled *Bitcoin: A Peer-to-Peer Electronic Cash System*. It was signed Satoshi Nakamoto, a pseudonym that has never been identified. Its solution is a chain of blocks ordered by a proof of work. Each block needs costly computation, and each block builds on the previous one. To rewrite a past transaction, an attacker would have to redo the proof of work for that block and for every block after it. Rewriting history is therefore expensive, and the order of transactions becomes reliable.
+
+The network started on 3 January 2009 with the first block. That block contains the headline of a Times article about a bank bailout. The headline proves the block was not created before that date. It also states the project's intent: money that does not depend on the banking system that was being rescued.
+
+The issuance rules were fixed from the start. The reward for creating a block began at 50 bitcoin. It halves every 210,000 blocks, which is roughly every four years. Because of this, the total supply approaches 21 million and never goes past it.
+
+For a while, bitcoin had no real-world use. Then in 2010 came the first documented commercial transaction: two pizzas paid for with 10,000 bitcoin.
+
+In 2011 Satoshi stopped taking part publicly. Satoshi's bitcoin have never been moved. The project's creator left, and the system kept running without them.

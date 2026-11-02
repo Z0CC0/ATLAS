@@ -1,0 +1,15 @@
+Direct ALTER TABLE ALTER COLUMN TYPE rewrites whole table under ACCESS EXCLUSIVE lock — service down for entire duration. Avoid it. Do instead:
+
+1. Count rows where value isn't all digits — confirms every value convertible.
+
+2. ADD COLUMN colonna_int integer.
+
+3. Backfill in batches of 10k rows, avoids long lock.
+
+4. Trigger keeping old and new column in sync during migration.
+
+5. Change code to read colonna_int, ship it.
+
+6. DROP COLUMN colonna — only after step 5 confirmed working.
+
+Step 6 is irreversible: once dropped, data doesn't come back without restore from backup.

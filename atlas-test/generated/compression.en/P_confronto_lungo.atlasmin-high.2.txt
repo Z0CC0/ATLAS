@@ -1,0 +1,5 @@
+Files plus a collector shipping them elsewhere — application never waits on log write.
+
+At 1000 req/min: files alone mean grep search, manual rotation, disk fills; no cross-machine search, connect to each host separately. Managed service gives instant search, alerts, retention, but volume cost grows fast at this rate and data leaves your infra — strip personal data first. Database search is convenient but log writes compete with real request traffic for cache and connections under load.
+
+Rule that always holds: log write must never sit in the request's critical path. Local files + collector satisfies that; database logging violates it.

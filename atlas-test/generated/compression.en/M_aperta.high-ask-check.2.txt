@@ -1,0 +1,11 @@
+First: which parts of the monolith actually change. Stable parts gain nothing from splitting.
+
+Second: where transaction boundaries sit — a transaction spanning two services becomes a distributed problem.
+
+Skip full rewrite in parallel with the old system — old one keeps changing, copy never catches up. Instead: progressive strangling. Router in front, move one piece at a time, old system stays authoritative until new one's verified.
+
+Microservices cost more in ops — every service wants releases, monitoring, logs, alerts, an owner. Below five devs, that cost usually beats the benefit.
+
+Modular monolith: sharp internal boundaries, one release, option to extract a module the day it's genuinely needed.
+
+Real question isn't technical: what must the team do in a year that it can't today.

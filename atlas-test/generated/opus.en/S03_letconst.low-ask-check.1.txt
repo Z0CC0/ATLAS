@@ -1,0 +1,7 @@
+internal knowledge
+
+With `let` you can reassign the variable later. With `const` you can't.
+
+`const` only locks the name. The value itself can still change: if you declare an object with `const`, you can still modify its properties.
+
+Both `let` and `const` are block scoped. `var` is not.

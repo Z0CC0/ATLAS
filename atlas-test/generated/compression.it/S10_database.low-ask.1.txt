@@ -1,0 +1,13 @@
+Per ordini, catalogo, ricerca testuale e analisi insieme: nessun database singolo eccelle in tutti e quattro. Postgres regge tutti e quattro in modo accettabile — punto di partenza sensato.
+
+Su ordini serve transazioni serie, non negoziabili. Postgres le da'. MySQL equivalente su questo, ma piu' debole su tipi dato e query complesse. ClickHouse va escluso qui: aggiornamenti puntuali sono suo punto debole.
+
+Su catalogo, Postgres basta. MongoDB semplifica con schemi variabili, ma transazioni multi-documento arrivate tardi e costano.
+
+Su ricerca testuale, Postgres ha ricerca integrata, sufficiente sotto milione documenti, debole sopra. Elasticsearch molto superiore — rilevanza, sinonimi, tolleranza errori battitura — ma non e' archivio autorevole, va alimentato da altro database, non sostituirlo.
+
+Su analisi, Postgres regge fino decine milioni righe, poi scansioni lente. ClickHouse molto superiore, scansioni colonnari ordini grandezza avanti, ma non serve per ordini.
+
+Configurazione tipica: Postgres come archivio autorevole, Elasticsearch e ClickHouse alimentati da li. Ogni sistema aggiunto porta problema sincronizzazione piu' problema allineamento dati. Costo vero sistemi specializzati non e' licenza, e' tempo persone che li tengono su.
+
+Regola pratica per te: parti solo con Postgres, aggiungi sistema quando carico specifico lo impone con numeri alla mano. Elasticsearch prima del milione documenti quasi sempre prematuro.

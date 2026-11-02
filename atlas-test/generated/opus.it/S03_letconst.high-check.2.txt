@@ -1,0 +1,7 @@
+Conoscenza interna.
+
+`let` permette di riassegnare il nome.
+
+`const` impedisce di riassegnare il nome, ma non di modificare il valore: un oggetto dichiarato con `const` può cambiare al suo interno.
+
+Entrambi hanno ambito di blocco, a differenza di `var`.

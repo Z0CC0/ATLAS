@@ -1,0 +1,482 @@
+[
+ {
+  "f": "M_aperta.low-ask-check.1.txt",
+  "removed": "la domanda decisiva non e' tecnica: cosa deve poter fare il team fra un anno che oggi non puo'",
+  "removedSaidPresent": false,
+  "kept": "una riscrittura completa in parallelo al vecchio sistema fallisce quasi sempre: il vecchio continua a cambiare e la copia non lo raggiunge mai",
+  "keptSaidPresent": true,
+  "cut": "conoscenza interna Poi servono due dati sul monolite. Primo: quale parte cambia davvero. Le parti stabili non guadagnano nulla dall'essere spezzate. Secondo: dove stanno i confini delle transazioni. Una transazione che attraversa due servizi diventa un problema distribuito. Sul metodo, evita di riscrivere tutto in parallelo al vecchio sistema. Quasi sempre fallisce, perché il vecchio continua a ca"
+ },
+ {
+  "f": "S04_meteo_domani.none.2.txt",
+  "removed": "vento da nord-ovest a 15 chilometri orari",
+  "removedSaidPresent": false,
+  "kept": "probabilita' di pioggia 30 per cento dopo le 18",
+  "keptSaidPresent": true,
+  "cut": "Domani a New York la mattina sarà serena, mentre dal pomeriggio il cielo si coprirà di nuvole. Le temperature saranno miti: si parte da una minima di 17 °C e si arriva a una massima di 24 °C. Dopo le 18 c'è una probabilità di pioggia del 30%. Se esci la sera, conviene portare un ombrello pieghevole. Sono dati presi dal web."
+ },
+ {
+  "f": "S03_letconst.low-ask.2.txt",
+  "removed": "const impedisce di riassegnare il nome, non di modificare il valore",
+  "removedSaidPresent": false,
+  "kept": "un oggetto dichiarato con const puo' cambiare al suo interno",
+  "keptSaidPresent": true,
+  "cut": "se dichiari un oggetto con `const`, il suo contenuto può comunque cambiare. Tutti e due hanno ambito di blocco, a differenza di `var`."
+ },
+ {
+  "f": "I_sicurezza.low-ask.2.txt",
+  "removed": "la chiave va tenuta sul server, e il frontend chiama un endpoint del proprio backend che a sua volta chiama il servizio",
+  "removedSaidPresent": false,
+  "kept": "no: qualsiasi cosa arrivi al browser e' leggibile, e l'offuscamento si annulla aprendo gli strumenti per sviluppatori o guardando le richieste di rete",
+  "keptSaidPresent": true,
+  "cut": "No. Tutto quello che arriva al browser si può leggere: l'offuscamento si annulla aprendo gli strumenti per sviluppatori o guardando le richieste di rete. La chiave deve restare sul server. Metti un limite di frequenza su quell'endpoint. Senza, chiunque può usarlo per sfruttare gratis la tua chiave. Se la chiave è già stata pubblicata, considerala compromessa e ruotala subito. Toglierla dal codice "
+ },
+ {
+  "f": "I_sicurezza.adhd.1.txt",
+  "removed": "la chiave va tenuta sul server, e il frontend chiama un endpoint del proprio backend che a sua volta chiama il servizio",
+  "removedSaidPresent": true,
+  "kept": null,
+  "keptSaidPresent": null,
+  "cut": "No, offuscarla non basta: tieni la chiave sul server. Tutto ciò che arriva al browser si può leggere. Per annullare l'offuscamento basta aprire gli strumenti per sviluppatori o guardare le richieste di rete. **Come si fa:** 1. Sposta la chiave sul backend. 2. Crea un endpoint sul tuo backend. 3. Metti un limite di frequenza sull'endpoint. Senza limite, chiunque può usare la tua chiave gratis attra"
+ },
+ {
+  "f": "B_tecnica.atlasmin-low.1.txt",
+  "removed": "nel middleware in db/session.py:47 la connessione viene rilasciata solo nel percorso di successo",
+  "removedSaidPresent": false,
+  "kept": "dopo qualche centinaio di richieste fallite il pool si svuota e ogni richiesta successiva va in attesa",
+  "keptSaidPresent": true,
+  "cut": "Il connection pool si esaurisce: le connessioni si perdono quando l'handler fallisce. Il problema non è una query lenta. Dopo qualche centinaio di richieste fallite il pool si svuota e ogni richiesta successiva resta in attesa. Per questo vedi latenze crescenti e non errori immediati. Correzione: ```python conn = pool.acquire() try: return handler(conn, request) finally: pool.release(conn) ``` Non"
+ },
+ {
+  "f": "I_sicurezza.high-ask.1.txt",
+  "removed": "la chiave va tenuta sul server, e il frontend chiama un endpoint del proprio backend che a sua volta chiama il servizio",
+  "removedSaidPresent": false,
+  "kept": null,
+  "keptSaidPresent": null,
+  "cut": "No. Tutto ciò che arriva al browser è leggibile da chiunque: l'offuscamento non regge, basta aprire gli strumenti per sviluppatori o guardare le richieste di rete per recuperare la chiave. Quell'endpoint deve avere un limite di frequenza. Senza, chiunque può usarlo per sfruttare gratis la tua chiave. Se la chiave è già stata pubblicata, considerala compromessa e ruotala subito. Toglierla dal codic"
+ },
+ {
+  "f": "E_confronto.caveman-lite.2.txt",
+  "removed": "Redis richiede un servizio in piu' da gestire, monitorare e aggiornare",
+  "removedSaidPresent": false,
+  "kept": "Postgres con SELECT FOR UPDATE SKIP LOCKED basta fino a circa mille lavori al minuto",
+  "keptSaidPresent": true,
+  "cut": "Per un progetto piccolo ti consiglio Postgres. **Perché Postgres ti basta:** - Con `SELECT ... FOR UPDATE SKIP LOCKED` gestisci fino a circa mille lavori al minuto. - Il lavoro entra nella stessa transazione dei dati. Se la scrittura viene annullata, non parte nemmeno il lavoro. - La persistenza è inclusa. Se il processo muore, la coda resta dov'era. **Quando conviene Redis:** - Regge molto più vo"
+ },
+ {
+  "f": "S04_meteo_domani.high-ask.1.txt",
+  "removed": "probabilita' di pioggia 30 per cento dopo le 18",
+  "removedSaidPresent": false,
+  "kept": "cielo sereno al mattino, nuvoloso dal pomeriggio",
+  "keptSaidPresent": true,
+  "cut": "Domani a New York sereno al mattino, nuvoloso dal pomeriggio. Massima 24 °C, minima 17 °C. Vento da nord-ovest a 15 km/h, umidità intorno al 60%. Fonte: web."
+ },
+ {
+  "f": "B_tecnica.low-check.1.txt",
+  "removed": "nel middleware in db/session.py:47 la connessione viene rilasciata solo nel percorso di successo",
+  "removedSaidPresent": false,
+  "kept": "dopo qualche centinaio di richieste fallite il pool si svuota e ogni richiesta successiva va in attesa",
+  "keptSaidPresent": true,
+  "cut": "dai tuoi file Il connection pool si esaurisce: non è una query lenta. Dopo qualche centinaio di richieste fallite il pool si svuota, e ogni richiesta successiva resta in attesa. Per questo vedi latenze crescenti invece di errori immediati. Per correggerlo, avvolgi l'acquisizione in un `try/finally`, così il rilascio avviene anche quando c'è un errore: ```python conn = pool.acquire() try: return ha"
+ },
+ {
+  "f": "S05_gpu.atlas-low.2.txt",
+  "removed": "la banda di memoria passa da circa 717 a circa 960 gigabyte al secondo",
+  "removedSaidPresent": false,
+  "kept": "la 5080 usa l'architettura Blackwell, la 4080 Ada Lovelace",
+  "keptSaidPresent": true,
+  "cut": "La 5080 è soprattutto un aggiornamento incrementale. Il salto grande riguarda la generazione di fotogrammi, non il rasterizzatore puro, dove il guadagno reale è del 10-15 per cento circa. Le differenze: **Architettura**: la 5080 usa Blackwell, la 4080 Ada Lovelace. **Memoria**: la 5080 monta GDDR7, la 4080 GDDR6X. **Consumo dichiarato**: sale da 320 a 360 watt. **Connettore di alimentazione**: res"
+ },
+ {
+  "f": "S10_database.atlasmin-low.2.txt",
+  "removed": "Postgres regge tutti e quattro i carichi in modo accettabile e nessuno in modo eccellente",
+  "removedSaidPresent": false,
+  "kept": "Postgres da' transazioni serie, che sugli ordini non sono negoziabili",
+  "keptSaidPresent": true,
+  "cut": "**Parti da Postgres da solo.** Aggiungi altri sistemi solo quando un carico specifico lo impone, con numeri alla mano. Sugli ordini dà transazioni serie, e lì non sono negoziabili. La ricerca testuale integrata basta sotto il milione di documenti, sopra diventa debole. Regge l'analisi fino a decine di milioni di righe, poi le scansioni rallentano. MySQL equivale a Postgres sugli ordini, ma è più d"
+ },
+ {
+  "f": "C_breve.atlas-high.2.txt",
+  "removed": "il planner preferisce una scansione sequenziale quando il filtro seleziona piu' di circa il 5-10 per cento delle righe",
+  "removedSaidPresent": false,
+  "kept": "no, su una colonna a bassa cardinalita' l'indice B-tree di norma non viene usato",
+  "keptSaidPresent": true,
+  "cut": "No, di norma. Su colonna a bassa cardinalità l'indice B-tree resta inutilizzato: L'indice però costa comunque scrittura e spazio. L'eccezione è un indice parziale sul valore raro, che invece funziona."
+ },
+ {
+  "f": "D_lista.caveman-lite.1.txt",
+  "removed": "X-Content-Type-Options impostato a nosniff, impedisce al browser di indovinare il tipo di contenuto",
+  "removedSaidPresent": false,
+  "kept": "Content-Security-Policy con default-src 'self', e' quello che blocca l'iniezione di script di terze parti",
+  "keptSaidPresent": true,
+  "cut": "Per un sito statico bastano sei header. Un settimo va tolto. **Da mettere:** - **`Strict-Transport-Security: max-age=31536000; includeSubDomains`** obbliga il browser a usare HTTPS. Il `max-age` deve essere di almeno 31536000 secondi. - **`Content-Security-Policy: default-src 'self'`** è l'header che blocca l'iniezione di script di terze parti. È il più importante della lista. - **`Referrer-Policy"
+ },
+ {
+  "f": "M_aperta.atlasmin-low.2.txt",
+  "removed": "i microservizi costano di piu' in operativita': ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupa",
+  "removedSaidPresent": false,
+  "kept": "sotto i cinque sviluppatori il costo operativo dei microservizi supera quasi sempre il beneficio",
+  "keptSaidPresent": true,
+  "cut": "Prima dell'architettura, chiediti cosa deve poter fare il team fra un anno che oggi non può. È la domanda decisiva, e non è tecnica. Poi servono due dati: 1. Quale parte del monolite cambia davvero. Le parti stabili non guadagnano nulla dall'essere spezzate. 2. Dove stanno i confini delle transazioni. Una transazione che attraversa due servizi diventa un problema distribuito. Sul metodo, evita di "
+ },
+ {
+  "f": "S07_https.atlas-high.2.txt",
+  "removed": "il certificato lega un nome di dominio a una chiave pubblica ed e' firmato da un'autorita' di certificazione",
+  "removedSaidPresent": false,
+  "kept": "HTTPS e' HTTP dentro un canale cifrato da TLS",
+  "keptSaidPresent": true,
+  "cut": "HTTPS è HTTP dentro un canale cifrato da TLS. Il canale si apre così: 1. Client apre connessione, dichiara versioni TLS e cifrari supportati. 2. Server sceglie cifrario e versione, manda proprio certificato. 3. Client verifica firma del certificato risalendo catena fino a radice già in memoria. 4. Client e server concordano chiave di sessione, oggi tipicamente con scambio Diffie-Hellman su curve e"
+ },
+ {
+  "f": "S10_database.atlas-high.1.txt",
+  "removed": "Postgres da' transazioni serie, che sugli ordini non sono negoziabili",
+  "removedSaidPresent": false,
+  "kept": "Postgres regge tutti e quattro i carichi in modo accettabile e nessuno in modo eccellente",
+  "keptSaidPresent": true,
+  "cut": "Parti con Postgres da solo. Aggiungi Elasticsearch o ClickHouse solo quando un carico specifico lo richiede e hai i numeri per dimostrarlo. **Postgres**: regge tutti e quattro i carichi in modo accettabile, nessuno in modo eccellente. La ricerca testuale integrata basta sotto il milione di documenti, sopra è debole. Regge l'analisi fino a decine di milioni di righe, poi le scansioni rallentano. My"
+ },
+ {
+  "f": "H_lunga.caveman-full.2.txt",
+  "removed": "quindi le parti stabili vanno messe prima e quelle che cambiano dopo, non il contrario",
+  "removedSaidPresent": true,
+  "kept": "funziona solo sul prefisso: basta un carattere diverso all'inizio e da quel punto in poi non c'e' piu' riuso",
+  "keptSaidPresent": true,
+  "cut": "La cache dei prompt conserva l'inizio di una richiesta già elaborato. Le richieste successive che partono con lo stesso inizio non lo ripagano per intero. **Come funziona** - Il riuso vale solo per il prefisso. Se cambia anche un solo carattere all'inizio, da quel punto in poi non c'è più riuso. - Una voce di sistema che cambia a ogni turno, per esempio un orario, blocca il riuso di tutto quello c"
+ },
+ {
+  "f": "S04_meteo_domani.caveman-full.1.txt",
+  "removed": "massima 24 gradi Celsius, minima 17",
+  "removedSaidPresent": false,
+  "kept": "cielo sereno al mattino, nuvoloso dal pomeriggio",
+  "keptSaidPresent": true,
+  "cut": "Domani a New York il cielo sarà sereno al mattino e diventerà nuvoloso dal pomeriggio. Dopo le 18 c'è una probabilità di pioggia del 30%, quindi conviene portare un ombrello se esci la sera. Il vento soffierà da nord-ovest a 15 km/h. L'umidità sarà intorno al 60%. Fonte: web."
+ },
+ {
+  "f": "S05_gpu.low-ask-check.1.txt",
+  "removed": "sul rasterizzatore il guadagno reale e' nell'ordine del 10-15 per cento",
+  "removedSaidPresent": false,
+  "kept": "la 5080 usa l'architettura Blackwell, la 4080 Ada Lovelace",
+  "keptSaidPresent": true,
+  "cut": "Conoscenza interna. La 5080 va un po' più veloce della 4080 nei giochi, ma la differenza grossa sta nella generazione di fotogrammi, non nel rasterizzatore puro. Cambia l'architettura: la 5080 usa Blackwell, la 4080 Ada Lovelace. Cambia anche la memoria: GDDR7 sulla 5080, GDDR6X sulla 4080. La banda sale da circa 717 a circa 960 gigabyte al secondo. Il consumo dichiarato passa da 320 a 360 watt. I"
+ },
+ {
+  "f": "E_confronto.none.2.txt",
+  "removed": "con Redis la persistenza va configurata: senza AOF attivo un riavvio perde i lavori in coda",
+  "removedSaidPresent": false,
+  "kept": "Postgres con SELECT FOR UPDATE SKIP LOCKED basta fino a circa mille lavori al minuto",
+  "keptSaidPresent": true,
+  "cut": "Per un progetto piccolo scegli **Postgres**. Passa a Redis solo quando il volume lo richiede davvero. **Perché Postgres:** - **Ti basta.** Con `SELECT ... FOR UPDATE SKIP LOCKED` regge fino a circa mille lavori al minuto. - **Lavoro e dati restano coerenti.** Il lavoro viene inserito nella stessa transazione dei dati. Non può quindi succedere che il lavoro parta mentre la scrittura viene annullata"
+ },
+ {
+  "f": "S03_letconst.atlas-high.2.txt",
+  "removed": "entrambi hanno ambito di blocco, a differenza di var",
+  "removedSaidPresent": false,
+  "kept": "un oggetto dichiarato con const puo' cambiare al suo interno",
+  "keptSaidPresent": true,
+  "cut": "**`const`** blocca solo la riassegnazione del nome, non la modifica del valore: un oggetto dichiarato con `const` può comunque cambiare al suo interno. **`let`** permette la riassegnazione."
+ },
+ {
+  "f": "E_confronto.high-ask-check.1.txt",
+  "removed": "Postgres da' la persistenza gratis: se il processo muore la coda e' ancora li'",
+  "removedSaidPresent": false,
+  "kept": "Postgres con SELECT FOR UPDATE SKIP LOCKED basta fino a circa mille lavori al minuto",
+  "keptSaidPresent": true,
+  "cut": "conoscenza interna Postgres. Passa a Redis solo quando il volume lo impone davvero. Con `SELECT FOR UPDATE SKIP LOCKED` basta fino a circa mille lavori al minuto. Il lavoro sta nella stessa transazione dei dati, quindi non succede mai che il lavoro parta e la scrittura venga annullata. Redis regge molto più volume, con latenza più bassa, sotto il millisecondo. Però è un servizio in più da gestire,"
+ },
+ {
+  "f": "S08_bitcoin.low-check.1.txt",
+  "removed": "il progetto nasce nell'ambiente cypherpunk, dopo tentativi precedenti come b-money e bit gold che non risolvevano l'ordinamento",
+  "removedSaidPresent": false,
+  "kept": "nel 2008 esce un documento firmato Satoshi Nakamoto, pseudonimo mai identificato",
+  "keptSaidPresent": true,
+  "cut": "*Conoscenza interna* Nel 2008 esce un documento firmato Satoshi Nakamoto, pseudonimo mai identificato, intitolato \"Bitcoin: A Peer-to-Peer Electronic Cash System\". Affronta il problema della doppia spesa, cioè impedire che la stessa moneta venga spesa due volte, senza un ente centrale che tenga il registro. La soluzione è una catena di blocchi ordinata da una prova di lavoro. Riscrivere il passato"
+ },
+ {
+  "f": "S10_database.low-ask.2.txt",
+  "removed": "la regola pratica e' partire da Postgres solo, e aggiungere un sistema quando un carico specifico lo impone con numeri alla mano",
+  "removedSaidPresent": false,
+  "kept": "Postgres regge tutti e quattro i carichi in modo accettabile e nessuno in modo eccellente",
+  "keptSaidPresent": true,
+  "cut": "Postgres regge tutti e quattro i carichi in modo accettabile e nessuno in modo eccellente. Sugli ordini dà transazioni serie, e lì non sono negoziabili. La ricerca testuale integrata basta sotto il milione di documenti e diventa debole sopra. Per l'analisi regge fino a decine di milioni di righe, poi le scansioni rallentano. MySQL vale Postgres sugli ordini, ma è più debole su tipi di dato e query"
+ },
+ {
+  "f": "S08_bitcoin.low-ask.1.txt",
+  "removed": "la soluzione e' una catena di blocchi ordinata da una prova di lavoro",
+  "removedSaidPresent": false,
+  "kept": "nel 2008 esce un documento firmato Satoshi Nakamoto, pseudonimo mai identificato",
+  "keptSaidPresent": true,
+  "cut": "Bitcoin nasce nel 2008 da un documento firmato Satoshi Nakamoto, pseudonimo mai identificato, intitolato *Bitcoin: A Peer-to-Peer Electronic Cash System*. Viene dall'ambiente cypherpunk. Tentativi precedenti come b-money e bit gold non risolvevano l'ordinamento delle transazioni. Il problema affrontato è la doppia spesa, cioè spendere due volte la stessa moneta, senza un ente centrale che tenga il"
+ },
+ {
+  "f": "N_spiegazione.none.2.txt",
+  "removed": "consistenza eventuale significa che dopo una scrittura le repliche non concordano subito, ma convergono entro un tempo finito se le scritture si fermano",
+  "removedSaidPresent": true,
+  "kept": "il compromesso e' con la disponibilita': un sistema che pretende consistenza forte deve rifiutare richieste quando le repliche non si parlano",
+  "keptSaidPresent": true,
+  "cut": "Per un momento, quindi, repliche diverse possono darti risposte diverse, ma alla fine si allineano. ## Perché esiste È un compromesso con la disponibilità. Un sistema che pretende consistenza forte deve rifiutare le richieste quando le repliche non riescono a parlarsi, perché non può garantire che tutte vedano lo stesso dato. Chi accetta la consistenza eventuale continua invece a rispondere, anche"
+ },
+ {
+  "f": "H_lunga.adhd.1.txt",
+  "removed": "scrivere nella cache costa piu' di una lettura normale, quindi la prima richiesta e' piu' cara",
+  "removedSaidPresent": false,
+  "kept": null,
+  "keptSaidPresent": null,
+  "cut": "**In breve:** la cache fa risparmiare quando mandi molte richieste che iniziano tutte con lo stesso testo lungo. Metti le parti che non cambiano all'inizio e quelle che cambiano alla fine. ## Come funziona - La cache salva l'inizio di una richiesta dopo che è già stato elaborato. Se la richiesta successiva comincia allo stesso modo, quella parte non la paghi di nuovo per intero. - Vale solo per l'"
+ },
+ {
+  "f": "H_lunga.high-ask.1.txt",
+  "removed": "scrivere nella cache costa piu' di una lettura normale, quindi la prima richiesta e' piu' cara",
+  "removedSaidPresent": false,
+  "kept": "funziona solo sul prefisso: basta un carattere diverso all'inizio e da quel punto in poi non c'e' piu' riuso",
+  "keptSaidPresent": true,
+  "cut": "La cache dei prompt conserva la parte iniziale di una richiesta (il prefisso) già elaborata: le richieste successive che iniziano allo stesso modo non la pagano di nuovo per intero. Funziona solo sul prefisso. Basta un carattere diverso all'inizio e da quel punto in poi non c'è più riuso. Per questo le parti stabili vanno messe prima e quelle che cambiano dopo, non il contrario. Attenzione alle vo"
+ },
+ {
+  "f": "S09_x86.high-check.2.txt",
+  "removed": "il Pentium del 1993 e' superscalare: due pipeline intere che possono ritirare due istruzioni per ciclo",
+  "removedSaidPresent": false,
+  "kept": "l'80386 del 1985 porta i 32 bit, la memoria virtuale paginata e la modalita' virtuale 8086",
+  "keptSaidPresent": true,
+  "cut": "conoscenza interna Tutto parte dall'8086 (1978): 16 bit, evoluzione dell'8080, compatibile a livello di sorgente. 80286 (1982): arriva la modalità protetta. Per tornare alla modalità reale però serve un riavvio. 80386 (1985): 32 bit, memoria virtuale paginata e modalità virtuale 8086. 486 (1989): cache di primo livello e coprocessore matematico integrati nel chip. Pentium (1993): Pentium Pro (1995"
+ },
+ {
+  "f": "P_confronto_lungo.high-check.1.txt",
+  "removed": "servizio gestito: i log escono dalla propria infrastruttura, quindi vanno ripuliti dai dati personali prima di uscire",
+  "removedSaidPresent": false,
+  "kept": "file: la ricerca su piu' macchine non esiste, bisogna collegarsi a ognuna",
+  "keptSaidPresent": true,
+  "cut": "conoscenza interna A mille richieste al minuto: **file locali più un raccoglitore che li spedisce altrove**. Così l'applicazione non aspetta mai la scrittura del log. Regola sempre valida: la scrittura del log **non deve stare nel percorso critico della richiesta**. File: costo zero, nessuna dipendenza. Ricerca con grep. La ricerca su più macchine non esiste, bisogna collegarsi a ognuna. La rotazi"
+ },
+ {
+  "f": "G_procedura.low-ask.2.txt",
+  "removed": "quarto: aggiungere un trigger che tenga allineate le due colonne durante la migrazione",
+  "removedSaidPresent": false,
+  "kept": "secondo: aggiungere una colonna nuova, ALTER TABLE t ADD COLUMN colonna_int integer",
+  "keptSaidPresent": true,
+  "cut": "Non convertire la colonna in un colpo solo: aggiungi una colonna nuova accanto a quella vecchia e sposta i dati un po' alla volta. Un `ALTER TABLE ... ALTER COLUMN TYPE` diretto riscrive tutta la tabella tenendo un ACCESS EXCLUSIVE lock, quindi il servizio resta fermo per tutto il tempo della riscrittura. Segui i passi in quest'ordine: 1. Verifica che ogni valore esistente si possa convertire: con"
+ },
+ {
+  "f": "G_procedura.atlasmin-high.1.txt",
+  "removed": "un ALTER TABLE ALTER COLUMN TYPE diretto riscrive tutta la tabella tenendo un ACCESS EXCLUSIVE lock, cioe' il servizio e' fermo per tutta la durata",
+  "removedSaidPresent": false,
+  "kept": "secondo: aggiungere una colonna nuova, ALTER TABLE t ADD COLUMN colonna_int integer",
+  "keptSaidPresent": true,
+  "cut": "Non con un `ALTER TABLE ... Meglio una migrazione a passi, in questo ordine: 1. Verifica che ogni valore esistente sia convertibile: conta le righe dove `colonna` non contiene solo cifre. Se il conteggio non è zero, sistema quei valori prima di andare avanti. 2. Aggiungi la colonna nuova: ```sql    ALTER TABLE t ADD COLUMN colonna_int integer; ``` 3. Riempila a blocchi da diecimila righe per volta"
+ },
+ {
+  "f": "A_ricerca.adhd.2.txt",
+  "removed": "tramonto alle 19:35, fra circa 9 ore e 15 minuti",
+  "removedSaidPresent": false,
+  "kept": "il centro e' il punto piu' caldo, la costa resta piu' fresca",
+  "keptSaidPresent": true,
+  "cut": "**Stasera hai due opzioni: jazz gratis all'Hammer Museum a Westwood, oppure Mt. **Il tempo oggi** (adesso sono le 10:20 PDT) - In mattinata il cielo è parzialmente nuvoloso, nel pomeriggio si schiarisce. - La massima prevista va da 86 a 93 °F (30-34 °C): cambia secondo la fonte e la zona. In centro fa più caldo, sulla costa resta più fresco. - L'aria è secca rispetto a New York, quindi a parità di"
+ },
+ {
+  "f": "S03_letconst.none.1.txt",
+  "removed": "entrambi hanno ambito di blocco, a differenza di var",
+  "removedSaidPresent": true,
+  "kept": null,
+  "keptSaidPresent": null,
+  "cut": "una variabile dichiarata dentro un blocco `{ ... }` esiste solo lì dentro. `var` invece non si comporta così. La differenza sta nella riassegnazione. **`let` permette di riassegnare la variabile:** ```js let contatore = 1; contatore = 2; // ok ``` **`const` non permette di riassegnare il nome:** ```js const limite = 10; limite = 20; // TypeError ``` `const` blocca solo il legame fra il nome e il v"
+ },
+ {
+  "f": "H_lunga.none.2.txt",
+  "removed": "conviene su conversazioni lunghe con un contesto grande e stabile: istruzioni di sistema, documentazione allegata, definizioni di strumenti",
+  "removedSaidPresent": false,
+  "kept": "quindi le parti stabili vanno messe prima e quelle che cambiano dopo, non il contrario",
+  "keptSaidPresent": true,
+  "cut": "La cache dei prompt serve a non ripagare per intero il lavoro già fatto. Quando invii una richiesta, il suo inizio viene elaborato e conservato. Se la richiesta successiva comincia allo stesso modo, quella parte viene riletta dalla cache invece di essere elaborata di nuovo per intero. **Funziona solo sul prefisso.** Il riuso vale finché l'inizio è identico: basta un carattere diverso e da quel pun"
+ },
+ {
+  "f": "S05_gpu.caveman-lite.2.txt",
+  "removed": "la banda di memoria passa da circa 717 a circa 960 gigabyte al secondo",
+  "removedSaidPresent": false,
+  "kept": "la 5080 usa l'architettura Blackwell, la 4080 Ada Lovelace",
+  "keptSaidPresent": true,
+  "cut": "La RTX 5080 è un'evoluzione della 4080 più che un salto netto. Il vantaggio maggiore riguarda la generazione di fotogrammi, non le prestazioni in rasterizzazione pura. **Architettura e memoria** - La 5080 usa l'architettura Blackwell, la 4080 usa Ada Lovelace. - La 5080 monta memoria GDDR7, la 4080 monta GDDR6X. **Prestazioni** - In rasterizzazione pura il guadagno reale è di circa il 10-15%. - La"
+ },
+ {
+  "f": "S09_x86.low-ask.1.txt",
+  "removed": "l'8086 del 1978 e' a 16 bit e nasce come evoluzione dell'8080, con compatibilita' a livello di sorgente",
+  "removedSaidPresent": false,
+  "kept": "l'80286 del 1982 introduce la modalita' protetta, ma non si puo' tornare a quella reale senza riavviare",
+  "keptSaidPresent": true,
+  "cut": "x86 nasce come processore a 16 bit e diventa col tempo un'interfaccia sopra macchine molto diverse. Ogni generazione aggiunge qualcosa senza rompere il passato. L'80286 del 1982 introduce la modalità protetta, ma per tornare a quella reale serve un riavvio. L'80386 del 1985 risolve gran parte del problema: 32 bit, memoria virtuale paginata e modalità virtuale 8086, che fa girare il vecchio softwar"
+ },
+ {
+  "f": "C_breve.high-ask.2.txt",
+  "removed": "l'eccezione e' un indice parziale sul valore raro, che invece funziona",
+  "removedSaidPresent": false,
+  "kept": "no, su una colonna a bassa cardinalita' l'indice B-tree di norma non viene usato",
+  "keptSaidPresent": true,
+  "cut": "No: su colonna a bassa cardinalità indice B-tree di norma non viene usato. Planner preferisce scansione sequenziale quando filtro seleziona più di circa 5-10% delle righe. Indice costa comunque scrittura e spazio. Eccezione:"
+ },
+ {
+  "f": "S09_x86.low-ask-check.1.txt",
+  "removed": "l'80286 del 1982 introduce la modalita' protetta, ma non si puo' tornare a quella reale senza riavviare",
+  "removedSaidPresent": false,
+  "kept": "l'8086 del 1978 e' a 16 bit e nasce come evoluzione dell'8080, con compatibilita' a livello di sorgente",
+  "keptSaidPresent": true,
+  "cut": "Conoscenza interna. x86 è partito come processore a 16 bit ed è diventato un'interfaccia che poggia su una macchina molto diversa. Punto di partenza: 8086 del 1978, a 16 bit, evoluzione dell'8080 con compatibilità a livello di sorgente. 80386 del 1985 porta 32 bit, memoria virtuale paginata e modalità virtuale 8086. 486 del 1989 integra nel chip cache di primo livello e coprocessore matematico. Po"
+ },
+ {
+  "f": "F_codice.atlas-high.2.txt",
+  "removed": "per il caso opposto, cioe' eseguire subito e poi ignorare per un periodo, serve un throttle, che e' un'altra funzione",
+  "removedSaidPresent": false,
+  "kept": null,
+  "keptSaidPresent": null,
+  "cut": "```js function debounce(fn, ms) {   let t; return (...args) => {     clearTimeout(t); t = setTimeout(() => fn(...args), ms); }; } ``` Chiama `clearTimeout` prima di ogni nuovo `setTimeout`. Altrimenti i timer si accumulano e la funzione parte più volte. Tieni `t` nella chiusura e non dentro la funzione restituita. Altrimenti ogni chiamata ha il proprio timer e il debounce non avviene. Inoltra gli "
+ },
+ {
+  "f": "B_tecnica.high-ask.2.txt",
+  "removed": "per questo si vedono latenze crescenti invece di errori immediati",
+  "removedSaidPresent": false,
+  "kept": "quando l'handler solleva un'eccezione il release() non viene mai raggiunto e la connessione resta occupata fino al timeout",
+  "keptSaidPresent": true,
+  "cut": "Il pool di connessioni si esaurisce. Non è una query lenta. In `db/session.py:47` il middleware rilascia la connessione solo quando la richiesta va a buon fine. Se l'handler solleva un'eccezione, `release()` non viene mai raggiunto e la connessione resta occupata fino al timeout. Dopo qualche centinaio di richieste fallite il pool resta senza connessioni libere e ogni richiesta successiva si mette"
+ },
+ {
+  "f": "S06_meteo_settimana.high-check.2.txt",
+  "removed": "lunedi: sereno, 24 gradi, minima 17",
+  "removedSaidPresent": false,
+  "kept": "la settimana ha due giorni con precipitazioni significative, mercoledi e domenica",
+  "keptSaidPresent": true,
+  "cut": "Fonte: web (link non fornito) Settimana a New York, fine settimana più caldo. Martedì: Mercoledì: Giovedì: Venerdì: Sabato: Domenica: Precipitazioni significative solo mercoledì e domenica: ombrello in quei due giorni."
+ },
+ {
+  "f": "S07_https.low-ask-check.1.txt",
+  "removed": "TLS 1.3 riduce lo scambio a un solo giro di andata e ritorno, contro i due di TLS 1.2",
+  "removedSaidPresent": false,
+  "kept": "HTTPS e' HTTP dentro un canale cifrato da TLS",
+  "keptSaidPresent": true,
+  "cut": "Conoscenza interna. HTTPS è HTTP normale che viaggia dentro un canale cifrato da TLS. Prima che passino i dati, client e server si accordano così: 1. Il client apre la connessione e dichiara quali versioni di TLS e quali cifrari supporta. 2. Il server sceglie cifrario e versione, poi manda il proprio certificato. 3. Il client verifica la firma del certificato risalendo la catena fino a una radice "
+ },
+ {
+  "f": "S08_bitcoin.high-ask.2.txt",
+  "removed": "la soluzione e' una catena di blocchi ordinata da una prova di lavoro",
+  "removedSaidPresent": false,
+  "kept": "nel 2008 esce un documento firmato Satoshi Nakamoto, pseudonimo mai identificato",
+  "keptSaidPresent": true,
+  "cut": "Bitcoin nasce nel 2008 con un documento firmato Satoshi Nakamoto, pseudonimo mai identificato: \"Bitcoin: A Peer-to-Peer Electronic Cash System\". Origine nell'ambiente cypherpunk. Tentativi precedenti, b-money e bit gold, non risolvevano l'ordinamento. Problema affrontato: doppia spesa senza un ente centrale che tenga il registro. Soluzione: Riscrivere il passato diventa costoso, perché la prova an"
+ },
+ {
+  "f": "S09_x86.none.1.txt",
+  "removed": "e' la prima volta che l'estensione dominante non viene da Intel",
+  "removedSaidPresent": false,
+  "kept": "l'8086 del 1978 e' a 16 bit e nasce come evoluzione dell'8080, con compatibilita' a livello di sorgente",
+  "keptSaidPresent": true,
+  "cut": "La storia di x86 parte in realtà un po' prima degli anni Ottanta, nel 1978, con l'**8086**: un processore a 16 bit nato come evoluzione dell'8080, pensato perché il vecchio codice si potesse riportare a livello di sorgente. Già all'inizio la compatibilità conta più di un progetto pulito, e resterà così per tutta la storia di questa architettura. **Gli anni Ottanta: la modalità protetta e il salto "
+ },
+ {
+  "f": "H_lunga.caveman-lite.2.txt",
+  "removed": "la voce di sistema che cambia a ogni turno, come un orario, annulla il riuso di tutto quello che viene dopo",
+  "removedSaidPresent": false,
+  "kept": "funziona solo sul prefisso: basta un carattere diverso all'inizio e da quel punto in poi non c'e' piu' riuso",
+  "keptSaidPresent": true,
+  "cut": "La cache dei prompt conserva la parte iniziale di una richiesta, il prefisso, dopo che è già stata elaborata. Così le richieste successive che iniziano allo stesso modo non ripagano per intero quel prefisso. **Come funziona** Il riuso vale solo per il prefisso. Se cambia anche un solo carattere all'inizio, da quel punto in poi non c'è più riuso. Per questo metti prima le parti stabili e dopo quell"
+ },
+ {
+  "f": "C_breve.low-ask-check.1.txt",
+  "removed": "no, su una colonna a bassa cardinalita' l'indice B-tree di norma non viene usato",
+  "removedSaidPresent": false,
+  "kept": "il planner preferisce una scansione sequenziale quando il filtro seleziona piu' di circa il 5-10 per cento delle righe",
+  "keptSaidPresent": true,
+  "cut": "Conoscenza interna. No: Il planner sceglie una scansione sequenziale quando il filtro seleziona più di circa il 5-10 per cento delle righe. Con tre valori, di solito ogni valore copre una parte ben più grande della tabella. L'indice però rallenta comunque le scritture e occupa spazio, quindi paghi un costo senza averne un vantaggio. C'è un'eccezione. Se uno dei tre valori è raro e filtri spesso pr"
+ },
+ {
+  "f": "I_sicurezza.caveman-full.2.txt",
+  "removed": "la chiave va tenuta sul server, e il frontend chiama un endpoint del proprio backend che a sua volta chiama il servizio",
+  "removedSaidPresent": false,
+  "kept": null,
+  "keptSaidPresent": null,
+  "cut": "No. L'offuscamento non protegge la chiave. Tutto quello che arriva al browser si può leggere. Basta aprire gli strumenti per sviluppatori o guardare le richieste di rete. **Come fare:** tieni la chiave sul server. **Limite di frequenza:** metti un limite di frequenza su quell'endpoint. Senza limite, chiunque può usare l'endpoint per sfruttare la tua chiave gratis. **Se la chiave è già stata pubbli"
+ },
+ {
+  "f": "M_aperta.none.2.txt",
+  "removed": "il secondo e' dove stanno i confini delle transazioni, perche' una transazione che attraversa due servizi diventa un problema distribuito",
+  "removedSaidPresent": false,
+  "kept": "una riscrittura completa in parallelo al vecchio sistema fallisce quasi sempre: il vecchio continua a cambiare e la copia non lo raggiunge mai",
+  "keptSaidPresent": true,
+  "cut": "Prima di scegliere l'architettura, conviene raccogliere un paio di dati e rispondere a una domanda che non è tecnica. **Parti da cosa deve poter fare il team.** Chiediti cosa deve poter fare il team fra un anno che oggi non può fare. È questa la domanda che decide. Può essere rilasciare una parte senza toccare il resto, far lavorare più persone in parallelo o reggere un carico che oggi non regge. "
+ },
+ {
+  "f": "S08_bitcoin.high-ask-check.1.txt",
+  "removed": "il progetto nasce nell'ambiente cypherpunk, dopo tentativi precedenti come b-money e bit gold che non risolvevano l'ordinamento",
+  "removedSaidPresent": false,
+  "kept": "nel 2008 esce un documento firmato Satoshi Nakamoto, pseudonimo mai identificato",
+  "keptSaidPresent": true,
+  "cut": "conoscenza interna 2008: esce documento \"Bitcoin: A Peer-to-Peer Electronic Cash System\", firmato Satoshi Nakamoto, pseudonimo mai identificato. Problema affrontato: doppia spesa senza ente centrale che tenga registro. Soluzione: catena di blocchi ordinata da prova di lavoro. Riscrivere passato diventa costoso, perché prova andrebbe rifatta per ogni blocco successivo. 3 gennaio 2009: generato prim"
+ },
+ {
+  "f": "B_tecnica.low-ask-check.2.txt",
+  "removed": "pool_size va aumentato solo dopo aver applicato la correzione, se il carico reale lo richiede",
+  "removedSaidPresent": false,
+  "kept": "la causa e' un esaurimento del connection pool, non una query lenta",
+  "keptSaidPresent": true,
+  "cut": "Dai tuoi file. Connection pool esaurito, non query lenta. In `db/session.py:47` il middleware rilascia la connessione solo nel percorso di successo. Quando l'handler solleva un'eccezione, `release()` non viene mai raggiunto e la connessione resta occupata fino al timeout. Dopo qualche centinaio di richieste fallite il pool si svuota e ogni richiesta successiva resta in attesa. Per questo vedi late"
+ },
+ {
+  "f": "G_procedura.adhd.1.txt",
+  "removed": "sesto e solo dopo: eliminare la colonna vecchia con ALTER TABLE t DROP COLUMN colonna",
+  "removedSaidPresent": true,
+  "kept": null,
+  "keptSaidPresent": null,
+  "cut": "Riscrive tutta la tabella e tiene un ACCESS EXCLUSIVE lock, quindi il servizio resta fermo finché non ha finito. Con dieci milioni di righe conviene migrare in sei passi, con il servizio sempre attivo: 1. **Controlla i dati.** Conta le righe in cui `colonna` non contiene solo cifre. Se il conteggio non è zero, sistema prima quei valori, altrimenti la conversione fallisce. 2. **Aggiungi la colonna "
+ },
+ {
+  "f": "S03_letconst.caveman-ultra.2.txt",
+  "removed": "un oggetto dichiarato con const puo' cambiare al suo interno",
+  "removedSaidPresent": true,
+  "kept": "const impedisce di riassegnare il nome, non di modificare il valore",
+  "keptSaidPresent": true,
+  "cut": "Differenza principale: **riassegnazione**. - `let` permette di riassegnare il nome. - `const` impedisce di riassegnare il nome, ma non impedisce di modificare il valore. In comune: `let` e `const` hanno entrambi ambito di blocco. `var` invece non ce l'ha."
+ },
+ {
+  "f": "O_critica.caveman-ultra.1.txt",
+  "removed": "non si testano con gli strumenti che il team usa gia': servono prove che girano contro un database vero",
+  "removedSaidPresent": false,
+  "kept": "il vantaggio e' reale: nessun percorso applicativo puo' saltare la regola, nemmeno uno script eseguito a mano",
+  "keptSaidPresent": true,
+  "cut": "Vantaggio vero: nessun percorso applicativo salta la regola, nemmeno uno script lanciato a mano. Però tutta la logica di business nei trigger costa caro: - **Invisibili.** Chi legge il codice applicativo non vede i trigger. Una modifica che sembra semplice ne attiva altre, senza lasciare traccia. - **Test.** Gli strumenti che il team usa già non bastano. - **Debug peggiore.** Un errore dentro un t"
+ },
+ {
+  "f": "A_ricerca.caveman-ultra.2.txt",
+  "removed": "aria secca rispetto a New York: il caldo si sente meno a parita' di temperatura",
+  "removedSaidPresent": false,
+  "kept": "il centro e' il punto piu' caldo, la costa resta piu' fresca",
+  "keptSaidPresent": true,
+  "cut": "**Meteo (ora 10:20 PDT):** mattina con nuvole sparse, pomeriggio sereno. Massima fra 86 e 93 °F (30-34 °C): il valore cambia secondo la fonte e la zona. Il centro è il punto più caldo, la costa resta più fresca. Di notte la minima scende intorno ai 69 °F (21 °C). **Buio:** il sole tramonta alle 19:35, fra circa 9 ore e 15 minuti. Il buio pieno arriva alle 20:00, fra circa 9 ore e 40 minuti, quando"
+ },
+ {
+  "f": "N_spiegazione.adhd.1.txt",
+  "removed": "non e' un difetto da eliminare ma una scelta: la maggior parte dei sistemi che scalano la accetta di proposito",
+  "removedSaidPresent": false,
+  "kept": "la soluzione comune e' leggere dalla replica primaria per la sessione che ha appena scritto, non per tutte",
+  "keptSaidPresent": true,
+  "cut": "**Consistenza eventuale:** dopo una scrittura, le copie dei dati (le repliche) non sono d'accordo subito. Se le scritture si fermano, però, arrivano allo stesso valore entro un tempo finito. ## Perché ti riguarda Lo noti soprattutto quando qualcuno legge subito dopo aver scritto. Esempio tipico: un utente pubblica un commento, ricarica la pagina e il commento non c'è. La scrittura è arrivata a una"
+ },
+ {
+  "f": "I_sicurezza.low-ask-check.2.txt",
+  "removed": "se la chiave e' gia' stata pubblicata va considerata compromessa e ruotata subito, non solo rimossa dal codice",
+  "removedSaidPresent": false,
+  "kept": null,
+  "keptSaidPresent": null,
+  "cut": "Conoscenza interna. No. Tutto quello che arriva al browser si può leggere, e l'offuscamento non regge: basta aprire gli strumenti per sviluppatori o guardare le richieste di rete per trovare la chiave. Tieni la chiave sul server. Il frontend chiama un endpoint del tuo backend, e il backend chiama il servizio. Metti un limite di frequenza su quell'endpoint. Altrimenti chiunque può usarlo per sfrutt"
+ },
+ {
+  "f": "F_codice.atlas-low.1.txt",
+  "removed": "per il caso opposto, cioe' eseguire subito e poi ignorare per un periodo, serve un throttle, che e' un'altra funzione",
+  "removedSaidPresent": false,
+  "kept": null,
+  "keptSaidPresent": null,
+  "cut": "Con questa funzione: ```js function debounce(fn, ms) {   let t; return (...args) => {     clearTimeout(t); t = setTimeout(() => fn(...args), ms); }; } ``` Contano tre dettagli: `clearTimeout` va chiamato prima di ogni nuovo `setTimeout`. Senza, i timer si accumulano e la funzione parte più volte. `t` deve stare nella chiusura, non dentro la funzione restituita. Altrimenti ogni chiamata avrebbe il "
+ },
+ {
+  "f": "H_lunga.atlasmin-low.1.txt",
+  "removed": "la voce di sistema che cambia a ogni turno, come un orario, annulla il riuso di tutto quello che viene dopo",
+  "removedSaidPresent": false,
+  "kept": "funziona solo sul prefisso: basta un carattere diverso all'inizio e da quel punto in poi non c'e' piu' riuso",
+  "keptSaidPresent": true,
+  "cut": "La cache conserva la parte iniziale di una richiesta già elaborata. Le richieste successive che cominciano allo stesso modo non ripagano per intero quel pezzo. Vale solo per il prefisso. Basta un carattere diverso all'inizio e da quel punto in poi non c'è più riuso. Quindi le parti stabili vanno prima e quelle che cambiano dopo, non il contrario. Scrivere nella cache costa più di una lettura norma"
+ }
+]

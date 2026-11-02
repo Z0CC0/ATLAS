@@ -1,0 +1,18 @@
+Non usare `ALTER TABLE ... ALTER COLUMN TYPE` diretto. Riscrive tutta la tabella con un lock `ACCESS EXCLUSIVE`, quindi il servizio resta fermo per tutta la durata della riscrittura. Su dieci milioni di righe conviene fare la migrazione a passi.
+
+1. **Controlla i dati.** Conta le righe di `colonna` che non contengono solo cifre. Se il conteggio non è zero, correggi quelle righe prima di andare avanti.
+2. **Aggiungi la colonna nuova.**
+   ```sql
+   ALTER TABLE t ADD COLUMN colonna_int integer;
+   ```
+3. **Aggiungi un trigger** che tenga allineate `colonna` e `colonna_int` per tutta la migrazione. Così le scritture fatte durante la copia arrivano anche nella colonna nuova.
+4. **Riempi `colonna_int` a blocchi di diecimila righe.** Ogni blocco tiene il lock per poco tempo, quindi la tabella resta usabile.
+5. **Cambia il codice** perché legga da `colonna_int` e rilascialo.
+6. **Solo dopo il rilascio, elimina la colonna vecchia.**
+
+> **Attenzione:** questo passo non si può annullare. Una volta eliminata `colonna`, i suoi dati si recuperano solo ripristinando un backup. Esegui il comando solo quando il codice rilasciato legge già da `colonna_int`.
+> ```sql
+> ALTER TABLE t DROP COLUMN colonna;
+> ```
+
+Ho messo il trigger prima del riempimento per non perdere le scritture che avvengono durante la copia. Nei tuoi punti il trigger veniva dopo il riempimento.

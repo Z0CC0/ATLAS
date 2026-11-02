@@ -1,0 +1,3 @@
+Internal knowledge
+
+Yes. This holds for every empty collection: list, tuple, dict, set and string.

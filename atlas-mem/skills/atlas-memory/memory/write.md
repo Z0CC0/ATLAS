@@ -1,0 +1,133 @@
+# Write — putting a fact into memory
+
+## First, is it worth a note
+
+Most things are not. A note is earned by a fact that is durable and applicable
+(`method.md`). The signals that one has appeared, each worth stopping to write:
+
+- **A correction.** The user corrected an approach, a name, a fact, a direction. What they
+  corrected, to what, and the reason.
+- **A decision, most of all one made against a recommendation.** The choice and why: the
+  reason is what stops the next session from reopening it.
+- **A constraint said in passing.** "It has to run on Mac too", "never touch that file",
+  "they bill by the row". These are lost first and cost most.
+- **A preference shown more than once.** How the user wants things done or said.
+- **A pointer** the user would otherwise have to restate: a URL, a dashboard, a ticket.
+
+Not a signal: a task completed, a fix that lives in the diff, a status, anything the git
+history or the code already says. Asked to remember one of those: ask what was non-obvious
+about it and save that, or decline in one line.
+
+At the end of a turn the `atlas-signals` hook may name one sign it saw in the transcript — a
+check that failed and then passed after an edit, a correction, an edit undone, a choice between
+offered options — and ask whether it is worth a note. It never writes one. Nothing worth
+keeping: say so in one line and stop; it asks at most three times in a session.
+
+## The gate — before the file is written
+
+Four checks, each a reason to rewrite the note or drop it:
+
+1. **It names what it is about.** A note on code names the file and the definition
+   (`src/x.ts`, `parseConfig`), so it can be linked and so it is found when that file is
+   opened. A general preference names the behaviour. A note that names neither is about the
+   session, not the project, and goes.
+2. **No status.** "PR is open", "not merged yet", "today", "waiting on", "still failing":
+   true when written, wrong next week. Keep the cause, the rule, the why; status belongs in the
+   pull request.
+3. **It says why.** A decision without its reason cannot be weighed later and gets reopened.
+   Each `Decided` line has a "because", the error it hit, or the number that settled it.
+4. **It does not repeat an existing note.** Same files and much the same title or body: that is
+   an **update** or a **contradiction** (below), never a second file.
+
+Longer than ~250 words is a warning, not a refusal: long notes get skimmed; cut to the fact
+and the why.
+
+(Gate after trailhq/Trail-Code `src/notes/note-gate.ts`, MIT: names code, no status, has a
+why, no duplicate. The hook's signs after `src/claude/note-signals.ts`. The explicit
+supersession record — the loser kept and marked, never deleted — after mattpocock/skills
+`teach/LEARNING-RECORD-FORMAT.md`, MIT, with the slug in place of its record number.)
+
+## Does it already exist
+
+Before creating a file, look for a note that covers this: the index by words, then
+
+```
+node "${CLAUDE_PLUGIN_ROOT}/tools/embed.mjs" search "<vault>" "<the fact, in one line>" --k 3 --words
+```
+
+Read the top hits whole and decide, in one of four ways, and say which:
+
+- **update** — a note on the same fact exists: edit it (the new detail, the date), keep its
+  slug and its links. Duplicates are how a vault rots.
+- **contradiction** — a note says the opposite or a different value: never written over.
+  Show the two together and let the user say which holds. Then the record is explicit, so a
+  later session cannot mistake the loser for current: the loser's file stays; its frontmatter
+  gets `superseded: <YYYY-MM-DD> by [[winner-slug]]` under `metadata`, its `description`
+  starts with `(superseded)`, and its line leaves `MEMORY.md`; the winner's `**Why:**` names
+  the loser with `[[loser-slug]]` and the reason it lost. The slug is the note's id — no
+  separate numbering. A note that merely *updates* another is an **update**, not a
+  supersession.
+- **nothing** — the fact is already there, in those words or better: no write, say so.
+- **add** — nothing covers it: a new file, linked with `[[slug]]` to the nearest notes the
+  search returned when they are related.
+
+Without the embedding library the search says so; then the index and the descriptions
+alone decide, and a doubt is a question to the user, not a second file.
+
+## Writing the file
+
+The name is a short kebab-case slug, unique in the vault. The `description` is one line, good
+enough to judge relevance without opening the file. The `type` is one of the four. The body
+is one fact; for `feedback` and `project` notes, the `**Why:**` and `**How to apply:**`
+lines; related notes linked with `[[slug]]`.
+
+A `feedback` note that comes out of something that went wrong is written as three parts,
+each one line, so it transfers: the **root cause** (what was actually wrong, not the symptom
+and not the fix), the **rule** that would have avoided it (general enough to apply the next
+time, in `How to apply`), and the **signal** by which the next time is recognised ("when a
+test is deleted instead of fixed", "when the same error appears twice"). A note that only
+narrates what happened is a diary entry, and a later session cannot act on it.
+
+Then one line in `MEMORY.md`: `- [Title](slug.md) — hook`, the hook being why a later session
+would open it.
+
+## Linking the note to code
+
+Only when the note is about one specific piece of code: a decision about one function, a
+constraint on one module, how one part works. A general preference has nothing to link.
+
+1. Name the definition the note is about: the file, and the name defined in it.
+2. Link it. The note file must exist first.
+
+```
+node "${CLAUDE_PLUGIN_ROOT}/tools/memcheck.mjs" link "<vault>" <slug> "<repository root>" <file> <symbol>
+```
+
+`<file>` is relative to the repository root. The tool parses the file, takes the lines the
+definition spans, the fingerprint and the commit itself, records what that code depends on
+(the names it uses that are defined in this repository, so a change there is noticed too),
+and prints what it recorded.
+
+It asks for a range in two cases, and then the range goes before the symbol
+(`… <file> <first>-<last> <symbol>`):
+- the name is defined more than once in the file: it lists the ranges; give the one meant;
+- the file cannot be parsed here (no parser installed, or no grammar for the language): open
+  the file and take the range as it is now, never from memory, from the first line of the
+  definition to its last.
+
+`memcheck defs "<repository root>" <file>` lists every definition in a file with its lines.
+If the tool refuses, the name or the range is wrong: fix that, never work around it.
+
+3. A note that depends on two places gets two links, one command each.
+
+A note whose code cannot be pinned to a definition and a range is left unlinked. An unlinked
+note is honest; a link to the wrong lines raises false alarms for ever.
+
+Linking again with the same file and symbol replaces the old link. That is also how a note is
+confirmed after its code changed (`check.md`).
+
+## Not done here
+
+Capturing automatically. Writing a note nobody, in effect, asked to keep. Putting a secret
+or private data in a note outside `<private>`. Recording finished work as if it were a
+durable fact. Typing a fingerprint, a range or a trust value into any file.

@@ -1,0 +1,7 @@
+Ecco cosa cambia passando da una RTX 4080 a una RTX 5080.
+
+La 5080 è costruita su un'architettura più nuova, Blackwell, mentre la 4080 usa Ada Lovelace. Insieme al cambio di architettura arriva anche un salto nella memoria video: la 5080 monta GDDR7 al posto della GDDR6X della 4080, e questo si traduce in una banda di memoria più ampia, che passa da circa 717 a circa 960 gigabyte al secondo.
+
+Sulla carta, dove la 5080 guadagna di più è nella generazione di fotogrammi, non nella potenza bruta di rasterizzazione: è lì che si vede il salto più marcato. Se invece guardi solo le prestazioni "pure", senza contare le tecniche di generazione dei frame, il miglioramento reale è più contenuto, nell'ordine del 10-15%.
+
+Tutto questo però ha un costo in termini di consumi: il TDP dichiarato sale da 320 a 360 watt. Nonostante l'aumento di potenza richiesta, il connettore di alimentazione resta lo stesso, a 16 pin, quindi non cambia nulla dal punto di vista dell'alimentatore o del cablaggio.

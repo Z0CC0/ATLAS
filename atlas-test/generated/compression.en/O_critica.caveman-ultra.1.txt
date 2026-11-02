@@ -1,0 +1,7 @@
+Bad idea, mostly.
+
+Upside real: no path skip rule, not even hand-run script.
+
+Cost high though. Trigger invisible in app code — simple-looking change fire others, no trace. Not testable with team's usual tools — need tests against real DB. Debugging worse — error inside trigger arrive as failed write, no word which rule caused it. Migrations fragile — trigger order matter, declared nowhere.
+
+Better split: DB keep only integrity — constraints, foreign keys, uniqueness, domain checks. Business logic live in app, behind single entry point. Entry point give same guarantee as trigger, long as direct DB access reserved for migrations only.

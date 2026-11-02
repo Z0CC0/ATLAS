@@ -1,0 +1,9 @@
+Usually not.
+
+A normal B-tree index on a column this low in cardinality usually goes unused.
+
+The planner picks a sequential scan when the filter matches more than about 5-10% of rows.
+
+The index still costs extra writes and disk space.
+
+Exception: a partial index on the rare value does work.

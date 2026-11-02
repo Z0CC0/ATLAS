@@ -1,0 +1,11 @@
+Eventual consistency: after a write, replicas disagree briefly, converge within a finite time once writes stop. Same-region convergence: under a second. Cross-region: seconds.
+
+Trade-off: consistency vs availability. Strong consistency means refusing requests when replicas can't talk to each other.
+
+Where it bites you: read-your-own-write. Post a comment, reload, comment's gone — hit a stale replica.
+
+Fix: route the writer's own session to the primary replica right after their write. Everyone else stays on replicas.
+
+Not a bug to eliminate. A deliberate choice, made by most systems that scale.
+
+Unacceptable for: account balances, seat availability, uniqueness checks (usernames, emails). Those need strong consistency regardless of cost.

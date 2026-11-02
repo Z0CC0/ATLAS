@@ -1,0 +1,42 @@
+# Come è nato Bitcoin
+
+## Il contesto: i cypherpunk
+
+Bitcoin nasce nell'ambiente **cypherpunk**. Prima di lui c'erano stati altri tentativi di creare denaro digitale, come **b-money** e **bit gold**. Nessuno però aveva risolto il problema dell'ordinamento, cioè come stabilire quale transazione viene prima di un'altra senza qualcuno che faccia da arbitro.
+
+## Il documento del 2008
+
+Nel **2008** esce un documento intitolato ***Bitcoin: A Peer-to-Peer Electronic Cash System***. È firmato **Satoshi Nakamoto**, uno pseudonimo che non è mai stato identificato.
+
+Il documento affronta il problema della **doppia spesa**. Un file digitale si copia facilmente, quindi serve un modo per impedire di spendere due volte la stessa moneta. Di solito questo lavoro lo fa un ente centrale che tiene il registro, per esempio una banca. Satoshi voleva farne a meno.
+
+## La soluzione: blocchi e prova di lavoro
+
+La soluzione è una **catena di blocchi**, ordinata da una **prova di lavoro**:
+
+- Le transazioni vengono raccolte in blocchi, e ogni blocco si aggancia a quello precedente.
+- Per aggiungere un blocco bisogna svolgere un lavoro di calcolo costoso.
+- Per riscrivere un blocco passato bisognerebbe rifare il lavoro per quel blocco e **per tutti i blocchi successivi**.
+
+Falsificare la storia diventa quindi troppo costoso. In questo modo la catena stessa fa da registro condiviso, senza bisogno di un ente centrale.
+
+## Il primo blocco: 3 gennaio 2009
+
+Il primo blocco viene generato il **3 gennaio 2009**. Dentro c'è il titolo di un articolo del *Times* su un **salvataggio bancario**. Quel riferimento ha due funzioni:
+
+1. **Marca temporale**: dimostra che il blocco non può essere stato creato prima di quella data.
+2. **Dichiarazione di intenti**: indica il sistema bancario tradizionale come ciò a cui Bitcoin vuole offrire un'alternativa.
+
+## Le regole di emissione
+
+- Chi genera un blocco riceve una ricompensa, che all'inizio è di **50 bitcoin**.
+- La ricompensa **si dimezza ogni 210.000 blocchi**, cioè più o meno ogni quattro anni.
+- Per questo il totale di bitcoin emessi si avvicina a **21 milioni** e non li supererà mai.
+
+## Le prime pizze
+
+La prima transazione commerciale documentata risale al **2010**: qualcuno paga **due pizze 10.000 bitcoin**. È il momento in cui Bitcoin viene usato per la prima volta per comprare qualcosa di concreto.
+
+## La scomparsa di Satoshi
+
+Nel **2011** Satoshi smette di partecipare pubblicamente al progetto. I bitcoin che possedeva **non sono mai stati spostati**. Il creatore è sparito e il sistema continua a funzionare senza di lui.

@@ -1,0 +1,11 @@
+Cache prompt salva prefisso richiesta gia' elaborato. Richieste dopo con stesso inizio non pagano tutto di nuovo — solo riuso su prefisso, un carattere diverso all'inizio rompe riuso da quel punto in poi.
+
+Regola pratica: stabile prima, variabile dopo. Non contrario.
+
+Costi: prima scrittura in cache costa piu' di lettura normale — prima richiesta piu' cara. Guadagno arriva da seconda richiesta in poi, cresce con numero turni.
+
+Conviene: conversazioni lunghe, contesto grande e stabile — istruzioni sistema, documentazione allegata, definizioni strumenti.
+
+Non conviene: richieste singole e diverse fra loro — paghi scrittura, mai rileggi.
+
+Attenzione: voce sistema che cambia ogni turno (es. orario) annulla riuso tutto quello dopo. Metti quella roba alla fine, non all'inizio.

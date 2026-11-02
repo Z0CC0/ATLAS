@@ -1,0 +1,16 @@
+In breve: la RTX 5080 è più rapida soprattutto nella **generazione di fotogrammi**. Nel rendering classico (il rasterizzatore puro) guadagni circa il **10-15%**.
+
+**Cosa cambia:**
+
+1. **Architettura:** la 5080 usa Blackwell, la 4080 usa Ada Lovelace.
+2. **Memoria:** la 5080 monta GDDR7, la 4080 GDDR6X.
+3. **Banda di memoria:** passa da circa 717 a circa 960 GB/s.
+4. **Consumo dichiarato:** sale da 320 a 360 W, cioè 40 W in più.
+
+**Cosa resta uguale:** il connettore di alimentazione è sempre a 16 pin. Il cavo che usi con la 4080 va bene anche per la 5080.
+
+**Conclusione:** il passaggio conviene se usi la generazione di fotogrammi. Se giochi senza, il miglioramento è modesto per una scheda nuova.
+
+Fonte: mia conoscenza interna, senza ricerche sul web.
+
+Prossimo passo: controlla se i giochi che usi di più supportano la generazione di fotogrammi. Da lì capisci se l'aggiornamento ti conviene.

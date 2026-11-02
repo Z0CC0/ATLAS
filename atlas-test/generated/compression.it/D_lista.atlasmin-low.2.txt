@@ -1,0 +1,13 @@
+Attiva HSTS con max-age almeno 31536000 e includeSubDomains, obbliga il browser a usare HTTPS.
+
+Metti Content-Security-Policy con default-src 'self', blocca l'iniezione di script di terze parti.
+
+Imposta X-Content-Type-Options a nosniff, impedisce al browser di indovinare il tipo di contenuto.
+
+Imposta Referrer-Policy a strict-origin-when-cross-origin, evita di far uscire il percorso completo verso altri siti.
+
+Contro clickjacking usa X-Frame-Options DENY oppure frame-ancestors 'none' nella CSP.
+
+Con Permissions-Policy spegni camera, microfono e geolocalizzazione se non li usi.
+
+X-XSS-Protection ometti: deprecato, browser moderni lo ignorano e in versioni vecchie introduceva vulnerabilità.

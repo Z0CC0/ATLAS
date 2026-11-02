@@ -1,0 +1,9 @@
+The biggest gain is in frame generation, not raw rasterisation. On rasterisation the 5080 is only about 10–15% faster.
+
+Architecture: 5080 uses Blackwell, 4080 Ada Lovelace.
+
+Memory: GDDR7 on the 5080, GDDR6X on the 4080. Bandwidth rises from about 717 to about 960 GB/s.
+
+Rated power: up from 320 W to 360 W.
+
+Power connector: still 16-pin.

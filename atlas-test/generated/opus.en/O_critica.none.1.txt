@@ -1,0 +1,19 @@
+I wouldn't put all of it in triggers. The goal is right, but you can get the same guarantee more cheaply.
+
+**The upside is real.** A rule in a trigger can't be skipped by any path through the application. Even someone running a script by hand can't get around it. That's why the idea is tempting.
+
+**What it costs you:**
+
+- **You can't see it.** Someone reading the application code has no idea the triggers exist. A change that looks simple can set off other changes, and nothing in the code shows it happening.
+- **Your usual tests don't cover it.** The testing tools your team already uses won't exercise triggers. You'd need a separate set of tests that run against a real database.
+- **Debugging gets harder.** When a trigger raises an error, the application just sees a failed write. It doesn't tell you which rule caused it.
+- **Migrations get fragile.** The order triggers fire in matters, but nothing records that order. Adding or changing one later is risky.
+
+**What I'd do instead:** split the work by what each layer does well.
+
+- **In the database:** only the rules that protect data integrity. That means constraints, foreign keys, uniqueness and domain checks.
+- **In the application:** the business logic, behind a single entry point that every write has to go through.
+
+That entry point gives you the same "can't be bypassed" guarantee as a trigger, with one condition: only migrations get direct access to the database. If that rule holds, nothing can skip the business logic. It also stays visible in the code, your normal tools can test it, and its errors say which rule failed.
+
+The real decision is whether you can enforce that access restriction. If you can, you don't need triggers for business logic.
