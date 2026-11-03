@@ -1,15 +1,19 @@
 internal knowledge
 
-Start with **what team must be able to do a year from now that it cannot today**. That question is organizational, not technical, and it decides the rest.
+Start with one question, and it isn't technical: what must your team be able to do a year from now that it can't do today? Let that answer pick the architecture.
 
-Next: which parts of monolith actually change. Stable parts gain nothing from being split.
+Before you decide, check four things.
 
-Then: where transaction boundaries sit. Transaction spanning two services becomes distributed problem, so draw service lines around transactions, not across them.
+1. **Which parts of the monolith actually change.** Parts that stay stable gain nothing from being split out.
 
-Avoid full rewrite running parallel to old system. Almost always fails: old one keeps changing, copy never catches up.
+2. **Where your transaction boundaries are.** If a transaction spans two services, it becomes a distributed problem.
 
-Instead, strangle progressively. Router in front, move one piece at a time, old system stays authoritative until new piece verified.
+3. **How many developers you have.** Every microservice needs its own releases, monitoring, logs, alerts and someone who looks after it. With fewer than five developers, that operational cost almost always exceeds the benefit.
 
-Microservices cost more in operations: every service needs releases, monitoring, logs, alerts and someone looking after it. **Below five developers, that cost almost always exceeds benefit.**
+4. **Whether a modular monolith would do.** Few people mention it, but it gives you sharp internal boundaries and a single release. You can still pull a module out the day you genuinely need to.
 
-Consider modular monolith, option nobody mentions: sharp internal boundaries, one release, and option to extract module the day it's genuinely needed.
+On how to migrate: don't run a full rewrite in parallel with the old system. That almost always fails, because the old system keeps changing and the copy never catches up. Strangle it progressively instead:
+
+1. Put a router in front of the monolith.
+2. Move one piece at a time.
+3. Keep the old system authoritative for each piece until the new version is verified.

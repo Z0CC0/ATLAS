@@ -1,13 +1,14 @@
-For a small project, use **Postgres**. Move to Redis later, when your volume actually needs it.
+For a small project, use **Postgres**. Move to Redis only when your volume actually requires it.
 
 **Why Postgres fits:**
-- **It handles your load.** `SELECT ... FOR UPDATE SKIP LOCKED` is enough for up to about a thousand jobs per minute. Most small projects stay well under that.
-- **Jobs and data commit together.** The job is written in the same transaction as the data it depends on. If that write rolls back, the job rolls back too, so a job never starts for data that doesn't exist.
-- **The queue survives crashes.** Persistence comes for free. If your process dies, the queued jobs are still in the table.
+- **Throughput is enough.** `SELECT ... FOR UPDATE SKIP LOCKED` handles up to roughly a thousand jobs per minute. Most small projects stay well below that.
+- **Jobs stay in step with your data.** You enqueue the job in the same transaction as the data write. If the write rolls back, the job rolls back too, so a job never runs against data that doesn't exist.
+- **Persistence needs no setup.** If the process dies, the queue is still in the database.
+- **You run nothing new.** You already operate Postgres.
 
-**What Redis gives you, and what it costs:**
-- Redis handles far more volume, with latency under a millisecond.
+**What Redis offers:**
+- It handles far more volume, with latency under a millisecond.
 - It is one more service to run, monitor and upgrade.
-- You have to configure persistence yourself. Without AOF enabled, a restart loses every queued job.
+- You must configure persistence yourself. Without AOF enabled, a restart loses the queued jobs.
 
-At small scale you don't need Redis's speed, but you would still pay its costs. Start with Postgres. Switch when job volume starts pushing past what `SKIP LOCKED` handles.
+**When to switch:** Move to Redis when you get close to the thousand-jobs-per-minute range, or when you need sub-millisecond latency. Until then, Redis adds operational work and data-loss risk without a real benefit.

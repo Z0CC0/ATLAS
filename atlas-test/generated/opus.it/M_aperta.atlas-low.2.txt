@@ -1,7 +1,13 @@
-Prima di scegliere l'architettura, chiediti cosa deve poter fare il tuo team fra un anno che oggi non può. È questa la domanda decisiva, e non è tecnica.
+Prima dell'architettura, chiediti cosa deve poter fare il tuo team fra un anno che oggi non può. È la **domanda decisiva**, e non è tecnica.
 
-Poi servono due dati sul monolite. Primo: quali parti cambiano davvero. Le parti stabili non guadagnano nulla dall'essere spezzate. Secondo: dove stanno i confini delle transazioni. Una transazione che attraversa due servizi diventa un problema distribuito.
+Poi servono due dati sul monolite.
 
-Sul metodo, evita la riscrittura completa in parallelo al vecchio sistema. Fallisce quasi sempre: il vecchio continua a cambiare e la copia non lo raggiunge mai. L'alternativa è lo **strangolamento progressivo**. Metti un router davanti e sposti un pezzo per volta. Il vecchio resta autorevole finché il nuovo non è verificato.
+Quali parti cambiano davvero. Quelle stabili non guadagnano nulla dall'essere spezzate.
 
-Sulla forma, tieni conto che i microservizi costano di più da gestire. Ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupi. Sotto i cinque sviluppatori quel costo supera quasi sempre il beneficio. Esiste poi un'opzione che si cita poco: il **monolite modulare**. Ha confini interni netti e un solo rilascio, e ti permette di estrarre un modulo il giorno in cui serve davvero.
+Dove stanno i confini delle transazioni. Una transazione che attraversa due servizi diventa un problema distribuito.
+
+Sul metodo, evita la riscrittura completa in parallelo al vecchio sistema. Fallisce quasi sempre: il vecchio continua a cambiare e la copia non lo raggiunge mai. Meglio lo **strangolamento progressivo**. Metti un router davanti e sposti un pezzo per volta. Il vecchio resta autorevole finché il nuovo non è verificato.
+
+Sulla forma, i microservizi costano di più da gestire. Ogni servizio richiede rilascio, monitoraggio, log, allarmi e una persona che se ne occupi. Sotto i cinque sviluppatori quel costo supera quasi sempre il beneficio.
+
+Considera anche il monolite modulare, un'opzione citata poco. Ha confini interni netti e un solo rilascio, e ti permette di estrarre un modulo il giorno in cui serve davvero.

@@ -1,15 +1,11 @@
-conoscenza interna
+Conoscenza interna.
 
-Scrivi i log su file locali e usa un raccoglitore che li spedisce altrove. A mille richieste al minuto è la scelta ragionevole, perché l'applicazione non aspetta mai la scrittura del log.
+Usa **file locali più un raccoglitore che li spedisce altrove**. Con mille richieste al minuto è la scelta ragionevole, perché l'applicazione non aspetta mai la scrittura del log.
 
-Qualunque cosa scegli, **la scrittura del log non deve stare nel percorso critico della richiesta**.
+Solo file: costano zero e non hanno dipendenze. Però cerchi solo con grep, e su più macchine la ricerca non esiste: devi collegarti a ognuna. La rotazione va configurata a mano, altrimenti il disco si riempie. Questo vale anche per i file locali della soluzione consigliata.
 
-Perché non una sola delle tre opzioni:
+Solo servizio gestito: hai ricerca immediata, allarmi e conservazione automatica. Però paghi per volume, e con mille richieste al minuto il volume cresce in fretta. In più i log escono dalla tua infrastruttura, quindi prima vanno ripuliti dai dati personali. Questo vale anche se il raccoglitore spedisce lì.
 
-Solo file: costano zero e non hanno dipendenze. Però cerchi con grep, e se non configuri a mano la rotazione il disco si riempie. Con più macchine non puoi cercare su tutte insieme: devi collegarti a ognuna.
+Database: la ricerca è comoda e nota. Però scrivere i log nello stesso database dell'applicazione mette in competizione due carichi molto diversi. Sotto carico i log riempiono cache e connessioni che servivano alle richieste vere.
 
-Solo servizio gestito: ricerca immediata, allarmi e conservazione automatica. Però paghi per volume, e a mille richieste al minuto il volume cresce in fretta. I log escono dalla tua infrastruttura, quindi prima di spedirli devi ripulirli dai dati personali.
-
-Database: la ricerca è comoda e la conosci già. Ma se scrivi i log nello stesso database dell'applicazione, metti in competizione due carichi molto diversi. Sotto carico i log occupano cache e connessioni che servivano alle richieste vere.
-
-Con file locali più raccoglitore, la destinazione finale resta una tua scelta. Se è un servizio gestito, valgono ancora il costo per volume e la pulizia dei dati personali.
+Qualunque destinazione scegli, vale una regola: **la scrittura del log non deve stare nel percorso critico della richiesta**.

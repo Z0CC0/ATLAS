@@ -1,18 +1,25 @@
-Non usare `ALTER TABLE ... ALTER COLUMN TYPE` diretto. Riscrive tutta la tabella e tiene un `ACCESS EXCLUSIVE` lock per tutta la durata. Con dieci milioni di righe, il servizio resta fermo per tutto quel tempo.
+Non usare `ALTER TABLE t ALTER COLUMN colonna TYPE integer` diretto. Riscrive tutta la tabella con un lock `ACCESS EXCLUSIVE`, quindi il servizio resta fermo per tutta la durata. Con dieci milioni di righe è un fermo lungo. Fai la migrazione a passi.
 
-Fai invece la migrazione in sei passi, in questo ordine:
+1. **Verifica che ogni valore si possa convertire.** Conta le righe che non contengono solo cifre:
+   ```sql
+   SELECT count(*) FROM t WHERE colonna !~ '^[0-9]+$';
+   ```
+   Se il risultato non è zero, sistema quelle righe prima di proseguire.
 
-1. **Verifica i dati.** Conta le righe in cui `colonna` non contiene solo cifre. Se il conteggio non è zero, quei valori non si convertono. Sistemali prima di andare avanti.
-2. **Aggiungi la colonna nuova.**
+2. **Aggiungi la colonna nuova:**
    ```sql
    ALTER TABLE t ADD COLUMN colonna_int integer;
    ```
-3. **Riempi `colonna_int` a blocchi da diecimila righe per volta.** Così non tieni un lock lungo sulla tabella.
-4. **Aggiungi un trigger.** Il trigger tiene allineate `colonna` e `colonna_int` durante la migrazione, anche per le righe scritte mentre riempi i blocchi.
-5. **Cambia il codice** perché legga da `colonna_int`, poi rilascialo.
-6. **Elimina la colonna vecchia**, solo quando il passo 5 è in produzione.
+
+3. **Riempi la colonna nuova a blocchi di diecimila righe per volta.** Così nessun lock lungo blocca la tabella.
+
+4. **Aggiungi un trigger che tenga allineate le due colonne** per tutta la migrazione. Così anche le scritture che arrivano nel frattempo finiscono in `colonna_int`.
+
+5. **Cambia il codice perché legga da `colonna_int` e rilascialo.**
+
+6. **Solo dopo il rilascio, elimina la colonna vecchia:**
    ```sql
    ALTER TABLE t DROP COLUMN colonna;
    ```
 
-**Attenzione:** il passo 6 è irreversibile. Una volta eliminata `colonna`, i dati tornano solo con un ripristino da backup. Fai il `DROP` solo quando il codice nuovo legge già da `colonna_int`.
+**Attenzione:** il passo 6 è irreversibile. Una volta eliminata la colonna, i dati tornano solo con un ripristino da backup. Fai questo passo solo quando il codice nuovo gira già in produzione e legge da `colonna_int`.

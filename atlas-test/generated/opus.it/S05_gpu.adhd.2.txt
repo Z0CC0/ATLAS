@@ -1,20 +1,18 @@
-**In breve: la 5080 va circa il 10-15% più veloce della 4080 in rasterizzazione pura. Il salto grande arriva solo se usi la generazione di fotogrammi.**
+**In breve:** la 5080 va soprattutto meglio con la generazione di fotogrammi. Senza, in rasterizzazione pura, il guadagno reale è circa del 10-15%.
 
-**Cosa cambia**
+| | RTX 4080 | RTX 5080 |
+|---|---|---|
+| Architettura | Ada Lovelace | Blackwell |
+| Memoria | GDDR6X | GDDR7 |
+| Banda di memoria | ~717 GB/s | ~960 GB/s |
+| Consumo dichiarato | 320 W | 360 W |
+| Connettore di alimentazione | 16 pin | 16 pin |
 
-1. **Architettura:** la 5080 usa Blackwell, la 4080 usa Ada Lovelace.
-2. **Memoria:** la 5080 passa alla GDDR7, la 4080 ha la GDDR6X.
-3. **Banda di memoria:** sale da circa 717 a circa 960 GB/s.
-4. **Consumo dichiarato:** sale da 320 a 360 W, cioè 40 W in più.
-5. **Prestazioni:** il miglioramento maggiore è nella generazione di fotogrammi. In rasterizzazione pura il guadagno reale è del 10-15%.
+**Cosa cambia per te:**
 
-**Cosa resta uguale**
+1. **Prestazioni:** il salto più grande è sulla generazione di fotogrammi. Se giochi soprattutto senza, aspettati circa un 10-15% in più.
+2. **Memoria:** passare alla GDDR7 porta la banda da circa 717 a circa 960 GB/s.
+3. **Consumo:** sale di 40 W, da 320 a 360 W dichiarati.
+4. **Cavi:** il connettore resta lo stesso a 16 pin, quindi nessun cambio di cablaggio.
 
-- Il connettore di alimentazione è sempre a 16 pin. Se passi dalla 4080 alla 5080 non devi cambiare cavo.
-
-**Come decidere**
-
-- **Hai già una 4080 e giochi senza generazione di fotogrammi:** con un 10-15% in più il cambio si giustifica poco.
-- **Usi la generazione di fotogrammi o parti da una scheda più vecchia:** la 5080 è quella da prendere.
-
-Prima di tutto controlla se i giochi a cui giochi di più supportano la generazione di fotogrammi. Da questo dipende quasi tutta la scelta.
+**Prossimo passo:** chiediti se nei tuoi giochi usi la generazione di fotogrammi. Se sì, la 5080 ti dà un vantaggio netto. Se no, il guadagno si ferma intorno al 10-15%.

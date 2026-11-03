@@ -1,19 +1,11 @@
-Eventual consistency: after write, replicas don't agree right away, but converge within finite time once writes stop. Matters because users notice the gap, and because you'll almost certainly choose it on purpose.
+Eventual consistency: after a write, replicas don't agree right away, but they converge within a finite time once writes stop.
 
-Why systems choose it: trade against availability. System demanding strong consistency has to refuse requests when replicas can't talk to each other. Eventual consistency keeps answering. That's why most systems that scale accept it deliberately. Not defect to eliminate, but design choice.
+Why care: it hits whoever reads right after writing. A user posts a comment, reloads, and the comment isn't there.
 
-Where it hurts: whoever reads right after writing. User posts comment, reloads, doesn't see it, because reload hit replica that hasn't caught up yet.
+How long the gap lasts: usually under a second between replicas in the same region, rising to seconds across regions.
 
-How long gap lasts: across replicas in same region, typically under a second. Across regions, rises to seconds.
+Why systems accept it: the alternative costs availability. A system that demands strong consistency has to refuse requests when its replicas can't talk to each other. So eventual consistency is a choice, not a defect to eliminate, and most systems that scale make that choice on purpose.
 
-Common fix: for session that just wrote, read from primary replica. Only that session, not everyone, so rest of traffic still spreads across replicas.
+Common fix for the reload problem: send reads to the primary replica only for the session that just wrote, not for everyone. The writer sees their own comment, and everyone else keeps reading from the replicas.
 
-When it's unacceptable: few cases, easy to recognise.
-
-Account balances
-
-Seat availability
-
-Uniqueness of an identifier
-
-In those, stale read means double spend, double booking or duplicate ID, so they need strong consistency. Everywhere else, eventual consistency plus read-from-primary for writer usually enough.
+Where it's unacceptable: only a few cases, and they're easy to recognise. These are account balances, seat availability and the uniqueness of an identifier. For those, pay for strong consistency.

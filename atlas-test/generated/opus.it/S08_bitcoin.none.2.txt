@@ -1,13 +1,31 @@
-Bitcoin nasce nell'ambiente cypherpunk, cioè in quella comunità di crittografi e attivisti che da anni cercava di creare una moneta digitale indipendente dalle istituzioni. Prima di Bitcoin c'erano stati altri tentativi, come b-money e bit gold. Nessuno però aveva risolto il problema di fondo: stabilire in modo affidabile l'ordine delle transazioni.
+# Come è nato Bitcoin
 
-Nel 2008 esce un documento intitolato *Bitcoin: A Peer-to-Peer Electronic Cash System*. È firmato Satoshi Nakamoto, uno pseudonimo dietro cui non si è mai scoperto chi ci fosse. Il documento affronta la doppia spesa: con il denaro digitale, che si può copiare, bisogna impedire che la stessa moneta venga spesa due volte. Normalmente questo compito spetta a un ente centrale, per esempio una banca, che tiene il registro. Satoshi vuole farne a meno.
+## L'ambiente e il problema
 
-La soluzione è una catena di blocchi, ordinata da una prova di lavoro. Ogni blocco raccoglie delle transazioni e si aggancia al precedente. Per aggiungerlo bisogna svolgere un calcolo costoso. Così riscrivere il passato diventa molto difficile: chi volesse modificare un blocco vecchio dovrebbe rifare la prova di lavoro per quel blocco e per tutti quelli venuti dopo. L'ordine delle transazioni si stabilisce quindi senza bisogno di un'autorità.
+Bitcoin nasce nell'ambiente cypherpunk. Prima di lui c'erano già stati tentativi di creare una moneta digitale, come **b-money** e **bit gold**, ma nessuno risolveva l'ordinamento delle transazioni: non riuscivano a stabilire senza ambiguità quale fosse venuta prima.
 
-Il primo blocco viene generato il 3 gennaio 2009. Contiene il titolo di un articolo del Times su un salvataggio bancario. Quel riferimento ha due funzioni. Dimostra che il blocco non può essere stato creato prima di quella data, quindi fa da marca temporale. Ed è anche una dichiarazione di intenti: il sistema nasce come alternativa a un sistema finanziario che deve essere salvato.
+Questo è il cuore del problema della **doppia spesa**. Un file digitale si copia facilmente, quindi bisogna impedire che qualcuno spenda due volte la stessa moneta. Di solito questo lavoro lo fa un ente centrale, come una banca, che tiene il registro. La sfida era ottenere lo stesso risultato senza nessuno al centro.
 
-Anche le regole di emissione sono fissate fin dall'inizio. Chi aggiunge un blocco riceve una ricompensa, che parte da 50 bitcoin e si dimezza ogni 210.000 blocchi, cioè circa ogni quattro anni. Per questo il totale dei bitcoin emessi tende a 21 milioni e non andrà mai oltre.
+## Il documento del 2008
 
-Nel 2010 avviene la prima transazione commerciale documentata: due pizze pagate 10.000 bitcoin.
+Nel 2008 esce un documento intitolato ***Bitcoin: A Peer-to-Peer Electronic Cash System***. È firmato Satoshi Nakamoto, uno pseudonimo che non è mai stato ricondotto a una persona reale.
 
-Nel 2011 Satoshi smette di partecipare pubblicamente al progetto. I bitcoin che aveva accumulato non sono mai stati spostati.
+La soluzione proposta è una **catena di blocchi**, messi in ordine da una **prova di lavoro**. L'idea chiave è che riscrivere il passato costa molto. Per modificare un blocco già registrato bisognerebbe rifare la prova di lavoro di quel blocco e anche di tutti quelli venuti dopo. Più la catena si allunga, più la storia diventa difficile da falsificare.
+
+## Il primo blocco
+
+Il 3 gennaio 2009 viene generato il primo blocco. Dentro c'è il titolo di un articolo del *Times* su un salvataggio bancario. Quel riferimento ha due funzioni:
+- **marca temporale**: dimostra che il blocco non può essere stato creato prima di quella data;
+- **dichiarazione di intenti**: indica chiaramente a quale sistema finanziario Bitcoin vuole offrire un'alternativa.
+
+## Le regole di emissione
+
+Chi aggiunge un blocco alla catena riceve una ricompensa. All'inizio vale **50 bitcoin** e si dimezza ogni **210.000 blocchi**, cioè circa ogni quattro anni. Per questo il totale emesso si avvicina a **21 milioni** di bitcoin senza mai superarli.
+
+## I primi passi nel mondo reale
+
+La prima transazione commerciale documentata risale al 2010: **due pizze pagate 10.000 bitcoin**.
+
+## La scomparsa del fondatore
+
+Nel 2011 Satoshi Nakamoto smette di partecipare pubblicamente al progetto. I bitcoin che possedeva non sono mai stati spostati.

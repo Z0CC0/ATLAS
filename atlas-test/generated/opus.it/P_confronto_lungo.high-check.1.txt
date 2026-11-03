@@ -1,11 +1,13 @@
 conoscenza interna
 
-A mille richieste al minuto: **file locali più un raccoglitore che li spedisce altrove**. Così l'applicazione non aspetta mai la scrittura del log.
+File locali più raccoglitore che li spedisce altrove: così l'applicazione non aspetta mai la scrittura del log.
 
-Regola sempre valida: la scrittura del log **non deve stare nel percorso critico della richiesta**.
+Vale sempre questa regola: scrittura del log fuori dal percorso critico della richiesta.
 
-File: costo zero, nessuna dipendenza. Ricerca con grep. La ricerca su più macchine non esiste, bisogna collegarsi a ognuna. La rotazione va configurata a mano, altrimenti il disco si riempie.
+**File**: costo zero, nessuna dipendenza. Però ricerca solo con grep, rotazione da configurare a mano, altrimenti il disco si riempie. Su più macchine nessuna ricerca unica: bisogna collegarsi a ognuna.
 
-Servizio gestito: ricerca immediata, allarmi, conservazione automatica. Si paga per volume, e a mille richieste al minuto il volume cresce in fretta. I log escono dalla tua infrastruttura, quindi vanno ripuliti dai dati personali prima di uscire.
+**Servizio gestito**: ricerca immediata, allarmi, conservazione automatica. Si paga per volume, e a mille richieste al minuto il volume cresce in fretta. I log escono dalla tua infrastruttura, quindi vanno ripuliti dai dati personali prima di uscire.
 
-Database: ricerca comoda e nota. Nello stesso database dell'applicazione, però, due carichi molto diversi entrano in competizione. Sotto carico i log riempiono cache e connessioni che servivano alle richieste vere.
+Database: ricerca comoda e nota. Ma log nello stesso database dell'applicazione mettono in competizione due carichi molto diversi. Sotto carico, i log occupano cache e connessioni che servivano alle richieste vere.
+
+La soluzione proposta tiene il costo basso dei file e risolve il problema della ricerca su più macchine, perché il raccoglitore porta tutto in un posto solo. Se la destinazione è un servizio gestito, valgono comunque il costo per volume e la pulizia dei dati personali.

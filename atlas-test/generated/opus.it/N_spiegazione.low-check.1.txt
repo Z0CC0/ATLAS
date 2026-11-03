@@ -1,11 +1,21 @@
-conoscenza interna
+Conoscenza interna.
 
-Consistenza eventuale: dopo una scrittura le repliche non concordano subito, ma convergono entro un tempo finito se le scritture si fermano.
+Consistenza eventuale: dopo una scrittura, repliche non concordano subito, ma convergono entro tempo finito se scritture si fermano.
 
-Ti interessa perché colpisce chi legge subito dopo aver scritto. Utente pubblica un commento, ricarica la pagina e il commento non c'è. Finestra di solito breve: con repliche nella stessa regione tipicamente sotto il secondo, fra regioni diverse sale a qualche secondo.
+Ti riguarda perché si vede proprio a chi legge subito dopo aver scritto. Utente pubblica commento, ricarica pagina, e non lo vede: lettura finita su replica ancora non aggiornata.
 
-Rimedio comune: la sessione che ha appena scritto legge dalla replica primaria. Solo quella sessione, non tutte.
+Quanto dura finestra: su repliche nella stessa regione di solito sotto il secondo; fra regioni diverse sale a secondi.
 
-**Non va trattata come difetto da eliminare: è una scelta.** Compromesso è con la disponibilità. Un sistema che pretende consistenza forte deve rifiutare richieste quando le repliche non si parlano. Per questo la maggior parte dei sistemi che scalano la accetta di proposito.
+Perché esiste: compromesso con disponibilità. Sistema che pretende consistenza forte deve rifiutare richieste quando repliche non si parlano. Quindi **non difetto da eliminare, ma scelta**: maggior parte dei sistemi che scalano la accetta di proposito.
 
-Casi dove non è accettabile: pochi e riconoscibili. Saldi di conto, disponibilità di posti, unicità di un identificativo. Lì serve consistenza forte.
+Soluzione comune al problema del commento sparito: leggere da replica primaria solo per sessione che ha appena scritto, non per tutte. Chi scrive vede subito proprio dato, tutti gli altri continuano a leggere da repliche.
+
+Dove invece non va accettata: casi pochi e riconoscibili.
+
+Saldi di conto
+
+Disponibilità di posti
+
+Unicità di un identificativo
+
+In pratica: **accettala come default**, gestisci lettura-dopo-scrittura per sessione, e pretendi consistenza forte solo in quei tre tipi di caso.

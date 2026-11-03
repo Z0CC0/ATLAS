@@ -1,25 +1,29 @@
-**Start with Postgres alone.** It covers orders, catalogue, text search and analytics with a single database. It isn't outstanding at any of the four, but it is acceptable at all of them.
+**Pick Postgres, and only Postgres, for now.** It's the only option here that covers all four workloads on its own. It also gives you real transactions, and orders can't do without those.
 
-## Why Postgres
-- **Orders:** it gives you real transactions, and on orders you can't do without them.
-- **Text search:** it has search built in. That is good enough below about a million documents and weak above that.
-- **Analytics:** it copes up to tens of millions of rows. Past that, the scans get slow.
+## How the options compare
 
-## The other options
+| Option | Orders | Catalogue | Text search | Analytics | Verdict |
+|---|---|---|---|---|---|
+| **Postgres** | Real transactions | Acceptable | Fine below 1M docs, weak above | Fine up to tens of millions of rows, then scans slow down | **Start here** |
+| MySQL | As good as Postgres | Weaker data types | No advantage | Weaker on complex queries | No reason to pick it over Postgres |
+| MongoDB | Multi-document transactions came late and are expensive | Easier, thanks to variable schemas | No advantage | No advantage | Bad fit for orders |
+| Elasticsearch | Can't be your main store | Not suited | **Much better**: relevance, synonyms, typo tolerance | Not suited | Add-on only, fed from Postgres |
+| ClickHouse | Weak at point updates | Not suited | Not suited | **Much better**: columnar scans are orders of magnitude faster | Add-on only, fed from Postgres |
 
-| Option | Where it wins | Where it loses |
-|---|---|---|
-| **MySQL** | Just as good as Postgres on orders | Weaker on data types and complex queries, so there's no reason to pick it over Postgres |
-| **MongoDB** | Variable schemas make the catalogue easier | Transactions across several documents arrived late and are costly, which is risky for orders |
-| **Elasticsearch** | Far better text search: relevance, synonyms, tolerance of typos | It can't be your main store. Another database has to feed it, so it sits alongside that database |
-| **ClickHouse** | Far better analytics: its column-based scans are many times faster | Not for orders, because updating single rows is its weak spot |
+Postgres handles all four workloads acceptably and none of them outstandingly. That's the trade-off you're accepting by starting with it alone.
 
-## What the platform looks like as it grows
-The usual setup is Postgres as the main store, with Elasticsearch and ClickHouse fed from it. Add those two only when you have numbers that show you need them:
+## When to add a second system
 
-1. **Add Elasticsearch** when search quality or catalogue size outgrows Postgres. Below a million documents it is almost always too early.
-2. **Add ClickHouse** when analytics goes past tens of millions of rows and the scans slow down.
+Teams that outgrow one database usually end up with Postgres as the main store, plus Elasticsearch and ClickHouse fed from it. Add each one only when a specific workload needs it and you have numbers to prove it:
 
-Each system you add brings two problems: keeping it in sync with Postgres, and keeping the data consistent between them. The licence isn't the real cost of a specialised system. The real cost is the time your people spend keeping it running.
+1. **Elasticsearch:** add it when search goes past about 1M documents, or when users need relevance, synonyms or typo tolerance that Postgres can't give. Adding it below 1M documents is almost always too early.
+2. **ClickHouse:** add it when analytics go past tens of millions of rows and scans get measurably slow.
 
-Next: count the documents in your catalogue and the rows your analytics will scan. If they're under a million and under tens of millions, Postgres alone is enough.
+## Why you should wait
+
+- Every system you add has to stay in sync with Postgres, and their data has to stay aligned.
+- The real cost of specialised systems isn't the licence. It's the time your people spend keeping them running.
+
+Next: write down your expected document count for search and row count for analytics. If you're under 1M and under tens of millions, Postgres alone is the answer.
+
+If you need to share this comparison with your team, I can turn it into a page.

@@ -28,13 +28,13 @@
       "rem_high": 32
     },
     "atlas-code": {
-      "items": 40,
-      "skills": 29,
+      "items": 39,
+      "skills": 28,
       "commands": 1,
       "agents": 10,
       "empty": [],
-      "desc": 4078,
-      "descWithName": 4217,
+      "desc": 3930,
+      "descWithName": 4066,
       "rules_low": 1686,
       "rem_low": 27,
       "rules_high": 1808,
@@ -53,14 +53,27 @@
       "rules_high": 1532,
       "rem_high": 32
     },
+    "atlas-video": {
+      "items": 11,
+      "skills": 8,
+      "commands": 1,
+      "agents": 2,
+      "empty": [],
+      "desc": 1019,
+      "descWithName": 1053,
+      "rules_low": 1409,
+      "rem_low": 27,
+      "rules_high": 1531,
+      "rem_high": 32
+    },
     "atlas-max": {
-      "items": 42,
-      "skills": 31,
+      "items": 43,
+      "skills": 32,
       "commands": 1,
       "agents": 10,
       "empty": [],
-      "desc": 4365,
-      "descWithName": 4511,
+      "desc": 4439,
+      "descWithName": 4589,
       "rules_low": 1686,
       "rem_low": 27,
       "rules_high": 1808,
@@ -70,35 +83,40 @@
       "model": "claude-opus-5-5",
       "none": 33331,
       "atlas": {
-        "off": 1247,
-        "low": 3357,
-        "high": 3537,
-        "low-ask": 3730,
-        "low-check": 4587,
+        "off": 1238,
+        "low": 3356,
+        "high": 3536,
+        "low-ask": 3727,
+        "low-check": 4585,
         "low-ask-check": 4961,
-        "high-ask": 3948,
-        "high-check": 4934,
-        "high-ask-check": 5309
+        "high-ask": 3946,
+        "high-check": 4928,
+        "high-ask-check": 5302
       },
       "atlas-min": {
-        "off": -66,
-        "low": 1538,
-        "high": 1723
+        "off": -70,
+        "low": 1539,
+        "high": 1721
       },
       "atlas-code": {
-        "off": 6391,
-        "low": 8898,
-        "high": 9113
+        "off": 6167,
+        "low": 8666,
+        "high": 8886
       },
       "atlas-mem": {
-        "off": 2571,
-        "low": 4694,
-        "high": 4874
+        "off": 2569,
+        "low": 4690,
+        "high": 4873
+      },
+      "atlas-video": {
+        "off": 1601,
+        "low": 3724,
+        "high": 3905
       },
       "atlas-max": {
-        "off": 6826,
-        "low": 9332,
-        "high": 9548
+        "off": 6955,
+        "low": 9455,
+        "high": 9672
       }
     }
   }

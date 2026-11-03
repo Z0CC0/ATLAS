@@ -1,17 +1,19 @@
-Partire da **Postgres solo**. Aggiungere altro solo quando un carico specifico lo impone, con numeri alla mano.
+**Parti da Postgres solo.** Aggiungi altro sistema solo quando carico specifico lo impone, con numeri alla mano.
 
-Postgres: regge tutti e quattro i carichi in modo accettabile, nessuno in modo eccellente. Transazioni serie, non negoziabili sugli ordini. Ricerca testuale integrata, sufficiente sotto il milione di documenti, debole sopra. Analisi fino a decine di milioni di righe, poi scansioni lente.
+Postgres regge tutti e quattro i carichi in modo accettabile, nessuno in modo eccellente. Su ordini, transazioni serie: lì non negoziabili.
 
-MySQL: equivalente sugli ordini, più debole su tipi di dato e query complesse. Nessun motivo di preferirlo.
+Ricerca testuale integrata: basta sotto milione di documenti, debole sopra.
 
-MongoDB: semplifica catalogo con schemi variabili, ma transazioni multi-documento arrivate tardi e costose. Rischioso per ordini.
+Analisi: regge fino a decine di milioni di righe, poi scansioni lente.
 
-Elasticsearch: molto superiore su ricerca testuale (rilevanza, sinonimi, tolleranza agli errori di battitura). Non è archivio autorevole: va alimentato da altro database, non lo sostituisce. Prima del milione di documenti quasi sempre prematuro.
+MySQL: equivalente su ordini, più debole su tipi di dato e query complesse. Nessun motivo per preferirlo.
+
+MongoDB: semplifica catalogo con schemi variabili, ma transazioni multi-documento arrivate tardi e costano. Rischio sugli ordini.
+
+Elasticsearch: molto superiore su ricerca testuale (rilevanza, sinonimi, tolleranza a errori di battitura). Non archivio autorevole: va alimentato da altro database, non lo sostituisce. Prima del milione di documenti quasi sempre prematuro.
 
 ClickHouse: molto superiore su analisi, scansioni colonnari ordini di grandezza avanti. Non per ordini: aggiornamenti puntuali suo punto debole.
 
 Configurazione tipica a regime: Postgres archivio autorevole, Elasticsearch e ClickHouse alimentati da lì.
 
-Ogni sistema aggiunto porta un problema di sincronizzazione e uno di allineamento dati. Costo vero non è licenza ma **tempo delle persone** che li tengono in piedi.
-
-Quindi: ordini sempre su Postgres. Elasticsearch quando catalogo supera milione di documenti o ricerca diventa limite misurato. ClickHouse quando analisi supera decine di milioni di righe e scansioni rallentano.
+Ogni sistema aggiunto porta problema di sincronizzazione e uno di allineamento dati. **Costo vero dei sistemi specializzati non licenza, ma tempo delle persone che li tengono in piedi.**

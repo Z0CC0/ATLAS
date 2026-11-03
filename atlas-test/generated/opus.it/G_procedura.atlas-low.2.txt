@@ -1,21 +1,23 @@
-Non con un `ALTER TABLE ... ALTER COLUMN TYPE` diretto. Riscrive tutta la tabella tenendo un ACCESS EXCLUSIVE lock, quindi il servizio resta fermo per tutta la durata. Conviene migrare con una colonna nuova, in questo ordine:
+Non usare un `ALTER TABLE ALTER COLUMN TYPE` diretto. Conviene aggiungere una colonna nuova, riempirla gradualmente ed eliminare la vecchia solo alla fine. L'`ALTER` diretto riscrive tutta la tabella tenendo un ACCESS EXCLUSIVE lock, quindi il servizio resta fermo per tutta la durata della riscrittura.
 
-1. Verifica che ogni valore esistente sia convertibile: conta le righe che non contengono solo cifre. Se il conteggio non è zero, sistema prima quelle righe.
+Segui i passi in quest'ordine:
+
+1. Controlla che ogni valore esistente si possa convertire, contando le righe che non contengono solo cifre. Se il conteggio non è zero, sistema prima quelle righe.
 
 2. Aggiungi la colonna nuova:
 ```sql
 ALTER TABLE t ADD COLUMN colonna_int integer;
 ```
 
-3. Riempila a blocchi da diecimila righe per volta, così non tieni un lock lungo sulla tabella.
+3. Aggiungi un trigger che tenga allineate le due colonne durante la migrazione, così le scritture che arrivano nel frattempo non restano indietro.
 
-4. Aggiungi un trigger che tenga allineate le due colonne mentre la migrazione è in corso.
+4. Riempi `colonna_int` a blocchi da diecimila righe per volta, così non tieni un lock lungo sulla tabella.
 
-5. Cambia il codice perché legga dalla colonna nuova, e rilascialo.
+5. Cambia il codice perché legga dalla colonna nuova, poi rilascialo.
 
-6. Solo dopo che il rilascio del passo 5 è in produzione, elimina la colonna vecchia:
+6. Solo dopo, elimina la colonna vecchia:
 ```sql
 ALTER TABLE t DROP COLUMN colonna;
 ```
 
-Il passo 6 è irreversibile. Una volta eliminata la colonna, i dati non tornano senza un ripristino da backup. Fino al passo 5 compreso, la colonna vecchia resta intatta e puoi sempre tornare indietro.
+**Il sesto passo non si può annullare.** Una volta eliminata la colonna, i dati tornano solo ripristinando un backup. Prima di eseguirlo, assicurati che il codice nuovo sia in produzione e legga davvero da `colonna_int`.

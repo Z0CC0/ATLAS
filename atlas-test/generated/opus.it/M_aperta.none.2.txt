@@ -1,18 +1,26 @@
-Prima di scegliere l'architettura, conviene raccogliere un paio di dati e rispondere a una domanda che non è tecnica.
+Prima di scegliere tra microservizi, monolite o altro, ti servono alcune risposte. Sono queste, più o meno in quest'ordine.
 
-**Parti da cosa deve poter fare il team.** Chiediti cosa deve poter fare il team fra un anno che oggi non può fare. È questa la domanda che decide. Può essere rilasciare una parte senza toccare il resto, far lavorare più persone in parallelo o reggere un carico che oggi non regge. Ogni scelta successiva va misurata su quella risposta, non su quale architettura sembra più moderna.
+**1. Quale parte del monolite cambia davvero?**
+È il primo dato da raccogliere. Probabilmente il codice si divide in zone che vengono toccate di continuo e zone che nessuno apre da anni. Le parti stabili non guadagnano nulla dall'essere spezzate: separarle aggiunge solo lavoro, senza benefici. Se un'architettura distribuita ha senso, ce l'ha per le zone che cambiano spesso.
 
-**Poi guarda il monolite con due domande.**
-- **Quali parti cambiano davvero?** Spezzare le parti stabili non porta nessun vantaggio. Se il 70% del codice non lo tocca nessuno da anni, può restare dov'è.
-- **Dove stanno i confini delle transazioni?** Se una transazione finisce divisa fra due servizi, diventa un problema distribuito. Dove oggi il database garantisce la coerenza, dopo dovrai garantirla tu. I confini giusti di solito seguono le transazioni, non la struttura delle cartelle.
+**2. Dove stanno i confini delle transazioni?**
+Guarda quali operazioni devono riuscire o fallire insieme. Se tagli un servizio in mezzo a una di queste, una transazione che oggi è locale e banale deve attraversare due servizi e diventa un problema distribuito. I confini delle transazioni ti dicono dove puoi tagliare senza danni e dove no.
 
-**Conta quanto costano i microservizi.** Ogni servizio ha bisogno di rilascio, monitoraggio, log, allarmi e di una persona che se ne occupi. Con meno di cinque sviluppatori questo costo operativo supera quasi sempre il beneficio. Se il team è piccolo, parti da qui.
+**3. Come pensi di arrivarci?**
+La tentazione è riscrivere tutto da zero mentre il vecchio sistema continua a girare. Quasi sempre fallisce: il vecchio continua a cambiare e la copia non lo raggiunge mai.
 
-**Considera il monolite modulare.** Se ne parla poco, ma spesso è la scelta giusta. Hai confini interni netti e un solo rilascio. Il giorno in cui un modulo ha davvero bisogno di vivere da solo, puoi estrarlo. Hai quasi tutti i vantaggi dell'ordine senza il costo operativo della distribuzione.
+L'alternativa è lo strangolamento progressivo:
+- metti un router davanti al monolite;
+- sposti un pezzo per volta;
+- il vecchio sistema resta autorevole finché il nuovo pezzo non è verificato.
 
-**Sul come, evita la riscrittura completa in parallelo.** Riscrivere tutto accanto al vecchio sistema fallisce quasi sempre. Il vecchio continua a cambiare e la copia non lo raggiunge mai. L'alternativa è lo strangolamento progressivo:
-1. metti un router davanti al monolite;
-2. sposti un pezzo alla volta, partendo dalle parti che cambiano di più;
-3. il vecchio sistema resta quello di riferimento finché il nuovo pezzo non è verificato.
+In questo modo non c'è un "giorno del passaggio" in cui rischi tutto.
 
-**Riassumendo:** prima chiarisci cosa deve cambiare fra un anno. Poi individua le parti che si muovono e dove passano le transazioni. Valuta onestamente la dimensione del team. Solo a quel punto scegli fra monolite modulare e servizi separati, e in entrambi i casi migra per pezzi, non con una riscrittura completa.
+**4. Quanto ti costa gestirlo?**
+I microservizi costano di più in operatività. Ogni servizio vuole un proprio rilascio, monitoraggio, log, allarmi e una persona che se ne occupa. Con un team sotto i cinque sviluppatori, questo costo supera quasi sempre il beneficio. Se siete in pochi, conta molto per la decisione.
+
+**5. Hai considerato il monolite modulare?**
+È l'opzione di cui si parla poco. Mantieni un solo rilascio, ma dentro tracci confini interni netti tra i moduli. Il giorno in cui un modulo ha davvero bisogno di vivere da solo, lo estrai. Spesso dà gran parte dei vantaggi dei microservizi senza il loro costo operativo, e ti lascia la porta aperta.
+
+**La domanda che decide**
+Non è tecnica. Chiediti cosa deve poter fare il tuo team fra un anno che oggi non può fare. Può essere rilasciare una parte senza toccare le altre, far lavorare più persone in parallelo o reggere un carico specifico. Parti da questa risposta. Le domande precedenti servono a capire quale architettura ti ci porta col minor costo.

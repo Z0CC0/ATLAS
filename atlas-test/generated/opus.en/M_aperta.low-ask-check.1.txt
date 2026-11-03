@@ -1,15 +1,15 @@
 internal knowledge
 
-The deciding question isn't technical: what must your team be able to do a year from now that it cannot do today? Pick the architecture that makes that possible.
+Before choosing an architecture, settle one question: what must your team be able to do a year from now that it can't do today? That question isn't technical, and the answers below follow from it.
 
-Before that, two things to map in the monolith:
+Find out which parts of the monolith actually change. Stable parts gain nothing from being split off, so leave them alone.
 
-First, which parts actually change. Stable parts gain nothing from being split.
+Map where the transaction boundaries sit. A transaction that spans two services becomes a distributed problem, so draw service lines where transactions already end, not through the middle of them.
 
-Second, where transaction boundaries sit. A transaction spanning two services becomes a distributed problem.
+Count your developers. Microservices cost more to operate: every service needs releases, monitoring, logs, alerts and a person who looks after it. With fewer than five developers, that cost almost always outweighs the benefit.
 
-**Don't do a full rewrite running in parallel with the old system.** It almost always fails, because the old system keeps changing and the copy never catches up. Strangle it progressively instead. Put a router in front and move one piece at a time. The old system stays authoritative until the new piece is verified.
+Consider a modular monolith, the option nobody mentions. It gives you sharp internal boundaries and a single release, and you can still extract a module the day you genuinely need to.
 
-On microservices: they cost more to operate. Every service needs its own releases, monitoring, logs, alerts, and someone who looks after it. Below five developers, that cost almost always exceeds the benefit.
+**Don't do a full rewrite running in parallel with the old system.** It almost always fails, because the old system keeps changing and the copy never catches up.
 
-**Consider the modular monolith, the option nobody mentions.** It gives you sharp internal boundaries and one release. You can still extract a module the day it's genuinely needed.
+**Strangle it progressively instead.** Put a router in front, move one piece at a time, and keep the old system authoritative until each new piece is verified.

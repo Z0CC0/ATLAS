@@ -1,32 +1,34 @@
-## What it does
+## Prompt caching in short
 
-The cache stores the part of a request that has already been processed, meaning its beginning (the prefix). If a later request starts exactly the same way, you don't pay to process that part again.
+Put everything that stays the same at the start of the prompt and everything that changes at the end. Caching saves money only when many requests begin with the same text.
 
-## The prefix rule
+## How it works
 
-Reuse only works from the start of the request, and only up to the first difference. If one character near the start changes, nothing after that point is reused.
+- The cache stores the start of a request (the prefix) after the model has processed it.
+- When a later request begins with the same text, that part is not paid for again.
+- Only a shared prefix can be reused. If even one character differs early on, nothing from that character onward is reused.
 
-That makes the order of your prompt matter:
+## How to order your prompt
 
-1. **Stable parts first:** system instructions, attached documentation, tool definitions.
-2. **Changing parts after:** the user's message and anything else that varies per request.
+1. **Stable parts first:** system instructions, attached documentation, tool definitions
+2. **Changing parts last:** the user's new message, the latest turn
 
-If you reverse the order, the changing content sits at the front and the cache never gets a match.
+If you reverse that order, the changing part comes first and breaks reuse of everything after it.
 
-## The cost pattern
+**A common mistake:** a system line that changes every turn, such as a clock or timestamp, stops reuse of everything after it. The large stable context that follows it gets processed and paid for again on every request.
+
+## Cost over time
 
 - **Request 1 costs more.** Writing to the cache is more expensive than a normal read.
-- **Request 2 onward costs less.** The stored prefix is read back instead of processed again.
-- **The saving grows with each turn.** The more turns reuse the same prefix, the more the first write pays for itself.
+- **Savings start at request 2.** From then on, the cached prefix is read back instead of processed again.
+- **Savings grow with each turn.** The more turns reuse the same prefix, the more the first-request cost is covered.
 
 ## When it pays off
 
-**Worth it:** long conversations with a large stable context, like big system instructions, attached docs, or many tool definitions. You pay for the write once and read it back on every turn.
+| Pays off | Doesn't pay off |
+|---|---|
+| Long conversations | Single, one-off requests |
+| Large stable context (instructions, docs, tools) | Requests that each differ from one another |
+| Many turns sharing the same prefix | You pay for the cache write and never read it back |
 
-**Not worth it:** single requests that each differ from the others. You pay the higher write cost and never read the cache back, so you end up paying more.
-
-## The common trap
-
-A line near the top that changes every turn, such as a clock or timestamp in the system prompt, breaks reuse for everything after it. The cache is written each turn and never read. Move that line after the stable content, or remove it.
-
-Next: open your system prompt and check whether anything in the first lines changes per request, such as a date, time or request ID.
+Next: open your system prompt and look for anything that changes per request, such as a date, time, or request ID. If you find one, move it to the end.

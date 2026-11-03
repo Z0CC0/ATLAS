@@ -1,13 +1,15 @@
-**Usually not.** Skip the plain index, unless you mostly query one rare value. In that case, add a partial index on that value.
-
-With only three distinct values, a normal B-tree index is normally not used. Each value matches a large share of the table. When a filter selects more than roughly 5–10% of the rows, the planner prefers a sequential scan. The index would sit unused, and you would still pay for it on every write and in disk space.
-
-**The exception** is when one of the three values is rare and you filter on it often. A partial index that covers only the rare value does work:
+Skip the plain index. If you query for one value that is rare, use a partial index on that value instead:
 
 ```sql
-CREATE INDEX idx_orders_failed ON orders (id) WHERE status = 'failed';
+CREATE INDEX idx_orders_failed ON orders (status) WHERE status = 'failed';
 ```
 
-This index is small and cheap to maintain. The planner uses it because the filter selects only a few rows.
+**Why a normal index doesn't help:**
 
-If you want to check your own case, run `SELECT status, count(*) FROM your_table GROUP BY status;`. If one value is well under 5% of the rows and you filter on it, build the partial index. If not, don't add an index.
+1. **The planner usually won't use it.** A column with three distinct values has low cardinality, so a B-tree index on it is normally ignored.
+2. **It picks a sequential scan instead.** When a filter matches more than roughly 5–10% of the rows, a full table scan is cheaper than going through the index. With three values, most filters match far more than that.
+3. **You still pay for it.** The unused index slows down every write and takes up disk space.
+
+**When the partial index pays off:** it only works if one of the three values is rare, for example 2% of rows are `'failed'`. The index then covers only those rows, so it stays small and the planner will use it for `WHERE status = 'failed'`.
+
+Next: run `SELECT status, count(*) FROM your_table GROUP BY status;` to see if any value is rare enough.

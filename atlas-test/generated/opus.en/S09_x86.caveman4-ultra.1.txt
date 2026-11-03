@@ -1,0 +1,29 @@
+## x86, 1978 to today
+
+**Foundations (16 bit)**
+- **8086 (1978)**: 16 bit. Grew out of the 8080, compatible at source level.
+- **80286 (1982)**: Added protected mode. No way back to real mode without a reboot.
+
+**32 bit era**
+- **80386 (1985)**: 32 bit, paged virtual memory, virtual 8086 mode.
+- **486 (1989)**: First level cache and maths coprocessor moved onto the chip.
+
+**Parallelism inside the core**
+- **Pentium (1993)**: Superscalar. Two integer pipelines, up to two instructions retired per cycle.
+- **Pentium Pro (1995)**: Out of order execution. x86 instructions translated into internal micro-operations. From here on, x86 is an interface, no longer the real machine underneath.
+
+**Frequency race and its end**
+- **Pentium 4 (2000)**: Chased frequency with a very long pipeline. Hit the power wall.
+
+**64 bit, from outside Intel**
+- **AMD64 (2003)**: AMD extended the architecture to 64 bit. Intel adopted the same instruction set. First time the dominant extension did not come from Intel.
+
+**Multicore**
+- **Core 2 (2006)**: Direction shifted from frequency to core count.
+
+**Vector extensions, across generations**
+- MMX, then SSE, then AVX, then AVX-512.
+
+**Today**
+- Complexity now sits in the layers below the instruction set: branch prediction, cache hierarchy, speculative execution.
+- **Spectre and Meltdown (2018)**: Showed that speculative execution carried a security cost nobody had priced.

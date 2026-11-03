@@ -1,9 +1,13 @@
 internal knowledge
 
-Prompt caching keeps the already-processed prefix of a request, so later requests that start the same way don't pay to process it again.
+Prompt caching saves already-processed start (prefix) of request, so later requests beginning same way don't pay to process it again. It pays off on long conversations with large context that stays the same, and doesn't pay off on one-off requests that differ from each other.
 
-It works only on the prefix. If one character near the start differs, nothing from that point on gets reused. That's why stable parts go first and changing parts go after, never the other way round. **A system line that changes every turn, like a clock, kills reuse of everything after it.**
+**How it works:** reuse covers only prefix. One different character near start, and nothing from that point on gets reused. So stable parts go first and changing parts after, never other way round.
 
-Writing to the cache costs more than a normal read, so the first request is more expensive. The gain starts with the second request and grows with the number of turns.
+**Cost:** writing to cache costs more than normal read, so first request comes out more expensive. Savings start from second request and grow with each turn.
 
-It pays off on long conversations with a large stable context: system instructions, attached documentation, tool definitions. It doesn't pay off on single requests that differ from each other. There you pay for the cache write and never read it back.
+When it pays off: long conversations built on big stable block, such as system instructions, attached documentation and tool definitions. That block gets written once and read back on every turn.
+
+When it doesn't: single requests that each differ. You pay for cache write and never read it back.
+
+Common trap: line in system prompt that changes every turn, such as clock or timestamp. Everything after it stops being reused. Move it to end, or remove it.

@@ -1,3 +1,5 @@
+Con una chiusura che tiene il timer e lo azzera a ogni chiamata:
+
 ```js
 function debounce(fn, ms) {
   let t;
@@ -8,11 +10,11 @@ function debounce(fn, ms) {
 }
 ```
 
-Devi chiamare `clearTimeout` prima di ogni nuovo `setTimeout`. Altrimenti i timer si accumulano e la funzione parte più volte.
+`clearTimeout` va chiamato prima di ogni nuovo `setTimeout`. Senza, i timer si accumulano e `fn` parte più volte.
 
-`t` deve stare nella chiusura e non dentro la funzione restituita. Se no ogni chiamata ha il suo timer e il debounce non avviene.
+`t` deve stare nella chiusura, fuori dalla funzione restituita. Se la sposti dentro, ogni chiamata ha il proprio timer e il debounce non avviene.
 
-Gli argomenti vanno passati con lo spread (`...args`). Senza, `fn` li riceve vuoti.
+Gli argomenti vanno inoltrati con lo spread (`...args`), altrimenti `fn` li riceve vuoti.
 
 Questa versione non restituisce niente. Se ti serve il valore di ritorno, devi usare una Promise.
 

@@ -1,6 +1,8 @@
-Yes, an empty list is falsy in a boolean context. The same holds for every empty collection: an empty list, tuple, dict, set, or string is falsy.
+Yes. An empty list is falsy, so `if my_list:` runs only when the list has items.
+
+This holds for every empty collection: list, tuple, dict, set and string. `[]`, `()`, `{}`, `set()` and `""` are all falsy in a boolean context.
 
 ```python
-if not []:
-    print("empty")  # this runs
+for empty in ([], (), {}, set(), ""):
+    print(bool(empty))  # False each time
 ```

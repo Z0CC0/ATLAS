@@ -1,11 +1,19 @@
-**Consistenza eventuale**: dopo una scrittura le repliche non concordano subito, ma convergono entro un tempo finito se le scritture si fermano.
+Consistenza eventuale vuol dire che dopo una scrittura le repliche non concordano subito, ma convergono entro un tempo finito, se le scritture si fermano.
 
-Ti riguarda quando qualcuno legge subito dopo aver scritto: utente pubblica commento, ricarica pagina e non lo vede.
+Ti riguarda quando qualcuno legge subito dopo aver scritto. Caso tipico: un utente pubblica un commento, ricarica la pagina e il commento non c'è. Per lui il sistema sembra rotto, anche se il dato arriverà.
 
-La soluzione comune è leggere dalla replica primaria per la sessione che ha appena scritto, non per tutte.
+Di solito l'attesa è breve: sotto il secondo fra repliche nella stessa regione, qualche secondo fra regioni diverse.
 
-La finestra è breve. Su repliche nella stessa regione la convergenza tipica sta sotto il secondo, fra regioni diverse sale a secondi.
+Rinunciarci ha un costo, cioè la disponibilità. Un sistema che pretende consistenza forte deve rifiutare richieste quando le repliche non riescono a parlarsi. Per questo la consistenza eventuale non è un difetto da eliminare, ma una scelta: la maggior parte dei sistemi che scalano la accetta di proposito.
 
-Non è un difetto da eliminare, ma una scelta. Il compromesso è con la disponibilità: un sistema che pretende consistenza forte deve rifiutare richieste quando le repliche non si parlano. Per questo la maggior parte dei sistemi che scalano la accetta di proposito.
+Per il problema del commento che sparisce, la soluzione comune è far leggere dalla replica primaria solo la sessione che ha appena scritto, non tutte. Chi ha scritto vede subito il proprio dato, mentre gli altri continuano a leggere dalle repliche.
 
-I casi in cui non è accettabile sono pochi e riconoscibili: saldi di conto, disponibilità di posti, unicità di un identificativo.
+I casi in cui non è accettabile sono pochi e si riconoscono:
+
+saldi di conto
+
+disponibilità di posti
+
+unicità di un identificativo
+
+In questi casi serve consistenza forte. Altrove conviene accettare quella eventuale e gestire la lettura subito dopo la scrittura.

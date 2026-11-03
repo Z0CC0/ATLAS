@@ -1,13 +1,15 @@
-Internal knowledge.
+internal knowledge
 
-At a thousand requests a minute, write logs to local files and run a collector that ships them elsewhere, so your API never waits on a log write.
+Use local files plus a collector that ships them elsewhere, so the application never waits on a log write.
 
-Whatever you pick, one rule always holds: writing the log must stay out of the request's critical path.
+**Whatever you pick, writing the log must not sit in the critical path of the request.**
 
-**Files alone** cost nothing and add no dependency. Searching means grep, though, and you have to configure rotation by hand or the disk fills. There's also no way to search across several machines, so you'd connect to each one.
+Why each option alone falls short:
 
-**A managed service** gives you instant search, alerts and automatic retention. You pay by volume, and at your traffic that volume grows fast. Your logs also leave your own infrastructure, so you have to strip personal data before they go.
+Files alone: zero cost and no dependency, but searching means grep. You also have to configure rotation by hand, or the disk fills. Across several machines there's no search at all, so you connect to each one.
 
-**A database** makes searching familiar and convenient. If it's your application's own database, though, logs and real requests are two very different workloads competing for it. Under load, logs fill the caches and connections your real requests needed.
+Managed service: instant search, alerts and automatic retention, but you pay by volume, and at a thousand requests a minute the volume grows fast. The logs also leave your infrastructure, so personal data has to be stripped before they go.
 
-The collector lets you combine these. Files take the writes cheaply, and the collector moves them to wherever you search: a managed service if you accept the cost and strip personal data first, or a store separate from your application database.
+Database: searching is familiar and convenient, but writing logs into the application's own database puts two very different workloads in competition. Under load, the logs fill caches and use up connections the real requests needed.
+
+The collector setup avoids the write-path problem. The application writes to local disk, and shipping happens outside the request. You still have to configure rotation on the files. If the collector ships to a managed service, the volume cost and the personal-data stripping still apply.

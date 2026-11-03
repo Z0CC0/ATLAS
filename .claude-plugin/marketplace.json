@@ -1,46 +1,59 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "atlas",
-  "version": "0.1.0",
-  "description": "ATLAS: four dials for how a coding assistant talks to you, and five subagents that keep the noisy work out of your conversation.",
+  "version": "0.1.1",
+  "description": "ATLAS: how a coding assistant talks to you, and what it can do.",
   "owner": {
     "name": "ZoCCo"
   },
   "plugins": [
     {
       "name": "atlas",
-      "version": "0.1.0",
-      "description": "Four independent dials — compression (low/high), rigour (ask), check and silent — plus two subagents that keep searches and pages out of your conversation. Compresses without losing a fact, and refuses to start building before the goal is clear.",
       "source": "./atlas",
-      "category": "productivity"
+      "version": "0.1.1",
+      "description": "Four independent dials — compression (low/high), rigour (ask), check and silent — plus two subagents that keep searches and pages out of your conversation. Compresses without losing a fact, and refuses to start building before the goal is clear."
     },
     {
       "name": "atlas-min",
-      "version": "0.1.0",
-      "description": "Compression only: two levels (low/high) and what makes them work. No rigour dial, no verification, no subagents, no extra commands. The rules that go beyond compression are removed from this package, not switched off.",
       "source": "./atlas-min",
-      "category": "productivity"
+      "version": "0.1.1",
+      "description": "Compression only: two levels (low/high) and what makes them work. No rigour dial, no verification, no subagents, no extra commands. The rules that go beyond compression are removed from this package, not switched off."
     },
     {
       "name": "atlas-code",
-      "version": "0.1.0",
-      "description": "Four independent dials — compression (low/high), rigour (ask), check and silent — plus ten subagents that keep searches, logs, pages and big files out of your conversation. Compresses without losing a fact, and refuses to start building before the goal is clear. This variant adds coding and documents: review by language, build fixing, tests, verification, planning, shipping, specs, changelogs and the rest, each read only when used.",
-      "source": "./atlas-code",
-      "category": "productivity"
+      "source": {
+        "source": "github",
+        "repo": "Z0CC0/ATLAS-code"
+      },
+      "version": "0.1.1",
+      "description": "Four independent dials — compression (low/high), rigour (ask), check and silent — plus ten subagents that keep searches, logs, pages and big files out of your conversation. Compresses without losing a fact, and refuses to start building before the goal is clear. This variant adds coding and documents: review by language, build fixing, tests, verification, planning, shipping, specs, changelogs and the rest, each read only when used."
     },
     {
       "name": "atlas-mem",
-      "version": "0.1.0",
-      "description": "Four independent dials — compression (low/high), rigour (ask), check and silent — plus five subagents that keep searches, logs, pages and big files out of your conversation. Compresses without losing a fact, and refuses to start building before the goal is clear. This variant adds review, build fixing and a memory: notes written by hand, linked to code, and flagged as suspect when that code or what it depends on changes.",
-      "source": "./atlas-mem",
-      "category": "productivity"
+      "source": {
+        "source": "github",
+        "repo": "Z0CC0/ATLAS-mem"
+      },
+      "version": "0.1.1",
+      "description": "Four independent dials — compression (low/high), rigour (ask), check and silent — plus five subagents that keep searches, logs, pages and big files out of your conversation. Compresses without losing a fact, and refuses to start building before the goal is clear. This variant adds review, build fixing and a memory: notes written by hand, linked to code, and flagged as suspect when that code or what it depends on changes."
+    },
+    {
+      "name": "atlas-video",
+      "source": {
+        "source": "github",
+        "repo": "Z0CC0/ATLAS-video"
+      },
+      "version": "0.1.1",
+      "description": "Four independent dials — compression (low/high), rigour (ask), check and silent — plus two subagents that keep searches and pages out of your conversation. Compresses without losing a fact, and refuses to start building before the goal is clear. This variant adds video made on this machine: written with HyperFrames, Remotion or Manim, or recorded from the screen with a camera that follows the cursor."
     },
     {
       "name": "atlas-max",
-      "version": "0.1.0",
-      "description": "Four independent dials — compression (low/high), rigour (ask), check and silent — plus ten subagents that keep searches, logs, pages and big files out of your conversation. Compresses without losing a fact, and refuses to start building before the goal is clear. This variant is everything ATLAS ships: coding, documents and the memory. Install it instead of atlas-code and atlas-mem, never beside them.",
-      "source": "./atlas-max",
-      "category": "productivity"
+      "source": {
+        "source": "github",
+        "repo": "Z0CC0/ATLAS-max"
+      },
+      "version": "0.1.1",
+      "description": "Four independent dials — compression (low/high), rigour (ask), check and silent — plus ten subagents that keep searches, logs, pages and big files out of your conversation. Compresses without losing a fact, and refuses to start building before the goal is clear. This variant is everything ATLAS ships: coding, documents and the memory. Install it instead of atlas-code and atlas-mem, never beside them."
     }
   ]
 }

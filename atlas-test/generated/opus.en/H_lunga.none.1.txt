@@ -1,31 +1,35 @@
-Prompt caching lets the model skip work it has already done. When a request starts with exactly the same content as an earlier one, the processed version of that shared beginning, the **prefix**, is kept. The next request reuses it instead of paying to process it again.
+## How prompt caching works
 
-## How it works
+When you send a request to a model, it first has to process all the input text before it can start answering. Prompt caching saves that already-processed beginning, the **prefix**, so a later request that starts the same way doesn't pay to process it again. It picks up from where the cached part ends.
 
-The cache only matches the **prefix**. Reuse runs from the start of the request up to the first difference. If a single character near the top changes, nothing after that point is reused, even if everything else is the same.
+The important word is *prefix*. Reuse only works from the start of the request and stops at the first difference. If one character changes near the top, nothing after that point is reused, even if the rest is identical.
 
-That leads to the main rule for structuring requests: **put the stable parts first and the changing parts last.** Something like:
+### What this means for how you build prompts
+
+Put the **stable parts first** and the **changing parts last**:
 
 1. System instructions
 2. Tool definitions
-3. Attached documentation
+3. Attached documentation or reference material
 4. The conversation so far
 5. The new user message
 
-If this order is reversed and something that changes sits near the top, the cache almost never gets used.
+If you reverse that order, for example by putting a per-request detail above the big stable block, the cache breaks at that detail every time.
 
-## The cost trade-off
+A common mistake is a system line that changes on every turn, such as the current time ("It is now 14:32:07"). The cache breaks right there, so everything after that line has to be processed again on every request. If you need something like that, move it toward the end.
 
-Caching isn't free up front. **Writing to the cache costs more than a normal read**, so the first request that creates the entry is more expensive than it would be without caching. You start saving from the **second request** onward, and the savings grow with each turn that reuses the same prefix.
+### The cost trade-off
 
-## When it pays off
+Caching isn't free. **Writing** to the cache costs more than a normal read of the input, so the first request is more expensive than it would be without caching. The savings come from reading the cache back:
 
-- **Long conversations with a large stable context.** Examples are a big system prompt, attached documentation and many tool definitions. You pay once to write them, then every turn reads them cheaply.
+- **Request 1:** you pay the higher cost of writing to the cache.
+- **Request 2 onward:** the cached prefix is reused and you start saving.
+- **More turns:** each turn reads the same prefix again, so the savings keep adding up.
 
-## When it doesn't
+### When it pays off
 
-- **Single requests that differ from each other.** You pay the extra write cost and never read the entry back, so you end up paying more than without caching.
+**Worth it:** long conversations or repeated calls that share a large, unchanging context, such as long system instructions, attached documentation and many tool definitions. You pay the write once and get the benefit on every turn after it.
 
-## A common mistake
+**Not worth it:** one-off requests that all differ from each other. Each one pays the extra cost to write to the cache, and nothing ever reads it back, so you end up paying more than without caching.
 
-Watch for a **line in the system prompt that changes every turn**, such as a current timestamp or clock. It sits near the top, so it breaks the prefix match on every request. Everything after it is processed again at full cost, including documentation and tool definitions that never changed. If you need that information, put it at the end of the request, after the stable parts.
+**Rule of thumb:** caching helps when the same large beginning comes up again and again. Keep that beginning byte-for-byte identical and put everything that changes after it.

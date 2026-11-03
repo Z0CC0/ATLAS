@@ -1,9 +1,9 @@
-internal knowledge
+internal knowledge (not checked against other sources, as you asked)
 
-RTX 5080 mainly better at frame generation; raw rasterisation gain only about 10-15 per cent.
+5080 is a modest step up from 4080, not a big leap. Biggest gain is frame generation; raw rasterisation is only about 10-15 per cent faster.
 
 Architecture: Blackwell on 5080, Ada Lovelace on 4080.
 
-Memory: GDDR7 on 5080, GDDR6X on 4080; bandwidth up from about 717 to about 960 GB/s.
+Memory: GDDR7 instead of GDDR6X, bandwidth up from about 717 to about 960 gigabytes per second.
 
-Power: rated draw up from 320 to 360 W; connector still 16-pin.
+Power: rated draw rises from 320 to 360 watts. Power connector is still 16-pin.

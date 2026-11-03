@@ -1,11 +1,9 @@
-**Local files plus a collector that ships them elsewhere.** At a thousand requests a minute, this means the application never waits on a log write.
+At a thousand requests a minute, write logs to local files and run a collector that ships them elsewhere. The application never waits on a log write. Whatever setup you pick, writing a log must never sit in the request's critical path.
 
-Why not one of the three on its own:
+**Files alone**: zero cost and no dependency. Searching means grep, and you have to configure rotation yourself or the disk fills. With several machines there's no way to search them together, so you connect to each one.
 
-Files alone cost nothing and add no dependency. Searching them means grep, though, and rotation has to be configured by hand or the disk fills. With several machines there's no single place to search, so you connect to each one.
+**Managed service**: instant search, alerts and automatic retention. You pay by volume, though, and at your traffic the volume grows fast. Logs also leave your own infrastructure, so you have to strip personal data before they go.
 
-A managed service gives instant search, alerts and automatic retention. You pay by volume, and at your traffic that volume grows fast. Your logs also leave your own infrastructure, so personal data has to be stripped out before they're sent.
+**Database**: searching is familiar and convenient. But writing logs into the application's own database makes two very different workloads compete. Under load, logs fill the caches and use up connections that real requests needed.
 
-A database makes searching familiar and convenient. Putting logs in the application's own database makes two very different workloads compete, though. Under load, the logs take up caches and connections that real requests needed.
-
-Whatever you choose, **writing a log must never sit in the critical path of the request.**
+Files plus a collector gives you the cheap local write of the first option and search in one place. That place can be a managed service, if you strip personal data before shipping.

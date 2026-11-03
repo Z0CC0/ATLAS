@@ -1,288 +1,6 @@
 {
  "answers": {
-  "A_ricerca.none.1.txt": {
-   "notes": {
-    "0": false,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true,
-    "9": true,
-    "10": true
-   },
-   "foreign": false,
-   "verbatim": true,
-   "first": {
-    "0": false,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true,
-    "9": true,
-    "10": true
-   },
-   "foreignSecond": false
-  },
-  "A_ricerca.none.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true,
-    "9": true,
-    "10": true
-   },
-   "foreign": false,
-   "verbatim": true,
-   "first": {
-    "0": false,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true,
-    "9": true,
-    "10": true
-   },
-   "foreignSecond": false
-  },
-  "B_tecnica.none.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "C_breve.none.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "B_tecnica.none.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "C_breve.none.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "D_lista.none.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "E_confronto.none.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "D_lista.none.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "E_confronto.none.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "F_codice.none.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "F_codice.none.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "G_procedura.none.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "H_lunga.none.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "G_procedura.none.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "H_lunga.none.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "I_sicurezza.none.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "I_sicurezza.none.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "L_unafrase.none.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "L_unafrase.none.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "A_ricerca.atlas-high.1.txt": {
+  "A_ricerca.adhd.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -316,24 +34,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "A_ricerca.adhd.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true,
-    "9": true,
-    "10": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "A_ricerca.atlas-high.2.txt": {
+  "A_ricerca.atlas-high.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -351,6 +52,23 @@
    "verbatim": true
   },
   "A_ricerca.atlas-low.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "A_ricerca.atlas-high.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -450,7 +168,21 @@
     "10": true
    },
    "foreign": false,
-   "verbatim": true
+   "verbatim": true,
+   "first": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": false,
+    "8": true,
+    "9": true,
+    "10": true
+   },
+   "foreignSecond": false
   },
   "A_ricerca.caveman-full.1.txt": {
    "notes": {
@@ -520,23 +252,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "A_ricerca.caveman-ultra.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true,
-    "9": true,
-    "10": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "A_ricerca.caveman-ultra.2.txt": {
    "notes": {
     "0": true,
@@ -588,6 +303,23 @@
    "foreign": false,
    "verbatim": true
   },
+  "A_ricerca.caveman-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "A_ricerca.high-ask.1.txt": {
    "notes": {
     "0": true,
@@ -622,7 +354,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "A_ricerca.high-check.1.txt": {
+  "A_ricerca.high-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -639,38 +371,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "A_ricerca.high-check.2.txt": {
-   "notes": {
-    "0": false,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true,
-    "9": true,
-    "10": true
-   },
-   "foreign": false,
-   "verbatim": true,
-   "first": {
-    "0": false,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true,
-    "9": true,
-    "10": true
-   },
-   "foreignSecond": false
-  },
-  "A_ricerca.low-ask-check.2.txt": {
+  "A_ricerca.high-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -704,7 +405,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "A_ricerca.low-ask.1.txt": {
+  "A_ricerca.low-ask-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -721,7 +422,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "A_ricerca.low-check.1.txt": {
+  "A_ricerca.low-ask.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -772,6 +473,68 @@
    "foreign": false,
    "verbatim": true
   },
+  "A_ricerca.low-check.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": false,
+    "8": true,
+    "9": true,
+    "10": true
+   },
+   "foreign": false,
+   "verbatim": true,
+   "first": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": false,
+    "8": true,
+    "9": true,
+    "10": true
+   },
+   "foreignSecond": false
+  },
+  "A_ricerca.none.1.txt": {
+   "notes": {
+    "0": false,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true
+   },
+   "foreign": false,
+   "verbatim": true,
+   "first": {
+    "0": false,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true
+   },
+   "foreignSecond": false
+  },
   "B_tecnica.adhd.1.txt": {
    "notes": {
     "0": true,
@@ -786,6 +549,37 @@
    },
    "foreign": false,
    "verbatim": true
+  },
+  "A_ricerca.none.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true
+   },
+   "foreign": false,
+   "verbatim": true,
+   "first": {
+    "0": false,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true
+   },
+   "foreignSecond": false
   },
   "B_tecnica.adhd.2.txt": {
    "notes": {
@@ -847,21 +641,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "B_tecnica.atlasmin-high.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "B_tecnica.atlas-low.2.txt": {
    "notes": {
     "0": true,
@@ -892,6 +671,21 @@
    "foreign": false,
    "verbatim": true
   },
+  "B_tecnica.atlasmin-high.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "B_tecnica.atlasmin-low.1.txt": {
    "notes": {
     "0": true,
@@ -905,19 +699,7 @@
     "8": true
    },
    "foreign": false,
-   "verbatim": true,
-   "first": {
-    "0": false,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true
-   },
-   "foreignSecond": false
+   "verbatim": true
   },
   "B_tecnica.atlasmin-low.2.txt": {
    "notes": {
@@ -979,21 +761,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "B_tecnica.caveman-lite.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "B_tecnica.caveman-ultra.2.txt": {
    "notes": {
     "0": true,
@@ -1009,37 +776,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "B_tecnica.caveman-ultra.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "B_tecnica.high-ask-check.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "B_tecnica.high-ask.1.txt": {
+  "B_tecnica.caveman-lite.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1069,7 +806,67 @@
    "foreign": false,
    "verbatim": true
   },
+  "B_tecnica.high-ask-check.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "B_tecnica.caveman-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "B_tecnica.high-ask.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "B_tecnica.high-ask.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "B_tecnica.high-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1114,21 +911,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "B_tecnica.high-check.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "B_tecnica.low-ask-check.2.txt": {
    "notes": {
     "0": true,
@@ -1159,6 +941,21 @@
    "foreign": false,
    "verbatim": true
   },
+  "B_tecnica.low-check.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "B_tecnica.low-ask.2.txt": {
    "notes": {
     "0": true,
@@ -1174,7 +971,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "B_tecnica.low-check.1.txt": {
+  "B_tecnica.none.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1189,17 +986,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "C_breve.adhd.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "B_tecnica.low-check.2.txt": {
+  "B_tecnica.none.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1224,6 +1011,16 @@
    "foreign": false,
    "verbatim": true
   },
+  "C_breve.adhd.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "C_breve.atlas-high.1.txt": {
    "notes": {
     "0": true,
@@ -1234,7 +1031,32 @@
    "foreign": false,
    "verbatim": true
   },
+  "B_tecnica.low-check.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "C_breve.atlas-high.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "C_breve.atlasmin-high.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1264,7 +1086,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "C_breve.atlasmin-high.1.txt": {
+  "C_breve.atlasmin-high.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1275,16 +1097,6 @@
    "verbatim": true
   },
   "C_breve.atlasmin-low.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "C_breve.atlasmin-high.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1334,7 +1146,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "C_breve.caveman-ultra.1.txt": {
+  "C_breve.caveman-ultra.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1354,7 +1166,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "C_breve.caveman-ultra.2.txt": {
+  "C_breve.caveman-ultra.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1394,7 +1206,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "C_breve.high-ask.2.txt": {
+  "C_breve.high-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1404,7 +1216,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "C_breve.high-check.1.txt": {
+  "C_breve.high-ask.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1424,27 +1236,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "C_breve.low-ask-check.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "C_breve.low-ask-check.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "C_breve.low-ask.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1464,7 +1256,47 @@
    "foreign": false,
    "verbatim": true
   },
+  "C_breve.low-ask.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "C_breve.low-ask-check.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "C_breve.low-check.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "C_breve.none.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "C_breve.none.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1484,19 +1316,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "D_lista.adhd.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "D_lista.adhd.1.txt": {
    "notes": {
     "0": true,
@@ -1510,7 +1329,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "D_lista.atlas-high.2.txt": {
+  "D_lista.adhd.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1524,6 +1343,19 @@
    "verbatim": true
   },
   "D_lista.atlas-high.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "D_lista.atlas-high.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1560,7 +1392,7 @@
     "6": true
    },
    "foreign": false,
-   "verbatim": false
+   "verbatim": true
   },
   "D_lista.atlasmin-high.1.txt": {
    "notes": {
@@ -1576,6 +1408,19 @@
    "verbatim": true
   },
   "D_lista.atlasmin-high.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "D_lista.atlasmin-low.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1614,19 +1459,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "D_lista.atlasmin-low.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "D_lista.caveman-full.2.txt": {
    "notes": {
     "0": true,
@@ -1653,6 +1485,19 @@
    "foreign": false,
    "verbatim": true
   },
+  "D_lista.caveman-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "D_lista.caveman-lite.2.txt": {
    "notes": {
     "0": true,
@@ -1667,19 +1512,6 @@
    "verbatim": true
   },
   "D_lista.caveman-ultra.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "D_lista.caveman-ultra.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1757,7 +1589,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "D_lista.high-check.2.txt": {
+  "D_lista.low-ask-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1770,7 +1602,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "D_lista.low-ask-check.1.txt": {
+  "D_lista.high-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1796,7 +1628,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "D_lista.low-ask.1.txt": {
+  "D_lista.low-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1835,7 +1667,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "D_lista.low-check.1.txt": {
+  "D_lista.low-ask.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1848,7 +1680,20 @@
    "foreign": false,
    "verbatim": true
   },
-  "E_confronto.adhd.1.txt": {
+  "D_lista.none.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "D_lista.none.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1885,35 +1730,19 @@
     "6": true
    },
    "foreign": false,
-   "verbatim": true
+   "verbatim": true,
+   "first": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": false
+   },
+   "foreignSecond": false
   },
   "E_confronto.atlas-high.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "E_confronto.atlas-low.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "E_confronto.atlasmin-high.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1949,7 +1778,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "E_confronto.atlasmin-high.2.txt": {
+  "E_confronto.atlas-low.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -1961,6 +1790,65 @@
    },
    "foreign": false,
    "verbatim": true
+  },
+  "E_confronto.adhd.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "E_confronto.atlasmin-high.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true,
+   "first": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": false
+   },
+   "foreignSecond": false
+  },
+  "E_confronto.atlasmin-high.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true,
+   "first": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": false
+   },
+   "foreignSecond": false
   },
   "E_confronto.atlasmin-low.1.txt": {
    "notes": {
@@ -2027,19 +1915,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "E_confronto.caveman-ultra.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "E_confronto.caveman-lite.2.txt": {
    "notes": {
     "0": true,
@@ -2079,6 +1954,19 @@
    "foreign": false,
    "verbatim": true
   },
+  "E_confronto.caveman-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "E_confronto.high-ask-check.2.txt": {
    "notes": {
     "0": true,
@@ -2103,7 +1991,17 @@
     "6": true
    },
    "foreign": false,
-   "verbatim": true
+   "verbatim": true,
+   "first": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": false
+   },
+   "foreignSecond": false
   },
   "E_confronto.high-check.1.txt": {
    "notes": {
@@ -2118,7 +2016,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "E_confronto.high-check.2.txt": {
+  "E_confronto.high-ask.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2129,19 +2027,9 @@
     "6": true
    },
    "foreign": false,
-   "verbatim": true,
-   "first": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": false
-   },
-   "foreignSecond": false
+   "verbatim": true
   },
-  "E_confronto.high-ask.2.txt": {
+  "E_confronto.high-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2167,19 +2055,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "E_confronto.low-ask-check.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "E_confronto.low-ask.1.txt": {
    "notes": {
     "0": true,
@@ -2193,7 +2068,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "E_confronto.low-check.2.txt": {
+  "E_confronto.low-ask-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2219,6 +2094,32 @@
    "foreign": false,
    "verbatim": true
   },
+  "E_confronto.low-check.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "E_confronto.none.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "E_confronto.low-check.1.txt": {
    "notes": {
     "0": true,
@@ -2232,14 +2133,15 @@
    "foreign": false,
    "verbatim": true
   },
-  "F_codice.adhd.1.txt": {
+  "E_confronto.none.2.txt": {
    "notes": {
     "0": true,
     "1": true,
     "2": true,
     "3": true,
     "4": true,
-    "5": true
+    "5": true,
+    "6": true
    },
    "foreign": false,
    "verbatim": true
@@ -2268,7 +2170,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "F_codice.atlas-high.2.txt": {
+  "F_codice.adhd.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2292,7 +2194,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "F_codice.atlas-low.2.txt": {
+  "F_codice.atlas-high.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2304,7 +2206,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "F_codice.atlasmin-low.1.txt": {
+  "F_codice.atlas-low.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2340,7 +2242,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "F_codice.caveman-full.1.txt": {
+  "F_codice.atlasmin-low.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2350,9 +2252,9 @@
     "5": true
    },
    "foreign": false,
-   "verbatim": true
+   "verbatim": false
   },
-  "F_codice.caveman-full.2.txt": {
+  "F_codice.caveman-full.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2376,7 +2278,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "F_codice.caveman-lite.1.txt": {
+  "F_codice.caveman-full.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2388,7 +2290,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "F_codice.caveman-lite.2.txt": {
+  "F_codice.caveman-lite.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2412,7 +2314,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "F_codice.caveman-ultra.2.txt": {
+  "F_codice.caveman-lite.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2448,6 +2350,18 @@
    "foreign": false,
    "verbatim": true
   },
+  "F_codice.caveman-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "F_codice.high-ask.1.txt": {
    "notes": {
     "0": true,
@@ -2472,7 +2386,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "F_codice.high-check.1.txt": {
+  "F_codice.high-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2484,7 +2398,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "F_codice.high-check.2.txt": {
+  "F_codice.high-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2508,31 +2422,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "F_codice.low-ask-check.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "F_codice.low-ask.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "F_codice.low-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2556,6 +2446,54 @@
    "foreign": false,
    "verbatim": true
   },
+  "F_codice.low-check.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "F_codice.low-ask-check.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "F_codice.none.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "F_codice.none.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "F_codice.low-check.2.txt": {
    "notes": {
     "0": true,
@@ -2568,7 +2506,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "G_procedura.adhd.1.txt": {
+  "G_procedura.adhd.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2582,7 +2520,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "G_procedura.adhd.2.txt": {
+  "G_procedura.atlas-high.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2610,7 +2548,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "G_procedura.atlas-high.2.txt": {
+  "G_procedura.adhd.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2622,7 +2560,18 @@
     "7": true
    },
    "foreign": false,
-   "verbatim": true
+   "verbatim": true,
+   "first": {
+    "0": true,
+    "1": true,
+    "2": false,
+    "3": false,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreignSecond": false
   },
   "G_procedura.atlas-low.1.txt": {
    "notes": {
@@ -2736,20 +2685,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "G_procedura.caveman-lite.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "G_procedura.caveman-lite.1.txt": {
    "notes": {
     "0": true,
@@ -2778,7 +2713,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "G_procedura.caveman-ultra.2.txt": {
+  "G_procedura.caveman-lite.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2806,7 +2741,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "G_procedura.high-ask-check.2.txt": {
+  "G_procedura.caveman-ultra.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2820,7 +2755,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "G_procedura.high-ask.2.txt": {
+  "G_procedura.high-ask-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2862,6 +2797,20 @@
    "foreign": false,
    "verbatim": true
   },
+  "G_procedura.high-ask.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "G_procedura.high-check.2.txt": {
    "notes": {
     "0": true,
@@ -2876,7 +2825,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "G_procedura.low-ask-check.1.txt": {
+  "G_procedura.low-ask-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2890,7 +2839,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "G_procedura.low-ask-check.2.txt": {
+  "G_procedura.low-ask-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2932,6 +2881,20 @@
    "foreign": false,
    "verbatim": true
   },
+  "G_procedura.low-check.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "G_procedura.low-check.1.txt": {
    "notes": {
     "0": true,
@@ -2946,7 +2909,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "G_procedura.low-check.2.txt": {
+  "G_procedura.none.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2974,7 +2937,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "H_lunga.adhd.2.txt": {
+  "G_procedura.none.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -2988,7 +2951,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "H_lunga.atlas-high.1.txt": {
+  "H_lunga.adhd.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -3030,6 +2993,20 @@
    "foreign": false,
    "verbatim": true
   },
+  "H_lunga.atlas-high.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "H_lunga.atlas-low.2.txt": {
    "notes": {
     "0": true,
@@ -3045,20 +3022,6 @@
    "verbatim": true
   },
   "H_lunga.atlasmin-high.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "H_lunga.atlasmin-high.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -3100,21 +3063,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "H_lunga.caveman-full.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "H_lunga.caveman-full.2.txt": {
+  "H_lunga.atlasmin-high.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -3142,7 +3091,21 @@
    "foreign": false,
    "verbatim": true
   },
-  "H_lunga.caveman-lite.2.txt": {
+  "H_lunga.caveman-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "H_lunga.caveman-full.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -3157,6 +3120,20 @@
    "verbatim": true
   },
   "H_lunga.caveman-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "H_lunga.caveman-lite.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -3198,7 +3175,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "H_lunga.high-ask.1.txt": {
+  "H_lunga.high-ask-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -3212,7 +3189,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "H_lunga.high-ask-check.2.txt": {
+  "H_lunga.high-ask.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -3254,7 +3231,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "H_lunga.high-check.2.txt": {
+  "H_lunga.low-ask-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -3282,7 +3259,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "H_lunga.low-ask-check.2.txt": {
+  "H_lunga.high-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -3352,6 +3329,34 @@
    "foreign": false,
    "verbatim": true
   },
+  "H_lunga.none.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "H_lunga.none.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "I_sicurezza.adhd.1.txt": {
    "notes": {
     "0": true,
@@ -3385,7 +3390,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "I_sicurezza.atlas-high.2.txt": {
+  "I_sicurezza.atlas-low.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -3396,7 +3401,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "I_sicurezza.atlas-low.1.txt": {
+  "I_sicurezza.atlas-high.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -3429,7 +3434,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "I_sicurezza.atlasmin-high.2.txt": {
+  "I_sicurezza.atlasmin-low.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -3440,7 +3445,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "I_sicurezza.atlasmin-low.1.txt": {
+  "I_sicurezza.atlasmin-high.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -3473,17 +3478,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "I_sicurezza.caveman-full.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "I_sicurezza.caveman-lite.1.txt": {
    "notes": {
     "0": true,
@@ -3495,7 +3489,18 @@
    "foreign": false,
    "verbatim": true
   },
-  "I_sicurezza.caveman-lite.2.txt": {
+  "I_sicurezza.caveman-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "I_sicurezza.caveman-ultra.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -3517,7 +3522,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "I_sicurezza.caveman-ultra.2.txt": {
+  "I_sicurezza.caveman-lite.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -3572,7 +3577,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "I_sicurezza.high-check.2.txt": {
+  "I_sicurezza.high-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -3583,7 +3588,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "I_sicurezza.high-check.1.txt": {
+  "I_sicurezza.high-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -3660,6 +3665,17 @@
    "foreign": false,
    "verbatim": true
   },
+  "I_sicurezza.none.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "L_unafrase.adhd.1.txt": {
    "notes": {
     "0": true,
@@ -3676,7 +3692,26 @@
    "foreign": false,
    "verbatim": true
   },
+  "I_sicurezza.none.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "L_unafrase.atlas-high.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "L_unafrase.atlas-low.2.txt": {
    "notes": {
     "0": true,
     "1": true
@@ -3700,7 +3735,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "L_unafrase.atlas-low.2.txt": {
+  "L_unafrase.atlasmin-high.2.txt": {
    "notes": {
     "0": true,
     "1": true
@@ -3716,23 +3751,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "L_unafrase.atlasmin-high.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "L_unafrase.atlasmin-low.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "L_unafrase.atlasmin-low.2.txt": {
    "notes": {
     "0": true,
     "1": true
@@ -3748,13 +3767,21 @@
    "foreign": false,
    "verbatim": true
   },
+  "L_unafrase.atlasmin-low.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "L_unafrase.caveman-full.2.txt": {
    "notes": {
     "0": true,
     "1": true
    },
    "foreign": false,
-   "verbatim": false
+   "verbatim": true
   },
   "L_unafrase.caveman-lite.1.txt": {
    "notes": {
@@ -3812,7 +3839,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "L_unafrase.high-check.1.txt": {
+  "L_unafrase.high-ask.2.txt": {
    "notes": {
     "0": true,
     "1": true
@@ -3820,7 +3847,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "L_unafrase.high-ask.2.txt": {
+  "L_unafrase.high-check.1.txt": {
    "notes": {
     "0": true,
     "1": true
@@ -3837,14 +3864,6 @@
    "verbatim": true
   },
   "L_unafrase.low-ask-check.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "L_unafrase.low-ask-check.2.txt": {
    "notes": {
     "0": true,
     "1": true
@@ -3876,6 +3895,22 @@
    "foreign": false,
    "verbatim": true
   },
+  "L_unafrase.low-ask-check.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "L_unafrase.none.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "L_unafrase.low-check.2.txt": {
    "notes": {
     "0": true,
@@ -3884,16 +3919,10 @@
    "foreign": false,
    "verbatim": true
   },
-  "M_aperta.adhd.2.txt": {
+  "L_unafrase.none.2.txt": {
    "notes": {
     "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true
+    "1": true
    },
    "foreign": false,
    "verbatim": true
@@ -3912,21 +3941,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "M_aperta.atlas-high.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "M_aperta.atlas-high.2.txt": {
+  "M_aperta.adhd.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -3954,7 +3969,21 @@
    "foreign": false,
    "verbatim": true
   },
-  "M_aperta.atlasmin-high.1.txt": {
+  "M_aperta.atlas-high.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "M_aperta.atlas-high.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -3996,35 +4025,35 @@
    "foreign": false,
    "verbatim": true
   },
-  "M_aperta.atlasmin-low.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "M_aperta.caveman-full.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "M_aperta.atlasmin-low.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "M_aperta.atlasmin-high.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "M_aperta.atlasmin-low.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4052,7 +4081,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "M_aperta.caveman-lite.1.txt": {
+  "M_aperta.caveman-full.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4067,6 +4096,20 @@
    "verbatim": true
   },
   "M_aperta.caveman-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "M_aperta.caveman-lite.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4122,7 +4165,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "M_aperta.high-ask-check.2.txt": {
+  "M_aperta.high-ask.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4136,7 +4179,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "M_aperta.high-ask.1.txt": {
+  "M_aperta.high-ask-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4153,7 +4196,7 @@
   "M_aperta.high-ask.2.txt": {
    "notes": {
     "0": true,
-    "1": false,
+    "1": true,
     "2": true,
     "3": true,
     "4": true,
@@ -4162,18 +4205,7 @@
     "7": true
    },
    "foreign": false,
-   "verbatim": true,
-   "first": {
-    "0": true,
-    "1": false,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true
-   },
-   "foreignSecond": false
+   "verbatim": true
   },
   "M_aperta.high-check.1.txt": {
    "notes": {
@@ -4245,7 +4277,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "M_aperta.low-ask.2.txt": {
+  "M_aperta.low-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4273,21 +4305,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "M_aperta.low-check.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "M_aperta.none.1.txt": {
+  "M_aperta.low-ask.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4315,7 +4333,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "N_spiegazione.adhd.1.txt": {
+  "M_aperta.none.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4323,7 +4341,8 @@
     "3": true,
     "4": true,
     "5": true,
-    "6": true
+    "6": true,
+    "7": true
    },
    "foreign": false,
    "verbatim": true
@@ -4341,20 +4360,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "N_spiegazione.atlas-high.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "N_spiegazione.atlas-low.1.txt": {
+  "N_spiegazione.adhd.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4380,20 +4386,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "N_spiegazione.atlas-low.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "N_spiegazione.atlasmin-high.2.txt": {
+  "N_spiegazione.atlas-low.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4419,7 +4412,46 @@
    "foreign": false,
    "verbatim": true
   },
+  "N_spiegazione.atlas-high.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "N_spiegazione.atlas-low.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "N_spiegazione.atlasmin-low.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "N_spiegazione.atlasmin-high.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4471,19 +4503,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "N_spiegazione.caveman-lite.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "N_spiegazione.caveman-lite.2.txt": {
    "notes": {
     "0": true,
@@ -4497,7 +4516,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "N_spiegazione.caveman-ultra.1.txt": {
+  "N_spiegazione.caveman-lite.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4510,7 +4529,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "N_spiegazione.caveman-ultra.2.txt": {
+  "N_spiegazione.caveman-ultra.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4549,20 +4568,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "N_spiegazione.high-ask.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "N_spiegazione.high-ask.1.txt": {
+  "N_spiegazione.caveman-ultra.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4588,7 +4594,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "N_spiegazione.high-check.2.txt": {
+  "N_spiegazione.high-ask.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4602,6 +4608,32 @@
    "verbatim": true
   },
   "N_spiegazione.low-ask-check.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "N_spiegazione.high-ask.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "N_spiegazione.high-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4653,7 +4685,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "N_spiegazione.low-check.1.txt": {
+  "N_spiegazione.low-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4666,7 +4698,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "N_spiegazione.low-check.2.txt": {
+  "N_spiegazione.low-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4692,7 +4724,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "N_spiegazione.none.2.txt": {
+  "O_critica.adhd.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4705,7 +4737,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "O_critica.adhd.1.txt": {
+  "N_spiegazione.none.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4744,6 +4776,19 @@
    "foreign": false,
    "verbatim": true
   },
+  "O_critica.atlas-low.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "O_critica.atlas-high.2.txt": {
    "notes": {
     "0": true,
@@ -4757,7 +4802,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "O_critica.atlas-low.1.txt": {
+  "O_critica.atlasmin-high.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4783,30 +4828,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "O_critica.atlasmin-high.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true
-   },
-   "foreign": false,
-   "verbatim": true,
-   "first": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": false,
-    "5": true,
-    "6": true
-   },
-   "foreignSecond": false
-  },
-  "O_critica.atlasmin-high.2.txt": {
+  "O_critica.atlasmin-low.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4819,7 +4841,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "O_critica.atlasmin-low.1.txt": {
+  "O_critica.atlasmin-high.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4871,7 +4893,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "O_critica.caveman-lite.2.txt": {
+  "O_critica.caveman-full.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4897,7 +4919,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "O_critica.caveman-ultra.2.txt": {
+  "O_critica.caveman-lite.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4910,7 +4932,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "O_critica.caveman-full.2.txt": {
+  "O_critica.caveman-ultra.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -4962,19 +4984,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "O_critica.high-check.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "O_critica.high-check.1.txt": {
    "notes": {
     "0": true,
@@ -4989,6 +4998,19 @@
    "verbatim": true
   },
   "O_critica.high-ask.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "O_critica.high-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -5027,7 +5049,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "O_critica.low-ask.1.txt": {
+  "O_critica.low-ask.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -5040,7 +5062,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "O_critica.low-check.1.txt": {
+  "O_critica.low-ask.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -5066,20 +5088,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "O_critica.low-ask.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "O_critica.none.2.txt": {
+  "O_critica.low-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -5119,6 +5128,19 @@
    "foreign": false,
    "verbatim": true
   },
+  "O_critica.none.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "P_confronto_lungo.adhd.2.txt": {
    "notes": {
     "0": true,
@@ -5132,31 +5154,6 @@
    },
    "foreign": false,
    "verbatim": true
-  },
-  "P_confronto_lungo.atlas-high.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true
-   },
-   "foreign": false,
-   "verbatim": true,
-   "first": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": false,
-    "7": true
-   },
-   "foreignSecond": false
   },
   "P_confronto_lungo.atlas-high.2.txt": {
    "notes": {
@@ -5183,7 +5180,7 @@
    },
    "foreignSecond": false
   },
-  "P_confronto_lungo.atlas-low.1.txt": {
+  "P_confronto_lungo.atlas-high.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -5198,6 +5195,34 @@
    "verbatim": true
   },
   "P_confronto_lungo.atlas-low.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "P_confronto_lungo.atlas-low.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "P_confronto_lungo.atlasmin-high.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -5247,31 +5272,6 @@
    },
    "foreignSecond": false
   },
-  "P_confronto_lungo.atlasmin-high.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true
-   },
-   "foreign": false,
-   "verbatim": true,
-   "first": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": false,
-    "7": true
-   },
-   "foreignSecond": false
-  },
   "P_confronto_lungo.atlasmin-low.1.txt": {
    "notes": {
     "0": true,
@@ -5296,6 +5296,20 @@
     "7": true
    },
    "foreignSecond": false
+  },
+  "P_confronto_lungo.caveman-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
   },
   "P_confronto_lungo.atlasmin-low.2.txt": {
    "notes": {
@@ -5325,7 +5339,21 @@
    "foreign": false,
    "verbatim": true
   },
-  "P_confronto_lungo.caveman-full.1.txt": {
+  "P_confronto_lungo.caveman-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "P_confronto_lungo.caveman-ultra.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -5367,60 +5395,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "P_confronto_lungo.caveman-lite.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "P_confronto_lungo.high-ask-check.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true
-   },
-   "foreign": false,
-   "verbatim": true,
-   "first": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": false,
-    "7": true
-   },
-   "foreignSecond": false
-  },
-  "P_confronto_lungo.high-ask-check.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "P_confronto_lungo.caveman-ultra.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -5459,21 +5434,7 @@
    },
    "foreignSecond": false
   },
-  "P_confronto_lungo.high-check.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "P_confronto_lungo.high-ask.2.txt": {
+  "P_confronto_lungo.high-ask-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -5488,6 +5449,31 @@
    "verbatim": true
   },
   "P_confronto_lungo.high-check.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true,
+   "first": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": false,
+    "7": true
+   },
+   "foreignSecond": false
+  },
+  "P_confronto_lungo.high-ask.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -5540,6 +5526,45 @@
    "foreign": false,
    "verbatim": true
   },
+  "P_confronto_lungo.low-ask.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "P_confronto_lungo.high-check.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true,
+   "first": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": false,
+    "7": true
+   },
+   "foreignSecond": false
+  },
   "P_confronto_lungo.low-ask.1.txt": {
    "notes": {
     "0": true,
@@ -5554,7 +5579,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "P_confronto_lungo.low-ask.2.txt": {
+  "P_confronto_lungo.low-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -5581,31 +5606,6 @@
    },
    "foreign": false,
    "verbatim": true
-  },
-  "P_confronto_lungo.low-check.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true
-   },
-   "foreign": false,
-   "verbatim": true,
-   "first": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": false,
-    "7": true
-   },
-   "foreignSecond": false
   },
   "P_confronto_lungo.none.1.txt": {
    "notes": {
@@ -5640,7 +5640,18 @@
     "0": true
    },
    "foreign": false,
-   "verbatim": null
+   "verbatim": true
+  },
+  "S01_ora.atlas-high.1.txt": {
+   "notes": {
+    "0": true
+   },
+   "foreign": false,
+   "verbatim": null,
+   "first": {
+    "0": false
+   },
+   "foreignSecond": false
   },
   "S01_ora.adhd.2.txt": {
    "notes": {
@@ -5649,7 +5660,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S01_ora.atlas-high.1.txt": {
+  "S01_ora.atlas-low.1.txt": {
    "notes": {
     "0": true
    },
@@ -5671,25 +5682,7 @@
    },
    "foreignSecond": false
   },
-  "S01_ora.atlas-low.1.txt": {
-   "notes": {
-    "0": true
-   },
-   "foreign": false,
-   "verbatim": null,
-   "first": {
-    "0": false
-   },
-   "foreignSecond": false
-  },
   "S01_ora.atlas-low.2.txt": {
-   "notes": {
-    "0": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "S01_ora.atlasmin-high.1.txt": {
    "notes": {
     "0": true
    },
@@ -5701,6 +5694,13 @@
    "foreignSecond": false
   },
   "S01_ora.atlasmin-high.2.txt": {
+   "notes": {
+    "0": true
+   },
+   "foreign": false,
+   "verbatim": null
+  },
+  "S01_ora.atlasmin-high.1.txt": {
    "notes": {
     "0": true
    },
@@ -5722,6 +5722,13 @@
    },
    "foreignSecond": false
   },
+  "S01_ora.caveman-full.1.txt": {
+   "notes": {
+    "0": true
+   },
+   "foreign": false,
+   "verbatim": null
+  },
   "S01_ora.atlasmin-low.2.txt": {
    "notes": {
     "0": true
@@ -5733,7 +5740,7 @@
    },
    "foreignSecond": false
   },
-  "S01_ora.caveman-full.1.txt": {
+  "S01_ora.caveman-full.2.txt": {
    "notes": {
     "0": true
    },
@@ -5741,13 +5748,6 @@
    "verbatim": null
   },
   "S01_ora.caveman-lite.1.txt": {
-   "notes": {
-    "0": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "S01_ora.caveman-full.2.txt": {
    "notes": {
     "0": true
    },
@@ -5766,7 +5766,7 @@
     "0": true
    },
    "foreign": false,
-   "verbatim": true
+   "verbatim": null
   },
   "S01_ora.caveman-ultra.2.txt": {
    "notes": {
@@ -5780,7 +5780,11 @@
     "0": true
    },
    "foreign": false,
-   "verbatim": null
+   "verbatim": null,
+   "first": {
+    "0": false
+   },
+   "foreignSecond": false
   },
   "S01_ora.high-ask-check.2.txt": {
    "notes": {
@@ -5842,7 +5846,11 @@
     "0": true
    },
    "foreign": false,
-   "verbatim": null
+   "verbatim": null,
+   "first": {
+    "0": false
+   },
+   "foreignSecond": false
   },
   "S01_ora.low-ask-check.2.txt": {
    "notes": {
@@ -5860,31 +5868,20 @@
     "0": true
    },
    "foreign": false,
-   "verbatim": null,
-   "first": {
-    "0": false
-   },
-   "foreignSecond": false
+   "verbatim": null
   },
   "S01_ora.low-ask.2.txt": {
    "notes": {
     "0": true
    },
    "foreign": false,
-   "verbatim": null
-  },
-  "S01_ora.low-check.1.txt": {
-   "notes": {
-    "0": true
-   },
-   "foreign": false,
    "verbatim": null,
    "first": {
     "0": false
    },
    "foreignSecond": false
   },
-  "S01_ora.low-check.2.txt": {
+  "S01_ora.low-check.1.txt": {
    "notes": {
     "0": true
    },
@@ -5901,6 +5898,17 @@
    },
    "foreign": false,
    "verbatim": true
+  },
+  "S01_ora.low-check.2.txt": {
+   "notes": {
+    "0": true
+   },
+   "foreign": false,
+   "verbatim": null,
+   "first": {
+    "0": false
+   },
+   "foreignSecond": false
   },
   "S01_ora.none.2.txt": {
    "notes": {
@@ -5925,7 +5933,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S02_capitale.atlas-high.2.txt": {
+  "S02_capitale.atlas-high.1.txt": {
    "notes": {
     "0": true,
     "1": true
@@ -5933,7 +5941,20 @@
    "foreign": false,
    "verbatim": true
   },
-  "S02_capitale.atlas-high.1.txt": {
+  "S02_capitale.atlas-high.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true
+   },
+   "foreign": false,
+   "verbatim": true,
+   "first": {
+    "0": false,
+    "1": true
+   },
+   "foreignSecond": false
+  },
+  "S02_capitale.atlas-low.1.txt": {
    "notes": {
     "0": true,
     "1": true
@@ -5965,7 +5986,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S02_capitale.atlasmin-low.1.txt": {
+  "S02_capitale.atlasmin-low.2.txt": {
    "notes": {
     "0": true,
     "1": true
@@ -5981,23 +6002,23 @@
    "foreign": false,
    "verbatim": true
   },
-  "S02_capitale.caveman-full.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "S02_capitale.atlasmin-low.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "S02_capitale.caveman-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S02_capitale.atlasmin-low.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S02_capitale.caveman-full.2.txt": {
    "notes": {
     "0": true,
     "1": true
@@ -6013,7 +6034,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S02_capitale.caveman-lite.2.txt": {
+  "S02_capitale.high-ask-check.1.txt": {
    "notes": {
     "0": true,
     "1": true
@@ -6029,7 +6050,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S02_capitale.high-ask-check.1.txt": {
+  "S02_capitale.caveman-lite.2.txt": {
    "notes": {
     "0": true,
     "1": true
@@ -6045,14 +6066,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "S02_capitale.high-ask.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "S02_capitale.high-ask.2.txt": {
    "notes": {
     "0": true,
@@ -6061,7 +6074,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S02_capitale.high-check.1.txt": {
+  "S02_capitale.high-ask.1.txt": {
    "notes": {
     "0": true,
     "1": true
@@ -6085,6 +6098,14 @@
    "foreign": false,
    "verbatim": true
   },
+  "S02_capitale.high-check.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "S02_capitale.low-ask-check.2.txt": {
    "notes": {
     "0": true,
@@ -6101,14 +6122,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "S02_capitale.low-ask.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "S02_capitale.low-check.1.txt": {
    "notes": {
     "0": true,
@@ -6117,7 +6130,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S02_capitale.none.1.txt": {
+  "S02_capitale.low-check.2.txt": {
    "notes": {
     "0": true,
     "1": true
@@ -6125,7 +6138,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S02_capitale.low-check.2.txt": {
+  "S02_capitale.low-ask.2.txt": {
    "notes": {
     "0": true,
     "1": true
@@ -6151,7 +6164,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S03_letconst.atlas-high.1.txt": {
+  "S03_letconst.adhd.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6161,7 +6174,15 @@
    "foreign": false,
    "verbatim": true
   },
-  "S03_letconst.adhd.2.txt": {
+  "S02_capitale.none.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S03_letconst.atlas-high.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6181,7 +6202,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S03_letconst.atlas-low.2.txt": {
+  "S03_letconst.atlas-low.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6191,7 +6212,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S03_letconst.atlas-low.1.txt": {
+  "S03_letconst.atlas-low.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6221,16 +6242,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "S03_letconst.atlasmin-low.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "S03_letconst.atlasmin-low.2.txt": {
    "notes": {
     "0": true,
@@ -6241,7 +6252,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S03_letconst.caveman-full.2.txt": {
+  "S03_letconst.caveman-full.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6251,7 +6262,17 @@
    "foreign": false,
    "verbatim": true
   },
-  "S03_letconst.caveman-full.1.txt": {
+  "S03_letconst.atlasmin-low.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S03_letconst.caveman-full.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6301,16 +6322,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "S03_letconst.high-ask-check.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "S03_letconst.high-ask-check.1.txt": {
    "notes": {
     "0": true,
@@ -6331,7 +6342,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S03_letconst.high-check.1.txt": {
+  "S03_letconst.high-ask.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6341,7 +6352,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S03_letconst.high-ask.2.txt": {
+  "S03_letconst.high-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6361,7 +6372,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S03_letconst.low-ask-check.2.txt": {
+  "S03_letconst.high-ask-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6381,6 +6392,16 @@
    "foreign": false,
    "verbatim": true
   },
+  "S03_letconst.low-ask-check.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "S03_letconst.low-ask.1.txt": {
    "notes": {
     "0": true,
@@ -6391,7 +6412,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S03_letconst.low-check.1.txt": {
+  "S03_letconst.low-ask.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6401,7 +6422,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S03_letconst.low-ask.2.txt": {
+  "S03_letconst.low-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6474,17 +6495,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "S04_meteo_domani.atlas-high.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "S04_meteo_domani.atlas-low.1.txt": {
    "notes": {
     "0": true,
@@ -6496,7 +6506,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S04_meteo_domani.atlas-low.2.txt": {
+  "S04_meteo_domani.atlas-high.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6518,7 +6528,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S04_meteo_domani.atlasmin-low.1.txt": {
+  "S04_meteo_domani.atlas-low.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6530,6 +6540,17 @@
    "verbatim": true
   },
   "S04_meteo_domani.atlasmin-high.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S04_meteo_domani.atlasmin-low.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6562,7 +6583,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S04_meteo_domani.caveman-full.2.txt": {
+  "S04_meteo_domani.caveman-lite.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6573,7 +6594,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S04_meteo_domani.caveman-lite.1.txt": {
+  "S04_meteo_domani.caveman-full.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6628,17 +6649,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "S04_meteo_domani.high-ask-check.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "S04_meteo_domani.high-ask.1.txt": {
    "notes": {
     "0": true,
@@ -6661,6 +6671,17 @@
    "foreign": false,
    "verbatim": true
   },
+  "S04_meteo_domani.high-ask-check.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "S04_meteo_domani.high-check.1.txt": {
    "notes": {
     "0": true,
@@ -6672,7 +6693,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S04_meteo_domani.high-check.2.txt": {
+  "S04_meteo_domani.low-ask-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6683,7 +6704,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S04_meteo_domani.low-ask-check.1.txt": {
+  "S04_meteo_domani.high-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6749,7 +6770,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S04_meteo_domani.none.1.txt": {
+  "S04_meteo_domani.none.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6760,7 +6781,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S04_meteo_domani.none.2.txt": {
+  "S04_meteo_domani.none.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6797,7 +6818,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S05_gpu.atlas-high.1.txt": {
+  "S05_gpu.atlas-high.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6810,7 +6831,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S05_gpu.atlas-high.2.txt": {
+  "S05_gpu.atlas-high.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6862,7 +6883,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S05_gpu.atlasmin-high.2.txt": {
+  "S05_gpu.atlasmin-low.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6875,7 +6896,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S05_gpu.atlasmin-low.1.txt": {
+  "S05_gpu.atlasmin-high.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6901,7 +6922,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S05_gpu.caveman-full.1.txt": {
+  "S05_gpu.caveman-full.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6914,7 +6935,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S05_gpu.caveman-full.2.txt": {
+  "S05_gpu.caveman-full.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6940,7 +6961,33 @@
    "foreign": false,
    "verbatim": true
   },
+  "S05_gpu.caveman-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "S05_gpu.caveman-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S05_gpu.high-ask-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -6966,56 +7013,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S05_gpu.caveman-ultra.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true
-   },
-   "foreign": false,
-   "verbatim": true,
-   "first": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": false
-   },
-   "foreignSecond": false
-  },
-  "S05_gpu.high-ask-check.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "S05_gpu.high-ask-check.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "S05_gpu.high-ask.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -7042,6 +7040,19 @@
    "verbatim": true
   },
   "S05_gpu.high-check.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S05_gpu.high-ask.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -7119,19 +7130,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "S05_gpu.low-check.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "S05_gpu.low-check.2.txt": {
    "notes": {
     "0": true,
@@ -7158,19 +7156,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "S05_gpu.none.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "S06_meteo_settimana.adhd.1.txt": {
    "notes": {
     "0": true,
@@ -7182,6 +7167,19 @@
     "6": true,
     "7": true,
     "8": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S05_gpu.none.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
    },
    "foreign": false,
    "verbatim": true
@@ -7228,6 +7226,19 @@
    },
    "foreignSecond": false
   },
+  "S05_gpu.low-check.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "S06_meteo_settimana.atlas-high.2.txt": {
    "notes": {
     "0": true,
@@ -7243,7 +7254,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S06_meteo_settimana.atlas-low.1.txt": {
+  "S06_meteo_settimana.atlas-low.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -7258,7 +7269,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S06_meteo_settimana.atlas-low.2.txt": {
+  "S06_meteo_settimana.atlas-low.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -7333,21 +7344,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "S06_meteo_settimana.caveman-full.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "S06_meteo_settimana.caveman-full.2.txt": {
    "notes": {
     "0": true,
@@ -7408,6 +7404,36 @@
    "foreign": false,
    "verbatim": true
   },
+  "S06_meteo_settimana.caveman-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S06_meteo_settimana.high-ask-check.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "S06_meteo_settimana.caveman-ultra.2.txt": {
    "notes": {
     "0": true,
@@ -7438,37 +7464,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S06_meteo_settimana.high-ask-check.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "S06_meteo_settimana.high-ask.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "S06_meteo_settimana.high-ask.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -7498,7 +7494,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S06_meteo_settimana.high-check.2.txt": {
+  "S06_meteo_settimana.high-ask.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -7513,7 +7509,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S06_meteo_settimana.low-ask-check.1.txt": {
+  "S06_meteo_settimana.high-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -7543,7 +7539,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S06_meteo_settimana.low-ask.1.txt": {
+  "S06_meteo_settimana.low-ask-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -7558,7 +7554,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S06_meteo_settimana.low-ask.2.txt": {
+  "S06_meteo_settimana.low-ask.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -7588,7 +7584,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S06_meteo_settimana.low-check.2.txt": {
+  "S06_meteo_settimana.low-ask.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -7618,6 +7614,21 @@
    "foreign": false,
    "verbatim": true
   },
+  "S06_meteo_settimana.low-check.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "S06_meteo_settimana.none.2.txt": {
    "notes": {
     "0": true,
@@ -7633,7 +7644,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S07_https.adhd.1.txt": {
+  "S07_https.adhd.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -7649,7 +7660,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S07_https.adhd.2.txt": {
+  "S07_https.adhd.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -7695,7 +7706,20 @@
     "9": true
    },
    "foreign": false,
-   "verbatim": true
+   "verbatim": true,
+   "first": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": false
+   },
+   "foreignSecond": false
   },
   "S07_https.atlas-low.1.txt": {
    "notes": {
@@ -7725,22 +7749,6 @@
     "9": false
    },
    "foreignSecond": false
-  },
-  "S07_https.atlas-low.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true,
-    "9": true
-   },
-   "foreign": false,
-   "verbatim": true
   },
   "S07_https.atlasmin-high.1.txt": {
    "notes": {
@@ -7774,7 +7782,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S07_https.atlasmin-low.1.txt": {
+  "S07_https.atlas-low.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -7817,7 +7825,49 @@
     "9": true
    },
    "foreign": false,
-   "verbatim": true
+   "verbatim": true,
+   "first": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": false
+   },
+   "foreignSecond": false
+  },
+  "S07_https.atlasmin-low.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true
+   },
+   "foreign": false,
+   "verbatim": true,
+   "first": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": false
+   },
+   "foreignSecond": false
   },
   "S07_https.caveman-full.2.txt": {
    "notes": {
@@ -7849,22 +7899,9 @@
     "9": true
    },
    "foreign": false,
-   "verbatim": true,
-   "first": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true,
-    "9": false
-   },
-   "foreignSecond": false
+   "verbatim": true
   },
-  "S07_https.caveman-lite.2.txt": {
+  "S07_https.caveman-lite.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -7896,22 +7933,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "S07_https.caveman-lite.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true,
-    "9": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "S07_https.caveman-ultra.2.txt": {
    "notes": {
     "0": true,
@@ -7928,7 +7949,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S07_https.high-ask-check.1.txt": {
+  "S07_https.caveman-lite.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -7960,7 +7981,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S07_https.high-ask.2.txt": {
+  "S07_https.high-ask-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -7992,7 +8013,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S07_https.high-check.1.txt": {
+  "S07_https.high-ask.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -8008,7 +8029,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S07_https.low-ask-check.2.txt": {
+  "S07_https.high-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -8070,20 +8091,7 @@
     "9": true
    },
    "foreign": false,
-   "verbatim": true,
-   "first": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true,
-    "9": false
-   },
-   "foreignSecond": false
+   "verbatim": true
   },
   "S07_https.low-ask.2.txt": {
    "notes": {
@@ -8163,37 +8171,6 @@
     "9": true
    },
    "foreign": false,
-   "verbatim": true,
-   "first": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": false,
-    "7": true,
-    "8": true,
-    "9": false
-   },
-   "foreignSecond": false
-  },
-  "S08_bitcoin.adhd.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true,
-    "9": true,
-    "10": true,
-    "11": true
-   },
-   "foreign": false,
    "verbatim": true
   },
   "S08_bitcoin.adhd.1.txt": {
@@ -8250,6 +8227,24 @@
    "foreign": false,
    "verbatim": true
   },
+  "S08_bitcoin.adhd.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "S08_bitcoin.atlas-low.1.txt": {
    "notes": {
     "0": true,
@@ -8286,7 +8281,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S08_bitcoin.atlasmin-high.1.txt": {
+  "S08_bitcoin.atlasmin-low.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -8322,7 +8317,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S08_bitcoin.atlasmin-low.1.txt": {
+  "S08_bitcoin.atlasmin-high.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -8376,24 +8371,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "S08_bitcoin.caveman-full.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true,
-    "9": true,
-    "10": true,
-    "11": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "S08_bitcoin.caveman-lite.1.txt": {
    "notes": {
     "0": true,
@@ -8412,7 +8389,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S08_bitcoin.caveman-lite.2.txt": {
+  "S08_bitcoin.caveman-full.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -8448,7 +8425,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S08_bitcoin.high-ask-check.1.txt": {
+  "S08_bitcoin.caveman-lite.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -8484,7 +8461,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S08_bitcoin.high-ask-check.2.txt": {
+  "S08_bitcoin.high-ask-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -8502,7 +8479,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S08_bitcoin.high-ask.2.txt": {
+  "S08_bitcoin.high-ask-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -8538,24 +8515,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "S08_bitcoin.high-check.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true,
-    "9": true,
-    "10": true,
-    "11": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "S08_bitcoin.high-check.2.txt": {
    "notes": {
     "0": true,
@@ -8574,7 +8533,25 @@
    "foreign": false,
    "verbatim": true
   },
-  "S08_bitcoin.low-ask-check.1.txt": {
+  "S08_bitcoin.high-ask.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S08_bitcoin.high-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -8610,6 +8587,24 @@
    "foreign": false,
    "verbatim": true
   },
+  "S08_bitcoin.low-ask-check.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "S08_bitcoin.low-ask.1.txt": {
    "notes": {
     "0": true,
@@ -8628,7 +8623,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S08_bitcoin.low-ask.2.txt": {
+  "S08_bitcoin.low-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -8646,7 +8641,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S08_bitcoin.low-check.1.txt": {
+  "S08_bitcoin.low-ask.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -8698,22 +8693,7 @@
     "11": true
    },
    "foreign": false,
-   "verbatim": true,
-   "first": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": false,
-    "7": true,
-    "8": true,
-    "9": true,
-    "10": true,
-    "11": true
-   },
-   "foreignSecond": false
+   "verbatim": true
   },
   "S08_bitcoin.none.2.txt": {
    "notes": {
@@ -8733,7 +8713,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S09_x86.adhd.1.txt": {
+  "S09_x86.adhd.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -8753,7 +8733,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S09_x86.adhd.2.txt": {
+  "S09_x86.adhd.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -8794,26 +8774,6 @@
    "verbatim": true
   },
   "S09_x86.atlas-high.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true,
-    "9": true,
-    "10": true,
-    "11": true,
-    "12": true,
-    "13": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
-  "S09_x86.atlas-low.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -8893,7 +8853,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S09_x86.atlasmin-low.1.txt": {
+  "S09_x86.atlas-low.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -8914,6 +8874,26 @@
    "verbatim": true
   },
   "S09_x86.atlasmin-low.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true,
+    "12": true,
+    "13": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S09_x86.atlasmin-low.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -8973,7 +8953,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S09_x86.caveman-lite.1.txt": {
+  "S09_x86.caveman-lite.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -8993,7 +8973,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S09_x86.caveman-lite.2.txt": {
+  "S09_x86.caveman-lite.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -9033,7 +9013,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S09_x86.caveman-ultra.2.txt": {
+  "S09_x86.high-ask-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -9053,7 +9033,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S09_x86.high-ask-check.1.txt": {
+  "S09_x86.caveman-ultra.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -9093,7 +9073,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S09_x86.high-ask.1.txt": {
+  "S09_x86.high-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -9133,7 +9113,27 @@
    "foreign": false,
    "verbatim": true
   },
-  "S09_x86.high-check.1.txt": {
+  "S09_x86.high-ask.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true,
+    "12": true,
+    "13": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S09_x86.low-ask-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -9193,26 +9193,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "S09_x86.low-ask-check.1.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true,
-    "9": true,
-    "10": true,
-    "11": true,
-    "12": true,
-    "13": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "S09_x86.low-ask.1.txt": {
    "notes": {
     "0": true,
@@ -9233,7 +9213,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S09_x86.low-check.1.txt": {
+  "S09_x86.low-ask.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -9253,7 +9233,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S09_x86.low-ask.2.txt": {
+  "S09_x86.low-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -9331,7 +9311,24 @@
     "13": true
    },
    "foreign": false,
-   "verbatim": true
+   "verbatim": true,
+   "first": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": false,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true,
+    "12": true,
+    "13": true
+   },
+   "foreignSecond": false
   },
   "S10_database.adhd.1.txt": {
    "notes": {
@@ -9352,25 +9349,7 @@
     "14": true
    },
    "foreign": false,
-   "verbatim": true,
-   "first": {
-    "0": true,
-    "1": true,
-    "2": false,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true,
-    "9": true,
-    "10": true,
-    "11": true,
-    "12": true,
-    "13": true,
-    "14": true
-   },
-   "foreignSecond": false
+   "verbatim": true
   },
   "S10_database.adhd.2.txt": {
    "notes": {
@@ -9412,25 +9391,7 @@
     "14": true
    },
    "foreign": false,
-   "verbatim": true,
-   "first": {
-    "0": true,
-    "1": false,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true,
-    "9": true,
-    "10": true,
-    "11": true,
-    "12": true,
-    "13": true,
-    "14": true
-   },
-   "foreignSecond": false
+   "verbatim": true
   },
   "S10_database.atlas-high.2.txt": {
    "notes": {
@@ -9474,7 +9435,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S10_database.atlas-low.2.txt": {
+  "S10_database.atlasmin-high.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -9495,7 +9456,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S10_database.atlasmin-high.1.txt": {
+  "S10_database.atlas-low.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -9537,7 +9498,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S10_database.atlasmin-low.1.txt": {
+  "S10_database.caveman-full.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -9579,7 +9540,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S10_database.caveman-full.1.txt": {
+  "S10_database.atlasmin-low.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -9684,27 +9645,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "S10_database.caveman-ultra.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true,
-    "9": true,
-    "10": true,
-    "11": true,
-    "12": true,
-    "13": true,
-    "14": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "S10_database.high-ask-check.1.txt": {
    "notes": {
     "0": true,
@@ -9727,6 +9667,27 @@
    "verbatim": true
   },
   "S10_database.high-ask-check.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true,
+    "12": true,
+    "13": true,
+    "14": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S10_database.caveman-ultra.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -9789,27 +9750,6 @@
    "foreign": false,
    "verbatim": true
   },
-  "S10_database.high-check.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true,
-    "9": true,
-    "10": true,
-    "11": true,
-    "12": true,
-    "13": true,
-    "14": true
-   },
-   "foreign": false,
-   "verbatim": true
-  },
   "S10_database.high-check.1.txt": {
    "notes": {
     "0": true,
@@ -9831,7 +9771,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S10_database.low-ask-check.1.txt": {
+  "S10_database.high-check.2.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -9852,7 +9792,7 @@
    "foreign": false,
    "verbatim": true
   },
-  "S10_database.low-ask.1.txt": {
+  "S10_database.low-ask-check.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -9913,48 +9853,9 @@
     "14": true
    },
    "foreign": false,
-   "verbatim": true,
-   "first": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": false,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true,
-    "9": true,
-    "10": true,
-    "11": true,
-    "12": true,
-    "13": true,
-    "14": true
-   },
-   "foreignSecond": false
-  },
-  "S10_database.low-check.2.txt": {
-   "notes": {
-    "0": true,
-    "1": true,
-    "2": true,
-    "3": true,
-    "4": true,
-    "5": true,
-    "6": true,
-    "7": true,
-    "8": true,
-    "9": true,
-    "10": true,
-    "11": true,
-    "12": true,
-    "13": true,
-    "14": true
-   },
-   "foreign": false,
    "verbatim": true
   },
-  "S10_database.none.1.txt": {
+  "S10_database.low-ask.1.txt": {
    "notes": {
     "0": true,
     "1": true,
@@ -9996,6 +9897,27 @@
    "foreign": false,
    "verbatim": true
   },
+  "S10_database.none.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true,
+    "12": true,
+    "13": true,
+    "14": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
   "S10_database.none.2.txt": {
    "notes": {
     "0": true,
@@ -10017,10 +9939,1982 @@
    "foreign": false,
    "verbatim": true
   },
-  "S02_capitale.atlas-low.1.txt": {
+  "S10_database.low-check.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true,
+    "12": true,
+    "13": true,
+    "14": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S07_https.low-ask-check.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true
+   },
+   "foreign": false,
+   "verbatim": true,
+   "first": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": false
+   },
+   "foreignSecond": false
+  },
+  "A_ricerca.caveman4-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "A_ricerca.caveman4-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "A_ricerca.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "A_ricerca.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "A_ricerca.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "A_ricerca.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "B_tecnica.caveman4-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "B_tecnica.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "B_tecnica.caveman4-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "B_tecnica.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "B_tecnica.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "B_tecnica.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "C_breve.caveman4-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "C_breve.caveman4-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "C_breve.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "C_breve.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "C_breve.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "C_breve.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "D_lista.caveman4-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "D_lista.caveman4-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "D_lista.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "D_lista.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "D_lista.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "D_lista.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "E_confronto.caveman4-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "E_confronto.caveman4-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "E_confronto.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "E_confronto.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "E_confronto.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "F_codice.caveman4-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "F_codice.caveman4-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "E_confronto.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true,
+   "first": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": false
+   },
+   "foreignSecond": false
+  },
+  "F_codice.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "F_codice.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "F_codice.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "G_procedura.caveman4-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "F_codice.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "G_procedura.caveman4-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "G_procedura.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "G_procedura.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "G_procedura.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "G_procedura.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "H_lunga.caveman4-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "H_lunga.caveman4-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "H_lunga.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "H_lunga.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "H_lunga.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "H_lunga.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "I_sicurezza.caveman4-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "I_sicurezza.caveman4-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "I_sicurezza.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "I_sicurezza.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "I_sicurezza.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "L_unafrase.caveman4-full.1.txt": {
    "notes": {
     "0": true,
     "1": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "L_unafrase.caveman4-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "I_sicurezza.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "L_unafrase.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "L_unafrase.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "L_unafrase.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "L_unafrase.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "M_aperta.caveman4-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "M_aperta.caveman4-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "M_aperta.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "M_aperta.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "M_aperta.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "M_aperta.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "N_spiegazione.caveman4-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "N_spiegazione.caveman4-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "N_spiegazione.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "N_spiegazione.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "N_spiegazione.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "N_spiegazione.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "O_critica.caveman4-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "O_critica.caveman4-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "O_critica.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "O_critica.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": false
+  },
+  "O_critica.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "P_confronto_lungo.caveman4-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "O_critica.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "P_confronto_lungo.caveman4-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "P_confronto_lungo.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "P_confronto_lungo.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "P_confronto_lungo.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "P_confronto_lungo.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S01_ora.caveman4-full.1.txt": {
+   "notes": {
+    "0": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S01_ora.caveman4-full.2.txt": {
+   "notes": {
+    "0": true
+   },
+   "foreign": false,
+   "verbatim": null
+  },
+  "S01_ora.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true
+   },
+   "foreign": false,
+   "verbatim": null
+  },
+  "S01_ora.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true
+   },
+   "foreign": false,
+   "verbatim": null
+  },
+  "S01_ora.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true
+   },
+   "foreign": false,
+   "verbatim": null
+  },
+  "S01_ora.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true
+   },
+   "foreign": false,
+   "verbatim": null
+  },
+  "S02_capitale.caveman4-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S02_capitale.caveman4-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S02_capitale.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S02_capitale.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S02_capitale.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S02_capitale.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S03_letconst.caveman4-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S03_letconst.caveman4-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S03_letconst.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S03_letconst.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S03_letconst.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S03_letconst.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S04_meteo_domani.caveman4-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S04_meteo_domani.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S04_meteo_domani.caveman4-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S04_meteo_domani.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S04_meteo_domani.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S04_meteo_domani.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S05_gpu.caveman4-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S05_gpu.caveman4-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S05_gpu.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S05_gpu.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S05_gpu.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S06_meteo_settimana.caveman4-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S05_gpu.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S06_meteo_settimana.caveman4-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S06_meteo_settimana.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S06_meteo_settimana.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S06_meteo_settimana.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true
+   },
+   "foreign": false,
+   "verbatim": false
+  },
+  "S06_meteo_settimana.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S07_https.caveman4-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S07_https.caveman4-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S07_https.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S07_https.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S07_https.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S07_https.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S08_bitcoin.caveman4-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S08_bitcoin.caveman4-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S08_bitcoin.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S08_bitcoin.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S08_bitcoin.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S08_bitcoin.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S09_x86.caveman4-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true,
+    "12": true,
+    "13": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S09_x86.caveman4-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true,
+    "12": true,
+    "13": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S09_x86.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true,
+    "12": true,
+    "13": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S09_x86.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true,
+    "12": true,
+    "13": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S09_x86.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true,
+    "12": true,
+    "13": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S09_x86.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true,
+    "12": true,
+    "13": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S10_database.caveman4-full.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true,
+    "12": true,
+    "13": true,
+    "14": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S10_database.caveman4-full.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true,
+    "12": true,
+    "13": true,
+    "14": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S10_database.caveman4-lite.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true,
+    "12": true,
+    "13": true,
+    "14": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S10_database.caveman4-lite.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true,
+    "12": true,
+    "13": true,
+    "14": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S10_database.caveman4-ultra.1.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true,
+    "12": true,
+    "13": true,
+    "14": true
+   },
+   "foreign": false,
+   "verbatim": true
+  },
+  "S10_database.caveman4-ultra.2.txt": {
+   "notes": {
+    "0": true,
+    "1": true,
+    "2": true,
+    "3": true,
+    "4": true,
+    "5": true,
+    "6": true,
+    "7": true,
+    "8": true,
+    "9": true,
+    "10": true,
+    "11": true,
+    "12": true,
+    "13": true,
+    "14": true
    },
    "foreign": false,
    "verbatim": true
@@ -10029,7 +11923,7 @@
  "meta": {
   "model": "claude-sonnet-5-5",
   "prompt": "b08ef043dac7",
-  "date": "2026-11-01",
+  "date": "2026-11-02",
   "second": {
    "model": "claude-sonnet-5-5",
    "prompt": "43f7430479cb"

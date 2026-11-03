@@ -1,3 +1,8 @@
-Sì, una lista vuota in Python è falsa in un contesto booleano.
+Sì: in un contesto booleano una lista vuota è falsa.
 
-Vale anche per le altre collezioni vuote: tuple, dizionari, insiemi e stringhe.
+Vale per tutte le collezioni vuote:
+- lista
+- tupla
+- dizionario
+- insieme
+- stringa

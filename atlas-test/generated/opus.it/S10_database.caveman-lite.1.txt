@@ -1,33 +1,29 @@
-Parti con Postgres da solo. Aggiungi altri sistemi solo quando un carico preciso lo richiede e hai i numeri per dimostrarlo.
+**Consiglio:** parti con solo Postgres. Aggiungi Elasticsearch o ClickHouse solo quando un carico preciso lo impone e hai i numeri per dimostrarlo.
 
 **Postgres**
-- Gestisce tutti e quattro i carichi in modo accettabile, ma nessuno in modo eccellente.
-- **Ordini:** ha transazioni serie. Sugli ordini non puoi rinunciarci.
-- **Ricerca testuale:** è integrata. Basta sotto il milione di documenti, sopra diventa debole.
+Regge in modo accettabile tutti e quattro i tuoi carichi, ma nessuno in modo eccellente.
+- **Ordini:** le transazioni sono solide. Sugli ordini non puoi rinunciarci.
+- **Catalogo:** lo gestisce senza problemi.
+- **Ricerca testuale:** è integrata e basta sotto il milione di documenti. Sopra diventa debole.
 - **Analisi:** regge fino a decine di milioni di righe. Oltre, le scansioni diventano lente.
 
 **MySQL**
-- Sugli ordini equivale a Postgres.
-- È più debole sui tipi di dato e sulle query complesse. Con il tuo carico misto non c'è motivo di preferirlo.
+Sugli ordini equivale a Postgres. È più debole sui tipi di dato e sulle query complesse. Rispetto a Postgres non ti dà niente in più.
 
 **MongoDB**
-- Semplifica il catalogo quando i prodotti hanno schemi variabili.
-- Le transazioni multi-documento sono arrivate tardi e costano. Per gli ordini è quindi una scelta scomoda.
+Rende più semplice il catalogo, perché accetta schemi variabili. Però le transazioni su più documenti sono arrivate tardi e costano. Per una piattaforma che gestisce ordini è un compromesso sbagliato.
 
 **Elasticsearch**
-- Nella ricerca testuale è molto superiore: rilevanza, sinonimi, tolleranza agli errori di battitura.
-- Non è un archivio autorevole. Deve ricevere i dati da un altro database, non sostituirlo.
-- Aggiungerlo prima del milione di documenti è quasi sempre prematuro.
+Sulla ricerca testuale è molto superiore: rilevanza, sinonimi, tolleranza agli errori di battitura. Non è però un archivio autorevole. Lo alimenti da un altro database, non lo usi al posto suo. Se lo aggiungi prima del milione di documenti, quasi sempre è prematuro.
 
 **ClickHouse**
-- Nell'analisi è molto superiore: le scansioni colonnari sono avanti di ordini di grandezza.
-- Non va usato per gli ordini, perché gli aggiornamenti puntuali sono il suo punto debole.
+Sull'analisi è molto superiore: con le scansioni colonnari è avanti di ordini di grandezza. Non va bene per gli ordini, perché gli aggiornamenti puntuali sono il suo punto debole.
 
-**Come si combinano**
-La configurazione tipica usa Postgres come archivio autorevole. Elasticsearch e ClickHouse ricevono i dati da Postgres. Ogni sistema che aggiungi porta però due problemi: la sincronizzazione e l'allineamento dei dati. Il costo vero dei sistemi specializzati non è la licenza. È il tempo delle persone che li tengono in funzione.
+**Come cresce di solito l'architettura**
+La configurazione tipica è Postgres come archivio autorevole, con Elasticsearch e ClickHouse alimentati da Postgres. Ogni sistema che aggiungi porta due problemi: la sincronizzazione e l'allineamento dei dati. Il costo vero dei sistemi specializzati non è la licenza. È il tempo delle persone che li tengono in piedi.
 
-**Cosa fare**
-1. Metti ordini, catalogo, ricerca e analisi su Postgres.
-2. Aggiungi Elasticsearch quando superi il milione di documenti e la qualità della ricerca diventa un problema misurato.
-3. Aggiungi ClickHouse quando le analisi superano le decine di milioni di righe e le scansioni diventano lente nei numeri, non solo come impressione.
-4. Prima di ogni aggiunta, verifica di avere le persone e il tempo per gestire la sincronizzazione.
+**In pratica**
+1. Oggi: solo Postgres per ordini, catalogo, ricerca e analisi.
+2. Quando i documenti superano il milione e la ricerca diventa un problema misurabile: aggiungi Elasticsearch, alimentato da Postgres.
+3. Quando l'analisi supera le decine di milioni di righe e le scansioni rallentano: aggiungi ClickHouse, alimentato da Postgres.
+4. Gli ordini restano sempre su Postgres.

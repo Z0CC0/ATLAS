@@ -1,27 +1,21 @@
-Start from one question, and it is not technical: what must your team be able to do a year from now that it cannot do today? Judge every architecture choice against that answer.
+Decide by one question first, and it is not technical. What must team be able to do one year from now that it cannot do today? Pick architecture that answers that.
 
-**Before picking an architecture, map the monolith:**
-- **Which parts actually change.** Stable parts gain nothing from being split, so leave them alone.
-- **Where the transaction boundaries sit.** A transaction that spans two services becomes a distributed problem. Draw your boundaries so they do not cut through a transaction.
+**1. Find which parts change.**
+Map which parts of monolith change often. Stable parts gain nothing from split. Leave them alone.
 
-**How to migrate:**
-- Avoid a full rewrite running in parallel with the old system. That approach almost always fails because the old system keeps changing and the copy never catches up.
-- Strangle the monolith progressively instead:
-  1. Put a router in front of the monolith.
-  2. Move one piece at a time.
-  3. Keep the old system authoritative until the new piece is verified.
+**2. Find transaction boundaries.**
+Find where transactions start and end. Transaction spanning two services becomes distributed problem. Draw service lines so no transaction crosses them.
 
-**Count the cost of microservices:**
-- Microservices cost more to operate. Every service needs its own releases, monitoring, logs and alerts, plus a person who looks after it.
-- With fewer than five developers, that cost almost always exceeds the benefit.
+**3. Do not rewrite everything in parallel.**
+Full rewrite beside old system almost always fails. Old system keeps changing, copy never catches up.
 
-**Consider the option nobody mentions: a modular monolith.**
-- It has sharp internal boundaries and ships as one release.
-- You keep the option to extract a module the day you genuinely need to.
-- For a small team, or when only a few parts change, this is probably your best starting point.
+Use progressive strangling instead:
+1. Put router in front of monolith.
+2. Move one piece at a time.
+3. Keep old system authoritative until new piece is verified.
 
-To get from these facts to a decision:
-1. Answer the one-year question.
-2. Find the parts that change and the transaction boundaries.
-3. Start with a modular monolith.
-4. Extract a service only when a real need appears, using the router and one piece at a time.
+**4. Count operational cost.**
+Microservices cost more to run. Each service needs releases, monitoring, logs, alerts and one person who looks after it. Below five developers, that cost almost always exceeds benefit.
+
+**5. Consider modular monolith.**
+Option nobody mentions. Sharp internal boundaries, one release. You can extract one module the day it is truly needed. Good fit for small team, or when you are unsure which parts will change.

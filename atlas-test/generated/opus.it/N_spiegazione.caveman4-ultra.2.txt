@@ -1,0 +1,16 @@
+**Cos'è:** dopo una scrittura le repliche non concordano subito. Se le scritture si fermano, convergono entro un tempo finito.
+
+**Tempi tipici di convergenza:**
+- Repliche nella stessa regione: sotto il secondo.
+- Repliche in regioni diverse: si sale a secondi.
+
+**Perché ti riguarda:** il problema tocca chi legge subito dopo aver scritto. Per esempio, l'utente pubblica un commento, ricarica la pagina e non lo vede.
+
+**Soluzione comune:** la sessione che ha appena scritto legge dalla replica primaria. Questo vale solo per quella sessione, non per tutte.
+
+**Perché accettarla:** è un compromesso con la disponibilità. Un sistema che pretende consistenza forte deve rifiutare le richieste quando le repliche non si parlano. Quindi non è un difetto da eliminare ma una scelta. La maggior parte dei sistemi che scalano la accetta di proposito.
+
+**Quando non va bene:** i casi sono pochi e riconoscibili:
+- saldi di conto
+- disponibilità di posti
+- unicità di un identificativo

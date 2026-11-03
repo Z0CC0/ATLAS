@@ -1,0 +1,16 @@
+La consistenza eventuale è una garanzia debole sui dati replicati. Dopo una scrittura le repliche non concordano subito. Se le scritture si fermano, però, convergono tutte entro un tempo finito.
+
+**Perché ti riguarda:** il problema lo vede chi legge subito dopo aver scritto. Per esempio, l'utente pubblica un commento, ricarica la pagina e non lo trova. Per lui è un bug, anche se il dato c'è ed è solo in viaggio verso le altre repliche.
+
+**Quanto dura:** con repliche nella stessa regione la convergenza tipica è sotto il secondo. Fra regioni diverse sale a qualche secondo.
+
+**Perché si accetta:** in cambio ottieni disponibilità. Un sistema che pretende consistenza forte deve rifiutare richieste quando le repliche non riescono a comunicare. Quindi non è un difetto da eliminare, è una scelta. La maggior parte dei sistemi che scalano la accetta di proposito.
+
+**Come gestire il commento sparito:** la soluzione comune è far leggere dalla replica primaria solo la sessione che ha appena scritto. Gli altri utenti continuano a leggere dalle repliche. Così chi scrive vede subito il proprio dato e il resto del traffico non pesa sulla primaria.
+
+**Quando non va bene:** i casi sono pochi e facili da riconoscere:
+- saldi di conto
+- disponibilità di posti
+- unicità di un identificativo
+
+In questi casi due letture non aggiornate possono produrre un errore reale, per esempio un saldo sbagliato, un posto venduto due volte o un ID duplicato. Lì serve consistenza forte. Per tutto il resto la consistenza eventuale va di solito bene.

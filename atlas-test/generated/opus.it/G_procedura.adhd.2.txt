@@ -1,21 +1,30 @@
-Non usare `ALTER TABLE t ALTER COLUMN colonna TYPE integer` diretto: riscrive tutta la tabella con un lock `ACCESS EXCLUSIVE`, quindi il servizio resta fermo per tutto il tempo della riscrittura. Fai invece la migrazione in 6 passi:
+Prima di toccare lo schema, conta le righe che non contengono solo cifre:
 
-1. **Controlla che ogni valore si possa convertire.** Conta le righe in cui `colonna` non contiene solo cifre:
-   ```sql
-   SELECT count(*) FROM t WHERE colonna !~ '^[0-9]+$';
-   ```
-   Se il risultato è diverso da 0, sistema quei valori prima di continuare.
+```sql
+SELECT count(*) FROM t WHERE colonna !~ '^[0-9]+$';
+```
+
+Se il risultato non è 0, quelle righe vanno sistemate prima di andare avanti.
+
+**Non usare `ALTER TABLE t ALTER COLUMN colonna TYPE integer`.** Riscrive tutta la tabella e tiene un `ACCESS EXCLUSIVE` lock per tutta la durata. Su dieci milioni di righe il servizio resta fermo per tutto quel tempo.
+
+## Procedura senza fermare il servizio
+
+1. **Verifica i dati.** Esegui la query qui sopra e procedi solo quando restituisce 0.
 2. **Aggiungi la colonna nuova:**
    ```sql
    ALTER TABLE t ADD COLUMN colonna_int integer;
    ```
-3. **Riempila a blocchi di 10.000 righe alla volta.** Così nessun lock sulla tabella dura a lungo.
-4. **Aggiungi un trigger** che tenga allineate le due colonne mentre la migrazione è in corso.
-5. **Modifica il codice** perché legga da `colonna_int`, poi rilascialo.
+3. **Aggiungi un trigger** che tenga allineate le due colonne durante la migrazione. Così le righe scritte mentre riempi la colonna nuova non restano indietro.
+4. **Riempi `colonna_int` a blocchi di 10.000 righe per volta.** Ogni blocco tiene il lock poco tempo e la tabella resta usabile.
+5. **Modifica il codice perché legga da `colonna_int`, poi rilascialo.**
 6. **Solo dopo il rilascio, elimina la colonna vecchia:**
    ```sql
    ALTER TABLE t DROP COLUMN colonna;
    ```
-   ⚠️ Questo passo è irreversibile: una volta eliminata la colonna, i dati tornano solo con un ripristino da backup. Fallo solo quando il codice nuovo è in produzione e legge correttamente dalla colonna nuova.
 
-Primo passo da fare adesso: lancia la query di conteggio del punto 1 e controlla che restituisca 0.
+## Attenzione al passo 6
+
+Il passo 6 è irreversibile. Dopo il `DROP` i dati della colonna vecchia si recuperano solo da un backup. Fallo quando il codice nuovo è in produzione e funziona.
+
+Next: lancia la query di conteggio e guarda se il risultato è 0.

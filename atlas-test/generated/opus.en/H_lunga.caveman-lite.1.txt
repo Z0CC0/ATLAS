@@ -1,20 +1,16 @@
-Prompt caching saves the part of a request the model has already processed, called the prefix. A later request that starts the same way reuses that prefix and does not pay to process it again.
+Prompt caching saves work on the part of a request that repeats. The cache stores the already-processed prefix of a request. A later request that starts the same way reuses that prefix and does not pay to process it again.
 
-**How it works**
+**Only the prefix is reused.** Matching goes from the start of the request. If one character differs early on, nothing from that point onward is reused, even when the rest is identical. So the order of your request matters:
 
-Reuse only covers the prefix. The request must match the cached version exactly from the first character. If one character differs near the start, reuse stops at that point, and everything after it gets processed at full cost.
+- Put the stable parts first: system instructions, attached documentation, tool definitions.
+- Put the changing parts after them: the user's new message, per-turn data.
 
-So put the parts that stay the same first and the parts that change after them. If you reverse that order, the changing part sits at the front and breaks reuse for the whole request.
+If you reverse that order, the changing content sits at the front and nothing behind it gets reused.
 
-A common mistake is a system line that changes every turn, such as the current time. Everything after that line loses reuse, even if the rest never changes. Move that line to the end or take it out.
+**Look out for volatile lines near the top.** A system line that changes every turn, such as a clock or timestamp, breaks reuse for everything after it. One line like that at the top of your instructions makes caching useless for the large stable context below it. Move that line to the end or remove it.
 
-**Cost**
+**What it costs:** Writing to the cache costs more than a normal read, so the first request is more expensive than it would be without caching. The savings start with the second request. They grow with each turn that reuses the same prefix.
 
-Writing to the cache costs more than a normal read. That makes the first request more expensive than it would be without caching. You start saving on the second request, and the savings grow with each turn that reuses the prefix.
+**When it pays off:** Long conversations with a large stable context. Examples are a big system prompt, attached docs, or many tool definitions sent again on every turn. You pay the write once and get cheaper reads many times.
 
-**When it pays off**
-
-- It pays off on long conversations with a large context that stays the same, such as system instructions, attached documentation and tool definitions. You pay to write that context once and then read it cheaply on every turn.
-- It does not pay off on one-off requests that differ from each other. You pay the higher write cost and never read the cache back, so you lose money.
-
-In short: if the same large block will come back many times at the start of your requests, put it first, keep it byte-for-byte identical, and let the cache handle it.
+**When it does not pay off:** Single requests that differ from each other. You pay the extra write cost and never read the cache back, so you spend more than you would without caching.

@@ -23,14 +23,14 @@ const fixed = JSON.parse(readFileSync(join(HERE, file), 'utf8'));
 const results = JSON.parse(readFileSync(join(HERE, 'results.opus.json'), 'utf8'));
 const billed = fixed.rows._billed;
 const saving = (k) => (results.saving.en[k] + results.saving.it[k]) / 200;
-const pct = (first, rem, s, n) => { const v = ((first + n * rem - n * ANSWER * s) / (n * ANSWER)) * 100; return `${v > 0 ? '+' : ''}${v.toFixed(0)}%`; };
+const pct = (first, rem, s, n) => { const v = ((first + n * rem - n * ANSWER * s) / (n * ANSWER)) * 100; const r = Math.round(v); return `${r > 0 ? '+' : ''}${r === 0 ? 0 : r}%`; };
 
 console.log(`Fixed costs: ${file}, ATLAS ${fixed.version}, billed on ${billed.model}. Savings: ${results.date}, ${results.rules}.\n`);
 console.log('`atlas`\n\n| setup | 40 turns | 295 turns |\n|---|---|---|');
 const SETUPS = [['low', 'atlas-low'], ['high', 'atlas-high'], ['low-ask', 'low-ask'], ['low-check', 'low-check'], ['low-ask-check', 'low-ask-check'], ['high-ask', 'high-ask'], ['high-check', 'high-check'], ['high-ask-check', 'high-ask-check']];
 for (const [k, r] of SETUPS) console.log(`| \`${k.replace(/-/g, '` + `')}\` | ${TURNS.map((n) => pct(billed.atlas[k], results.rem[r], saving(r), n)).join(' | ')} |`);
 
-for (const b of ['atlas-min', 'atlas-code', 'atlas-mem', 'atlas-max']) {
+for (const b of ['atlas-min', 'atlas-code', 'atlas-mem', 'atlas-video', 'atlas-max']) {
   console.log(`\n\`${b}\`\n\n| setup | 40 turns | 295 turns |\n|---|---|---|`);
   const min = b === 'atlas-min';
   for (const [level, r, rem] of [['low', min ? 'atlasmin-low' : 'atlas-low', fixed.rows[b].rem_low], ['high', min ? 'atlasmin-high' : 'atlas-high', fixed.rows[b].rem_high]]) {

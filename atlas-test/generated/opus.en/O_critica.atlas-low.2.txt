@@ -1,13 +1,21 @@
-I wouldn't put all of it there. Keep integrity rules in the database and business logic in the application, behind a single entry point.
+I wouldn't put all of it there. Keep only integrity rules in the database, and put business logic in the application behind a single entry point.
 
-The upside is real: no application path can skip the rule, not even a script run by hand. But it costs a lot.
+The upside you're after is real. With triggers, no application path can skip the rule, not even a script someone runs by hand.
+
+The cost comes later:
 
 Triggers are invisible to anyone reading the application code. A change that looks simple can fire other triggers and leave no trace.
 
-Your team's current testing tools won't cover them. You'd need tests running against a real database.
+Your team's current test tools won't cover them. You'd need tests that run against a real database.
 
-Debugging gets harder. An error inside a trigger shows up only as a failed write and doesn't say which rule caused it.
+Debugging gets harder. An error inside a trigger shows up only as a failed write, with nothing saying which rule caused it.
 
-Migrations become fragile, because trigger order matters and nothing records it.
+Migrations become fragile, because the order triggers fire in matters and isn't declared anywhere.
 
-**The alternative:** use the database only for what protects integrity: constraints, foreign keys, uniqueness and domain checks. Put the business logic in the application, behind a single entry point. That entry point gives you the same guarantee as a trigger, **as long as direct database access is reserved for migrations**.
+A better split:
+
+The database keeps what protects integrity: constraints, foreign keys, uniqueness and domain checks.
+
+The application holds the business logic, and every write goes through one entry point.
+
+That entry point gives you the same guarantee as a trigger, as long as direct database access is reserved for migrations. Without that rule, a hand-run script can go around it, and you're back to the problem you started with.

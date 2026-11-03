@@ -1,13 +1,11 @@
-New York's weather this week, from web sources:
+**New York weather this week** (source: web)
 
-- **Monday:** clear, 24°, low 17.
-- **Tuesday:** cloudy, 22°, low 16, with light rain in the evening.
-- **Wednesday:** rain for most of the day, 19°, low 15. This is the coolest day.
-- **Thursday:** brighter spells, 21°, low 14.
-- **Friday:** clear, 25°, low 16.
-- **Saturday:** clear and warm, 28°, low 19.
-- **Sunday:** thunderstorms in the afternoon, 26°, low 18.
+- **Monday:** Clear. High 24°, low 17°.
+- **Tuesday:** Cloudy. High 22°, low 16°. Light rain in the evening.
+- **Wednesday:** Rain most of the day. High 19°, low 15°.
+- **Thursday:** Brighter spells. High 21°, low 14°.
+- **Friday:** Clear. High 25°, low 16°.
+- **Saturday:** Clear and warm. High 28°, low 19°.
+- **Sunday:** Thunderstorms in the afternoon. High 26°, low 18°.
 
-Significant rain falls on two days, Wednesday and Sunday. Bring an umbrella both days. On Sunday, plan outdoor activities for the morning.
-
-The weekend is the warmest stretch. Saturday is the best day to be outside.
+Wednesday and Sunday are the two days with significant rain, so bring an umbrella. Wednesday is also the coolest day. The weekend is the warmest part of the week, with Saturday at 28°. If you're planning something outdoors, Saturday is the best day. On Sunday, do outdoor things in the morning, before the storms.

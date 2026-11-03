@@ -1,27 +1,34 @@
-**Parti con Postgres da solo.** Aggiungi Elasticsearch o ClickHouse solo quando un carico preciso lo impone, e hai i numeri per dimostrarlo.
+**Usa solo Postgres.** Aggiungi un altro sistema solo quando un carico specifico lo richiede, con dei numeri che lo dimostrano.
 
 ## Confronto per carico
 
-| | Ordini | Catalogo | Ricerca testuale | Analisi |
-|---|---|---|---|---|
-| **Postgres** | ✅ transazioni serie | ✅ accettabile | ⚠️ ok sotto 1M documenti, debole sopra | ⚠️ ok fino a decine di milioni di righe, poi scansioni lente |
-| **MySQL** | ✅ equivalente a Postgres | ⚠️ più debole su tipi di dato | — | ⚠️ più debole su query complesse |
-| **MongoDB** | ❌ transazioni multi-documento arrivate tardi e costose | ✅ semplifica gli schemi variabili | — | — |
-| **Elasticsearch** | ❌ non è un archivio autorevole | — | ✅✅ rilevanza, sinonimi, tolleranza ai refusi | — |
-| **ClickHouse** | ❌ debole sugli aggiornamenti puntuali | — | — | ✅✅ scansioni colonnari, avanti di ordini di grandezza |
+| Carico | Postgres | Alternativa migliore | Quando conviene cambiare |
+|---|---|---|---|
+| **Ordini** | Transazioni solide, e sugli ordini non si può rinunciare | Nessuna. MySQL è equivalente qui | Mai |
+| **Catalogo** | Va bene | MongoDB, più semplice con schemi variabili | Quasi mai, vedi sotto |
+| **Ricerca testuale** | Integrata, basta sotto 1 milione di documenti | Elasticsearch: molto meglio su rilevanza, sinonimi ed errori di battitura | Sopra 1 milione di documenti |
+| **Analisi** | Regge fino a decine di milioni di righe | ClickHouse: scansioni colonnari più veloci di ordini di grandezza | Quando le scansioni diventano lente |
 
-Postgres è l'unico che regge tutti e quattro i carichi in modo accettabile, anche se non eccelle in nessuno. Sugli ordini le transazioni non sono negoziabili, quindi MongoDB e ClickHouse sono esclusi come database principale. MySQL è un'alternativa possibile, ma non ha vantaggi rispetto a Postgres e ha qualche limite in più.
+Postgres gestisce tutti e quattro i carichi in modo accettabile, ma nessuno in modo eccellente. Proprio per questo è il punto di partenza giusto.
 
-## Quando aggiungere cosa
+## Le alternative da scartare come database principale
 
-1. **Adesso:** usa solo Postgres, per ordini, catalogo, ricerca e analisi.
-2. **Aggiungi Elasticsearch** quando superi il milione di documenti o quando la qualità della ricerca diventa un problema misurato. Prima del milione è quasi sempre prematuro. Va alimentato da Postgres, non lo sostituisce.
-3. **Aggiungi ClickHouse** quando le query di analisi, oltre le decine di milioni di righe, diventano troppo lente. Anche lui va alimentato da Postgres.
+- **MySQL:** sugli ordini è uguale a Postgres, ma è più debole su tipi di dato e query complesse. Non ti dà nulla in più.
+- **MongoDB:** semplifica il catalogo, ma le transazioni su più documenti sono arrivate tardi e costano. Sugli ordini è un rischio.
+- **Elasticsearch:** non è un archivio autorevole. Va alimentato da un altro database, non può sostituirlo.
+- **ClickHouse:** gli aggiornamenti puntuali sono il suo punto debole, quindi non va bene per gli ordini.
 
-Dove probabilmente arriverai: Postgres come archivio autorevole, con Elasticsearch e ClickHouse alimentati da lì.
+## Dove arrivi se cresci
 
-## Il costo nascosto
+La configurazione tipica è Postgres come archivio autorevole, con Elasticsearch e ClickHouse alimentati da Postgres.
 
-Ogni sistema che aggiungi porta due problemi: tenerlo sincronizzato e verificare che i dati restino allineati. Il costo vero non è la licenza, ma il tempo delle persone che devono tenerlo in piedi. Per questo conviene aggiungere un sistema solo quando i numeri lo giustificano.
+Ogni sistema che aggiungi però porta due problemi: la sincronizzazione e l'allineamento dei dati. Il costo vero non è la licenza, è il tempo delle persone che tengono in piedi quei sistemi. Per questo aggiungere Elasticsearch prima del milione di documenti è quasi sempre prematuro.
 
-**Prossimo passo (2 minuti):** scrivi due numeri, cioè quanti prodotti o documenti ti aspetti nel catalogo e quante righe di ordini all'anno. Se sono sotto 1 milione e sotto qualche decina di milioni, per ora basta Postgres.
+## Le due soglie da controllare
+
+1. **Documenti da cercare oltre 1 milione?** Allora valuta Elasticsearch.
+2. **Righe da analizzare oltre qualche decina di milioni, con scansioni lente?** Allora valuta ClickHouse.
+
+Se la risposta è no a entrambe, ti basta Postgres.
+
+Prossimo passo: stima quanti prodotti avrai nel catalogo e quante righe di ordini prevedi tra un anno (5 minuti). Poi confronta i due numeri con le soglie qui sopra.

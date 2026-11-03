@@ -1,9 +1,11 @@
-Usually no. B-tree index on column with only three distinct values normally goes unused. Each value matches large share of rows. Planner picks sequential scan when filter selects more than roughly 5-10% of rows. Index still costs extra work on every write, plus disk space. So you pay for it and get nothing back.
+Usually no. On a column with only three distinct values, the planner normally ignores a plain B-tree index. Each value matches a big share of the table. When a filter selects more than roughly 5-10% of rows, the planner prefers a sequential scan.
 
-One exception: one value is rare, and you query for that value. Then build partial index covering only rare value. That index does work. Example:
+The index still costs you something even when unused. Every write must update it, and it takes disk space.
+
+Exception: one value is rare and you query for it often. Then build a partial index on that rare value only, and the planner does use it. Example:
 
 ```sql
-CREATE INDEX orders_failed_idx ON orders (status) WHERE status = 'failed';
+CREATE INDEX orders_failed_idx ON orders (id) WHERE status = 'failed';
 ```
 
-This index stays small. It speeds up queries that filter on rare value, and it costs less on writes than full index.
+Small index, cheap to maintain, fast for queries with `WHERE status = 'failed'`.

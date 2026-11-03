@@ -1,13 +1,13 @@
-x86 has spent about forty years staying compatible on the surface while the machine underneath was rebuilt several times.
+x86 started as a 16-bit chip that grew out of the 8080. Over the decades it turned into a stable instruction set, and the real machine now sits underneath it.
 
-**Foundations, 1978–1985.** 8086 of 1978, 16 bit, grew out of 8080 and stayed compatible with it at source level, so existing code could move across. 80286 of 1982 added protected mode, but with a flaw: once in protected mode, no way back to real mode without a reboot. 80386 of 1985 fixed that and set the shape for decades. It brought 32 bit, paged virtual memory, and virtual 8086 mode, which let old real-mode programs run inside protected environment.
+**Foundations (1978–1989).** The 8086 of 1978 was 16-bit and compatible with the 8080 at source level, so existing code could be carried over by recompiling. The 80286 of 1982 added protected mode, with one awkward limit: once in protected mode, the only way back to real mode was a reboot. The 80386 of 1985 fixed most of that. It brought 32-bit operation, paged virtual memory, and virtual 8086 mode, which let old real-mode programs run inside the protected environment. The 486 of 1989 moved the first-level cache and the maths coprocessor onto the chip itself.
 
-**Pulling things onto the chip, 1989–1993.** 486 of 1989 moved first level cache and maths coprocessor onto the chip itself. Pentium of 1993 went superscalar, with two integer pipelines that could retire two instructions per cycle.
+**Parallelism inside the chip (1993–1995).** The Pentium of 1993 was superscalar: it had two integer pipelines and could retire two instructions per cycle. The Pentium Pro of 1995 made the bigger break. It executed instructions out of order and translated x86 instructions into internal micro-operations. From then on, x86 was an interface rather than the real machine underneath.
 
-**Turning point, 1995.** Pentium Pro introduced out of order execution and translated x86 instructions into internal micro-operations. From then on x86 became an interface, no longer the real machine underneath. Everything after builds on that split.
+**Frequency hits the power wall (2000).** The Pentium 4 of 2000 chased clock speed with a very long pipeline. It ran into the power wall: higher clock speeds could no longer be delivered within practical power limits.
 
-**Frequency race and its end, 2000–2006.** Pentium 4 of 2000 chased clock speed with very long pipeline and hit power wall. In between, 2003, AMD extended the architecture to 64 bit with AMD64, and Intel adopted same instruction set. First time the dominant extension came from someone other than Intel. From 2006, with Core 2, direction shifted from frequency to core count.
+**64 bit comes from AMD (2003).** AMD extended the architecture to 64 bit in 2003 with AMD64, and Intel adopted the same instruction set. It was the first time the dominant extension did not come from Intel.
 
-**Alongside all this**, vector extensions kept growing across generations: MMX, SSE, AVX, AVX-512.
+**More cores instead of more clock (2006 on).** With the Core 2 in 2006, the direction shifted from raising frequency to adding cores. Across the same generations the vector extensions kept growing: MMX, then SSE, then AVX, then AVX-512.
 
-**Today** most of the complexity sits in layers below the instruction set: branch prediction, cache hierarchy, speculative execution. That last one showed its price in 2018, when Spectre and Meltdown revealed that speculative execution carried a security cost nobody had priced.
+**Today.** Most of the complexity now sits in the layers below the instruction set: branch prediction, the cache hierarchy and speculative execution. Spectre and Meltdown in 2018 showed that speculative execution had carried a security cost nobody had priced in.

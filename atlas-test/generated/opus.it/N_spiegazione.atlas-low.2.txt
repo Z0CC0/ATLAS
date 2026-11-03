@@ -1,9 +1,19 @@
-La consistenza eventuale vuol dire che, dopo una scrittura, le repliche non concordano subito, ma convergono entro un tempo finito se le scritture si fermano.
+La consistenza eventuale vuol dire che, dopo una scrittura, le repliche di un dato non concordano subito, ma arrivano allo stesso valore entro un tempo finito, purché le scritture si fermino.
 
-Ti interessa per via del compromesso con la disponibilità. Un sistema che pretende consistenza forte deve rifiutare richieste quando le repliche non si parlano. Per questo la consistenza eventuale non è un difetto da eliminare, ma una scelta: la maggior parte dei sistemi che scalano la accetta di proposito.
+Ti interessa perché tocca direttamente chi legge subito dopo aver scritto. Per esempio, un utente pubblica un commento, ricarica la pagina e non lo vede. Non perdi dati, ma l'esperienza sembra rotta.
 
-Il problema si vede con chi legge subito dopo aver scritto. Un utente pubblica un commento, ricarica la pagina e non lo vede. La soluzione comune è leggere dalla replica primaria solo per la sessione che ha appena scritto, non per tutte.
+Quanto dura questa finestra: con repliche nella stessa regione di solito resta sotto il secondo, mentre fra regioni diverse arriva a qualche secondo.
 
-La finestra di disallineamento è breve. Fra repliche nella stessa regione di solito converge in meno di un secondo, fra regioni diverse sale a qualche secondo.
+Non è un difetto da eliminare, è una scelta. Si sacrifica la consistenza per avere più disponibilità: un sistema che pretende consistenza forte deve rifiutare richieste quando le repliche non riescono a parlarsi. Per questo la maggior parte dei sistemi che scalano accetta la consistenza eventuale di proposito.
 
-I casi in cui non è accettabile sono pochi e riconoscibili: saldi di conto, disponibilità di posti, unicità di un identificativo.
+La soluzione comune al problema del commento è far leggere dalla replica primaria solo la sessione che ha appena scritto, non tutte le sessioni. Così chi ha scritto vede subito la propria modifica, e gli altri continuano a leggere dalle repliche.
+
+Ci sono pochi casi in cui non è accettabile, ed è facile riconoscerli:
+
+saldi di conto
+
+disponibilità di posti
+
+unicità di un identificativo
+
+Lì serve **consistenza forte**. Quasi ovunque altrove puoi accettare quella eventuale.

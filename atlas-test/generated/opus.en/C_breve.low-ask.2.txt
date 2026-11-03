@@ -1,8 +1,8 @@
-**No**, usually not. On low-cardinality column, B-tree index normally goes unused. Planner prefers sequential scan once filter selects more than roughly 5-10 per cent of rows, and with three values each one likely covers far more than that.
+**No**, usually not. On low cardinality column, planner normally doesn't use B-tree index.
 
-Index still costs writes and disk space, so you pay for it without benefit.
+Planner prefers sequential scan once filter selects more than roughly 5-10 per cent of rows. With only three values, most filters select more than that. Index still costs writes and disk space, so you pay for it and get nothing back.
 
-Exception: if one value is rare and you query for it, partial index on that value does work, for example:
+Exception: one value rare and you filter on it. Partial index on that rare value does work:
 
 ```sql
 CREATE INDEX orders_failed_idx ON orders (id) WHERE status = 'failed';

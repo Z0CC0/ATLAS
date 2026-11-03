@@ -1,17 +1,13 @@
-Start with the question that decides it, and it isn't technical: what must your team be able to do a year from now that it can't do today? Architecture should answer that. It shouldn't answer a fashion.
+Before choosing, find out which parts of your monolith actually change. Stable parts gain nothing from being split, so leave them alone.
 
-Before choosing, map two things in the monolith.
+Next, map where your transaction boundaries sit. Once a transaction spans two services, it turns into a distributed problem.
 
-**Which parts actually change.** Stable parts gain nothing from being split, so leave them where they are.
+Don't do a full rewrite running in parallel with the old system. That almost always fails, because the old system keeps changing and the copy never catches up.
 
-**Where transaction boundaries sit.** A transaction spanning two services becomes a distributed problem, so draw service lines where transactions already end, not through them.
+Strangle it progressively instead. Put a router in front and move one piece at a time. The old system stays authoritative until the new piece is verified.
 
-Then choose how to migrate. A full rewrite running in parallel with the old system almost always fails: the old one keeps changing and the copy never catches up. Strangle it progressively instead:
+Count what microservices cost to operate. Every service needs releases, monitoring, logs, alerts and a person who looks after it. With fewer than five developers, that cost almost always exceeds the benefit.
 
-1. Put a router in front.
-2. Move one piece at a time.
-3. Keep the old system authoritative until each new piece is verified.
+Look at the modular monolith, the option nobody mentions. You get sharp internal boundaries and one release, and you can still extract a module the day you genuinely need to.
 
-On shape, weigh operational cost honestly. Every microservice wants releases, monitoring, logs, alerts, and a person who looks after it. With fewer than five developers, that cost almost always exceeds the benefit.
-
-The option nobody mentions is the modular monolith: sharp internal boundaries, one release, and the freedom to extract a module the day it's genuinely needed. For a small team rewriting PHP, it's usually the sensible default. It also keeps the door to services open without paying for them up front.
+**The deciding question isn't technical:** what must your team be able to do a year from now that it can't do today? Pick the architecture that answers it.

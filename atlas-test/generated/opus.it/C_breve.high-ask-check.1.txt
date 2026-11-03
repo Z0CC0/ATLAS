@@ -1,9 +1,5 @@
-Conoscenza interna.
+conoscenza interna
 
-No. Su una colonna a bassa cardinalità l'indice B-tree di norma non viene usato.
+No. Su una colonna a bassa cardinalità di norma il planner non usa l'indice B-tree. Se il filtro seleziona più di circa il 5-10% delle righe, preferisce una scansione sequenziale. L'indice costa comunque in scrittura e in spazio.
 
-Se il filtro seleziona più del 5-10% circa delle righe, il planner sceglie la scansione sequenziale.
-
-L'indice però costa comunque in scrittura e in spazio.
-
-Fa eccezione l'indice parziale sul valore raro: quello funziona.
+Fa eccezione l'indice parziale sul valore raro: in quel caso funziona.

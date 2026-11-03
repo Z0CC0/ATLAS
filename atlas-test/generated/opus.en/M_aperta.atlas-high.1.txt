@@ -1,14 +1,17 @@
-Decide based on what the team must be able to do a year from now that it can't do today. That question isn't technical, and it should drive the architecture.
+Start with the question that isn't technical: what must your team be able to do a year from now that it can't do today? Let that answer pick the architecture.
 
-Before you choose, work out two things:
+**Before you choose:**
 
-1. Which parts of the monolith actually change. The stable parts gain nothing from being split out.
-2. Where the transaction boundaries sit. A transaction that spans two services becomes a distributed problem.
+1. Find which parts of the monolith actually change. Stable parts gain nothing from being split out.
 
-Avoid a full rewrite running in parallel with the old system. It almost always fails, because the old system keeps changing and the copy never catches up.
+2. Map where the transaction boundaries sit. A transaction that spans two services becomes a distributed problem.
 
-Strangle the monolith progressively instead. Put a router in front, move one piece at a time, and keep the old system authoritative until the new piece is verified.
+**How to migrate:** don't do a full rewrite running in parallel with the old system. It almost always fails, because the old system keeps changing and the copy never catches up. Strangle it progressively instead:
 
-Microservices cost more to run. Every service needs its own releases, monitoring, logs, alerts and a person who looks after it. With fewer than five developers, that cost almost always outweighs the benefit.
+1. Put a router in front of the monolith.
+2. Move one piece at a time.
+3. Keep the old system authoritative until the new piece is verified.
 
-Consider a **modular monolith**, the option nobody mentions. It gives you sharp internal boundaries and a single release, and you can still extract a module the day you genuinely need to.
+**Microservices cost more to operate.** Every service needs its own releases, monitoring, logs, alerts and a person who looks after it. With fewer than five developers, that cost almost always exceeds the benefit.
+
+**Consider a modular monolith.** It's the option nobody mentions: sharp internal boundaries and a single release. You can still extract a module the day it's genuinely needed.

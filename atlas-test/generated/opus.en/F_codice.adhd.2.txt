@@ -1,4 +1,4 @@
-Paste this in and wrap the function you want to debounce:
+Copy this into your code:
 
 ```js
 function debounce(fn, ms) {
@@ -10,24 +10,22 @@ function debounce(fn, ms) {
 }
 ```
 
-## How to use it
+How to use it:
 
 ```js
-const onResize = debounce(() => console.log('resized'), 200);
+const onResize = debounce(() => console.log('resized'), 300);
 window.addEventListener('resize', onResize);
 ```
 
-`fn` runs once, `ms` milliseconds after the last call. Each new call inside that window resets the timer.
+## Why each piece is there
 
-## Three details the code depends on
-
-1. **`clearTimeout(t)` runs before every new `setTimeout`.** If you remove it, the timers stack up and `fn` fires more than once.
-2. **`let t` sits in the outer function, not in the returned one.** That way every call shares one timer. If you move `t` inside the arrow function, each call gets its own timer and nothing is debounced.
-3. **`...args` passes the arguments through.** Without the spread, `fn` is called with nothing.
+1. **`let t` sits outside the returned function.** It lives in the closure, so every call shares one timer. If you move it inside, each call gets its own timer and nothing gets debounced.
+2. **`clearTimeout(t)` runs before every `setTimeout`.** If you skip it, the timers stack up and `fn` runs more than once.
+3. **`...args` forwards the arguments.** Without the spread, `fn` gets called with no arguments.
 
 ## Limits
 
-- **It returns nothing.** The debounced function gives back `undefined`. If you need `fn`'s return value, you have to wrap this in a Promise.
-- **Wrong tool for "run now, then ignore for a while".** That behaviour is a throttle, which is a separate function.
+- **It returns nothing.** If you need `fn`'s return value, the debounced function has to return a Promise.
+- **It waits until the calls stop.** If you want it to run right away and then ignore calls for a while, you need a throttle. That's a different function.
 
-Next: wrap one handler you already have, such as a search input's `input` event, and type quickly to check that it fires once.
+Next: paste the snippet in, wrap one noisy handler (resize, input, scroll), and check that it fires once after the calls stop.

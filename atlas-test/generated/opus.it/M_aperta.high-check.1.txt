@@ -1,13 +1,17 @@
-conoscenza interna
+internal knowledge
 
-Prima di scegliere l'architettura, ti servono tre risposte: quale parte del monolite cambia davvero, dove stanno i confini delle transazioni, cosa deve poter fare il team fra un anno che oggi non può. L'ultima è la domanda decisiva, e non è tecnica.
+Domanda decisiva non tecnica: cosa deve poter fare tuo team fra un anno che oggi non può.
 
-Le parti stabili non guadagnano nulla dall'essere spezzate.
+Prima di scegliere architettura:
 
-Una transazione che attraversa due servizi diventa un problema distribuito. Traccia i confini dei servizi lungo quelli delle transazioni.
+1. Quale parte del monolite cambia davvero. Parti stabili non guadagnano nulla dall'essere spezzate.
 
-Evita la riscrittura completa in parallelo al vecchio sistema: fallisce quasi sempre, perché il vecchio continua a cambiare e la copia non lo raggiunge mai. Meglio lo strangolamento progressivo: metti un router davanti e sposti un pezzo per volta. Il vecchio resta autorevole finché il nuovo non è verificato.
+2. Dove stanno confini delle transazioni. Transazione che attraversa due servizi diventa problema distribuito.
 
-I microservizi costano di più da gestire: ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupi. Sotto i cinque sviluppatori quel costo supera quasi sempre il beneficio.
+Riscrittura completa in parallelo al vecchio sistema: fallisce quasi sempre. Vecchio continua a cambiare, copia non lo raggiunge mai.
 
-Valuta il monolite modulare, l'opzione poco citata: confini interni netti, un solo rilascio, e un modulo lo estrai il giorno che serve davvero.
+Alternativa: strangolamento progressivo. Router davanti, un pezzo per volta, vecchio resta autorevole finché nuovo non è verificato.
+
+Microservizi costano di più in operatività: ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupa. Sotto cinque sviluppatori costo supera quasi sempre beneficio.
+
+Opzione poco citata: **monolite modulare**. Confini interni netti, un solo rilascio, modulo estraibile il giorno che serve davvero.

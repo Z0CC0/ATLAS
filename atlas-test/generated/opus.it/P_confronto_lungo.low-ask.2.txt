@@ -1,11 +1,11 @@
-**File locali più raccoglitore** che li spedisce altrove. Applicazione non aspetta mai scrittura del log.
+File locali più raccoglitore che li spedisce altrove. A mille richieste al minuto così l'applicazione non aspetta mai la scrittura del log.
 
-Regola che vale sempre: scrittura del log fuori dal percorso critico della richiesta. A mille richieste al minuto conta ancora di più.
+**Regola che vale sempre: scrittura del log fuori dal percorso critico della richiesta.**
 
-Perché non solo file: costo zero e nessuna dipendenza, ma ricerca si fa con grep, e su più macchine non esiste, bisogna collegarsi a ognuna. Rotazione va configurata a mano, altrimenti disco si riempie.
+Perché non solo file: costo zero e nessuna dipendenza, ma ricerca solo con grep e, su più macchine, bisogna collegarsi a ognuna. Rotazione va configurata a mano, altrimenti disco si riempie.
 
-Perché non direttamente servizio gestito: ricerca immediata, allarmi e conservazione automatica, ma si paga per volume, e a mille richieste al minuto volume cresce in fretta. Log escono inoltre dalla tua infrastruttura, quindi vanno ripuliti dai dati personali prima di uscire.
+Perché non solo servizio gestito: ricerca immediata, allarmi e conservazione automatica, ma si paga per volume, e a mille richieste al minuto volume cresce in fretta. Inoltre log escono dalla tua infrastruttura, quindi vanno ripuliti dai dati personali prima di uscire.
 
-Perché non database dell'applicazione: ricerca comoda e nota, ma log e richieste sono due carichi molto diversi in competizione. Sotto carico, log riempiono cache e connessioni che servivano alle richieste vere.
+Perché non database: ricerca comoda e nota, ma log nello stesso database dell'applicazione mettono in competizione due carichi molto diversi. Sotto carico occupano cache e connessioni che servivano alle richieste vere.
 
-Con raccoglitore tieni vantaggi di file, cioè scrittura locale e veloce, e ricerca arriva dove li spedisci. Se destinazione è servizio gestito, costo per volume e pulizia dei dati personali restano da gestire.
+Con raccoglitore, destinazione finale può anche essere servizio gestito: valgono comunque costo per volume e pulizia dei dati personali.

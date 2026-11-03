@@ -1,7 +1,13 @@
-conoscenza interna
+*Conoscenza interna*
 
-No, di norma. Su una colonna a bassa cardinalità il planner non usa l'indice B-tree: quando il filtro seleziona più del 5-10% circa delle righe, preferisce una scansione sequenziale.
+No, di norma no. Su una colonna con pochi valori distinti il planner di solito non usa l'indice B-tree.
 
-L'indice però costa comunque in scrittura e spazio, quindi lo paghi senza averne un guadagno.
+Quando il filtro seleziona più del 5-10% circa delle righe, il planner sceglie una scansione sequenziale. Con tre valori, ognuno copre quasi sempre una quota molto più alta.
 
-Eccezione: se uno dei tre valori è raro, un indice parziale solo su quel valore funziona.
+L'indice però costa lo stesso: rallenta le scritture e occupa spazio.
+
+Fa eccezione il caso in cui uno dei tre valori è raro e lo cerchi spesso. Lì conviene un indice parziale solo su quel valore, e funziona:
+
+```sql
+CREATE INDEX ordini_stato_errore_idx ON ordini (stato) WHERE stato = 'errore';
+```

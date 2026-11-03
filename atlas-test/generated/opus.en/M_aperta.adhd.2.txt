@@ -1,21 +1,22 @@
-Write down one sentence first: what must your team be able to do a year from now that it can't do today? That answer decides the architecture, not the technology.
+**Start here:** write one sentence answering *"What must the team be able to do a year from now that it can't do today?"* That's the question that decides the architecture, and it isn't a technical one.
 
-## Before you choose
+## Before you pick an architecture
 
-1. **Find what actually changes.** Map which parts of the monolith get modified often and which have been stable for a long time. Splitting out a stable part gains you nothing.
-2. **Find the transaction boundaries.** If one transaction would span two services, it becomes a distributed problem. Put service boundaries where transactions already end, not through the middle of one.
-3. **Count the people.** Microservices cost more to run. Every service needs its own releases, monitoring, logs, alerts, and a person who looks after it. With fewer than five developers, that cost almost always outweighs the benefit.
+1. **Find what actually changes.** List the parts of the monolith that change often. Stable parts gain nothing from being split, so leave them alone.
+2. **Map your transaction boundaries.** If one transaction would span two services, it becomes a distributed problem. Draw your service boundaries so they don't cut through a transaction.
+3. **Count your developers.** With fewer than five, the operational cost of microservices almost always outweighs the benefit. Every service needs its own releases, monitoring, logs, alerts, and a person who looks after it.
 
-## The option nobody mentions: a modular monolith
+## Options, best first
 
-A modular monolith has sharp internal boundaries and ships as one release. You can still extract a module into its own service on the day you genuinely need to. If the one-year goal doesn't clearly need independent services, this is probably where you land.
+- **Modular monolith (the one nobody mentions):** sharp internal boundaries and one release. You can still pull a module out the day you really need to. This is the likely fit for a small team.
+- **Microservices:** worth it only if your one-year answer needs them and you have the people to run them.
 
-## How to migrate: don't do a big-bang rewrite
+## How to migrate: strangle it, don't rewrite it
 
-- **Avoid:** a full rewrite running in parallel with the old system. It almost always fails. The old system keeps changing, and the copy never catches up.
-- **Do instead:** strangle it step by step.
-  1. Put a router in front of the monolith.
-  2. Move one piece at a time.
-  3. Keep the old system as the source of truth until each new piece is verified.
+Don't build a full rewrite next to the old system. That almost always fails, because the old system keeps changing and the copy never catches up. Do this instead:
 
-Next: spend 10 minutes listing the monolith's modules and marking each one as "changes often" or "stable." The "changes often" ones are your first candidates to move.
+1. Put a router in front of the monolith.
+2. Move one piece at a time, starting with the parts that change most.
+3. Keep the old system as the source of truth until each new piece is verified.
+
+**Next:** write that one sentence about the year ahead. Then list the three parts of the monolith that changed most in the last few months.

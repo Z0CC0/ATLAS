@@ -1,18 +1,22 @@
-**Non metterei tutta la logica nei trigger.** Nel database terrei solo i vincoli di integrità. La logica di business la sposterei nell'applicazione, dietro un solo punto di ingresso.
+**Non metterei tutta la logica nei trigger.** Nel database terrei solo ciò che protegge l'integrità dei dati. La logica di business la metterei nell'applicazione, dietro un unico punto di ingresso.
 
-**Cosa guadagni con i trigger**
-Il vantaggio c'è davvero: nessun percorso applicativo può saltare la regola, nemmeno uno script lanciato a mano.
+## Il vantaggio che cerchi è reale
 
-**Cosa ti costano**
-1. **Non si vedono.** Chi legge il codice applicativo non sa che esistono. Una modifica che sembra semplice ne attiva altre, e non resta traccia.
-2. **I test sono più difficili.** Gli strumenti che il team usa già non bastano: servono prove che girano contro un database vero.
-3. **Il debug è peggiore.** Se un trigger va in errore, vedi solo che la scrittura è fallita. Non sai quale regola l'ha bloccata.
-4. **Le migrazioni si rompono facilmente.** L'ordine in cui scattano i trigger conta, ma non è scritto da nessuna parte.
+Con i trigger nessun percorso applicativo può saltare la regola, nemmeno uno script lanciato a mano. Questo è vero.
 
-**Come dividerei il lavoro**
-- **Nel database:** vincoli, chiavi esterne, unicità, controlli di dominio. Tutto quello che protegge l'integrità dei dati.
-- **Nell'applicazione:** la logica di business, con un solo punto di ingresso per ogni scrittura.
+## Cosa ti costa
 
-Il punto di ingresso unico ti dà la stessa garanzia del trigger, a una condizione: l'accesso diretto al database deve essere riservato alle migrazioni. Se chiudi quella porta, nessuno può aggirare le regole, e non paghi i quattro costi qui sopra.
+1. **Sono invisibili.** Chi legge il codice applicativo non li vede. Una modifica che sembra semplice ne fa scattare altre, senza lasciare traccia.
+2. **Non si testano con gli strumenti che il team usa già.** Servono test che girano contro un database vero.
+3. **Il debug è più difficile.** Un errore dentro un trigger arriva come scrittura fallita, senza dire quale regola l'ha causato.
+4. **Le migrazioni diventano fragili.** L'ordine dei trigger conta, ma non è scritto da nessuna parte.
 
-Primo passo: elenca le regole che oggi vorresti mettere nei trigger e segna quali sono di integrità (vanno nel database) e quali di business (vanno nell'applicazione).
+## Cosa farei
+
+- **Nel database:** vincoli, chiavi esterne, unicità, controlli di dominio.
+- **Nell'applicazione:** la logica di business, con un solo punto di ingresso per le scritture.
+- **Accesso diretto al DB:** solo per le migrazioni.
+
+Con l'accesso diretto limitato così, il punto di ingresso unico ti dà la stessa garanzia del trigger: nessuno può aggirare la regola. In più eviti i quattro costi elencati sopra.
+
+**Prossimo passo (2 minuti):** scrivi in una lista chi o cosa oggi ha accesso diretto in scrittura al database. Quella lista ti dice quanto lavoro serve per arrivare al punto di ingresso unico.

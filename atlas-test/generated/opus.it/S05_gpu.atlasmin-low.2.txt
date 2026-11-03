@@ -1,9 +1,7 @@
-Differenza principale sta nella generazione di fotogrammi. Sul rasterizzatore puro 5080 guadagna nell'ordine del 10-15 per cento.
+La 5080 è soprattutto più brava nella generazione di fotogrammi. Sul rasterizzatore puro il guadagno reale si ferma intorno al 10-15 per cento.
 
-Architettura: Blackwell sulla 5080, Ada Lovelace sulla 4080.
+Cambia l'architettura: la 5080 usa Blackwell, la 4080 Ada Lovelace.
 
-Memoria: GDDR7 sulla 5080, GDDR6X sulla 4080. Banda sale da circa 717 a circa 960 gigabyte al secondo.
+Cambia anche la memoria: GDDR7 sulla 5080, GDDR6X sulla 4080. La banda passa da circa 717 a circa 960 gigabyte al secondo.
 
-Consumo dichiarato: da 320 a 360 watt.
-
-Connettore di alimentazione: resta a 16 pin.
+Il consumo dichiarato sale da 320 a 360 watt. Il connettore di alimentazione resta a 16 pin.

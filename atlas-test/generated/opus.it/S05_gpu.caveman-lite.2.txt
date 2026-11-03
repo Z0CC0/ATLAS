@@ -1,16 +1,9 @@
-La RTX 5080 è un'evoluzione della 4080 più che un salto netto. Il vantaggio maggiore riguarda la generazione di fotogrammi, non le prestazioni in rasterizzazione pura.
+La RTX 5080 è la generazione successiva alla RTX 4080. Usa l'architettura **Blackwell**, mentre la 4080 usa **Ada Lovelace**.
 
-**Architettura e memoria**
-- La 5080 usa l'architettura Blackwell, la 4080 usa Ada Lovelace.
-- La 5080 monta memoria GDDR7, la 4080 monta GDDR6X.
-- La banda di memoria sale da circa 717 a circa 960 GB/s.
+**Memoria:** la 5080 monta memoria GDDR7 al posto della GDDR6X della 4080. La banda di memoria passa da circa 717 a circa 960 GB/s.
 
-**Prestazioni**
-- In rasterizzazione pura il guadagno reale è di circa il 10-15%.
-- La differenza più grande è nella generazione di fotogrammi. Se non la usi, il salto è modesto.
+**Prestazioni:** il salto più grande riguarda la generazione di fotogrammi. Sul rasterizzatore puro il guadagno reale è solo del 10-15% circa. Se giochi senza generazione di fotogrammi, la differenza è modesta.
 
-**Consumo e alimentazione**
-- Il consumo dichiarato sale da 320 a 360 W.
-- Il connettore di alimentazione resta a 16 pin, quindi il cavo attuale va ancora bene.
+**Consumo e alimentazione:** il consumo dichiarato sale da 320 a 360 W. Il connettore di alimentazione resta a 16 pin, quindi non devi cambiare il cavo.
 
-**In pratica:** se hai già una 4080 e giochi senza generazione di fotogrammi, il passaggio alla 5080 ti dà poco. Se invece usi la generazione di fotogrammi, la differenza si nota di più.
+**In sintesi:** se hai già una 4080, il passaggio alla 5080 conviene soprattutto se usi la generazione di fotogrammi. Per il rendering tradizionale il miglioramento è contenuto.

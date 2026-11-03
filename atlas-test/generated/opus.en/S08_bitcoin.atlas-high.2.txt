@@ -1,13 +1,15 @@
-Bitcoin grew out of the cypherpunk scene. Earlier attempts such as b-money and bit gold did not solve ordering.
+Bitcoin came out of the cypherpunk scene. Earlier attempts like b-money and bit gold never solved transaction ordering.
 
-In 2008 a paper appeared, "Bitcoin: A Peer-to-Peer Electronic Cash System". It was signed Satoshi Nakamoto, a pseudonym never identified.
+In 2008 a paper appeared, "Bitcoin: A Peer-to-Peer Electronic Cash System", signed Satoshi Nakamoto. That is a pseudonym, never identified.
 
-The problem it tackled was double spending without a central body keeping the ledger. The solution was a chain of blocks ordered by proof of work. Rewriting the past becomes expensive because the work would have to be redone for every later block.
+Its problem: double spending, with no central body keeping the ledger.
 
-The first block was generated on 3 January 2009. It contains the headline of a Times article about a bank bailout, which serves as both a timestamp and a statement of intent.
+Its solution: a chain of blocks ordered by proof of work. Rewriting the past is expensive, because the work would have to be redone for every later block.
 
-The block reward started at 50 bitcoin and halves every 210,000 blocks, roughly every four years. Total issuance tends to 21 million and no further.
+The first block came on 3 January 2009. It carries the headline of a Times article about a bank bailout, which works as both a timestamp and a statement of intent.
 
-The first documented commercial transaction came in 2010: two pizzas paid for with 10,000 bitcoin.
+The block reward started at 50 bitcoin and halves every 210,000 blocks, roughly every four years. Total supply tends to 21 million and never goes beyond it.
 
-Satoshi stopped taking part publicly in 2011, and their bitcoin have never been moved.
+The first documented purchase came in 2010: two pizzas, paid with 10,000 bitcoin.
+
+Satoshi stopped taking part publicly in 2011. Their bitcoin have never been moved.

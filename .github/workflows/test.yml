@@ -1,5 +1,4 @@
-# Runs the test suite of every build that ships one, on Linux and Windows, at every push and
-# pull request. Nothing to install: the plugin is plain Node. `atlas-min` has no tests.
+# Runs the tests of this repository on Linux and Windows, at every push and pull request.
 name: Tests
 
 on:
@@ -17,9 +16,8 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest]
-        build: [atlas, atlas-code, atlas-mem, atlas-max]
+        build: [atlas]
     runs-on: ${{ matrix.os }}
-    name: ${{ matrix.build }} on ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4

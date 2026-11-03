@@ -1,15 +1,15 @@
-Prima dell'architettura, chiediti cosa deve poter fare il team fra un anno che oggi non può. È questa la domanda decisiva, e non è tecnica.
+Prima della tecnologia, chiediti cosa deve poter fare il team fra un anno che oggi non può. È la domanda decisiva.
 
-Dati da raccogliere, in quest'ordine:
+Poi due dati da raccogliere, in quest'ordine:
 
-1. Quale parte del monolite cambia davvero. Le parti stabili non guadagnano nulla dall'essere spezzate.
+1. Quali parti del monolite cambiano davvero. Spezzare le parti stabili non porta nessun guadagno.
 
-2. Dove stanno i confini delle transazioni. Una transazione che attraversa due servizi diventa un problema distribuito.
+2. Dove stanno i confini delle transazioni. Se una transazione attraversa due servizi, diventa un problema distribuito.
 
-Evita la riscrittura completa in parallelo al vecchio sistema: fallisce quasi sempre, perché il vecchio continua a cambiare e la copia non lo raggiunge mai.
+Non riscrivere tutto in parallelo al vecchio sistema: fallisce quasi sempre. Il vecchio continua a cambiare e la copia non lo raggiunge mai.
 
-Meglio lo strangolamento progressivo: metti un router davanti e sposti un pezzo per volta. Il vecchio resta autorevole finché il nuovo non è verificato.
+Meglio lo strangolamento progressivo: metti un router davanti e sposta un pezzo alla volta. Il vecchio resta autorevole finché il nuovo non è verificato.
 
-I microservizi costano di più da gestire: ogni servizio richiede rilascio, monitoraggio, log, allarmi e una persona che se ne occupi. Sotto i cinque sviluppatori quel costo supera quasi sempre il beneficio.
+I microservizi costano di più da gestire. Ogni servizio richiede rilascio, monitoraggio, log, allarmi e una persona che se ne occupi. Sotto i cinque sviluppatori questo costo supera quasi sempre il beneficio.
 
-Considera anche il monolite modulare, l'opzione poco citata. Ha confini interni netti e un solo rilascio, e puoi estrarre un modulo il giorno in cui serve davvero.
+C'è anche un'opzione di cui si parla poco: il **monolite modulare**. Ha confini interni netti e un solo rilascio. Un modulo si può estrarre il giorno in cui serve davvero.

@@ -1,4 +1,4 @@
-Wrap the connection acquisition in `try/finally` in `db/session.py:47`:
+Wrap the connection handling in `db/session.py:47` in `try/finally`:
 
 ```python
 conn = pool.acquire()
@@ -8,29 +8,19 @@ finally:
     pool.release(conn)
 ```
 
-## What's happening
+**What's happening:** your connection pool is running out. A slow query is not the cause.
 
-The connection pool is running out. A slow query is not the cause.
+- The middleware only releases the connection when the request succeeds.
+- If the handler raises an exception, the code never reaches `release()`, so the connection stays held until it times out.
+- After a few hundred failed requests the pool is empty, and every request after that waits for a connection.
+- That's why latency keeps climbing until the API locks up, instead of requests failing right away with errors.
 
-1. The middleware at `db/session.py:47` releases the connection only when the handler succeeds.
-2. When the handler raises an exception, `release()` never runs. The connection stays held until it times out.
-3. After a few hundred failed requests, the pool is empty. Every request after that waits for a free connection.
-4. That's why latency keeps rising instead of requests failing right away: they're queuing for connections that aren't coming back.
+**Steps (about 10 minutes):**
 
-With `finally`, the connection is released on the error path as well as the success path, so the leak stops.
+1. Run `pytest tests/test_pool.py -k exhaustion -x` to reproduce the lockup before the change.
+2. Replace the acquire/release code at `db/session.py:47` with the snippet above.
+3. Run the same test again to confirm the fix.
 
-## Don't just raise `pool_size`
+**Don't raise `pool_size` to fix this.** A bigger pool only delays the point where it empties. Connections still leak. Raise it only after the fix is in, and only if your real load needs more connections.
 
-A bigger pool looks like a fix, but it only hides the problem. It delays the moment the pool runs out, and connections still leak on every failed request. Raise `pool_size` only after the fix is in, and only if your real load needs it.
-
-## Check it
-
-Run this before and after the change. Before, it should reproduce the lockup. After, it should pass:
-
-```
-pytest tests/test_pool.py -k exhaustion -x
-```
-
-This takes about 5 minutes: one small edit and one test run.
-
-Next: open `db/session.py` at line 47 and paste in the snippet above.
+Next: run the pytest command from step 1 and watch it fail.

@@ -1,14 +1,9 @@
-La RTX 5080 è la generazione successiva alla 4080. Il salto più grande però riguarda la generazione di fotogrammi, non la potenza grezza.
+La RTX 5080 è l'evoluzione diretta della 4080. Cambia parecchio sotto la scocca, ma il salto di prestazioni è meno ampio di quanto possa sembrare.
 
-**Cosa cambia sotto il cofano**
-- **Architettura:** la 5080 usa Blackwell, la 4080 Ada Lovelace.
-- **Memoria:** la 5080 passa alla GDDR7, mentre la 4080 monta GDDR6X. La banda sale da circa 717 a circa 960 GB/s.
-- **Consumo:** quello dichiarato passa da 320 a 360 watt, quindi la 5080 consuma un po' di più.
+**Architettura e memoria.** La 5080 usa la nuova architettura Blackwell, mentre la 4080 è basata su Ada Lovelace. Anche la memoria è di nuova generazione: la 5080 monta GDDR7 al posto delle GDDR6X della 4080. Così la banda di memoria passa da circa 717 a circa 960 GB/s.
 
-**Prestazioni reali**
-Nel rendering tradizionale (rasterizzazione pura) il guadagno si aggira sul 10-15%. È un miglioramento, ma non un salto generazionale netto. La differenza diventa davvero ampia solo con la generazione di fotogrammi: è lì che la 5080 si stacca dalla 4080.
+**Prestazioni.** Il salto più grande arriva dalla generazione di fotogrammi, non dalla potenza di calcolo pura. Nel rendering tradizionale, cioè senza generazione di frame, il guadagno reale è intorno al 10-15%. Quindi conviene se nei giochi usi la generazione di fotogrammi. Se guardi soprattutto alle prestazioni "native", la differenza con la 4080 è contenuta.
 
-**Alimentazione**
-Il connettore resta a 16 pin. Se hai già un alimentatore adatto alla 4080, sul fronte del cavo non cambia nulla.
+**Consumi e alimentazione.** Il consumo dichiarato sale da 320 a 360 watt, quindi controlla che il tuo alimentatore abbia margine. Il connettore di alimentazione invece resta lo stesso: il 16 pin.
 
-**In pratica:** se giochi soprattutto a titoli che supportano la generazione di fotogrammi, la 5080 dà un vantaggio concreto. Se ti interessa la potenza pura, passare da una 4080 a una 5080 porta un miglioramento modesto.
+**In sintesi:** se hai già una 4080, passare alla 5080 ha senso soprattutto se sfrutti la generazione di fotogrammi. Per il rendering tradizionale il miglioramento è limitato. Se invece parti da una scheda più vecchia e devi scegliere fra le due, la 5080 è la più moderna, sia per l'architettura sia per la memoria.

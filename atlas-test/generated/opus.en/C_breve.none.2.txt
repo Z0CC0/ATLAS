@@ -1,13 +1,13 @@
-Usually not. On a column with only three distinct values, a regular B-tree index normally goes unused. The planner picks a sequential scan whenever the filter matches more than about 5–10% of the rows. With three values, most filters match far more than that, so reading the whole table beats jumping back and forth through the index.
+Usually not. A plain B-tree index on a column with only three distinct values normally goes unused. Each value matches a large share of the table. Once a filter selects more than roughly 5–10% of the rows, the planner decides a sequential scan is cheaper than going through the index, so it skips the index.
 
-You also pay for the index even when it's never used. Every insert, update and delete has to maintain it, and it takes up disk space.
+The index still has costs even when nothing uses it. Every insert, update and delete has to maintain it, and it takes up disk space.
 
-There's one exception. If one of the three values is rare and that's the one you filter on (say, `status = 'failed'` in a table where almost everything is `'done'`), a partial index on that value does work:
+**The exception** is when one of the three values is rare and that's the value you query for. In that case a partial index that covers only the rare value works well:
 
 ```sql
-CREATE INDEX ON orders (id) WHERE status = 'failed';
+CREATE INDEX orders_pending_idx ON orders (id) WHERE status = 'pending';
 ```
 
-It only stores the few matching rows, so it stays small and cheap to maintain. The planner uses it because that filter is selective.
+The index stays small because it only holds the rare rows, and queries filtering on `status = 'pending'` can use it because they select only a small fraction of the table.
 
-So skip the ordinary index. Add a partial one only if you often query the rare value.
+So skip a plain index on that column. If you often look up a rare value, add a partial index for that value.

@@ -1,18 +1,21 @@
-La cache dei prompt conserva la parte iniziale di una richiesta, il prefisso, dopo che è già stata elaborata. Così le richieste successive che iniziano allo stesso modo non ripagano per intero quel prefisso.
+La cache dei prompt conserva la parte iniziale (il prefisso) di una richiesta già elaborata. Così le richieste successive che iniziano allo stesso modo non pagano di nuovo quel prefisso per intero.
 
 **Come funziona**
 
-Il riuso vale solo per il prefisso. Se cambia anche un solo carattere all'inizio, da quel punto in poi non c'è più riuso. Per questo metti prima le parti stabili e dopo quelle che cambiano, non il contrario.
+Il riuso vale solo per il prefisso. Se un solo carattere all'inizio è diverso, da quel punto in poi la cache non serve più. Per questo conviene mettere prima le parti stabili e dopo quelle che cambiano, non il contrario.
 
-Attenzione alle voci di sistema che cambiano a ogni turno, per esempio un orario. Una voce così annulla il riuso di tutto quello che viene dopo, anche se il resto è identico.
+Fai attenzione alle voci di sistema che cambiano a ogni turno, per esempio un orario. Una voce di questo tipo annulla il riuso di tutto quello che viene dopo. Se ti serve, mettila in fondo.
 
-**Quanto costa**
+**Costi**
 
-Scrivere nella cache costa più di una lettura normale, quindi la prima richiesta costa di più. Il guadagno arriva dalla seconda richiesta in poi e cresce con il numero di turni.
+Scrivere nella cache costa più di una lettura normale, quindi la prima richiesta costa di più. Il guadagno arriva dalla seconda richiesta in poi e aumenta con il numero di turni.
 
 **Quando conviene**
 
-- **Sì:** conversazioni lunghe con un contesto grande e stabile, come istruzioni di sistema, documentazione allegata e definizioni di strumenti. Paghi la scrittura una volta e poi rileggi a ogni turno.
-- **No:** richieste singole e diverse fra loro. In quel caso paghi la scrittura e non rileggi mai la cache.
+- Conversazioni lunghe con un contesto grande e stabile: istruzioni di sistema, documentazione allegata, definizioni di strumenti.
 
-In breve: la cache conviene quando lo stesso contesto grande torna uguale per molti turni.
+**Quando non conviene**
+
+- Richieste singole e diverse fra loro. In questo caso paghi la scrittura nella cache ma non rileggi mai quello che hai scritto.
+
+In pratica: se riusi molte volte lo stesso contesto iniziale, la cache ti fa risparmiare. Se ogni richiesta è diversa dalle altre, ti fa solo spendere di più.

@@ -1,13 +1,23 @@
 internal knowledge
 
-Eventual consistency: after a write, replicas don't agree immediately, but converge within finite time once writes stop.
+Eventual consistency: after a write, replicas don't agree right away, but if writes stop, they converge within finite time.
 
-Why care: it hits whoever reads right after writing. User posts comment, reloads, doesn't see it.
+**Why care:** it bites whoever reads right after writing. You post a comment, reload, and it's gone. Not lost, just served by a replica that hasn't caught up yet.
 
-How long the gap lasts: typically under a second across replicas in same region, seconds across regions.
+How long that window lasts: under a second between replicas in same region, seconds across regions.
 
-Why systems accept it: trade against availability. System demanding strong consistency has to refuse requests when replicas cannot talk. So eventual consistency not a defect to eliminate but a choice, and most systems that scale make it deliberately.
+Why accept it at all: trade against availability. A system demanding strong consistency must refuse requests whenever replicas can't talk to each other. Eventual consistency keeps answering instead.
 
-Common fix for the vanishing comment: read from primary replica for the session that just wrote, not for everyone. Author sees own comment right away; other readers keep reading from replicas.
+So it's not a defect to eliminate but a choice, and most systems that scale make it deliberately.
 
-Where it's unacceptable: few cases, easy to recognise. Account balances, seat availability, uniqueness of an identifier. Those need strong consistency; most of the rest can live with eventual.
+Usual fix for the vanishing-comment problem: route reads to primary replica only for the session that just wrote, not for everyone. Writer sees their own change immediately; everyone else still reads from replicas.
+
+**Where it's unacceptable**: few cases, easy to spot.
+
+Account balances
+
+Seat availability
+
+Uniqueness of an identifier
+
+If your data falls in one of those, you need strong consistency there. Anywhere else, eventual consistency is probably fine.

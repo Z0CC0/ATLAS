@@ -1,1 +1,1 @@
-Yes. Same holds for every empty collection: list, tuple, dict, set and string.
+Yes. Holds for every empty collection: list, tuple, dict, set and string.

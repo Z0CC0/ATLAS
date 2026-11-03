@@ -1,139 +1,211 @@
 [
  {
-  "f": "S04_meteo_domani.low-check.2.txt",
+  "f": "S09_x86.caveman-full.2.txt",
+  "removed": "the Pentium of 1993 is superscalar: two integer pipelines that can retire two instructions per cycle",
+  "removedSaidPresent": false,
+  "kept": "the 8086 of 1978 is 16 bit and grows out of the 8080, compatible at source level",
+  "keptSaidPresent": true,
+  "cut": "x86 history splits into three eras. First, Intel adds features to the instruction set. Next, the hardware under the instruction set changes completely. Today, most of the complexity sits below the instruction set. **Foundations (1978–1985)** - **8086 (1978).** 16-bit. Grows out of 8080 and stays compatible at source level, so 8080 code ports with little effort. That choice starts x86's main habit:"
+ },
+ {
+  "f": "S05_gpu.caveman4-full.1.txt",
+  "removed": "the 5080 uses the Blackwell architecture, the 4080 Ada Lovelace",
+  "removedSaidPresent": false,
+  "kept": "the 5080 carries GDDR7 memory, the 4080 GDDR6X",
+  "keptSaidPresent": true,
+  "cut": "- **Memory:** the 5080 has GDDR7 instead of GDDR6X, and bandwidth rises from about 717 GB/s to about 960 GB/s. - **Rasterisation:** in normal rendering, expect about 10-15% more performance. - **Frame generation:** this is where the 5080 improves most. If your games support it, that's where you'll notice the difference. - **Power:** rated draw goes from 320 W to 360 W. The power connector is still"
+ },
+ {
+  "f": "S08_bitcoin.none.2.txt",
+  "removed": "in 2008 a paper appears signed Satoshi Nakamoto, a pseudonym never identified",
+  "removedSaidPresent": false,
+  "kept": "the solution is a chain of blocks ordered by a proof of work",
+  "keptSaidPresent": true,
+  "cut": "# How Bitcoin came about Bitcoin came out of the cypherpunk scene, a community that wanted to use cryptography to protect individual autonomy. People there had tried to create digital money before. Proposals such as b-money and bit gold got close, but none of them solved one key problem: getting everyone to agree on the order of transactions without trusting a central authority. ## The paper In 20"
+ },
+ {
+  "f": "E_confronto.adhd.2.txt",
+  "removed": "Redis handles far more volume and has lower latency, under a millisecond",
+  "removedSaidPresent": false,
+  "kept": "Postgres gives persistence for free: if the process dies the queue is still there",
+  "keptSaidPresent": true,
+  "cut": "**Why Postgres fits a small project:** 1. **Throughput is enough.** `SELECT ... FOR UPDATE SKIP LOCKED` handles up to about 1,000 jobs per minute. 2. **Jobs share a transaction with your data.** If the write rolls back, the job rolls back with it. A job can never start for data that was never saved. 3. **Persistence is built in.** If the process dies, the queue is still there. 4. **No extra servic"
+ },
+ {
+  "f": "A_ricerca.high-ask-check.1.txt",
+  "removed": "dry air compared to New York: the heat feels milder at the same temperature",
+  "removedSaidPresent": false,
+  "kept": "scattered clouds in the morning, clearing in the afternoon",
+  "keptSaidPresent": true,
+  "cut": "web These figures don't fit today's date. On 2 November Los Angeles is on PST, not PDT, and sunset comes much earlier than 19:35. They may come from a summer day. Now 10:20 PDT. Scattered clouds this morning, clearing in the afternoon. High 86–93°F (30–34°C), depending on source and area. Downtown is hottest; the coast stays cooler. Overnight low around 69°F (21°C). Sunset is at **19:35**, in abou"
+ },
+ {
+  "f": "H_lunga.high-ask-check.2.txt",
+  "removed": "writing to the cache costs more than a normal read, so the first request is more expensive",
+  "removedSaidPresent": false,
+  "kept": "it only works on the prefix: one different character at the start and there is no reuse from that point on",
+  "keptSaidPresent": true,
+  "cut": "internal knowledge Cache stores already-processed prefix of request; later requests starting same way skip paying for it again. Prefix only: one different character at start, no reuse from that point on. So stable parts first, changing parts after, never reverse. Gain starts from second request, grows with number of turns. Pays off: long conversations with large stable context, such as system inst"
+ },
+ {
+  "f": "F_codice.caveman-lite.2.txt",
+  "removed": "clearTimeout has to be called before every new setTimeout, or timers pile up and the function fires more than once",
+  "removedSaidPresent": true,
+  "kept": "this version returns nothing: if the return value matters you need a Promise",
+  "keptSaidPresent": true,
+  "cut": "Here is a debounce function with no library: ```js function debounce(fn, ms) {   let t; return (...args) => {     clearTimeout(t); t = setTimeout(() => fn(...args), ms); }; } ``` Usage: ```js const onResize = debounce(() => console.log('resized'), 200); window.addEventListener('resize', onResize); ``` Each call cancels the timer that is still waiting and starts a new one. As a result, `fn` runs on"
+ },
+ {
+  "f": "D_lista.atlas-low.1.txt",
+  "removed": "X-Content-Type-Options set to nosniff, stopping the browser from guessing the content type",
+  "removedSaidPresent": false,
+  "kept": null,
+  "keptSaidPresent": null,
+  "cut": "For a static site, set these six headers and leave out a seventh: Strict-Transport-Security: max-age=31536000; includeSubDomains. This forces the browser to use HTTPS. The max-age should be at least 31536000 seconds (one year). Content-Security-Policy: default-src 'self'. This blocks scripts injected from third-party sources. Add frame-ancestors 'none' to the same header to protect against clickja"
+ },
+ {
+  "f": "S06_meteo_settimana.caveman4-ultra.2.txt",
+  "removed": "Saturday: clear and warm, 28 degrees, low 19",
+  "removedSaidPresent": false,
+  "kept": "Wednesday: rain for most of the day, 19 degrees, low 15",
+  "keptSaidPresent": true,
+  "cut": "**New York, this week** (source: web) - **Mon**: - **Tue**: cloudy, 22°, low 16°. Light rain in the evening. - **Wed**: rain most of the day, 19°, low 15° - **Thu**: brighter spells, 21°, low 14° - **Fri**: - **Sat**: - **Sun**: thunderstorms in the afternoon, 26°, low 18° Wednesday and Sunday bring the most rain, so take an umbrella. The weekend is the warmest part of the week."
+ },
+ {
+  "f": "F_codice.caveman4-full.1.txt",
+  "removed": "clearTimeout has to be called before every new setTimeout, or timers pile up and the function fires more than once",
+  "removedSaidPresent": false,
+  "kept": null,
+  "keptSaidPresent": null,
+  "cut": "```js function debounce(fn, ms) {   let t; return (...args) => {     clearTimeout(t); t = setTimeout(() => fn(...args), ms); }; } ``` Each call cancels the pending timer and starts a new one. `fn` runs only after `ms` pass with no new calls. Three details make it work: - **`let t` sits in the closure, outside the returned function.** If you declare it inside, every call gets its own timer and noth"
+ },
+ {
+  "f": "S09_x86.high-check.1.txt",
+  "removed": "the 486 of 1989 pulls the first level cache and the maths coprocessor onto the chip",
+  "removedSaidPresent": false,
+  "kept": "the 80386 of 1985 brings 32 bit, paged virtual memory and virtual 8086 mode",
+  "keptSaidPresent": true,
+  "cut": "internal knowledge (the facts you supplied, used as given and not checked) **1978, 8086**: 16-bit chip that grew out of the 8080. It was compatible at source level, so 8080 code could be carried over. **1982, 80286**: added protected mode. Once a program switched into it, the only way back to real mode was a reboot. **1985, 80386**: moved to 32 bit and added paged virtual memory and virtual 8086 m"
+ },
+ {
+  "f": "G_procedura.low-ask-check.1.txt",
+  "removed": "a direct ALTER TABLE ALTER COLUMN TYPE rewrites the whole table holding an ACCESS EXCLUSIVE lock, meaning the service is down for the entire duration",
+  "removedSaidPresent": false,
+  "kept": "second: add a new column, ALTER TABLE t ADD COLUMN colonna_int integer",
+  "keptSaidPresent": true,
+  "cut": "internal knowledge Don't run `ALTER TABLE ... ALTER COLUMN ... TYPE integer` directly. Do the change in these steps instead, in this order: 1. Check that every existing value can be converted. Count the rows that are not all digits, for example: ```sql    SELECT count(*) FROM t WHERE colonna !~ '^[0-9]+$'; ```    If the count isn't zero, fix those rows before going on. 2. Add the new column: ```sq"
+ },
+ {
+  "f": "S10_database.adhd.2.txt",
+  "removed": "Elasticsearch is far better at text search: relevance, synonyms, tolerance of typos",
+  "removedSaidPresent": false,
+  "kept": "Postgres handles all four workloads acceptably and none of them outstandingly",
+  "keptSaidPresent": true,
+  "cut": "**Pick Postgres, and only Postgres, for now.** It's the only option here that covers all four workloads on its own. It also gives you real transactions, and orders can't do without those. ## How the options compare |---|---|---|---|---|---| | **Postgres** | Real transactions | Acceptable | Fine below 1M docs, weak above | Fine up to tens of millions of rows, then scans slow down | **Start here** |"
+ },
+ {
+  "f": "P_confronto_lungo.atlasmin-high.2.txt",
+  "removed": "at a thousand requests a minute the sensible choice is local files plus a collector that ships them elsewhere, so the application never waits on a log write",
+  "removedSaidPresent": false,
+  "kept": "managed service: the logs leave your own infrastructure, so personal data has to be stripped before they go",
+  "keptSaidPresent": true,
+  "cut": "Rule that always holds: writing the log must not sit in the request's critical path. **Files**: zero cost, no dependency. But searching means grep. Rotation must be configured by hand, or the disk fills. No search across several machines; you connect to each one. **Managed service**: instant search, alerts, automatic retention. But you pay by volume, and at a thousand requests a minute volume grow"
+ },
+ {
+  "f": "I_sicurezza.high-ask.2.txt",
+  "removed": "that backend endpoint needs a rate limit, or it becomes a free way to use your key",
+  "removedSaidPresent": false,
+  "kept": "no: anything that reaches the browser is readable, and obfuscation falls apart the moment someone opens the developer tools or looks at the network requests",
+  "keptSaidPresent": true,
+  "cut": "No. Anything that reaches the browser can be read, and obfuscation stops working as soon as someone opens the developer tools or watches the network requests. Keep the key on the server. Without one, anyone can use it to run up usage on your key for free. If the key has already been published, treat it as compromised and rotate it right away. Removing it from the code is not enough. Deleting it in"
+ },
+ {
+  "f": "A_ricerca.atlasmin-low.1.txt",
+  "removed": "dry air compared to New York: the heat feels milder at the same temperature",
+  "removedSaidPresent": false,
+  "kept": "scattered clouds in the morning, clearing in the afternoon",
+  "keptSaidPresent": true,
+  "cut": "Hot and clearing: high 86–93°F (30–34°C), depending on source and area. Scattered clouds this morning, clear by afternoon. Downtown hottest, coast cooler. Overnight low around 69°F (21°C). **Sunset 19:35**, about 9 hours 15 minutes from now (local time 10:20 PDT). Full dark at 20:00, end of civil twilight, about 9 hours 40 minutes away. First quarter moon, 52% lit, so sky stays fairly dark early i"
+ },
+ {
+  "f": "S03_letconst.atlasmin-low.1.txt",
+  "removed": "an object declared with const can change internally",
+  "removedSaidPresent": true,
+  "kept": "both are block scoped, unlike var",
+  "keptSaidPresent": true,
+  "cut": "`let` allows reassignment; `const` doesn't. `const` only stops you from reassigning the name. It doesn't stop you from modifying the value. ```js const user = { name: \"Ana\" }; user.name = \"Bea\"; // fine: user = {}; // TypeError: name cannot be reassigned let count = 1; count = 2; // fine: let allows reassignment ``` Both block scoped, unlike `var`."
+ },
+ {
+  "f": "S10_database.none.1.txt",
+  "removed": "Postgres carries analytics up to tens of millions of rows, after which the scans get slow",
+  "removedSaidPresent": false,
+  "kept": "Postgres handles all four workloads acceptably and none of them outstandingly",
+  "keptSaidPresent": true,
+  "cut": "**Start with Postgres alone.** Add Elasticsearch or ClickHouse later, and only when one specific workload shows you numbers that justify it. ## Why Postgres is the base You have four workloads. Postgres does all of them acceptably and none of them outstandingly. For a platform at an early or uncertain scale, that's the right trade. Orders are the deciding factor: they need real transactions, and P"
+ },
+ {
+  "f": "B_tecnica.atlas-high.2.txt",
+  "removed": "when the handler raises an exception, release() is never reached and the connection stays held until timeout",
+  "removedSaidPresent": false,
+  "kept": "after a few hundred failed requests the pool empties and every later request waits",
+  "keptSaidPresent": true,
+  "cut": "Your connection pool is running out. It is not a slow query. The middleware at `db/session.py:47` releases the connection only when the request succeeds. After a few hundred failed requests the pool is empty, and every request after that waits for a free connection. That's why latency keeps rising instead of you getting errors right away. **Fix:** wrap the acquisition in try/finally so the connect"
+ },
+ {
+  "f": "S06_meteo_settimana.caveman4-lite.2.txt",
+  "removed": "Sunday: thunderstorms in the afternoon, 26 degrees, low 18",
+  "removedSaidPresent": false,
+  "kept": "Monday: clear, 24 degrees, low 17",
+  "keptSaidPresent": true,
+  "cut": "**New York this week:** the weekend is warmest. - **Monday:** clear, high 24°, low 17° - **Tuesday:** cloudy, high 22°, low 16°. Light rain in the evening. - **Wednesday:** rain most of the day, high 19°, low 15° - **Thursday:** some bright spells, high 21°, low 14° - **Friday:** clear, high 25°, low 16° - **Saturday:** clear and warm, high 28°, low 19° Plan for an umbrella on Wednesday. Saturday "
+ },
+ {
+  "f": "C_breve.atlas-high.1.txt",
+  "removed": "the index still costs writes and disk space",
+  "removedSaidPresent": false,
+  "kept": "no, on a low cardinality column the B-tree index is normally not used",
+  "keptSaidPresent": true,
+  "cut": "Usually not. Planner ignores B-tree index on low-cardinality column, preferring sequential scan when filter selects more than roughly 5-10% of rows. Exception: partial index on the rare value works."
+ },
+ {
+  "f": "S06_meteo_settimana.atlas-high.2.txt",
+  "removed": "Tuesday: cloudy, 22 degrees, low 16, light rain in the evening",
+  "removedSaidPresent": false,
+  "kept": "Monday: clear, 24 degrees, low 17",
+  "keptSaidPresent": true,
+  "cut": "Mostly mild week in New York, rain mainly Wednesday and Sunday, warmest at weekend. Monday: clear, 24 degrees, low 17 Tuesday: Wednesday: Thursday: brighter spells, 21 degrees, low 14 Friday: clear, 25 degrees, low 16 Saturday: clear and warm, 28 degrees, low 19 Sunday: afternoon thunderstorms, 26 degrees, low 18 Source: web"
+ },
+ {
+  "f": "E_confronto.caveman-ultra.1.txt",
+  "removed": "Postgres with SELECT FOR UPDATE SKIP LOCKED is enough up to roughly a thousand jobs per minute",
+  "removedSaidPresent": true,
+  "kept": "Redis means one more service to run, monitor and upgrade",
+  "keptSaidPresent": true,
+  "cut": "**Postgres.** Switch to Redis only when volume really needs it. Why Postgres fits small project: - `SELECT ... - Job sits in same transaction as data. If matching write rolls back, job never starts. - Persistence comes free. Process dies, queue survives. Redis tradeoffs: - Handles far more volume. Latency under 1 ms. - Adds one more service to run, monitor and upgrade. - Persistence needs configur"
+ },
+ {
+  "f": "S04_meteo_domani.low-ask-check.2.txt",
   "removed": "30 per cent chance of rain after 18:00",
   "removedSaidPresent": false,
   "kept": "clear sky in the morning, cloudy from the afternoon",
   "keptSaidPresent": true,
-  "cut": "Source: web. You gave the facts but no link, so I can't cite the page. Tomorrow in New York the morning will be clear and clouds will come in from the afternoon. It will reach a high of 24°C and drop to a low of 17°C."
+  "cut": "web (link not provided) Tomorrow in New York: clear morning, cloudy from afternoon. High 24 °C, low 17 °C. Wind from north-west at 15 km/h. Humidity around 60%."
  },
  {
-  "f": "A_ricerca.caveman-full.2.txt",
-  "removed": "free jazz concert at the Hammer Museum, Westwood, in the open courtyard, with Machado Mijiga, a multi-instrumentalist; free, outdoors, and in the right slot to catch the evening cooling",
+  "f": "S10_database.caveman-lite.2.txt",
+  "removed": "Postgres handles all four workloads acceptably and none of them outstandingly",
   "removedSaidPresent": false,
-  "kept": "scattered clouds in the morning, clearing in the afternoon",
+  "kept": "Postgres gives real transactions, which on orders are not negotiable",
   "keptSaidPresent": true,
-  "cut": "**Weather in LA today** (it's 10:20 PDT now) - Scattered clouds this morning, clearing by afternoon. - High of 86–93°F (30–34°C), depending on source and area. Downtown gets hottest and the coast stays cooler. - Air is dry compared to New York, so the heat feels milder at the same temperature. - Overnight low is around 69°F (21°C), so you'll be comfortable outside tonight. **When it gets dark** - "
+  "cut": "**Recommendation: start with Postgres alone.** Add Elasticsearch or ClickHouse only when one specific workload outgrows it and you have numbers to prove it. ## Why Postgres first The deciding point is orders. Postgres gives real transactions, and on orders transactions are not negotiable. ## The alternatives - **MySQL:** Equal to Postgres on orders. Weaker on data types and complex queries. It has"
  },
  {
-  "f": "F_codice.atlasmin-low.2.txt",
-  "removed": "for the opposite case, running immediately and then ignoring for a period, you want a throttle, which is a different function",
+  "f": "S04_meteo_domani.atlas-high.1.txt",
+  "removed": "wind from the north-west at 15 kilometres per hour",
   "removedSaidPresent": false,
-  "kept": null,
-  "keptSaidPresent": null,
-  "cut": "Wrap the function in a closure that holds one timer and resets it on every call: ```js function debounce(fn, ms) { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); }; } ``` Call `clearTimeout` before every new `setTimeout`. Otherwise timers pile up and the function fires more than once. Keep `t` in the closure, not inside the returned function. Otherwise every c"
- },
- {
-  "f": "B_tecnica.none.1.txt",
-  "removed": "pool_size should be raised only after the fix is in, and only if the real load calls for it",
-  "removedSaidPresent": false,
-  "kept": "when the handler raises an exception, release() is never reached and the connection stays held until timeout",
+  "kept": "clear sky in the morning, cloudy from the afternoon",
   "keptSaidPresent": true,
-  "cut": "Your API is running out of database connections. A slow query isn't the cause. ## What's happening The middleware at `db/session.py:47` only releases the connection when the request succeeds. If the handler raises an exception, execution never reaches `release()`, so that connection stays checked out until it times out. Each failed request keeps one connection. After a few hundred failures the poo"
- },
- {
-  "f": "S07_https.none.1.txt",
-  "removed": "the client opens the connection and states which TLS versions and ciphers it supports",
-  "removedSaidPresent": false,
-  "kept": "HTTPS is HTTP inside a channel encrypted by TLS",
-  "keptSaidPresent": true,
-  "cut": "HTTPS is ordinary HTTP carried inside a channel that TLS encrypts. The web requests and responses are the same as always. The difference is that everything travels through a protected tunnel, and that tunnel is set up at the start of every connection. **1. **2. The server answers and identifies itself.** The server chooses one version and one cipher from that list. It also sends back its certifica"
- },
- {
-  "f": "D_lista.high-ask.2.txt",
-  "removed": "Permissions-Policy to switch off camera, microphone and geolocation if the site does not use them",
-  "removedSaidPresent": false,
-  "kept": "X-Content-Type-Options set to nosniff, stopping the browser from guessing the content type",
-  "keptSaidPresent": true,
-  "cut": "Set six headers and leave out a seventh: Strict-Transport-Security: `max-age=31536000; includeSubDomains`. This forces the browser onto HTTPS. Use a max-age of at least 31536000 seconds. Content-Security-Policy: `default-src 'self'`. This blocks third-party script injection. X-Content-Type-Options: `nosniff`. This stops the browser from guessing the content type. Referrer-Policy: `strict-origin-wh"
- },
- {
-  "f": "O_critica.high-ask.1.txt",
-  "removed": "debugging is worse: an error inside a trigger arrives as a failed write, without saying which rule caused it",
-  "removedSaidPresent": false,
-  "kept": "the upside is real: no application path can skip the rule, not even a script run by hand",
-  "keptSaidPresent": true,
-  "cut": "I wouldn't. Keep only integrity rules in the database, and put business logic in the application behind a single entry point. The upside is real: no application path can skip the rule, not even a script run by hand. The costs: Triggers are invisible to anyone reading the application code. A change that looks simple can fire other triggers and leave no trace. The team's current testing tools don't "
- },
- {
-  "f": "C_breve.low-ask.1.txt",
-  "removed": "the planner prefers a sequential scan when the filter selects more than roughly 5-10 per cent of the rows",
-  "removedSaidPresent": false,
-  "kept": "the index still costs writes and disk space",
-  "keptSaidPresent": true,
-  "cut": "Usually no. With only three values, each value usually matches a large share of the rows. You still pay for the index in slower writes and extra disk space. The exception is when one value is rare. A partial index on that value does get used."
- },
- {
-  "f": "D_lista.caveman-ultra.1.txt",
-  "removed": "Permissions-Policy to switch off camera, microphone and geolocation if the site does not use them",
-  "removedSaidPresent": false,
-  "kept": "X-Content-Type-Options set to nosniff, stopping the browser from guessing the content type",
-  "keptSaidPresent": true,
-  "cut": "Set these six headers. Omit a seventh. - **`Strict-Transport-Security: max-age=31536000; includeSubDomains`** forces browsers onto HTTPS. Use 31536000 seconds as the minimum max-age. - **`Content-Security-Policy: default-src 'self'`** blocks third-party script injection. This header matters most. - **`X-Content-Type-Options: nosniff`** stops browsers from guessing the content type. - **`Referrer-P"
- },
- {
-  "f": "H_lunga.high-check.1.txt",
-  "removed": "the gain starts from the second request onward, and grows with the number of turns",
-  "removedSaidPresent": false,
-  "kept": "it only works on the prefix: one different character at the start and there is no reuse from that point on",
-  "keptSaidPresent": true,
-  "cut": "internal knowledge Cache stores already-processed prefix of request. Later requests starting same way don't pay for it again. Works on prefix only: one different character at start, no reuse from that point on. So stable parts go first, changing parts after. Never other way round. Writing to cache costs more than normal read, so first request costs more. Pays off: long conversations with large sta"
- },
- {
-  "f": "S10_database.atlas-high.2.txt",
-  "removed": "the usual setup is Postgres as the authoritative store, plus Elasticsearch and ClickHouse fed from it",
-  "removedSaidPresent": false,
-  "kept": "Postgres handles all four workloads acceptably and none of them outstandingly",
-  "keptSaidPresent": true,
-  "cut": "Postgres handles all four workloads acceptably and none of them outstandingly. It gives real transactions, which you can't do without on orders. Built-in text search is good enough below a million documents and weak above. Analytics hold up to tens of millions of rows, and past that the scans get slow. MySQL is equivalent on orders. It's weaker on data types and complex queries, so it gives you no"
- },
- {
-  "f": "H_lunga.atlas-low.2.txt",
-  "removed": "it pays off on long conversations with a large stable context: system instructions, attached documentation, tool definitions",
-  "removedSaidPresent": false,
-  "kept": "so the stable parts go first and the changing parts after, not the other way round",
-  "keptSaidPresent": true,
-  "cut": "Prompt caching saves the part of a request that stays the same between calls, so you only pay for it once. It pays off when many requests share a large stable beginning. The cache keeps the already-processed prefix of a request. Any later request that starts the same way doesn't pay to process that part again. Reuse works only on the prefix: if one character differs near the start, nothing from th"
- },
- {
-  "f": "G_procedura.caveman-lite.2.txt",
-  "removed": "fourth: add a trigger keeping the two columns in step during the migration",
-  "removedSaidPresent": true,
-  "kept": "first: check every existing value is convertible, by counting the rows that are not all digits",
-  "keptSaidPresent": true,
-  "cut": "Don't use `ALTER TABLE ... ALTER COLUMN ... TYPE integer` directly. It rewrites the whole table while holding an `ACCESS EXCLUSIVE` lock. With ten million rows, your service is down until the rewrite finishes. Instead, do the change in six steps, in this order: 1. **Check that every value converts.** Count the rows where `colonna` is not all digits. If the count is not zero, fix those rows first. "
- },
- {
-  "f": "E_confronto.low-check.1.txt",
-  "removed": "Postgres gives persistence for free: if the process dies the queue is still there",
-  "removedSaidPresent": true,
-  "kept": "Postgres with SELECT FOR UPDATE SKIP LOCKED is enough up to roughly a thousand jobs per minute",
-  "keptSaidPresent": true,
-  "cut": "internal knowledge For a small project, use Postgres. Switch to Redis only when volume genuinely demands it. Postgres with `SELECT FOR UPDATE SKIP LOCKED` handles up to roughly a thousand jobs per minute. Job sits in same transaction as data, so a job can never start while its matching write gets rolled back. Persistence comes free: Redis handles far more volume, with latency under a millisecond. "
- },
- {
-  "f": "M_aperta.caveman-full.1.txt",
-  "removed": "the deciding question is not technical: what must the team be able to do a year from now that it cannot do today",
-  "removedSaidPresent": false,
-  "kept": "the second is where the transaction boundaries sit, because a transaction spanning two services becomes a distributed problem",
-  "keptSaidPresent": true,
-  "cut": "Start from the problem you have, not from a target architecture. **1. Find what actually changes.** Look at which parts of the monolith get touched often. Stable parts gain nothing from being split, so leave them where they are. **2. Map transaction boundaries.** A transaction that spans two services becomes a distributed problem. Draw each service boundary so that every transaction stays inside o"
- },
- {
-  "f": "I_sicurezza.atlas-high.2.txt",
-  "removed": "the key belongs on the server, and the frontend calls an endpoint on its own backend which in turn calls the service",
-  "removedSaidPresent": false,
-  "kept": "taking it out of a commit is not enough: it stays in the repository history and anyone with a clone already has it",
-  "keptSaidPresent": true,
-  "cut": "No. Anything that reaches the browser can be read. Obfuscation stops working as soon as someone opens the developer tools or looks at the network requests. Keep the key on your server. Put a rate limit on that backend endpoint. Without one, anyone can use it to spend your key for free. If the key has already been published, treat it as compromised and rotate it immediately. Removing it from the co"
- },
- {
-  "f": "G_procedura.low-ask.2.txt",
-  "removed": "fourth: add a trigger keeping the two columns in step during the migration",
-  "removedSaidPresent": false,
-  "kept": "second: add a new column, ALTER TABLE t ADD COLUMN colonna_int integer",
-  "keptSaidPresent": true,
-  "cut": "Don't change the type in place. Add a new integer column next to the old one, move the data over, then remove the old column last. A direct `ALTER TABLE ... ALTER COLUMN ... TYPE` rewrites the whole table and holds an ACCESS EXCLUSIVE lock the entire time. With ten million rows, your service is down until the rewrite finishes. Follow these steps in this order: 1. Check that every existing value ca"
+  "cut": "Tomorrow in New York: clear morning, cloudy from afternoon, 30% chance of rain after 18:00. High 24°C, low 17°C. Source: web."
  },
  {
   "f": "S07_https.caveman-full.2.txt",
@@ -141,342 +213,270 @@
   "removedSaidPresent": false,
   "kept": "HTTPS is HTTP inside a channel encrypted by TLS",
   "keptSaidPresent": true,
-  "cut": "HTTPS is HTTP running inside a channel that TLS encrypts. A TLS handshake sets up that channel before any HTTP data goes through. **Handshake** 1. Client opens the connection and lists the TLS versions and ciphers it supports. 2. Server picks one cipher and one version, then sends its certificate. 3. Client checks the certificate. The certificate binds a domain name to a public key, and a certific"
+  "cut": "HTTPS is HTTP running inside a channel that TLS encrypts. HTTP itself does not change. TLS wraps it. **Handshake** 1. Client opens the connection. It lists the TLS versions and ciphers it supports. 2. Server picks one version and one cipher. It sends back its certificate. 3. Certificate binds a domain name to a public key. A certificate authority (CA) signs it. 4. Client checks the signature by wa"
  },
  {
-  "f": "H_lunga.atlas-high.1.txt",
-  "removed": "a system line that changes every turn, such as a clock, kills the reuse of everything after it",
+  "f": "P_confronto_lungo.caveman4-full.1.txt",
+  "removed": "the rule that always holds: writing the log must not sit in the critical path of the request",
   "removedSaidPresent": false,
-  "kept": "the cache keeps the already-processed prefix of a request, so later requests starting the same way do not pay for it again",
+  "kept": "database: under load, the logs fill caches and connections that the real requests needed",
   "keptSaidPresent": true,
-  "cut": "Prompt caching stores the part of a request that has already been processed, so later requests that start the same way don't pay to process it again. It works only on the prefix. If even one character near the start is different, nothing is reused from that point on. Put the stable parts first and the parts that change after them, not the other way round. Writing to the cache costs more than a nor"
+  "cut": "Use local files plus a collector that ships them elsewhere. At 1,000 requests/minute, this setup means the app never waits on a log write. **Files alone** - Zero cost, no dependency. - Search is grep only. - You have to set up rotation by hand, or the disk fills. - No search across machines. You have to connect to each one. **Managed service** - Instant search, alerts, automatic retention. - You p"
  },
  {
-  "f": "S03_letconst.high-check.2.txt",
-  "removed": "an object declared with const can change internally",
-  "removedSaidPresent": false,
-  "kept": "both are block scoped, unlike var",
-  "keptSaidPresent": true,
-  "cut": "internal knowledge `let` lets you reassign the name. `const` does not. `const` only blocks reassigning the name. Both are block scoped, unlike `var`."
- },
- {
-  "f": "S07_https.low-ask.2.txt",
-  "removed": "HTTPS is HTTP inside a channel encrypted by TLS",
-  "removedSaidPresent": false,
-  "kept": "the client opens the connection and states which TLS versions and ciphers it supports",
-  "keptSaidPresent": true,
-  "cut": "Setting up that channel is called the handshake: 1. Client opens connection and lists TLS versions and ciphers it supports. 2. Server picks one cipher and one version, and sends its certificate. 3. Client verifies certificate signature by walking chain up to root it already holds. 4. Both sides agree on session key, today typically through elliptic curve Diffie-Hellman exchange. Certificate binds "
- },
- {
-  "f": "I_sicurezza.caveman-full.1.txt",
-  "removed": "taking it out of a commit is not enough: it stays in the repository history and anyone with a clone already has it",
-  "removedSaidPresent": false,
-  "kept": null,
-  "keptSaidPresent": null,
-  "cut": "No. Obfuscation does not protect the key. Anything that reaches the browser is readable. The obfuscation stops working as soon as someone opens the developer tools or looks at the network requests. **How to do it instead:** 1. Keep the key on the server. 2. Have your frontend call an endpoint on your own backend. The backend then calls the service with the key. 3. Put a rate limit on that endpoint"
- },
- {
-  "f": "F_codice.none.1.txt",
-  "removed": "clearTimeout has to be called before every new setTimeout, or timers pile up and the function fires more than once",
-  "removedSaidPresent": false,
-  "kept": null,
-  "keptSaidPresent": null,
-  "cut": "Here's a debounce you can drop into any project: ```js function debounce(fn, ms) {   let t; return (...args) => {     clearTimeout(t); t = setTimeout(() => fn(...args), ms); }; } ``` Usage: ```js const onResize = debounce(() => console.log('resized'), 200); window.addEventListener('resize', onResize); ``` It works because of three details: - **`let t` sits in the closure, outside the returned func"
- },
- {
-  "f": "S05_gpu.low-ask.2.txt",
-  "removed": "memory bandwidth goes from about 717 to about 960 gigabytes per second",
-  "removedSaidPresent": false,
-  "kept": "the 5080 uses the Blackwell architecture, the 4080 Ada Lovelace",
-  "keptSaidPresent": true,
-  "cut": "RTX 5080 is a modest step up from the 4080. The biggest gain is in frame generation, while raw rasterisation improves only about 10-15 per cent. Architecture: 5080 uses Blackwell, 4080 uses Ada Lovelace. Memory: GDDR7 on 5080, GDDR6X on 4080. Power: Power connector stays at 16 pins, so the same cable fits. If you mostly play without frame generation, the upgrade from a 4080 is small. The bigger di"
- },
- {
-  "f": "H_lunga.caveman-lite.2.txt",
-  "removed": "a system line that changes every turn, such as a clock, kills the reuse of everything after it",
-  "removedSaidPresent": false,
-  "kept": "writing to the cache costs more than a normal read, so the first request is more expensive",
-  "keptSaidPresent": true,
-  "cut": "Prompt caching saves the part of a request the model has already processed. That part is the **prefix**. When a later request starts with the same prefix, you do not pay to process it again. ## How it works Reuse only covers the prefix. The cache compares requests from the first character forward. So a single change near the start wipes out almost all of the benefit. This means order matters. Put "
- },
- {
-  "f": "D_lista.adhd.1.txt",
-  "removed": "Content-Security-Policy with default-src 'self', which is what blocks third-party script injection",
-  "removedSaidPresent": false,
-  "kept": "X-Content-Type-Options set to nosniff, stopping the browser from guessing the content type",
-  "keptSaidPresent": true,
-  "cut": "Add these six headers to every response. Leave out `X-XSS-Protection`. ``` Strict-Transport-Security: max-age=31536000; includeSubDomains Content-Security-Policy: default-src 'self'; frame-ancestors 'none' X-Content-Type-Options: nosniff Referrer-Policy: strict-origin-when-cross-origin X-Frame-Options: DENY Permissions-Policy: camera=(), microphone=(), geolocation=() ``` ## What each one does 1. *"
- },
- {
-  "f": "S08_bitcoin.atlasmin-high.2.txt",
-  "removed": "the solution is a chain of blocks ordered by a proof of work",
-  "removedSaidPresent": false,
-  "kept": "in 2008 a paper appears signed Satoshi Nakamoto, a pseudonym never identified",
-  "keptSaidPresent": true,
-  "cut": "Bitcoin began with a 2008 paper, *Bitcoin: A Peer-to-Peer Electronic Cash System*, signed Satoshi Nakamoto, a pseudonym never identified. It came out of the cypherpunk scene. Earlier attempts there, b-money and bit gold, did not solve ordering. The problem was double spending without a central body keeping the ledger. Rewriting the past is expensive because the work must be redone for every later "
- },
- {
-  "f": "B_tecnica.atlasmin-low.1.txt",
-  "removed": "to reproduce the behaviour before and after the change, run: pytest tests/test_pool.py -k exhaustion -x",
-  "removedSaidPresent": false,
-  "kept": "when the handler raises an exception, release() is never reached and the connection stays held until timeout",
-  "keptSaidPresent": true,
-  "cut": "Your pool is running out of connections. It's a connection leak, not a slow query. The middleware at `db/session.py:47` releases the connection only when the request succeeds. When the handler raises an exception, `release()` never runs and the connection stays held until it times out. After a few hundred failed requests the pool is empty and every request after that waits for a connection. That's"
- },
- {
-  "f": "E_confronto.caveman-full.1.txt",
-  "removed": "Redis means one more service to run, monitor and upgrade",
-  "removedSaidPresent": false,
-  "kept": "Redis handles far more volume and has lower latency, under a millisecond",
-  "keptSaidPresent": true,
-  "cut": "**Use Postgres.** Move to Redis only when job volume really needs it. **Why Postgres fits small project:** - `SELECT ... FOR UPDATE SKIP LOCKED` handles up to about a thousand jobs per minute. Small project rarely goes past that. - Job and data live in same transaction. If write rolls back, job rolls back too. Job never starts for data that doesn't exist. - Persistence comes free. If process dies,"
- },
- {
-  "f": "M_aperta.atlasmin-high.1.txt",
-  "removed": "the deciding question is not technical: what must the team be able to do a year from now that it cannot do today",
-  "removedSaidPresent": false,
-  "kept": "the second is where the transaction boundaries sit, because a transaction spanning two services becomes a distributed problem",
-  "keptSaidPresent": true,
-  "cut": "Let that answer drive the architecture. Find which parts of the monolith actually change. Stable parts gain nothing from being split. Find where transaction boundaries sit. A transaction spanning two services becomes a distributed problem. Don't do a full rewrite running in parallel with the old system. It almost always fails: the old one keeps changing, and the copy never catches up. Strangle pro"
- },
- {
-  "f": "S09_x86.caveman-full.1.txt",
-  "removed": "the Pentium of 1993 is superscalar: two integer pipelines that can retire two instructions per cycle",
-  "removedSaidPresent": false,
-  "kept": "the 8086 of 1978 is 16 bit and grows out of the 8080, compatible at source level",
-  "keptSaidPresent": true,
-  "cut": "x86 history splits into three eras: first the instruction set grows, then clock speed rises, then parallelism and speculation carry performance. **Foundations (1978–1985)** - **8086 (1978):** 16 bit. Grows out of 8080, compatible at source level. Old code needs recompile, not rewrite. Compatibility is the pattern from day one. - **80286 (1982):** Introduces protected mode. Flaw: no way back to rea"
- },
- {
-  "f": "S09_x86.caveman-lite.1.txt",
-  "removed": "the Pentium Pro of 1995 introduces out of order execution and translates x86 instructions into internal micro-operations",
-  "removedSaidPresent": false,
-  "kept": "the 8086 of 1978 is 16 bit and grows out of the 8080, compatible at source level",
-  "keptSaidPresent": true,
-  "cut": "Over four decades, x86 has kept its instruction set compatible while the hardware underneath has changed completely. **The 16-bit start.** The 8086 of 1978 is a 16-bit processor. It grows out of the 8080 and is compatible with it at source level. Compatibility with earlier chips shapes every step that follows. **Protected mode, with a catch.** The 80286 of 1982 introduces protected mode. It has a "
- },
- {
-  "f": "S10_database.adhd.1.txt",
-  "removed": "MongoDB makes the catalogue easier with variable schemas, but multi-document transactions arrived late and cost",
+  "f": "S10_database.low-check.2.txt",
+  "removed": "Postgres gives real transactions, which on orders are not negotiable",
   "removedSaidPresent": false,
   "kept": "Postgres handles all four workloads acceptably and none of them outstandingly",
   "keptSaidPresent": true,
-  "cut": "**Start with Postgres alone.** Add another system only when a specific workload proves, with numbers, that Postgres can't keep up. ## Why Postgres first - It handles all four of your workloads acceptably, though none of them outstandingly. - It gives you real transactions. For orders, you can't do without them. - Every extra system you add brings two problems: keeping the systems in sync and keepi"
+  "cut": "internal knowledge **Start with Postgres alone.** Add Elasticsearch or ClickHouse only when a specific workload needs it and you have numbers to prove it. Postgres handles all four of your workloads acceptably, though none of them outstandingly. Its built-in text search holds up below a million documents and gets weak above that. Analytics stay fine up to tens of millions of rows, then the scans g"
  },
  {
-  "f": "B_tecnica.high-ask.1.txt",
-  "removed": "after a few hundred failed requests the pool empties and every later request waits",
+  "f": "S03_letconst.none.1.txt",
+  "removed": "both are block scoped, unlike var",
   "removedSaidPresent": false,
-  "kept": "the cause is connection pool exhaustion, not a slow query",
+  "kept": "an object declared with const can change internally",
   "keptSaidPresent": true,
-  "cut": "**Connection pool exhaustion**, not a slow query. Middleware at `db/session.py:47` releases the connection only on the success path. When the handler raises an exception, `release()` is never reached, so the connection stays held until timeout. That's why latency rises instead of failing with immediate errors. Fix: wrap the acquisition in try/finally so the connection is also released on the error"
+  "cut": "`var` doesn't work that way. The difference is whether you can reassign the variable. **`let` allows reassignment:** ```js let count = 1; count = 2; // fine ``` **`const` doesn't let you reassign the name:** ```js const max = 10; max = 20; // TypeError ``` `const` only stops you from pointing the name at a new value. It doesn't stop you from changing the value itself. So if you declare an object w"
  },
  {
-  "f": "I_sicurezza.atlasmin-low.1.txt",
-  "removed": "no: anything that reaches the browser is readable, and obfuscation falls apart the moment someone opens the developer tools or looks at the network requests",
+  "f": "M_aperta.caveman-ultra.2.txt",
+  "removed": "the deciding question is not technical: what must the team be able to do a year from now that it cannot do today",
   "removedSaidPresent": false,
-  "kept": null,
-  "keptSaidPresent": null,
-  "cut": "No. Obfuscating the key doesn't protect it. Keep the key on the server. Your frontend should call an endpoint on your own backend, and that backend should call the service using the key. Put a rate limit on that backend endpoint. Without one, anyone can use it to run requests on your key for free. If the key has already been published, treat it as compromised and rotate it right away. Removing it "
+  "kept": "a full rewrite running in parallel with the old system almost always fails: the old one keeps changing and the copy never catches up",
+  "keptSaidPresent": true,
+  "cut": "Before choosing an architecture, answer these questions: **1. Which parts change?** Map which parts of the monolith actually change. Stable parts gain nothing from a split. Leave them alone. **2. Where are the transaction boundaries?** Find where each transaction starts and ends. A transaction that spans two services becomes a distributed problem. Draw service lines around transactions, never thro"
  },
  {
-  "f": "F_codice.low-ask.2.txt",
-  "removed": "clearTimeout has to be called before every new setTimeout, or timers pile up and the function fires more than once",
-  "removedSaidPresent": false,
-  "kept": null,
-  "keptSaidPresent": null,
-  "cut": "```js function debounce(fn, ms) { let t; return (...args) => { clearTimeout(t); t = setTimeout(() => fn(...args), ms); }; } ``` Keep `t` in the closure, not inside the returned function. Otherwise every call gets its own timer and no debouncing happens. Forward arguments with the spread. Without it, the called function receives nothing. This version returns nothing. If you need the return value, u"
- },
- {
-  "f": "O_critica.caveman-ultra.1.txt",
-  "removed": "the upside is real: no application path can skip the rule, not even a script run by hand",
-  "removedSaidPresent": false,
-  "kept": null,
-  "keptSaidPresent": null,
-  "cut": "I wouldn't put all of it there. Put integrity rules in DB. Put business logic in app, behind one entry point. **Cost is high:** - **Invisible.** Nobody reading app code sees triggers. A change that looks simple fires other triggers and leaves no trace. - **Testing.** Your team's current test tools don't cover triggers. You need tests that run against a real database. - **Debugging.** An error insi"
- },
- {
-  "f": "O_critica.low-ask-check.1.txt",
+  "f": "O_critica.adhd.1.txt",
   "removed": "the alternative is to keep in the database only what protects integrity — constraints, foreign keys, uniqueness, domain checks — and the business logic in the application, behind a single entry point",
   "removedSaidPresent": false,
   "kept": "the upside is real: no application path can skip the rule, not even a script run by hand",
   "keptSaidPresent": true,
-  "cut": "internal knowledge I wouldn't put all of it in triggers. You're right about the upside: no application path can skip a trigger, not even a script run by hand. The costs are high, though. Anyone reading the application code can't see triggers. A change that looks simple can fire others and leave no trace. Your team can't test them with the tools it already uses. The tests have to run against a real"
+  "cut": "Don't put all of it in triggers. **What triggers do get you:** no application path can skip the rule, not even a script someone runs by hand. That benefit is real. **What they cost you:** 1. **They're invisible.** Someone reading the application code can't see them. A change that looks simple can fire other triggers and leave no trace. 2. **Your current test tools can't test them.** You'd need tes"
  },
  {
-  "f": "S05_gpu.high-ask-check.1.txt",
-  "removed": "the power connector stays at 16 pins",
+  "f": "B_tecnica.low-check.2.txt",
+  "removed": "in the middleware at db/session.py:47 the connection is released only on the success path",
   "removedSaidPresent": false,
-  "kept": "rated power draw rises from 320 to 360 watts",
+  "kept": "the cause is connection pool exhaustion, not a slow query",
   "keptSaidPresent": true,
-  "cut": "internal knowledge The RTX 5080 is a modest step up from the 4080. Its biggest gain is in frame generation, not raw rasterisation. Rasterisation: only about 10–15% faster. Architecture: Blackwell, up from Ada Lovelace. Memory: GDDR7 instead of GDDR6X. Bandwidth rises from about 717 to about 960 GB/s. rated draw rises from 320 to 360 W."
+  "cut": "from your files Connection pool exhaustion, not slow query. When handler raises exception, `release()` never reached, so connection stays held until timeout. After few hundred failed requests pool empties and every later request waits for free connection. That's why you see rising latency instead of immediate errors. Fix: wrap acquisition in try/finally so release happens on error path too. ```pyt"
  },
  {
-  "f": "B_tecnica.caveman-full.2.txt",
-  "removed": "the cause is connection pool exhaustion, not a slow query",
-  "removedSaidPresent": true,
-  "kept": "in the middleware at db/session.py:47 the connection is released only on the success path",
-  "keptSaidPresent": true,
-  "cut": "**What happens:** - The middleware at `db/session.py:47` releases the connection only on the success path. - When a handler raises an exception, `release()` is never reached. That connection stays held until timeout. - After a few hundred failed requests, the pool is empty. Every later request waits for a free connection. - That is why latency rises and the API locks up instead of returning errors"
- },
- {
-  "f": "S06_meteo_settimana.caveman-lite.2.txt",
+  "f": "S06_meteo_settimana.high-ask.2.txt",
   "removed": "Saturday: clear and warm, 28 degrees, low 19",
-  "removedSaidPresent": false,
-  "kept": "Wednesday: rain for most of the day, 19 degrees, low 15",
-  "keptSaidPresent": true,
-  "cut": "New York has a mixed week. It starts dry, turns wet midweek, then warms up for the weekend. - **Tuesday:** Cloudy, high 22, low 16. Light rain arrives in the evening. - **Wednesday:** Rain for most of the day, high 19, low 15. - **Thursday:** Brighter spells, high 21, low 14. - **Sunday:** Thunderstorms in the afternoon, high 26, low 18. The only days with heavy rain are Wednesday and Sunday. Carr"
- },
- {
-  "f": "S08_bitcoin.atlasmin-low.1.txt",
-  "removed": "the solution is a chain of blocks ordered by a proof of work",
-  "removedSaidPresent": false,
-  "kept": "the problem it tackles is double spending without a central body keeping the ledger",
-  "keptSaidPresent": true,
-  "cut": "Bitcoin came from the cypherpunk scene. Earlier designs like b-money and bit gold had tried to create digital money but never solved ordering: deciding which transaction came first. In 2008 a paper titled *Bitcoin: A Peer-to-Peer Electronic Cash System* appeared, signed Satoshi Nakamoto. That was a pseudonym, and the person behind it has never been identified. The paper tackled double spending, me"
- },
- {
-  "f": "S06_meteo_settimana.atlasmin-high.1.txt",
-  "removed": "Sunday: thunderstorms in the afternoon, 26 degrees, low 18",
   "removedSaidPresent": false,
   "kept": "Tuesday: cloudy, 22 degrees, low 16, light rain in the evening",
   "keptSaidPresent": true,
-  "cut": "New York this week: Monday: clear, 24°, low 17 Tuesday: cloudy, 22°, low 16, light rain in the evening Wednesday: rain most of the day, 19°, low 15 Thursday: brighter spells, 21°, low 14 Friday: clear, 25°, low 16 Saturday: clear and warm, 28°, low 19 Source: web"
+  "cut": "New York this week: mostly dry, rain Wednesday and Sunday, warmest at weekend. Monday: Tuesday: cloudy, 22°, low 16, light rain evening Wednesday: rain most of day, 19°, low 15 Thursday: brighter spells, 21°, low 14 Friday: Sunday: afternoon thunderstorms, 26°, low 18 Significant rain only Wednesday and Sunday. Source: web."
  },
  {
-  "f": "S06_meteo_settimana.caveman-ultra.1.txt",
-  "removed": "Sunday: thunderstorms in the afternoon, 26 degrees, low 18",
+  "f": "D_lista.caveman-full.2.txt",
+  "removed": "X-XSS-Protection is deprecated and should be omitted: modern browsers ignore it and older versions introduced vulnerabilities",
   "removedSaidPresent": false,
-  "kept": "Monday: clear, 24 degrees, low 17",
+  "kept": "Permissions-Policy to switch off camera, microphone and geolocation if the site does not use them",
   "keptSaidPresent": true,
-  "cut": "**New York weather this week** (from the web): - **Monday:** clear, 24°, low 17. - **Tuesday:** cloudy, 22°, low 16. Light rain in the evening. - **Wednesday:** rain most of the day, 19°, low 15. - **Thursday:** some sun, 21°, low 14. - **Friday:** clear, 25°, low 16. - **Saturday:** clear and warm, 28°, low 19. The weekend is the warmest part of the week. For outdoor plans, Saturday is the best d"
+  "cut": "Static site still need these headers: - **Strict-Transport-Security**: `max-age=31536000; includeSubDomains` or longer. Browser then use HTTPS only. - **Content-Security-Policy**: `default-src 'self'`. This header block third-party script injection. - **X-Content-Type-Options**: `nosniff`. Browser then not guess content type. - **Referrer-Policy**: `strict-origin-when-cross-origin`. Full path not "
  },
  {
-  "f": "A_ricerca.high-ask.2.txt",
-  "removed": "full dark (end of civil twilight) at 20:00, in about 9 hours and 40 minutes",
+  "f": "S08_bitcoin.caveman4-lite.1.txt",
+  "removed": "the solution is a chain of blocks ordered by a proof of work",
+  "removedSaidPresent": true,
+  "kept": "in 2008 a paper appears signed Satoshi Nakamoto, a pseudonym never identified",
+  "keptSaidPresent": true,
+  "cut": "Bitcoin grew out of the cypherpunk scene. Earlier attempts at digital cash, such as b-money and bit gold, had come close. None of them solved ordering: agreeing which transaction came first without trusting someone to decide. In 2008 a paper appeared titled *Bitcoin: A Peer-to-Peer Electronic Cash System*. It was signed Satoshi Nakamoto, a pseudonym whose owner has never been identified. The paper"
+ },
+ {
+  "f": "S09_x86.caveman-full.1.txt",
+  "removed": "from 2006 the direction shifts from frequency to core count, with the Core 2",
   "removedSaidPresent": false,
-  "kept": "scattered clouds in the morning, clearing in the afternoon",
+  "kept": "the 486 of 1989 pulls the first level cache and the maths coprocessor onto the chip",
   "keptSaidPresent": true,
-  "cut": "Sunny and hot today, dark by 20:00. Tonight, pick between free jazz in Westwood and Mt. Joy at the Greek Theatre. **Weather** (as of 10:20 PDT) Some clouds this morning, clearing by afternoon. High between 86 and 93°F (30–34°C), depending on the source and the area. Downtown will be the hottest spot and the coast stays cooler. The air is drier than in New York, so the same temperature feels less h"
+  "cut": "## Origin: 8086 (1978) 16-bit chip. Grows out of 8080. Compatible at source level, so 8080 code ports with reassembly, not rewrite. This choice sets pattern for next four decades: never break old software. ## Protection and 32 bit (1982–1985) **80286 (1982)** adds protected mode, first step toward real multitasking OS. Flaw: no way back to real mode without reboot. Old DOS software and new protect"
  },
  {
-  "f": "C_breve.low-ask.2.txt",
-  "removed": "the index still costs writes and disk space",
+  "f": "S06_meteo_settimana.low-check.2.txt",
+  "removed": "Wednesday: rain for most of the day, 19 degrees, low 15",
   "removedSaidPresent": false,
-  "kept": "no, on a low cardinality column the B-tree index is normally not used",
-  "keptSaidPresent": true,
-  "cut": "**No**, usually not. On low-cardinality column, B-tree index normally goes unused. Planner prefers sequential scan once filter selects more than roughly 5-10 per cent of rows, and with three values each one likely covers far more than that. Exception: if one value is rare and you query for it, partial index on that value does work, for example: ```sql CREATE INDEX orders_failed_idx ON orders (id) "
+  "kept": null,
+  "keptSaidPresent": null,
+  "cut": "web (no link given) Monday: Tuesday: Thursday: some brighter spells, high 21, low 14 Friday: clear, high 25, low 16 Saturday: clear and warm, high 28, low 19 Sunday: afternoon thunderstorms, high 26, low 18"
  },
  {
-  "f": "S07_https.adhd.2.txt",
-  "removed": "the certificate binds a domain name to a public key and is signed by a certificate authority",
+  "f": "S07_https.low-ask.2.txt",
+  "removed": "HTTPS is HTTP inside a channel encrypted by TLS",
+  "removedSaidPresent": true,
+  "kept": "the client opens the connection and states which TLS versions and ciphers it supports",
+  "keptSaidPresent": true,
+  "cut": "Before any HTTP flows, client and server run a TLS handshake: 1. The client opens the connection and lists the TLS versions and ciphers it supports. 2. The server picks a version and a cipher, and sends its certificate. 3. The client checks the certificate. A certificate binds a domain name to a public key and is signed by a certificate authority. The client verifies that signature by following th"
+ },
+ {
+  "f": "N_spiegazione.caveman-lite.2.txt",
+  "removed": "the trade is against availability: a system demanding strong consistency has to refuse requests when the replicas cannot talk",
   "removedSaidPresent": false,
-  "kept": "HTTPS is HTTP inside a channel encrypted by TLS",
+  "kept": "the common fix is to read from the primary replica for the session that just wrote, not for everyone",
   "keptSaidPresent": true,
-  "cut": "HTTPS is ordinary HTTP sent through a channel encrypted by TLS. The web traffic is the same as with HTTP. The difference is that TLS first sets up a secure channel, and all the HTTP traffic then travels through it. ## 1. The client says hello Your browser (the client) opens the connection. It lists which TLS versions and ciphers it supports. ## 2. The server answers and shows its certificate The s"
+  "cut": "Eventual consistency means that after a write, the replicas don't agree right away. They converge within a finite time once the writes stop. For a short window, different replicas can give different answers to the same read. **Why it exists:** the trade is against availability. A system with eventual consistency keeps answering and lets the replicas catch up later. **How long the window is:** acro"
  },
  {
-  "f": "S08_bitcoin.atlas-low.1.txt",
-  "removed": "the paper is titled Bitcoin: A Peer-to-Peer Electronic Cash System",
-  "removedSaidPresent": false,
-  "kept": "the problem it tackles is double spending without a central body keeping the ledger",
+  "f": "P_confronto_lungo.atlas-high.2.txt",
+  "removed": "the rule that always holds: writing the log must not sit in the critical path of the request",
+  "removedSaidPresent": true,
+  "kept": "managed service: the logs leave your own infrastructure, so personal data has to be stripped before they go",
   "keptSaidPresent": true,
-  "cut": "That name is a pseudonym and has never been identified. It grew out of the cypherpunk scene. Earlier attempts such as b-money and bit gold never solved ordering. That left double spending open: without a central body keeping the ledger, nothing stopped someone spending the same coin twice. The paper's answer was a chain of blocks ordered by proof of work. Proof of work makes rewriting the past exp"
+  "cut": "Local files plus a collector that ships them elsewhere. The application never waits on a log write. Files alone: zero cost, no dependency. Search is grep, and you have to configure rotation by hand or the disk fills. You can't search across several machines; you connect to each one. Managed service: instant search, alerts, automatic retention. You pay by volume, though, and at a thousand requests "
  },
  {
-  "f": "M_aperta.atlas-low.1.txt",
-  "removed": "the modular monolith is the option nobody mentions: sharp internal boundaries, one release, and the option to extract a module the day it is genuinely needed",
-  "removedSaidPresent": false,
-  "kept": "the second is where the transaction boundaries sit, because a transaction spanning two services becomes a distributed problem",
-  "keptSaidPresent": true,
-  "cut": "Start from a question that isn't technical: what must your team be able to do a year from now that it can't do today? Let that answer choose the architecture. Before picking a shape, map two things in the current PHP code: Which parts actually change. Stable parts gain nothing from being split out, so leave them alone. Where transaction boundaries sit. A transaction that spans two services becomes"
- },
- {
-  "f": "G_procedura.low-check.2.txt",
-  "removed": "fifth: change the code to read from the new column, and ship it",
+  "f": "G_procedura.caveman4-full.2.txt",
+  "removed": "a direct ALTER TABLE ALTER COLUMN TYPE rewrites the whole table holding an ACCESS EXCLUSIVE lock, meaning the service is down for the entire duration",
   "removedSaidPresent": false,
   "kept": "second: add a new column, ALTER TABLE t ADD COLUMN colonna_int integer",
   "keptSaidPresent": true,
-  "cut": "internal knowledge Don't run `ALTER TABLE ... ALTER COLUMN TYPE` directly. On ten million rows it rewrites the whole table while holding an ACCESS EXCLUSIVE lock, so the service is down for the whole rewrite. Use a new column and switch over in six steps, in this order: 1. Check that every existing value can be converted. Count the rows whose value is not all digits. If the count isn't zero, fix t"
+  "cut": "Don't run `ALTER TABLE ... ALTER COLUMN TYPE` directly. Move the data to a new column in stages instead: 1. **Check every value converts.** Count the rows where `colonna` is not all digits. If the count is not zero, fix those rows before you continue. 2. **Add the new column:**    ```sql    ALTER TABLE t ADD COLUMN colonna_int integer    ``` 3. **Backfill in batches of 10,000 rows.** Small batches"
  },
  {
-  "f": "S03_letconst.low-check.2.txt",
+  "f": "S09_x86.caveman4-ultra.2.txt",
+  "removed": "the 80386 of 1985 brings 32 bit, paged virtual memory and virtual 8086 mode",
+  "removedSaidPresent": false,
+  "kept": "the 486 of 1989 pulls the first level cache and the maths coprocessor onto the chip",
+  "keptSaidPresent": true,
+  "cut": "**x86, 1978 to today** **16-bit start** - **8086 (1978)**: 16 bit. Grew out of 8080, source-level compatible. That compatibility constraint shapes every step after. - **80286 (1982)**: protected mode. Catch: no way back to real mode without reboot. **32-bit foundation** Old real-mode code now runs inside protected mode. Fixes 286's one-way trap. - **486 (1989)**: first-level cache and maths coproc"
+ },
+ {
+  "f": "M_aperta.high-check.2.txt",
+  "removed": "microservices cost more in operations: every service wants releases, monitoring, logs, alerts and a person who looks after it",
+  "removedSaidPresent": false,
+  "kept": "the first thing to know is which part of the monolith actually changes: the stable parts gain nothing from being split",
+  "keptSaidPresent": true,
+  "cut": "internal knowledge Start with one question, and it isn't technical: what must your team be able to do a year from now that it can't do today? Let that answer pick the architecture. Before you decide, check four things. 1. **Which parts of the monolith actually change.** Parts that stay stable gain nothing from being split out. 2. **Where your transaction boundaries are.** If a transaction spans tw"
+ },
+ {
+  "f": "E_confronto.high-check.2.txt",
+  "removed": "Redis means one more service to run, monitor and upgrade",
+  "removedSaidPresent": false,
+  "kept": "Postgres with SELECT FOR UPDATE SKIP LOCKED is enough up to roughly a thousand jobs per minute",
+  "keptSaidPresent": true,
+  "cut": "internal knowledge **Postgres** for a small project. Move to Redis only when volume genuinely demands it. Postgres with `SELECT FOR UPDATE SKIP LOCKED` handles up to roughly a thousand jobs per minute. Job lives in same transaction as data: a job never starts if its write rolled back. Persistence free: process dies, queue survives. Redis persistence needs configuring: without AOF, restart loses qu"
+ },
+ {
+  "f": "S06_meteo_settimana.caveman4-full.2.txt",
+  "removed": "Tuesday: cloudy, 22 degrees, low 16, light rain in the evening",
+  "removedSaidPresent": false,
+  "kept": "Monday: clear, 24 degrees, low 17",
+  "keptSaidPresent": true,
+  "cut": "**New York this week** (source: web): - **Monday:** clear, high 24°, low 17°. - **Wednesday:** rain most of the day, high 19°, low 15°. - **Thursday:** some sunny spells, high 21°, low 14°. - **Friday:** clear, high 25°, low 16°. - **Saturday:** clear and warm, high 28°, low 19°. - **Sunday:** thunderstorms in the afternoon, high 26°, low 18°. The heaviest rain comes on Wednesday and Sunday, so ta"
+ },
+ {
+  "f": "S03_letconst.none.2.txt",
   "removed": "const prevents reassigning the name, not modifying the value",
   "removedSaidPresent": true,
   "kept": "an object declared with const can change internally",
   "keptSaidPresent": true,
-  "cut": "internal knowledge `let` allows reassignment. So an object declared with `const` can still change internally: ```js \"Ada\" }; user.name = \"Grace\"; // fine: object changes internally user = { name: \"Linus\" }; // TypeError: name can't be reassigned let count = 1; count = 2; // fine: let allows reassignment ``` Both are block scoped, unlike `var`."
+  "cut": "Both `let` and `const` are block scoped. A variable declared with either one exists only inside the `{ }` block where you declare it. `var` doesn't work that way. The difference between them is reassignment: **`let` lets you reassign the variable:** ```js let count = 1; count = 2; // fine ``` ```js const count = 1; count = 2; // TypeError ``` It doesn't freeze the value itself. If you declare an o"
  },
  {
-  "f": "S05_gpu.caveman-full.2.txt",
-  "removed": "the biggest jump is in frame generation, not raw rasterisation",
-  "removedSaidPresent": false,
-  "kept": "the 5080 uses the Blackwell architecture, the 4080 Ada Lovelace",
-  "keptSaidPresent": true,
-  "cut": "The RTX 5080 is a moderate step up from the RTX 4080. - **Architecture:** the 5080 uses Blackwell. The 4080 uses Ada Lovelace. - **Memory:** the 5080 has GDDR7 and the 4080 has GDDR6X. Memory bandwidth goes from about 717 GB/s to about 960 GB/s. - **Rasterisation:** the real gain is about 10-15 per cent. Games that support it will show the largest improvement. - **Power:** rated draw rises from 32"
- },
- {
-  "f": "S08_bitcoin.caveman-lite.2.txt",
-  "removed": "the solution is a chain of blocks ordered by a proof of work",
+  "f": "S05_gpu.atlasmin-high.2.txt",
+  "removed": "rated power draw rises from 320 to 360 watts",
   "removedSaidPresent": true,
-  "kept": "the first block is generated on 3 January 2009 and contains the headline of a Times article about a bank bailout",
+  "kept": "the biggest jump is in frame generation, not raw rasterisation",
   "keptSaidPresent": true,
-  "cut": "Bitcoin grew out of the cypherpunk scene. The people there had wanted digital money for years. Earlier designs such as b-money and bit gold got close, but none of them solved one problem: how to agree on the order of transactions. **The problem.** Digital money is easy to copy, so the same coin can be spent twice. The usual fix is a central body that keeps the ledger and decides which payment came"
+  "cut": "RTX 5080 is a newer generation. Biggest gain is frame generation, not raw rasterisation. Architecture: Blackwell, up from Ada Lovelace on 4080. Memory: GDDR7, up from GDDR6X. Bandwidth: about 717 GB/s up to about 960 GB/s. Rasterisation: real gain about 10–15 per cent. 320 W up to 360 W. Power connector: still 16-pin."
  },
  {
-  "f": "S08_bitcoin.low-ask.2.txt",
-  "removed": "in 2008 a paper appears signed Satoshi Nakamoto, a pseudonym never identified",
+  "f": "D_lista.high-ask-check.2.txt",
+  "removed": "X-XSS-Protection is deprecated and should be omitted: modern browsers ignore it and older versions introduced vulnerabilities",
   "removedSaidPresent": false,
-  "kept": "the solution is a chain of blocks ordered by a proof of work",
+  "kept": "X-Content-Type-Options set to nosniff, stopping the browser from guessing the content type",
   "keptSaidPresent": true,
-  "cut": "A Peer-to-Peer Electronic Cash System*. Idea grew out of cypherpunk scene. Earlier attempts such as b-money and bit gold had not solved ordering, meaning agreeing which transaction came first. Paper tackled that as double spending: stopping same money being spent twice without central body keeping ledger. Solution: chain of blocks ordered by proof of work. Proof of work makes rewriting past expens"
+  "cut": "internal knowledge Set these six headers on a static site: `Strict-Transport-Security: max-age=31536000; includeSubDomains` makes the browser use HTTPS. Use a max-age of at least 31536000 seconds. `Content-Security-Policy: default-src 'self'` blocks injected third-party scripts. `X-Content-Type-Options: nosniff` stops the browser from guessing the content type. `Referrer-Policy: strict-origin-when"
  },
  {
-  "f": "E_confronto.high-ask.1.txt",
-  "removed": "Redis handles far more volume and has lower latency, under a millisecond",
+  "f": "P_confronto_lungo.high-check.2.txt",
+  "removed": "database: searching is familiar and convenient, but writing logs into the application's own database puts two very different workloads in competition",
   "removedSaidPresent": false,
-  "kept": "Postgres with SELECT FOR UPDATE SKIP LOCKED is enough up to roughly a thousand jobs per minute",
+  "kept": "managed service: instant search, alerts, automatic retention, but you pay by volume and at a thousand requests a minute the volume grows fast",
   "keptSaidPresent": true,
-  "cut": "Postgres with `SELECT FOR UPDATE SKIP LOCKED` handles up to roughly a thousand jobs per minute. Job lives in same transaction as data: never starts while matching write rolls back. Persistence free: process dies, queue survives. Redis: Costs one more service to run, monitor, upgrade. Redis persistence needs configuring: without AOF enabled, restart loses queued jobs."
+  "cut": "internal knowledge Local files plus collector shipping them elsewhere. Application never waits on log write. Rule always holds: log write never in request's critical path. Why not files alone: zero cost, no dependency, but search means grep. Rotation configured by hand, or disk fills. No search across several machines; connect to each one. Why not managed service alone: instant search, alerts, aut"
  },
  {
-  "f": "F_codice.high-ask-check.2.txt",
-  "removed": "clearTimeout has to be called before every new setTimeout, or timers pile up and the function fires more than once",
+  "f": "B_tecnica.none.1.txt",
+  "removed": "pool_size should be raised only after the fix is in, and only if the real load calls for it",
+  "removedSaidPresent": false,
+  "kept": "in the middleware at db/session.py:47 the connection is released only on the success path",
+  "keptSaidPresent": true,
+  "cut": "Your database connection pool is running out, and the cause is a connection leak. It isn't a slow query. ## What's happening In the middleware at `db/session.py:47`, the connection is released only when the handler succeeds. If the handler raises an exception, the code never reaches `release()`, so that connection stays checked out until it times out. Each failed request holds on to one connection"
+ },
+ {
+  "f": "I_sicurezza.high-ask-check.1.txt",
+  "removed": "taking it out of a commit is not enough: it stays in the repository history and anyone with a clone already has it",
   "removedSaidPresent": false,
   "kept": null,
   "keptSaidPresent": null,
-  "cut": "internal knowledge ```js function debounce(fn, ms) {   let t; return (...args) => {     clearTimeout(t); t = setTimeout(() => fn(...args), ms); }; } ``` Keep `t` in the closure, not inside the returned function. If each call gets its own timer, nothing is debounced. Forward the arguments with the spread (`...args`). Without it, `fn` receives nothing. This version returns nothing. If you need the r"
+  "cut": "internal knowledge No. Anything that reaches the browser can be read by whoever is using it. Obfuscation stops working as soon as someone opens the developer tools or looks at the network requests, because the key shows up there in plain text. Keep the key on the server. Your frontend should call an endpoint on your own backend, and that backend calls the service using the key. Put a rate limit on"
  },
  {
-  "f": "B_tecnica.none.2.txt",
-  "removed": "in the middleware at db/session.py:47 the connection is released only on the success path",
+  "f": "I_sicurezza.low-check.2.txt",
+  "removed": "no: anything that reaches the browser is readable, and obfuscation falls apart the moment someone opens the developer tools or looks at the network requests",
   "removedSaidPresent": false,
-  "kept": "when the handler raises an exception, release() is never reached and the connection stays held until timeout",
-  "keptSaidPresent": true,
-  "cut": "Your pool is running out of database connections. It isn't a slow query. **What's happening** If the handler raises an exception, `release()` never runs, so that connection stays checked out until it times out. After a few hundred failed requests the pool is empty, and every request after that has to wait for a connection to come free. That's why latency keeps rising instead of requests failing st"
+  "kept": null,
+  "keptSaidPresent": null,
+  "cut": "internal knowledge No. Keep the key on the server. Your frontend should call an endpoint on your own backend, and that backend calls the service with the key. Put a rate limit on that backend endpoint. Without one, anyone can use your endpoint to spend your key for free. If the key has already been published anywhere, treat it as compromised and rotate it right away. Removing it from the code isn'"
  },
  {
-  "f": "S05_gpu.high-ask-check.2.txt",
-  "removed": "rated power draw rises from 320 to 360 watts",
+  "f": "A_ricerca.adhd.2.txt",
+  "removed": "Mt. Joy at the Greek Theatre at 20:00; an amphitheatre inside Griffith Park, one of the best places in the city for a summer concert, and a short distance from the Griffith Observatory if you arrive early for sunset",
   "removedSaidPresent": false,
-  "kept": "the 5080 uses the Blackwell architecture, the 4080 Ada Lovelace",
+  "kept": "scattered clouds in the morning, clearing in the afternoon",
   "keptSaidPresent": true,
-  "cut": "internal knowledge RTX 5080 mainly better at frame generation; raw rasterisation gain only about 10-15 per cent. Architecture: Blackwell on 5080, Ada Lovelace on 4080. Memory: GDDR7 on 5080, GDDR6X on 4080; bandwidth up from about 717 to about 960 GB/s. Power: connector still 16-pin."
+  "cut": "**Pick your plan for tonight:** the free jazz at the Hammer Museum, or Mt. Joy at the Greek Theatre at 20:00. ## Weather today (it's 10:20 PDT now) - **Sky:** some clouds this morning, clear by the afternoon. - **High:** 86–93°F (30–34°C). Forecasts differ, and so do neighborhoods. - Downtown will be the hottest part of the city. - The coast will stay cooler. - **Tonight's low:** about 69°F (21°C)"
  },
  {
-  "f": "P_confronto_lungo.high-ask-check.1.txt",
-  "removed": "database: searching is familiar and convenient, but writing logs into the application's own database puts two very different workloads in competition",
+  "f": "S08_bitcoin.atlas-high.2.txt",
+  "removed": "the paper is titled Bitcoin: A Peer-to-Peer Electronic Cash System",
   "removedSaidPresent": false,
-  "kept": "managed service: the logs leave your own infrastructure, so personal data has to be stripped before they go",
+  "kept": "the problem it tackles is double spending without a central body keeping the ledger",
   "keptSaidPresent": true,
-  "cut": "internal knowledge Local files plus a collector that ships them elsewhere. Your app never waits on a log write. Rule that always holds: writing a log must not sit in the request's critical path. Files alone: zero cost, no dependency. Searching means grep, though, and you have to set up rotation by hand or the disk fills. You also can't search across several machines; you have to connect to each on"
+  "cut": "Bitcoin came out of the cypherpunk scene. Earlier attempts like b-money and bit gold never solved transaction ordering. That is a pseudonym, never identified. Its problem: double spending, with no central body keeping the ledger. Its solution: a chain of blocks ordered by proof of work. Rewriting the past is expensive, because the work would have to be redone for every later block. The first block"
  },
  {
-  "f": "G_procedura.atlasmin-high.2.txt",
-  "removed": "third: fill it in batches of ten thousand rows, so no long lock is held on the table",
+  "f": "D_lista.high-check.1.txt",
+  "removed": "Permissions-Policy to switch off camera, microphone and geolocation if the site does not use them",
   "removedSaidPresent": false,
-  "kept": "second: add a new column, ALTER TABLE t ADD COLUMN colonna_int integer",
+  "kept": "Referrer-Policy set to strict-origin-when-cross-origin, so the full path does not leak to other sites",
   "keptSaidPresent": true,
-  "cut": "Don't use a direct `ALTER TABLE ... ALTER COLUMN ... TYPE`. It rewrites the whole table while holding an ACCESS EXCLUSIVE lock, so the service is down for the entire rewrite. Do the change in these steps, in this order: 1. Check that every existing value can be converted. Count the rows whose value is not all digits. If that count is not zero, fix those rows first. 2. Add a new column: ```sql    A"
+  "cut": "internal knowledge (not checked against current specs, as you asked) For a site that only serves static pages, set these six headers and leave out a seventh: Strict-Transport-Security: use a max-age of at least 31536000 seconds and add includeSubDomains. This makes the browser always use HTTPS. Content-Security-Policy: use default-src 'self'. This is the header that blocks scripts injected from th"
+ },
+ {
+  "f": "S06_meteo_settimana.low-ask.2.txt",
+  "removed": "Tuesday: cloudy, 22 degrees, low 16, light rain in the evening",
+  "removedSaidPresent": false,
+  "kept": "Monday: clear, 24 degrees, low 17",
+  "keptSaidPresent": true,
+  "cut": "Mostly dry week in New York. Wednesday and Sunday bring the significant rain, and the weekend is the warmest part. Monday: clear, high 24 degrees, low 17 Tuesday: Wednesday: rain for most of the day, high 19, low 15 Thursday: some sunny spells, high 21, low 14 Friday: clear, high 25, low 16 Saturday: clear and warm, high 28, low 19 Sunday: thunderstorms in the afternoon, high 26, low 18 Saturday i"
+ },
+ {
+  "f": "S08_bitcoin.low-check.2.txt",
+  "removed": "the solution is a chain of blocks ordered by a proof of work",
+  "removedSaidPresent": true,
+  "kept": "that reference works both as a timestamp and as a statement of intent",
+  "keptSaidPresent": true,
+  "cut": "internal knowledge Bitcoin grew out of the cypherpunk scene. Earlier attempts at digital cash, such as b-money and bit gold, never solved one problem: how to agree on the order of transactions. In 2008 a paper appeared titled *Bitcoin: A Peer-to-Peer Electronic Cash System*, signed Satoshi Nakamoto. That name was a pseudonym, and nobody has ever identified who used it. The paper tackled double spe"
+ },
+ {
+  "f": "S09_x86.low-ask.2.txt",
+  "removed": "the 80286 of 1982 introduces protected mode, but there is no way back to real mode without a reboot",
+  "removedSaidPresent": false,
+  "kept": "the 8086 of 1978 is 16 bit and grows out of the 8080, compatible at source level",
+  "keptSaidPresent": true,
+  "cut": "The story starts slightly before the eighties: 8086, 1978, 16 bit, grew out of 8080 and stayed compatible with it at source level. That pattern of carrying the past forward runs through everything after. **Early eighties: 80386 (1985) fixed what 286 left awkward. It brought 32 bit, paged virtual memory and virtual 8086 mode, so old 16-bit code could run inside the new protected world. **Pulling th"
+ },
+ {
+  "f": "N_spiegazione.caveman4-full.2.txt",
+  "removed": "it is not a defect to be eliminated but a choice: most systems that scale accept it deliberately",
+  "removedSaidPresent": false,
+  "kept": "the trade is against availability: a system demanding strong consistency has to refuse requests when the replicas cannot talk",
+  "keptSaidPresent": true,
+  "cut": "**Eventual consistency:** after a write, the replicas don't agree right away. If writes stop, they converge within a finite time. **Why it exists.** It's a trade against availability. A system that demands strong consistency has to refuse requests when its replicas can't talk to each other. Eventual consistency keeps serving them. **How long \"eventually\" is.** Replicas in the same region usually c"
  }
 ]

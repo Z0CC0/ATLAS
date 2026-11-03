@@ -1,19 +1,19 @@
-Prima di scegliere l'architettura, rispondi a una domanda che non è tecnica: **cosa deve poter fare il team fra un anno che oggi non può?** Tutto il resto dipende da questa risposta.
+Prima di scegliere l'architettura, rispondi a una domanda che non è tecnica: **cosa deve poter fare il tuo team fra un anno che oggi non può?** Tutto il resto dipende da questa risposta.
 
-**Due dati da raccogliere nel monolite**
-1. **Quali parti cambiano davvero.** Una parte stabile non guadagna nulla dall'essere separata. Concentra lì solo lo sforzo che serve.
-2. **Dove passano i confini delle transazioni.** Se una transazione attraversa due servizi, diventa un problema distribuito. I confini giusti seguono le transazioni, non le cartelle del codice.
+**Due dati da raccogliere sul monolite**
+1. **Quali parti cambiano davvero.** Le parti stabili non guadagnano nulla se le spezzi. Lasciale dove sono.
+2. **Dove stanno i confini delle transazioni.** Se una transazione attraversa due servizi, diventa un problema distribuito. Taglia lungo quei confini, non attraverso.
 
 **Come migrare**
-- Evita la riscrittura completa in parallelo al vecchio sistema. Fallisce quasi sempre: il PHP continua a cambiare e la copia non lo raggiunge mai.
-- Usa lo strangolamento progressivo:
-  1. Metti un router davanti al monolite.
-  2. Sposta un pezzo per volta.
-  3. Lascia il vecchio sistema autorevole finché il nuovo pezzo non è verificato.
+- Evita la riscrittura completa in parallelo al vecchio sistema. Fallisce quasi sempre: il vecchio sistema continua a cambiare e la copia non lo raggiunge mai.
+- Usa lo strangolamento progressivo. Metti un router davanti al monolite e sposta un pezzo per volta. Il vecchio sistema resta autorevole finché il nuovo non è verificato.
 
-**Quale forma dare al sistema**
-- I microservizi costano di più da gestire. Ogni servizio richiede rilascio, monitoraggio, log, allarmi e una persona che se ne occupi.
-- Con meno di cinque sviluppatori, quel costo supera quasi sempre il beneficio.
-- Valuta il monolite modulare, l'opzione di cui si parla poco. Ha confini interni netti e un solo rilascio. Puoi estrarre un modulo come servizio il giorno in cui serve davvero.
+**Come scegliere la forma**
+- **Microservizi:** costano di più da gestire. Ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupi. Se il team ha meno di cinque sviluppatori, il costo supera quasi sempre il beneficio.
+- **Monolite modulare:** è l'opzione citata poco. Ha confini interni netti e un solo rilascio. Puoi estrarre un modulo il giorno in cui serve davvero.
 
-**In pratica:** mappa le parti che cambiano e i confini delle transazioni. Poi confronta la dimensione del team con il costo operativo. Se il team è piccolo, parti da un monolite modulare e migra con lo strangolamento progressivo. Estrai un servizio solo quando quel servizio sblocca qualcosa che il team deve poter fare fra un anno.
+**Ordine pratico**
+1. Definisci l'obiettivo del team a un anno.
+2. Trova le parti che cambiano e i confini delle transazioni.
+3. Se il team è piccolo, parti da un monolite modulare.
+4. Migra con lo strangolamento progressivo, non con una riscrittura completa.

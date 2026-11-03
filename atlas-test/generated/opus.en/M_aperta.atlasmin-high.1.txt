@@ -1,13 +1,17 @@
-Start with the question that isn't technical: what must your team be able to do a year from now that it can't do today? Let that answer drive the architecture.
+Key question isn't technical: what must your team be able to do a year from now that it can't do today? Let that drive the architecture.
 
-Find which parts of the monolith actually change. Stable parts gain nothing from being split.
+Before deciding, find out:
 
-Find where transaction boundaries sit. A transaction spanning two services becomes a distributed problem.
+**Which parts actually change.** Stable parts gain nothing from being split.
 
-Don't do a full rewrite running in parallel with the old system. It almost always fails: the old one keeps changing, and the copy never catches up.
+Where transaction boundaries sit. A transaction spanning two services becomes a distributed problem.
 
-Strangle progressively instead. Put a router in front, move one piece at a time, and keep the old system authoritative until the new piece is verified.
+How many developers you have. Microservices cost more to run: every service needs releases, monitoring, logs, alerts and a person looking after it. Below five developers, that cost almost always exceeds the benefit.
 
-Microservices cost more in operations. Every service needs releases, monitoring, logs, alerts and a person looking after it. Below five developers, that cost almost always exceeds the benefit.
+Consider a modular monolith, the option nobody mentions. You get sharp internal boundaries and one release, and you can still extract a module the day it's genuinely needed.
 
-Consider a **modular monolith**, the option nobody mentions: sharp internal boundaries, one release, and a module extracted only the day it's genuinely needed.
+How to migrate:
+
+**Avoid a full rewrite running in parallel with the old system.** It almost always fails, because the old system keeps changing and the copy never catches up.
+
+Use progressive strangling instead. Put a router in front and move one piece at a time. The old system stays authoritative until the new piece is verified.

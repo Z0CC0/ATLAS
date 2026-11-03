@@ -1,0 +1,1 @@
+Yes. Empty list is falsy. Same for every empty collection: list, tuple, dict, set, and string.

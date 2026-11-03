@@ -1,16 +1,18 @@
-Before you choose microservices, a modular monolith or anything else, answer a few questions. The architecture should come from those answers.
+Start with the question that isn't technical: **what does your team need to be able to do a year from now that it can't do today?** Ship one area without touching the rest? Scale one hot path? Let two teams work without stepping on each other? That answer should drive the architecture.
 
-**1. Find out which parts actually change.** Look at where changes land in the monolith. Stable parts gain nothing from being split out, so leave them alone. The parts that change often are the only ones where new boundaries might pay off.
+Then look at the monolith in this order:
 
-**2. Map the transaction boundaries.** Check where your transactions start and end before you draw any service lines. A transaction that spans two services becomes a distributed problem. Keep each transaction inside one boundary.
+**1. Which parts actually change.** Find the code that gets modified often and the code nobody touches. The stable parts gain nothing from being split out, so leave them alone. Put your effort where the change happens.
 
-**3. Don't do a big-bang rewrite.** Building a full replacement in parallel with the old system almost always fails. The old system keeps changing, and the copy never catches up. Use progressive strangling instead:
+**2. Where the transaction boundaries are.** Find the operations that have to commit or roll back together. If you draw a service line through one of them, a simple DB transaction becomes a distributed problem. Your boundaries should follow those transactions, not cut across them.
+
+**3. How you'll migrate.** Don't build a full rewrite in parallel with the old system. That approach almost always fails: the old system keeps changing and the copy never catches up. Strangle it progressively instead:
 - Put a router in front of the monolith.
-- Move one piece at a time behind the router.
-- Keep the old system authoritative for each piece until the new version is verified.
+- Move one piece at a time behind it.
+- Keep the old system authoritative for each piece until the new one is verified.
 
-**4. Count the operational cost of microservices.** Every service needs its own releases, monitoring, logs, alerts and a person who looks after it. With fewer than five developers, that cost almost always exceeds the benefit.
+**4. Whether you can afford microservices.** Each service needs its own releases, monitoring, logs, alerts, and a person who looks after it. With fewer than five developers, that operational cost almost always exceeds the benefit.
 
-**5. Consider the modular monolith.** Few people suggest it, but it is often the right answer. You get sharp internal boundaries and a single release. You can still extract a module into its own service on the day you actually need to.
+**5. The option nobody mentions: a modular monolith.** You draw sharp internal boundaries between modules and keep one release. Any module can still be extracted into its own service on the day you genuinely need that. You get most of the structural benefit without the operational cost, and you keep microservices open for later.
 
-**6. Answer the question that decides it.** The deciding question isn't technical: what must your team be able to do a year from now that it can't do today? Choose the architecture that makes that possible. Anything beyond that is cost without return.
+In short: answer the one-year question first. Then map what changes and where the transactions sit. Migrate by strangling, not by rewriting. Default to a modular monolith unless your team size and needs clearly justify microservices.

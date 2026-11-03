@@ -1,1 +1,1 @@
-Sì. Vale per tutte le collezioni vuote: lista, tupla, dizionario, insieme e stringa.
+Sì, tutte le collezioni vuote sono false: lista, tupla, dizionario, insieme e stringa.

@@ -1,16 +1,15 @@
-I wouldn't put all of it in triggers. Put integrity rules in the database and business logic in the application.
+Don't put all of it in triggers. Upside real: no application path can skip rule, not even script run by hand. Cost high, though.
 
-**What you gain:** the benefit is real. No application path can skip the rule, not even a script someone runs by hand.
+**Problems:**
+- Triggers invisible to anyone reading application code. Change that looks simple can fire other triggers, with no trace.
+- Team's existing test tools don't cover triggers. Tests must run against real database.
+- Debugging worse. Error inside trigger arrives as failed write, and error doesn't say which rule caused it.
+- Migrations fragile. Trigger order matters, but nothing declares that order.
 
-**What it costs:**
-- **Hidden behavior.** People reading the application code can't see triggers. A change that looks simple can fire other triggers and leave no trace.
-- **Testing.** Your team's current test tools don't cover triggers. You'd need tests that run against a real database.
-- **Debugging.** An error inside a trigger shows up only as a failed write. Nothing says which rule caused it.
-- **Migrations.** They become fragile. Trigger order matters, and nothing declares that order.
+**Better split:**
+- Database keeps only what protects integrity: constraints, foreign keys, uniqueness, domain checks.
+- Business logic lives in application, behind single entry point.
 
-**What I'd do instead:**
-- Keep only integrity protection in the database: constraints, foreign keys, uniqueness and domain checks.
-- Keep the business logic in the application, behind a single entry point.
-- Allow direct database access only for migrations. With that rule in place, the single entry point gives the same guarantee as a trigger: nothing can skip it.
+Single entry point gives same guarantee as trigger, with one condition. Reserve direct database access for migrations only. Nobody else writes to DB directly, so nothing skips rule. Logic stays visible, testable with team's current tools, and errors name the rule that failed.
 
-You keep the protection you want and avoid the hidden behavior, the testing gap, the debugging trouble and the fragile migrations.
+**Next step:** lock down DB credentials so only application and migration tooling can write.

@@ -1,9 +1,11 @@
-Usually no. With only three distinct values, PostgreSQL's planner normally won't use a B-tree index on that column. When a filter matches more than roughly 5–10% of the rows, it picks a sequential scan instead. The index still slows down writes and takes disk space, so you pay for it without getting faster reads.
+Usually no. Planner normally ignores plain B-tree index on low-cardinality column.
 
-One exception: if one value is rare, a partial index on that value does get used.
+Three values means each value often matches big share of rows. Filter selecting more than roughly 5-10% of rows makes planner prefer sequential scan. Index still costs extra work on every write, plus disk space. You pay, get nothing.
+
+Exception: one value rare. Partial index on that rare value works:
 
 ```sql
-CREATE INDEX orders_failed_idx ON orders (id) WHERE status = 'failed';
+CREATE INDEX orders_failed_idx ON orders (status) WHERE status = 'failed';
 ```
 
-Queries that filter on `status = 'failed'` will use it. Queries on the common values will keep using a sequential scan.
+Index stays small. Planner uses it for queries filtering on that value.

@@ -1,30 +1,22 @@
-HTTPS is ordinary HTTP sent through a channel that TLS encrypts. The web requests and responses are the same. TLS protects them in transit.
+HTTPS is ordinary HTTP sent through a channel that TLS encrypts. TLS sets that channel up during a short exchange called the handshake. After the handshake, your HTTP requests and responses travel encrypted inside it.
 
-## The handshake
+## The handshake, step by step
 
-Before any HTTP is sent, client and server set up the encrypted channel:
-
-1. **Client hello.** The client opens the connection and lists the TLS versions and ciphers it supports.
-2. **Server reply.** The server picks one version and one cipher from that list, and sends its certificate.
-3. **Certificate check.** The client verifies the certificate's signature by following the chain of signers up to a root certificate it already holds. If the chain doesn't end at a trusted root, the check fails.
-4. **Key agreement.** Client and server agree on a shared session key. Today this is usually done with an elliptic curve Diffie-Hellman exchange.
-5. **Encrypted traffic.** From here on, all traffic is encrypted and authenticated. Anyone in the middle can neither read it nor change it without being detected.
-
-## What the certificate proves
-
-A certificate links a domain name to a public key, and a certificate authority signs it. That signature is what the client checks in step 3.
-
-The certificate proves one thing: whoever controls that key controls that domain. It says **nothing** about who runs the site or whether they can be trusted. A scam site can have a perfectly valid certificate.
+1. **Client says hello.** Your browser opens the connection and lists the TLS versions and ciphers (encryption methods) it supports.
+2. **Server answers.** It picks one version and one cipher from that list and sends its certificate.
+3. **Client checks the certificate.** A certificate binds a domain name to a public key, and a certificate authority (CA) signs it. To check that signature, the browser follows the chain of signatures up to a root certificate it already has stored. If the chain ends at a root it trusts, it accepts the certificate.
+4. **Both sides agree a session key.** These days this is usually done with an elliptic curve Diffie-Hellman exchange.
+5. **Encrypted traffic starts.** From here on, all traffic is encrypted and authenticated. Anyone sitting between you and the server can't read it or change it.
 
 ## Why the session key is symmetric
 
-Asymmetric encryption (public/private key pairs) costs too much to use on real traffic. So it is used only during the handshake. The actual data is encrypted with the symmetric session key from step 4, which is much cheaper.
+The certificate uses asymmetric cryptography, where the public and private keys are different. That's useful for proving identity, but it's too slow and costly to run on every byte of real traffic. So the handshake ends with a shared symmetric key, and that cheaper key encrypts the actual data.
 
-## TLS 1.2 vs TLS 1.3
+## TLS 1.3 vs TLS 1.2
 
 - **TLS 1.2:** the handshake takes two round trips between client and server.
-- **TLS 1.3:** it takes one round trip.
+- **TLS 1.3:** it takes one round trip, so the connection is ready sooner.
 
-Fewer round trips mean the connection is ready sooner and the first page request goes out earlier.
+## What the padlock does not prove
 
-**In short:** the certificate proves the server controls the domain's key, the key exchange creates a shared secret, and that secret encrypts and authenticates every HTTP message.
+The certificate tells you only that whoever controls that domain also holds that key. It says nothing about who runs the site. A phishing site on a domain it controls can have a perfectly valid certificate. HTTPS means the connection is private and hasn't been tampered with. It does not mean the site is honest.

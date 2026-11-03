@@ -1,18 +1,24 @@
-Don't run `ALTER TABLE t ALTER COLUMN colonna TYPE integer` directly. It rewrites all ten million rows while holding an ACCESS EXCLUSIVE lock, so your service is down for as long as the rewrite takes. Move the data to a new column instead:
+Start by counting the rows that won't convert. If the count is not 0, fix those rows before you go further:
 
-1. **Check every value converts.** Count the rows where `colonna` is not all digits. If the count isn't 0, fix those rows before you go on.
+```sql
+SELECT count(*) FROM t WHERE colonna !~ '^[0-9]+$';
+```
+
+Don't run `ALTER TABLE t ALTER COLUMN colonna TYPE integer` directly. It rewrites the whole table while holding an `ACCESS EXCLUSIVE` lock, so the service is down until it finishes. Use these steps instead:
+
+1. **Check:** run the count above. Continue only when it returns 0.
 2. **Add the new column:**
    ```sql
    ALTER TABLE t ADD COLUMN colonna_int integer;
    ```
-3. **Fill it in batches of 10,000 rows.** Small batches mean no long lock is held on the table, so the service keeps running.
-4. **Add a trigger that keeps `colonna` and `colonna_int` matching** while the migration runs. Rows written during the backfill stay correct.
-5. **Change the code to read from `colonna_int`, and ship it.**
-6. **Only after that, drop the old column:**
+3. **Add a trigger** that keeps `colonna` and `colonna_int` in step. Rows written while you backfill then stay correct.
+4. **Backfill in batches of 10,000 rows.** Small batches mean no long lock is ever held on the table.
+5. **Switch the code** to read from `colonna_int`, then ship it.
+6. **Only then, drop the old column:**
    ```sql
    ALTER TABLE t DROP COLUMN colonna;
    ```
 
-⚠️ Step 6 can't be undone. Once the column is dropped, the only way to get that data back is a restore from backup. Run it only after the code from step 5 is live and reading from `colonna_int`.
+⚠️ Step 6 can't be undone. Once you drop the column, the data comes back only from a backup restore. Don't run it until the new code is live and reading from `colonna_int`.
 
-Next: run the step 1 count on production and check whether it returns 0.
+Next: run the count query on production and check that it returns 0.

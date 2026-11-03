@@ -1,14 +1,14 @@
-`let` allows reassignment. `const` prevents reassigning name, but not modifying value.
+`let` allows reassignment; `const` doesn't let you reassign the name.
 
-So object declared with `const` can still change internally:
+With `const`, only the binding stays fixed, not the value. An object declared with `const` can still change internally:
 
 ```js
-const user = { name: "Ana" };
-user.name = "Luca";   // works
-user = {};            // TypeError: Assignment to constant variable.
+const user = { name: "Ann" };
+user.name = "Bob";   // fine: object changed internally
+user = {};           // TypeError: name cannot be reassigned
 
 let count = 1;
-count = 2;            // works
+count = 2;           // fine with let
 ```
 
-Both block scoped, unlike `var`.
+Both are block scoped, unlike `var`, so a variable declared inside `{ }` stays inside that block.

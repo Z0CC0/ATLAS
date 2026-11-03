@@ -1,14 +1,14 @@
-`let` lets you reassign a variable. `const` does not.
+`let` lets you reassign a variable. `const` doesn't: once a name is declared with `const`, you can't point it at a new value.
 
-`const` stops you from reassigning the name, but it doesn't stop you from changing the value. So an object declared with `const` can still change internally:
+`const` locks the name, not the value. If a `const` holds an object, you can still change what's inside it:
 
 ```js
-const user = { name: "Ada" };
-user.name = "Grace"; // allowed: the object changes internally
-user = {};           // TypeError: the name can't be reassigned
+const user = { name: "Ana" };
+user.name = "Luca";   // allowed: changes the object's contents
+user = {};            // TypeError: Assignment to constant variable.
 
 let count = 1;
-count = 2;           // allowed
+count = 2;            // allowed
 ```
 
-Both are block scoped, which `var` is not.
+Both are block scoped, so they exist only inside the `{ }` where you declare them. `var` doesn't work that way.

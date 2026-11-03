@@ -1,11 +1,13 @@
-Usually not. On a column with only three distinct values, the planner normally won't use a B-tree index at all. When a filter matches more than about 5–10% of the rows, a sequential scan is cheaper, and with three values almost any filter matches far more than that. You'd still pay for the index on every write and in disk space.
+Usually not. A regular B-tree index on a column with only three distinct values is normally ignored by the query planner. Each value matches a large share of the table, and once a filter selects more than roughly 5–10% of the rows, the planner decides a sequential scan is cheaper than jumping back and forth through the index. So the index rarely speeds up your reads.
 
-The exception is when one of the values is rare, for example a `status` column where almost every row is `'done'` and only a few are `'pending'`. A partial index on that value works well:
+It still costs you, though. Every INSERT, UPDATE and DELETE has to maintain it, and it takes up disk space. You pay for it on every write and get little or nothing back on reads.
+
+**The exception:** if one of the three values is rare and you query for it often, a partial index on just that value works well. For example, with a `status` column where most rows are `'done'` and only a few are `'pending'`:
 
 ```sql
 CREATE INDEX orders_pending_idx ON orders (id) WHERE status = 'pending';
 ```
 
-It stays small, only rows with that value cost anything to maintain, and queries filtering on `status = 'pending'` will use it.
+The index covers only the rare rows, so it stays small and cheap to maintain. Queries like `WHERE status = 'pending'` select a small fraction of the table, so the planner will actually use it.
 
-*(From general knowledge; nothing was looked up.)*
+So skip the plain index. Add a partial index only if you regularly filter on a value that's uncommon.

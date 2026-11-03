@@ -1,16 +1,22 @@
-In breve: la RTX 5080 è più rapida soprattutto nella **generazione di fotogrammi**. Nel rendering classico (il rasterizzatore puro) guadagni circa il **10-15%**.
+**In breve:** la 5080 va circa il 10-15% più veloce della 4080 nel rendering tradizionale. Il salto grosso c'è solo se usi la generazione di fotogrammi.
 
-**Cosa cambia:**
+## Dove cambia
 
-1. **Architettura:** la 5080 usa Blackwell, la 4080 usa Ada Lovelace.
-2. **Memoria:** la 5080 monta GDDR7, la 4080 GDDR6X.
-3. **Banda di memoria:** passa da circa 717 a circa 960 GB/s.
-4. **Consumo dichiarato:** sale da 320 a 360 W, cioè 40 W in più.
+1. **Architettura:** la 5080 usa Blackwell, la 4080 Ada Lovelace.
+2. **Memoria:** la 5080 ha GDDR7, la 4080 GDDR6X. La banda sale da circa 717 a circa 960 GB/s.
+3. **Prestazioni:**
+   - Con la generazione di fotogrammi la 5080 stacca nettamente la 4080.
+   - Senza (rasterizzazione pura) il guadagno reale è del 10-15%.
+4. **Consumo:** sale da 320 a 360 watt.
 
-**Cosa resta uguale:** il connettore di alimentazione è sempre a 16 pin. Il cavo che usi con la 4080 va bene anche per la 5080.
+## Cosa resta uguale
 
-**Conclusione:** il passaggio conviene se usi la generazione di fotogrammi. Se giochi senza, il miglioramento è modesto per una scheda nuova.
+- Il connettore di alimentazione è sempre a 16 pin, quindi non ti serve un cavo diverso.
 
-Fonte: mia conoscenza interna, senza ricerche sul web.
+## Cosa significa per te
 
-Prossimo passo: controlla se i giochi che usi di più supportano la generazione di fotogrammi. Da lì capisci se l'aggiornamento ti conviene.
+- **Hai già una 4080:** se non usi la generazione di fotogrammi, il passaggio ti dà poco.
+- **Stai scegliendo tra le due:** la 5080 conviene se giochi a titoli che supportano la generazione di fotogrammi.
+- **Alimentatore:** la 5080 consuma 40 W in più, quindi controlla che il tuo abbia margine.
+
+**Prossimo passo:** guarda se i 2-3 giochi che usi di più supportano la generazione di fotogrammi. Se non la supportano, la differenza tra le due schede è piccola.

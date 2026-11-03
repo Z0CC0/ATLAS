@@ -1,19 +1,19 @@
-Per un sito statico ti bastano sei header. Un settimo va tolto.
+Per sito statico bastano sei header. Uno da evitare.
 
 **Da mettere:**
 
-- **`Strict-Transport-Security`**: costringe il browser a usare HTTPS. Imposta `max-age` ad almeno `31536000` secondi e aggiungi `includeSubDomains`.
-- **`Content-Security-Policy`**: parti da `default-src 'self'`. È l'header che blocca gli script di terze parti iniettati.
-- **`X-Content-Type-Options: nosniff`**: impedisce al browser di indovinare il tipo di contenuto.
-- **`Referrer-Policy: strict-origin-when-cross-origin`**: evita che il percorso completo delle tue pagine arrivi ad altri siti.
-- **Contro il clickjacking**: usa `X-Frame-Options: DENY`, oppure `frame-ancestors 'none'` dentro la CSP. Basta uno dei due.
-- **`Permissions-Policy`**: spegne camera, microfono e geolocalizzazione. Mettilo se il sito non li usa.
+- **`Strict-Transport-Security`**: obbliga browser a usare HTTPS. Usa `max-age` di almeno 31536000 secondi più `includeSubDomains`.
+- **`Content-Security-Policy`** con `default-src 'self'`: blocca iniezione di script di terze parti. È header più importante.
+- **`X-Content-Type-Options: nosniff`**: impedisce al browser di indovinare tipo di contenuto.
+- **`Referrer-Policy: strict-origin-when-cross-origin`**: percorso completo non esce verso altri siti.
+- **Anti-clickjacking**: `X-Frame-Options: DENY`, oppure `frame-ancestors 'none'` dentro CSP. Basta uno dei due.
+- **`Permissions-Policy`**: spegne camera, microfono e geolocalizzazione. Utile se sito non li usa.
 
-**Da togliere:**
+**Da omettere:**
 
-- **`X-XSS-Protection`**: è deprecato. I browser moderni lo ignorano, e nelle versioni vecchie introduceva vulnerabilità. Se la configurazione lo imposta già, rimuovilo.
+- **`X-XSS-Protection`**: deprecato. Browser moderni lo ignorano. In vecchie versioni introduceva vulnerabilità.
 
-Esempio completo:
+Esempio:
 
 ```
 Strict-Transport-Security: max-age=31536000; includeSubDomains
@@ -23,4 +23,4 @@ Referrer-Policy: strict-origin-when-cross-origin
 Permissions-Policy: camera=(), microphone=(), geolocation=()
 ```
 
-In questo esempio `frame-ancestors 'none'` sta nella CSP e sostituisce `X-Frame-Options`.
+Qui `frame-ancestors 'none'` dentro CSP fa da protezione anti-clickjacking, quindi `X-Frame-Options` non serve. Se vuoi più compatibilità, aggiungi `X-Frame-Options: DENY`.

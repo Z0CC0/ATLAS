@@ -1,13 +1,25 @@
-Bitcoin nasce nell'ambiente cypherpunk. Lì da anni si cercava di creare una moneta digitale che non dipendesse da un'autorità. C'erano già stati tentativi come b-money e bit gold. Nessuno dei due, però, risolveva un punto decisivo: come mettere d'accordo tutti sull'ordine delle transazioni.
+Bitcoin nasce nell'ambiente cypherpunk. Questa comunità cercava da anni un denaro elettronico che non dipendesse da banche o istituzioni. C'erano già stati dei tentativi, come b-money e bit gold. Nessuno però risolveva il problema dell'ordinamento, cioè stabilire senza ambiguità quale transazione viene prima di un'altra.
 
-Nel 2008 esce un documento intitolato *Bitcoin: A Peer-to-Peer Electronic Cash System*. È firmato Satoshi Nakamoto, uno pseudonimo dietro cui nessuno è mai stato identificato. Il documento affronta il problema della doppia spesa. Una moneta digitale è fatta di dati, e i dati si possono copiare. Serve quindi un modo per impedire che la stessa moneta venga spesa due volte. Di solito ci pensa un ente centrale che tiene il registro, ma Satoshi vuole farne a meno.
+**Il documento del 2008**
 
-La soluzione è una catena di blocchi ordinata da una prova di lavoro. Ogni blocco si aggancia al precedente, e aggiungerlo richiede un calcolo costoso. Per questo riscrivere il passato non conviene. Chi volesse modificare un blocco vecchio dovrebbe rifare la prova di lavoro anche per tutti i blocchi successivi. Così l'ordine delle transazioni si fissa senza bisogno di un'autorità.
+Nel 2008 esce un documento intitolato *Bitcoin: A Peer-to-Peer Electronic Cash System*. È firmato Satoshi Nakamoto, uno pseudonimo che non è mai stato identificato. Il documento affronta il problema della doppia spesa. Un file digitale si copia facilmente, quindi bisogna impedire che la stessa moneta venga spesa due volte. Tradizionalmente questo compito spetta a un ente centrale che tiene il registro. Satoshi voleva farne a meno.
 
-Il primo blocco viene generato il 3 gennaio 2009. Contiene il titolo di un articolo del Times su un salvataggio bancario. Quel riferimento ha due funzioni. È una marca temporale, perché prova che il blocco non esisteva prima di quella data. È anche una dichiarazione di intenti, perché dice contro cosa nasce il progetto.
+**La soluzione: blocchi e prova di lavoro**
 
-Le regole di emissione sono fisse fin dall'inizio. Chi genera un blocco riceve una ricompensa che parte da 50 bitcoin. La ricompensa si dimezza ogni 210.000 blocchi, cioè circa ogni quattro anni. Per questo il totale emesso tende a 21 milioni di bitcoin e non li supererà.
+La soluzione è una catena di blocchi, ordinata da una prova di lavoro. Ogni blocco richiede un lavoro di calcolo costoso e si aggancia al blocco precedente. Per riscrivere un blocco passato bisognerebbe rifare la prova di lavoro di quel blocco e di tutti quelli venuti dopo. Per questo modificare la storia diventa molto costoso, e l'ordine delle transazioni resta affidabile senza un'autorità centrale.
 
-Nel 2010 avviene la prima transazione commerciale documentata: due pizze pagate 10.000 bitcoin.
+**Il primo blocco**
 
-Nel 2011 Satoshi smette di partecipare pubblicamente al progetto. I suoi bitcoin non sono mai stati spostati.
+Il primo blocco viene generato il 3 gennaio 2009. Contiene il titolo di un articolo del *Times* su un salvataggio bancario. Quel riferimento ha due funzioni. È una marca temporale, perché prova che il blocco non può essere stato creato prima di quella data. È anche una dichiarazione di intenti, perché indica il sistema finanziario tradizionale come ciò a cui Bitcoin vuole offrire un'alternativa.
+
+**Le regole di emissione**
+
+Chi genera un blocco riceve una ricompensa in bitcoin. All'inizio la ricompensa è di 50 bitcoin. Si dimezza ogni 210.000 blocchi, cioè circa ogni quattro anni. Per questo il totale emesso si avvicina a 21 milioni e non li supera mai.
+
+**Dalla teoria all'uso**
+
+La prima transazione commerciale documentata risale al 2010: due pizze pagate 10.000 bitcoin. È il primo caso noto di bitcoin usati per comprare qualcosa di reale.
+
+**La scomparsa di Satoshi**
+
+Nel 2011 Satoshi smette di partecipare pubblicamente al progetto. I bitcoin che gli sono attribuiti non sono mai stati spostati. Il progetto continua senza il suo creatore, come un sistema senza un centro.

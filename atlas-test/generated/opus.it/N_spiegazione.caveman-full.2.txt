@@ -1,14 +1,14 @@
-**Cos'è.** Dopo una scrittura, le repliche non concordano subito. Convergono entro un tempo finito, se le scritture si fermano. Nella stessa regione il tempo tipico di convergenza è sotto il secondo. Fra regioni diverse sale a qualche secondo.
+**Cos'è.** Dopo una scrittura, repliche non concordano subito. Se scritture si fermano, convergono entro tempo finito. Tempo tipico: sotto il secondo fra repliche nella stessa regione, qualche secondo fra regioni diverse.
 
-**Perché ti interessa.** Tocca chi legge subito dopo aver scritto. Per esempio, un utente pubblica un commento, ricarica la pagina e non lo vede. Per lui il sistema sembra rotto.
+**Perché esiste.** Compromesso con disponibilità. Sistema che pretende consistenza forte deve rifiutare richieste quando repliche non si parlano. Consistenza eventuale invece continua a rispondere. Quindi non è difetto da eliminare ma scelta: maggior parte dei sistemi che scalano la accetta di proposito.
 
-**Soluzione comune.** La sessione che ha appena scritto legge dalla replica primaria. Tutte le altre sessioni continuano a leggere dalle repliche. Così l'utente vede il suo commento senza caricare la primaria con ogni lettura.
+**Perché ti interessa.** Colpisce chi legge subito dopo aver scritto. Caso classico: utente pubblica commento, ricarica pagina, commento non c'è. Utente pensa a bug, magari ripubblica.
 
-**Perché non si elimina.** Il compromesso è con la disponibilità. Un sistema che pretende consistenza forte deve rifiutare richieste quando le repliche non si parlano. La consistenza eventuale quindi non è un difetto: è una scelta. La maggior parte dei sistemi che scalano la accetta di proposito.
+**Come lo gestisci.** Sessione che ha appena scritto legge da replica primaria. Altre sessioni continuano a leggere dalle repliche. Così chi scrive vede subito proprio dato, e tu non perdi beneficio delle repliche.
 
-**Quando non va bene.** I casi sono pochi e facili da riconoscere:
-- saldi di conto;
-- disponibilità di posti;
-- unicità di un identificativo.
+**Quando non va bene.** Casi pochi e riconoscibili:
+- saldi di conto
+- disponibilità di posti
+- unicità di un identificativo
 
-Per questi dati serve consistenza forte. Per tutto il resto, di solito basta la consistenza eventuale con la lettura dalla primaria dopo la scrittura.
+Lì serve consistenza forte. Per tutto il resto, consistenza eventuale di solito basta.

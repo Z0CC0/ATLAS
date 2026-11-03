@@ -1,4 +1,6 @@
-```js
+Con una chiusura che tiene il timer e lo azzera a ogni chiamata:
+
+```javascript
 function debounce(fn, ms) {
   let t;
   return (...args) => {
@@ -8,12 +10,14 @@ function debounce(fn, ms) {
 }
 ```
 
-`clearTimeout` va chiamato prima di ogni nuovo `setTimeout`. Altrimenti i timer si accumulano e la funzione parte più volte.
+Tre dettagli da non sbagliare:
 
-`t` deve stare nella chiusura, non dentro la funzione restituita. Se stesse dentro, ogni chiamata avrebbe il proprio timer e il debounce non avverrebbe.
+`clearTimeout` va chiamato prima di ogni nuovo `setTimeout`. Senza, i timer si accumulano e la funzione parte più volte.
 
-Gli argomenti vanno inoltrati con lo spread (`...args`). Senza, la funzione chiamata li riceve vuoti.
+`t` deve stare nella chiusura, non dentro la funzione restituita. Altrimenti ogni chiamata avrebbe il proprio timer e il debounce non avverrebbe.
 
-Questa versione non restituisce niente. Se ti serve il valore di ritorno, devi usare una Promise.
+Gli argomenti vanno inoltrati con lo spread (`...args`), altrimenti `fn` li riceve vuoti.
 
-Se invece vuoi eseguire subito e poi ignorare le chiamate per un certo periodo, ti serve un throttle, che è un'altra funzione.
+Questa versione non restituisce niente. Se ti serve il valore di ritorno di `fn`, devi usare una Promise.
+
+Se invece vuoi il comportamento opposto, cioè eseguire subito e poi ignorare le chiamate per un certo periodo, ti serve un throttle, che è un'altra funzione.

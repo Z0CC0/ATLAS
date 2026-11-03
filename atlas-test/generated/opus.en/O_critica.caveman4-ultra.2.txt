@@ -1,0 +1,12 @@
+Wouldn't put all of it there. Upside real: no application path skips the rule, not even a script run by hand. Cost is high, though.
+
+- **Invisible**: someone reading the app code can't see triggers. A change that looks simple fires others, with no trace.
+- **Testing**: the team's current tools can't test them. You need tests running against a real database.
+- **Debugging**: an error inside a trigger arrives as a failed write. It doesn't say which rule caused it.
+- **Migrations**: fragile. Trigger order matters, and nothing declares it.
+
+Better split:
+- **Database**: only what protects integrity. Constraints, foreign keys, uniqueness, domain checks.
+- **Application**: business logic, behind a single entry point.
+
+The single entry point gives the same guarantee as a trigger, as long as direct database access is reserved for migrations. That access rule is what the guarantee depends on, so enforce it.

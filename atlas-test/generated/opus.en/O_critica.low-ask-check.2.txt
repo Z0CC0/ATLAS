@@ -1,17 +1,17 @@
 internal knowledge
 
-I wouldn't put all of it there. Keep integrity rules in the database and business logic in the application, behind a single entry point.
+I wouldn't put all of it in triggers. Keep integrity rules in database, business logic in application behind single entry point.
 
-The upside is real: no application path can skip the rule, not even a script run by hand. But it costs you in four places:
+Your instinct has real upside: no application path can skip a trigger, not even a script someone runs by hand.
 
-Triggers are invisible to anyone reading the application code. A change that looks simple can fire other triggers and leave no trace.
+Cost comes with it, though. Nobody reading application code sees triggers, so a change that looks simple can fire others and leave no trace.
 
-Your team's current testing tools won't cover them. You need tests that run against a real database.
+Your team's current test tools won't cover them. You'd need tests running against a real database.
 
-Debugging gets harder. An error inside a trigger shows up as a failed write and doesn't say which rule caused it.
+Debugging gets worse. When a trigger fails, you just see a failed write, with nothing saying which rule caused it.
 
-Migrations become fragile, because trigger order matters and nothing records it.
+Migrations get fragile, because trigger order matters and nothing declares it.
 
-A better split: the database keeps only what protects integrity, meaning constraints, foreign keys, uniqueness and domain checks. The business logic goes in the application, and every change goes through one entry point.
+**Alternative:** keep in database only what protects integrity: constraints, foreign keys, uniqueness, domain checks. Put business logic in application, behind one entry point that every write goes through.
 
-That entry point gives you the **same guarantee as a trigger, as long as direct database access is reserved for migrations**.
+That entry point gives same guarantee as triggers, **as long as direct database access stays reserved to migrations**. Hand-run scripts must go through entry point too, or they bypass it.

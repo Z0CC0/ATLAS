@@ -1,38 +1,44 @@
-Don't run `ALTER TABLE t ALTER COLUMN colonna TYPE integer` directly. It rewrites the whole table while holding an ACCESS EXCLUSIVE lock, so on ten million rows your service is down until the rewrite finishes. Do the change in stages so the table stays usable throughout.
+Don't do it with a single `ALTER TABLE ... ALTER COLUMN ... TYPE integer`. On a table this size, that statement rewrites the whole table while holding an `ACCESS EXCLUSIVE` lock, so your service is down for as long as the rewrite takes. Instead, add a new column next to the old one, move the data over gradually, and drop the old column at the very end.
 
-**1. Check that every value will convert.** Count the rows whose value isn't all digits:
+**1. Check that every value can be converted**
+
+Count the rows where the value isn't all digits:
 
 ```sql
 SELECT count(*) FROM t WHERE colonna !~ '^[0-9]+$';
 ```
 
-If the count isn't zero, fix those rows before you go on.
+If the count isn't zero, fix or decide how to handle those rows before you go further.
 
-**2. Add the new column:**
+**2. Add the new column**
 
 ```sql
 ALTER TABLE t ADD COLUMN colonna_int integer;
 ```
 
-**3. Fill it in batches of 10,000 rows.** Small batches mean no long lock is ever held on the table. Repeat until no rows are left:
+**3. Copy the data in batches of 10,000 rows**
+
+Run an update like this repeatedly until no rows are left to fill. Each batch is small, so no long lock is held on the table and normal traffic keeps flowing.
 
 ```sql
 UPDATE t SET colonna_int = colonna::integer
 WHERE id IN (
-  SELECT id FROM t
-  WHERE colonna_int IS NULL AND colonna IS NOT NULL
-  LIMIT 10000
+  SELECT id FROM t WHERE colonna_int IS NULL LIMIT 10000
 );
 ```
 
-**4. Add a trigger that keeps the two columns in step.** Rows written while the migration runs then get `colonna_int` too, so nothing is missed.
+**4. Add a trigger to keep the two columns in sync**
 
-**5. Change your code to read from `colonna_int` and ship it.** Confirm it's working in production before you go further.
+While the migration is running, the application keeps writing to `colonna`. A trigger copies each insert or update into `colonna_int`, so the new column doesn't fall behind the old one.
 
-**6. Only then, drop the old column:**
+**5. Change the code to read from `colonna_int` and ship it**
+
+Make sure that release is deployed and working before you continue.
+
+**6. Only then, drop the old column**
 
 ```sql
 ALTER TABLE t DROP COLUMN colonna;
 ```
 
-This last step can't be undone. Once the column is dropped, the data only comes back by restoring from a backup. Up to step 5 you can still roll back, because the old column is still there. Don't run step 6 until you're sure the new column is correct and the code using it is stable.
+Be careful with this step because it can't be undone. Once the column is dropped, the data only comes back if you restore from a backup. Don't run it until you're sure nothing reads `colonna` anymore.

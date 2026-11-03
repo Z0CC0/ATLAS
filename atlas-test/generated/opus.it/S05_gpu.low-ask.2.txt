@@ -1,9 +1,11 @@
-La 5080 va circa il 10-15% più veloce della 4080 nel rasterizzatore puro. Il salto più grande è nella generazione di fotogrammi.
+La 5080 va molto meglio della 4080 con la generazione di fotogrammi. Senza, in rasterizzazione pura, guadagna circa il 10-15%.
 
-Architettura Blackwell invece di Ada Lovelace.
+**Architettura:** Blackwell sulla 5080, Ada Lovelace sulla 4080.
 
-Memoria GDDR7 al posto della GDDR6X: la banda passa da circa 717 a circa 960 gigabyte al secondo.
+**Memoria:** GDDR7 al posto di GDDR6X. La banda passa da circa 717 a circa 960 GB/s.
 
-Consumo dichiarato sale da 320 a 360 watt.
+**Consumo dichiarato:** da 320 a 360 W.
 
-Connettore di alimentazione resta a 16 pin.
+**Connettore di alimentazione:** resta a 16 pin, quindi non serve un cavo diverso.
+
+Se giochi soprattutto senza generazione di fotogrammi, rispetto alla 4080 il salto è modesto.

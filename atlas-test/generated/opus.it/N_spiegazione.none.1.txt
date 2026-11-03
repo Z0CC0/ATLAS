@@ -1,24 +1,26 @@
-La consistenza eventuale riguarda i sistemi che tengono più copie (repliche) degli stessi dati. Quando scrivi un dato, le repliche non sono subito d'accordo tra loro. Se però le scritture si fermano, finiscono per allinearsi entro un tempo finito. Per un momento, quindi, due letture possono darti risposte diverse.
+La consistenza eventuale è un modo di comportarsi dei sistemi che tengono più copie (repliche) degli stessi dati. Quando scrivi qualcosa, le repliche non sono d'accordo subito. Alcune hanno già il dato nuovo, altre no. Però se le scritture si fermano, tutte arrivano allo stesso stato entro un tempo finito. "Eventuale" vuol dire proprio questo: alla fine convergono, ma non nell'istante in cui scrivi.
 
-**Perché dovrebbe interessarti**
+## Perché un sistema dovrebbe accettarlo
 
-Lo noti soprattutto quando leggi subito dopo aver scritto. Un utente pubblica un commento, ricarica la pagina e il commento non c'è. La scrittura è andata a buon fine, ma la lettura è arrivata a una replica che non l'ha ancora ricevuta. Per chi guarda sembra un bug.
+È un compromesso con la disponibilità. Prendi un sistema che pretende consistenza forte, cioè tutte le repliche sempre allineate. Quando le repliche non riescono a parlarsi, quel sistema deve rifiutare le richieste, perché non può garantire di darti il dato giusto. Un sistema con consistenza eventuale invece continua a rispondere, accettando che per un po' le repliche non coincidano.
 
-Di solito la finestra è breve. Tra repliche nella stessa regione si allineano in meno di un secondo, tra regioni diverse servono alcuni secondi.
+Per questo non va visto come un difetto da eliminare: è una scelta. La maggior parte dei sistemi che scalano la accetta di proposito.
 
-**Perché i sistemi funzionano così**
+## Perché dovrebbe interessarti
 
-In cambio ottieni disponibilità. Un sistema che pretende consistenza forte, cioè che tutte le repliche siano sempre d'accordo, deve rifiutare le richieste quando le repliche non riescono a comunicare. Uno a consistenza eventuale continua a rispondere. Per questo la consistenza eventuale non è un difetto da eliminare ma una scelta, e la maggior parte dei sistemi che scalano la accetta di proposito.
+Il problema lo vedi soprattutto quando qualcuno legge subito dopo aver scritto. Il caso classico è questo: l'utente pubblica un commento, ricarica la pagina e il commento non c'è. La scrittura è andata su una replica e la lettura è arrivata da un'altra che non l'ha ancora ricevuta. Per l'utente sembra che il commento sia sparito.
 
-**Come si gestisce in pratica**
+La soluzione comune è mirata. Solo la sessione che ha appena scritto legge dalla replica primaria, mentre tutti gli altri continuano a leggere dalle repliche normali. Così chi ha scritto vede subito il proprio dato e il resto del sistema mantiene i vantaggi della consistenza eventuale.
 
-La soluzione più comune è leggere dalla replica primaria solo per la sessione che ha appena scritto, non per tutte. Chi ha pubblicato il commento lo vede subito. Gli altri utenti leggono dalle repliche normali e lo vedono qualche istante dopo, senza accorgersene. Il costo resta contenuto perché la primaria non riceve tutto il traffico.
+Quanto dura questa finestra di disallineamento:
+- **repliche nella stessa regione:** di solito meno di un secondo;
+- **repliche in regioni diverse:** si sale a qualche secondo.
 
-**Quando non va bene**
+## Quando non va bene
 
-I casi in cui la consistenza eventuale non basta sono pochi e facili da riconoscere:
-- il saldo di un conto;
-- i posti disponibili, per esempio per non vendere due volte lo stesso posto;
-- l'unicità di un identificativo, per esempio perché due utenti non ottengano lo stesso.
+I casi in cui la consistenza eventuale non è accettabile sono pochi e facili da riconoscere:
+- **saldi di conto**, perché non puoi spendere due volte gli stessi soldi;
+- **disponibilità di posti**, perché non puoi vendere due volte lo stesso posto;
+- **unicità di un identificativo**, perché due utenti non possono avere lo stesso nome o codice.
 
-In questi casi serve consistenza forte. Per il resto dei dati, di solito, la consistenza eventuale va benissimo.
+In pratica: per quasi tutto la consistenza eventuale va bene. Ti basta gestire il caso di chi rilegge subito ciò che ha scritto e trattare a parte quei pochi dati che devono essere sempre esatti.

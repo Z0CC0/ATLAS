@@ -1,21 +1,51 @@
-Don't change the type in place. Add a new integer column, move the data across in steps, and drop the old column last. A direct `ALTER TABLE ... ALTER COLUMN ... TYPE integer` rewrites the whole table while holding an ACCESS EXCLUSIVE lock, so the service is down for as long as the rewrite takes.
+Don't run `ALTER TABLE t ALTER COLUMN colonna TYPE integer` directly. It rewrites the whole table while holding an ACCESS EXCLUSIVE lock, so the service is down for as long as the rewrite takes. On ten million rows that is a real outage. Do the change in six steps instead, in this order.
 
-1. Check that every existing value can be converted by counting the rows that are not all digits. If the count isn't zero, fix those rows before you go on.
+1. Check that every existing value can be converted. Count the rows that are not all digits:
+
+```sql
+SELECT count(*) FROM t WHERE colonna !~ '^[0-9]+$';
+```
+
+If the count is not zero, fix those rows before you go on.
 
 2. Add the new column:
+
 ```sql
 ALTER TABLE t ADD COLUMN colonna_int integer;
 ```
 
-3. Fill it in batches of ten thousand rows, so no long lock is held on the table.
+3. Fill it in batches of ten thousand rows, so no long lock is held on the table. Repeat this until it updates zero rows:
 
-4. Add a trigger that keeps the two columns in step while the migration runs, so rows written during the migration also get the integer value.
+```sql
+UPDATE t SET colonna_int = colonna::integer
+WHERE id IN (
+  SELECT id FROM t
+  WHERE colonna_int IS NULL AND colonna IS NOT NULL
+  LIMIT 10000
+);
+```
 
-5. Change the code to read from the new column, and ship it.
+4. Add a trigger that keeps the two columns in step during the migration, so rows written while the backfill runs stay consistent:
 
-6. Only after all of that, drop the old column:
+```sql
+CREATE FUNCTION sync_colonna() RETURNS trigger AS $$
+BEGIN
+  NEW.colonna_int := NEW.colonna::integer;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER sync_colonna
+BEFORE INSERT OR UPDATE ON t
+FOR EACH ROW EXECUTE FUNCTION sync_colonna();
+```
+
+5. Change the code to read from `colonna_int`, and ship it.
+
+6. Only after step 5 is in production, drop the old column:
+
 ```sql
 ALTER TABLE t DROP COLUMN colonna;
 ```
 
-**Step 6 can't be undone.** Once the column is dropped, the data only comes back through a restore from backup. Don't run it until the code reading `colonna_int` is live and working.
+**Step 6 can't be undone.** Once the column is dropped, the data only comes back by restoring from backup. Before you run it, make sure the shipped code no longer reads `colonna` at all.

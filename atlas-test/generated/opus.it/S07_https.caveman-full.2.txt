@@ -1,11 +1,13 @@
-HTTPS è HTTP dentro un canale cifrato da TLS. Prima che parta qualsiasi traffico HTTP, client e server fanno una negoziazione (*handshake*):
+HTTPS è HTTP dentro canale cifrato da TLS. Prima di inviare dati HTTP, client e server preparano il canale. Passi:
 
 1. **Client apre connessione.** Dichiara quali versioni di TLS e quali cifrari supporta.
-2. **Server risponde.** Sceglie cifrario e versione e manda il proprio certificato.
-3. **Client verifica certificato.** Il certificato lega un nome di dominio a una chiave pubblica ed è firmato da un'autorità di certificazione. Il client controlla la firma e risale la catena fino a una radice che ha già in memoria.
-4. **Accordo sulla chiave di sessione.** Client e server concordano una chiave di sessione, oggi tipicamente con uno scambio Diffie-Hellman su curve ellittiche. La chiave è simmetrica perché la cifratura asimmetrica costa troppo per il traffico vero.
-5. **Traffico protetto.** Da quel punto in poi il traffico è cifrato e autenticato. Chi sta in mezzo non può leggerlo né modificarlo.
+2. **Server risponde.** Sceglie cifrario e versione, poi manda proprio certificato.
+3. **Client controlla certificato.** Certificato lega nome di dominio a chiave pubblica. Autorità di certificazione lo firma. Client verifica firma risalendo catena fino a radice che ha già in memoria.
+4. **Client e server concordano chiave di sessione.** Oggi metodo tipico: scambio Diffie-Hellman su curve ellittiche.
+5. **Traffico protetto.** Da qui ogni dato è cifrato e autenticato. Chi sta in mezzo non può leggerlo né modificarlo.
 
-**Velocità:** TLS 1.3 completa lo scambio in un solo giro di andata e ritorno. TLS 1.2 ne richiede due.
+**Perché chiave di sessione simmetrica:** cifratura asimmetrica costa troppo per traffico vero. Asimmetrica serve solo nella fase iniziale.
 
-**Limite importante:** il certificato non dice nulla su chi gestisce il sito. Dice solo che quel dominio controlla quella chiave. Il lucchetto nel browser garantisce che parli con quel dominio, non che il sito sia affidabile.
+**TLS 1.3 vs 1.2:** TLS 1.3 completa scambio iniziale in un solo giro di andata e ritorno. TLS 1.2 ne richiede due. Connessione parte prima.
+
+**Limite importante:** certificato non dice nulla su chi gestisce sito. Dice solo che quel dominio controlla quella chiave. Lucchetto nel browser garantisce canale sicuro verso quel dominio, non onestà di chi lo gestisce.

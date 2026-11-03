@@ -1,11 +1,19 @@
-HTTPS è semplicemente HTTP che passa dentro un canale cifrato da TLS. Le richieste e le risposte web sono le stesse di sempre. Cambia il fatto che viaggiano protette, e la parte interessante è come si costruisce quel canale.
+HTTPS è semplicemente HTTP che passa dentro un canale cifrato da TLS. Le richieste e le risposte sono quelle di sempre. Cambia il fatto che prima di scambiarle client e server costruiscono un tunnel sicuro.
 
-**L'apertura.** Il client apre la connessione e dichiara quali versioni di TLS e quali cifrari è in grado di usare. Il server sceglie la versione e il cifrario tra quelli proposti. Insieme alla risposta manda il proprio certificato.
+**1. Il saluto iniziale**
+Il tuo browser (il client) apre la connessione e dice al server quali versioni di TLS e quali cifrari è in grado di usare. Il server sceglie la versione e il cifrario e risponde inviando il proprio certificato.
 
-**Il certificato e la verifica.** Il certificato è un documento che lega un nome di dominio a una chiave pubblica. È firmato da un'autorità di certificazione. Il client non si fida sulla parola: controlla la firma e risale la catena delle autorità fino a una radice che ha già in memoria. Se la catena arriva lì, il certificato è valido. Quello che il certificato garantisce però è poco: dice solo che quel dominio controlla quella chiave. Non dice nulla su chi gestisce davvero il sito né sulle sue intenzioni.
+**2. Il certificato e la sua verifica**
+Il certificato lega un nome di dominio a una chiave pubblica ed è firmato da un'autorità di certificazione. Il client non si fida a scatola chiusa: controlla la firma e risale la catena di certificati fino a una radice che ha già in memoria. Se la catena regge, il client sa che sta parlando con chi controlla davvero quel dominio.
 
-**La chiave di sessione.** A questo punto client e server concordano una chiave di sessione. Oggi di solito lo fanno con uno scambio Diffie-Hellman su curve ellittiche. Questa chiave è simmetrica, cioè la stessa per entrambi. La cifratura asimmetrica costa troppo per usarla su tutto il traffico vero, quindi serve solo nella fase iniziale.
+**3. La chiave di sessione**
+A questo punto client e server concordano una chiave di sessione. Oggi lo fanno tipicamente con uno scambio Diffie-Hellman su curve ellittiche. La chiave è simmetrica perché la cifratura asimmetrica costa troppo per gestire tutto il traffico vero. La crittografia a chiave pubblica serve quindi solo nella fase iniziale. Il resto della comunicazione usa una chiave condivisa, che è molto più veloce.
 
-**Dopo l'handshake.** Da quel momento il traffico è cifrato e autenticato. Chi sta in mezzo non può leggerlo e non può modificarlo senza che le modifiche vengano scoperte.
+**4. La comunicazione protetta**
+Da quel momento il traffico è cifrato e autenticato. Chi sta in mezzo non può leggerlo e non può modificarlo.
 
-**TLS 1.2 e 1.3.** Tutta questa negoziazione richiede dei giri di andata e ritorno tra client e server. TLS 1.2 ne usa due, TLS 1.3 uno solo. Per questo con TLS 1.3 la connessione si apre più in fretta.
+**Una nota sulla velocità**
+Con TLS 1.3 tutta questa negoziazione richiede un solo giro di andata e ritorno tra client e server. Con TLS 1.2 ne servivano due, quindi oggi la connessione si apre più in fretta.
+
+**Una nota su cosa garantisce il lucchetto**
+Il certificato non dice nulla su chi gestisce il sito. Dice solo che quel dominio controlla quella chiave. HTTPS ti assicura che la comunicazione con quel dominio è privata e integra, ma non che chi c'è dietro sia affidabile.

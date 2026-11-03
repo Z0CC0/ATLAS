@@ -1,7 +1,3 @@
-Domani a New York sarà una bella giornata, con **cielo sereno al mattino**. **Dal pomeriggio il cielo si coprirà.**
+Domani a New York la mattina sarà serena, ma dal pomeriggio il cielo si coprirà di nuvole. Le temperature saranno miti, tra una minima di 17 °C e una massima di 24 °C. L'umidità resterà intorno al 60%. Soffierà un vento da nord-ovest a circa 15 km/h.
 
-Le temperature saranno gradevoli, con **una minima di 17 °C e una massima di 24 °C**. L'umidità resterà intorno al 60%. Soffierà un vento moderato da nord-ovest a circa 15 km/h.
-
-**Dopo le 18 c'è una probabilità di pioggia del 30%.** Se stai fuori fino a sera, porta un ombrello pieghevole. Durante il giorno non dovrebbe servirti.
-
-*Fonte: dati meteo dal web.*
+Dopo le 18 c'è una probabilità di pioggia del 30%. Se resti fuori fino a sera, conviene portare un ombrello pieghevole.

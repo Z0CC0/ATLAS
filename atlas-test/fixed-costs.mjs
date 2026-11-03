@@ -22,7 +22,7 @@ import { tmpdir } from 'node:os';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const REPO = join(HERE, '..');
-const BUILDS = ['atlas', 'atlas-min', 'atlas-code', 'atlas-mem', 'atlas-max'];
+const BUILDS = ['atlas', 'atlas-min', 'atlas-code', 'atlas-mem', 'atlas-video', 'atlas-max'];
 const argv = process.argv.slice(2);
 const opt = (name, fallback) => { const i = argv.indexOf(name); return i < 0 ? fallback : argv[i + 1]; };
 
@@ -94,10 +94,12 @@ function turn(cwd, model, pluginDir) {
   return u.input_tokens + (u.cache_creation_input_tokens || 0) + (u.cache_read_input_tokens || 0);
 }
 
+// A build is a folder of this repository, or a repository of its own cloned beside this one.
+const buildDir = (b) => { const here = join(REPO, b); return existsSync(here) ? here : join(REPO, '..', b.replace('atlas-', 'ATLAS-')); };
 const version = JSON.parse(readFileSync(join(REPO, 'atlas', 'package.json'), 'utf8')).version;
 const rows = {};
 for (const b of BUILDS) {
-  const root = join(REPO, b);
+  const root = buildDir(b);
   if (!existsSync(root)) throw new Error(`no build folder at ${root}`);
   const it = items(root);
   const empty = it.filter((x) => !x.description).map((x) => x.id);
@@ -122,7 +124,7 @@ if (argv.includes('--billed')) {
   const none = turn(cwd, model, null);
   rows._billed = { model, none };
   for (const b of BUILDS) {
-    const root = join(REPO, b);
+    const root = buildDir(b);
     // The state file of this throwaway folder, the only one the switch writes.
     const billed = { off: turn(cwd, model, root) - none };
     for (const level of ['low', 'high']) {

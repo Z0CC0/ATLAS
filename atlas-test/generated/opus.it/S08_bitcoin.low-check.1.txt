@@ -1,15 +1,15 @@
-*Conoscenza interna*
+Fonte: conoscenza interna. Fatti forniti da te, non verificati con ricerche, come chiesto.
 
-Bitcoin nasce in ambiente cypherpunk, dopo tentativi come b-money e bit gold, che però non risolvevano l'ordinamento delle transazioni.
+Bitcoin nasce nell'ambiente cypherpunk. Prima c'erano già stati tentativi come b-money e bit gold, ma nessuno risolveva il problema di come ordinare le transazioni.
 
-Nel 2008 esce un documento firmato Satoshi Nakamoto, pseudonimo mai identificato, intitolato "Bitcoin: A Peer-to-Peer Electronic Cash System". Affronta il problema della doppia spesa, cioè impedire che la stessa moneta venga spesa due volte, senza un ente centrale che tenga il registro.
+Nel 2008 esce un documento intitolato "Bitcoin: A Peer-to-Peer Electronic Cash System". Lo firma Satoshi Nakamoto, uno pseudonimo dietro cui nessuno è mai stato identificato. Il documento affronta il problema della doppia spesa: impedire che la stessa moneta venga spesa due volte senza un ente centrale che tenga il registro.
 
-La soluzione è una catena di blocchi ordinata da una prova di lavoro. Riscrivere il passato diventa costoso, perché la prova andrebbe rifatta per ogni blocco successivo.
+La soluzione proposta è una catena di blocchi, messi in ordine da una prova di lavoro. Riscrivere il passato diventa costoso, perché bisognerebbe rifare la prova di lavoro per ogni blocco successivo.
 
-Il primo blocco viene generato il 3 gennaio 2009. Contiene il titolo di un articolo del Times su un salvataggio bancario, che serve sia da marca temporale sia da dichiarazione di intenti.
+Il primo blocco viene generato il 3 gennaio 2009. Contiene il titolo di un articolo del Times su un salvataggio bancario, che fa sia da marca temporale sia da dichiarazione di intenti.
 
-La ricompensa per blocco parte da 50 bitcoin e si dimezza ogni 210.000 blocchi, circa ogni quattro anni. Per questo il totale emesso tende a 21 milioni e non li supera mai.
+Le regole di emissione sono fissate fin dall'inizio. Ogni blocco dà una ricompensa che parte da 50 bitcoin e si dimezza ogni 210.000 blocchi, cioè circa ogni quattro anni. Per questo il totale emesso tende a 21 milioni di bitcoin e non li supera mai.
 
-La prima transazione commerciale documentata risale al 2010: due pizze pagate 10.000 bitcoin.
+Nel 2010 avviene la prima transazione commerciale documentata: due pizze pagate 10.000 bitcoin.
 
-Nel 2011 Satoshi smette di partecipare pubblicamente. I suoi bitcoin non sono mai stati spostati.
+Nel 2011 Satoshi smette di partecipare pubblicamente al progetto. I suoi bitcoin non sono mai stati spostati.

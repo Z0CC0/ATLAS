@@ -1,20 +1,20 @@
-Su un sito statico conviene impostare sei header e ometterne uno.
+Per un sito statico questi sono gli header da impostare:
 
-Strict-Transport-Security, con `max-age` di almeno 31536000 secondi e `includeSubDomains`: obbliga il browser a usare sempre HTTPS.
+Strict-Transport-Security, con `max-age` di almeno 31536000 secondi e `includeSubDomains`. Obbliga il browser a usare HTTPS.
 
-Content-Security-Policy, con `default-src 'self'`: è l'header che blocca l'iniezione di script di terze parti.
+Content-Security-Policy, con `default-src 'self'`. È l'header che blocca l'iniezione di script di terze parti.
 
-X-Content-Type-Options impostato a `nosniff`: impedisce al browser di indovinare il tipo di contenuto.
+X-Content-Type-Options impostato a `nosniff`. Impedisce al browser di indovinare il tipo di contenuto.
 
-Referrer-Policy impostato a `strict-origin-when-cross-origin`: evita che il percorso completo delle tue pagine venga inviato agli altri siti.
+Referrer-Policy impostato a `strict-origin-when-cross-origin`. Evita che il percorso completo della pagina arrivi ad altri siti.
 
-X-Frame-Options impostato a `DENY`, oppure `frame-ancestors 'none'` dentro la Content-Security-Policy: protegge dal clickjacking.
+X-Frame-Options impostato a `DENY`, oppure `frame-ancestors 'none'` dentro la Content-Security-Policy. Serve contro il clickjacking.
 
-Permissions-Policy: serve a disattivare camera, microfono e geolocalizzazione, se il sito non li usa.
+Permissions-Policy, per disattivare camera, microfono e geolocalizzazione se il sito non li usa.
 
-**Non mettere X-XSS-Protection.** È deprecato e i browser moderni lo ignorano. Nelle versioni vecchie dei browser introduceva anche delle vulnerabilità.
+Non mettere invece **X-XSS-Protection**. È deprecato: i browser moderni lo ignorano, e nelle versioni vecchie introduceva vulnerabilità.
 
-Un esempio completo:
+Un esempio:
 
 ```
 Strict-Transport-Security: max-age=31536000; includeSubDomains

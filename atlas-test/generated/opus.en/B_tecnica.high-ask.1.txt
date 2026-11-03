@@ -1,6 +1,6 @@
-**Connection pool exhaustion**, not a slow query.
+Connection pool exhaustion, not a slow query.
 
-Middleware at `db/session.py:47` releases the connection only on the success path. When the handler raises an exception, `release()` is never reached, so the connection stays held until timeout. After a few hundred failed requests the pool is empty and every later request waits. That's why latency rises instead of failing with immediate errors.
+Middleware at `db/session.py:47` releases the connection only on the success path. When the handler raises an exception, `release()` is never reached, so the connection stays held until timeout. After a few hundred failed requests the pool is empty and every later request waits for a connection. That is why latency rises instead of requests failing right away.
 
 Fix: wrap the acquisition in try/finally so the connection is also released on the error path:
 
@@ -12,9 +12,9 @@ finally:
     pool.release(conn)
 ```
 
-Don't raise `pool_size` as the fix. It only masks the problem: the pool empties later, but connections still leak. Raise it only after this fix is in, and only if your real load needs it.
+Raising `pool_size` only hides the problem. The pool still empties, just later, because the connection leak is still there. Raise it only after the fix is in, and only if your real load needs it.
 
-To reproduce the problem before and after the change:
+To reproduce the problem, run this before and after the change:
 
 ```
 pytest tests/test_pool.py -k exhaustion -x

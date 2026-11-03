@@ -1,0 +1,11 @@
+**Cos'è.** La cache conserva la parte iniziale (prefisso) di una richiesta già elaborata. Le richieste successive che iniziano allo stesso modo non pagano più per intero quella parte.
+
+**Funziona solo sul prefisso.** Se cambia anche un solo carattere all'inizio, da quel punto in poi non si riusa più niente. Quindi:
+- metti prima le parti stabili e dopo quelle che cambiano, non il contrario;
+- una voce di sistema che cambia a ogni turno, per esempio un orario, impedisce il riuso di tutto quello che viene dopo.
+
+**Costi.** Scrivere nella cache costa più di una lettura normale, quindi la prima richiesta è più cara. Il risparmio arriva dalla seconda richiesta in poi e aumenta con il numero di turni.
+
+**Quando conviene:** nelle conversazioni lunghe con un contesto grande e stabile, come istruzioni di sistema, documentazione allegata e definizioni di strumenti.
+
+**Quando non conviene:** con richieste singole e diverse tra loro. Paghi la scrittura nella cache ma non rileggi mai quello che hai salvato.

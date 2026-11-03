@@ -31,8 +31,8 @@ telemetry, no network.
 
 34 tokens of descriptions in every session, 1,051 tokens of rules injected at `low`, a
 reminder of 27 to 32 tokens per turn. Measured against no plugin on 48 questions
-(`claude-opus-5-5`, 2026-09-26): `low` 40% less output in English and 39% in Italian,
-`high` 47% and 44%, with 0 of 176 notes lost. The full bench, with every answer it
+(`claude-opus-5-5`, 2026-11-03): `low` 44% less output in English and 42% in Italian,
+`high` 53% and 50%, with 0 of 176 notes lost at `high`. The full bench, with every answer it
 generated, is in the `atlas-test/` folder of the repository.
 
 ## Licence

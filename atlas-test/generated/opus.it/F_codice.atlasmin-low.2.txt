@@ -1,4 +1,4 @@
-Serve una funzione che avvolge l'originale e rimanda la chiamata finché non passano `ms` millisecondi senza nuove chiamate:
+Avvolgi la funzione in una chiusura che azzera il timer a ogni chiamata:
 
 ```js
 function debounce(fn, ms) {
@@ -10,14 +10,21 @@ function debounce(fn, ms) {
 }
 ```
 
-Tre dettagli da non sbagliare:
+Uso:
+
+```js
+const onResize = debounce(() => console.log('resize'), 200);
+window.addEventListener('resize', onResize);
+```
+
+Tre punti da rispettare, altrimenti non funziona:
 
 `clearTimeout` va chiamato prima di ogni nuovo `setTimeout`. Senza, i timer si accumulano e la funzione parte più volte.
 
-`t` deve stare nella chiusura, non dentro la funzione restituita. Altrimenti ogni chiamata avrebbe il proprio timer e il debounce non avverrebbe.
+`t` deve stare nella chiusura, non dentro la funzione restituita. Se no ogni chiamata ha il proprio timer e il debounce non avviene.
 
-Gli argomenti vanno inoltrati con lo spread (`...args`). Altrimenti `fn` li riceve vuoti.
+Argomenti inoltrati con lo spread (`...args`). Senza, `fn` li riceve vuoti.
 
 Questa versione non restituisce niente. Se ti serve il valore di ritorno, devi usare una Promise.
 
-Se invece vuoi il contrario, cioè eseguire subito e poi ignorare le chiamate per un certo periodo, ti serve un throttle, che è un'altra funzione.
+Se invece vuoi eseguire subito e poi ignorare le chiamate per un certo periodo, ti serve un throttle, che è un'altra funzione.

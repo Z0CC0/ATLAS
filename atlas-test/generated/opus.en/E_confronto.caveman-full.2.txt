@@ -1,14 +1,14 @@
-**Use Postgres.** For small project, Postgres better choice. Move to Redis only when volume really demand it.
+Use Postgres. Switch to Redis only when volume really needs it.
 
-Why Postgres fit:
-- **Enough throughput.** `SELECT ... FOR UPDATE SKIP LOCKED` handle up to roughly a thousand jobs per minute. Most small projects stay far below that.
-- **Job and data share one transaction.** Enqueue job in same transaction as write. If write roll back, job roll back too. Job never start for data that not exist.
-- **Persistence free.** Process die, queue still there. Nothing extra to configure.
-- **No new service.** You already run Postgres.
+**Why Postgres fits small project:**
+- `SELECT ... FOR UPDATE SKIP LOCKED` handles up to roughly 1,000 jobs per minute. Small project rarely needs more.
+- Job sits in same transaction as data. If write rolls back, job rolls back too. Job never starts for data that does not exist.
+- Persistence comes free. If process dies, queue is still there.
+- No new service. You already run Postgres.
 
-What Redis give, and what it cost:
-- Far more volume. Latency under a millisecond.
+**What Redis gives, and what it costs:**
+- Much more volume and lower latency, under 1 ms.
 - One more service to run, monitor and upgrade.
-- Persistence not automatic. Without AOF enabled, restart lose queued jobs.
+- You must configure persistence. Without AOF enabled, restart loses queued jobs.
 
-**Switch signal:** job rate approach thousand per minute, or you need sub-millisecond latency. Before that, Redis add ops work and data-loss risk for speed you not use.
+Start with Postgres. Move to Redis when job volume outgrows it.

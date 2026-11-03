@@ -1,9 +1,9 @@
-No. L'offuscamento non protegge la chiave. Tutto quello che arriva al browser è leggibile. Chiunque può recuperare la chiave dagli strumenti per sviluppatori o dalle richieste di rete.
+No. Tutto quello che arriva al browser è leggibile. L'offuscamento non protegge la chiave: basta aprire gli strumenti per sviluppatori o guardare le richieste di rete per recuperarla.
 
 **Come fare invece:**
-- Tieni la chiave sul server. Il frontend chiama un endpoint del tuo backend, e il backend chiama il servizio.
-- Metti un limite di frequenza su quell'endpoint. Senza limite, chiunque può usare la tua chiave gratis attraverso il tuo backend.
+- Tieni la chiave sul server. Il frontend chiama un endpoint del tuo backend, e il backend chiama il servizio esterno con la chiave.
+- Metti un limite di frequenza su quell'endpoint. Senza limite, chiunque può usarlo per sfruttare la tua chiave gratis.
 
 **Se la chiave è già stata pubblicata:**
 - Considerala compromessa e ruotala subito. Toglierla dal codice non basta.
-- Rimuoverla con un nuovo commit non la cancella. La chiave resta nella cronologia del repository, e chi ha già un clone la possiede.
+- Rimuoverla con un nuovo commit non la cancella. La chiave resta nella cronologia del repository, e chi ha già un clone ce l'ha.

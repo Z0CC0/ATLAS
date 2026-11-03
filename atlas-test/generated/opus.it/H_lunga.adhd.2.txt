@@ -1,31 +1,31 @@
-## Come funziona
+**Regola pratica:** metti all'inizio del prompt le parti che non cambiano e alla fine quelle che cambiano. Così la cache può riusarle.
 
-La cache conserva la parte iniziale di una richiesta (il prefisso) dopo che è già stata elaborata. Se la richiesta successiva comincia allo stesso modo, quel pezzo non lo paghi di nuovo per intero.
+## Cosa fa
 
-Il riuso vale solo per il prefisso. Se all'inizio cambia anche un solo carattere, da quel punto in poi la cache non serve più.
+La cache conserva la parte iniziale di una richiesta (il prefisso) già elaborata. Se la richiesta successiva comincia allo stesso modo, quella parte non la paghi di nuovo per intero.
 
-## Come ordinare il prompt
+## Perché conta l'ordine
 
-1. **Prima le parti stabili:** istruzioni di sistema, documentazione allegata, definizioni degli strumenti.
-2. **Dopo le parti che cambiano:** il messaggio del turno, i dati nuovi.
+Il riuso vale solo per il prefisso. Se cambia anche un solo carattere all'inizio, da quel punto in poi non si riusa più niente.
 
-Se inverti l'ordine, la parte variabile in testa rende inutile tutto quello che viene dopo.
+Quindi:
+- **Prima:** le parti stabili (istruzioni di sistema, documentazione allegata, definizioni degli strumenti)
+- **Dopo:** le parti che cambiano (il messaggio dell'utente, i dati del turno)
 
-Attenzione in particolare alle voci di sistema che cambiano a ogni turno, come un orario. Anche se sono piccole, se stanno in alto rendono inutile la cache per tutto il testo che le segue. Spostale in fondo.
+Un errore comune è mettere nel system prompt qualcosa che cambia a ogni turno, per esempio l'orario attuale. Basta quello per annullare il riuso di tutto ciò che viene dopo.
 
 ## Quanto costa
 
-- **Prima richiesta:** costa di più, perché scrivere nella cache costa più di una lettura normale.
-- **Dalla seconda in poi:** cominci a risparmiare, e più turni fai, più risparmi.
+1. **Prima richiesta:** costa di più, perché scrivere nella cache costa più di una lettura normale.
+2. **Dalla seconda in poi:** cominci a risparmiare.
+3. **Più turni fai:** più il risparmio cresce.
 
 ## Quando conviene
 
 | Conviene | Non conviene |
 |---|---|
 | Conversazioni lunghe | Richieste singole |
-| Contesto grande e stabile (istruzioni di sistema, documentazione, strumenti) | Richieste tutte diverse fra loro |
-| Molti turni che riusano lo stesso inizio | Paghi la scrittura in cache e non rileggi mai quel contenuto |
+| Contesto grande e stabile | Richieste tutte diverse fra loro |
+| Stesse istruzioni, documenti e strumenti a ogni turno | Paghi la scrittura nella cache e non la rileggi mai |
 
-**In breve:** conviene quando lo stesso inizio lungo viene riletto molte volte. Se ogni richiesta è diversa, spendi di più e basta.
-
-Prossimo passo: apri il tuo prompt di sistema e controlla se in alto c'è qualcosa che cambia a ogni turno, come un orario o una data. Se c'è, spostalo in fondo.
+**Da fare adesso:** apri il tuo system prompt e cerca qualcosa che cambia a ogni turno, come una data o un orario. Se c'è, spostalo in fondo alla richiesta.

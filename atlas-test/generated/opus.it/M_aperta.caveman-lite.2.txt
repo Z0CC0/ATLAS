@@ -1,16 +1,18 @@
-Prima di scegliere l'architettura, chiarisci quattro punti. Ti conviene affrontarli in questo ordine.
+Prima di scegliere l'architettura, chiariti questi punti.
 
-**1. Quale parte del monolite cambia davvero.** Questo è il primo dato che ti serve. Le parti stabili non guadagnano nulla dall'essere spezzate. Se il 70% del codice non si tocca da anni, separarlo in servizi aggiunge solo costo.
+**1. Quale parte del monolite cambia davvero.** È il primo dato da raccogliere. Le parti stabili non guadagnano nulla dall'essere spezzate. Se un modulo non si tocca da anni, separarlo aggiunge solo costo.
 
-**2. Dove stanno i confini delle transazioni.** Una transazione che attraversa due servizi diventa un problema distribuito. Se un'operazione deve aggiornare ordini e magazzino in modo atomico, quelle due parti devono stare insieme. In alternativa, accetti la complessità che nasce dal separarle.
+**2. Dove stanno i confini delle transazioni.** Se una transazione attraversa due servizi, diventa un problema distribuito. Mappa le operazioni che oggi stanno in una sola transazione sul DB. Quelle operazioni ti mostrano dove *non* tagliare.
 
-**3. Come fai la migrazione, oltre alla forma finale.** Evita la riscrittura completa in parallelo al vecchio sistema. Quasi sempre fallisce: il vecchio continua a cambiare e la copia non lo raggiunge mai. Usa lo strangolamento progressivo:
-- Metti un router davanti al monolite.
-- Sposta un pezzo per volta.
-- Il vecchio sistema resta autorevole finché il nuovo pezzo non è verificato.
+**3. Come migrare.** Non riscrivere tutto in parallelo al vecchio sistema. Quasi sempre fallisce: il vecchio continua a cambiare e la copia non lo raggiunge mai. Usa lo strangolamento progressivo:
+- metti un router davanti al monolite;
+- sposta un pezzo per volta;
+- il vecchio resta autorevole finché il nuovo non è verificato.
 
-**4. Quanto costa gestire l'architettura, oltre a costruirla.** I microservizi costano di più in operatività. Ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupa. Sotto i cinque sviluppatori, quel costo supera quasi sempre il beneficio.
+**4. Quanto costano i microservizi in operatività.** Ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupa. Sotto i cinque sviluppatori, questo costo supera quasi sempre il beneficio. Conta quante persone hai davvero.
 
-**Un'opzione che spesso nessuno cita: il monolite modulare.** Hai confini interni netti e un solo rilascio. Il giorno che serve davvero, puoi estrarre un modulo in un servizio separato. Se il team è piccolo, di solito è il punto di partenza più sensato. Conviene anche usarlo come tappa intermedia dello strangolamento.
+**5. Il monolite modulare.** È l'opzione poco citata, ma spesso la più sensata. Ha confini interni netti e un solo rilascio. Ti lascia estrarre un modulo il giorno che serve davvero. Puoi fare la riscrittura PHP in questa forma e decidere dopo cosa separare.
 
-**La domanda decisiva non è tecnica.** Chiediti cosa deve poter fare il team fra un anno che oggi non può. Può essere rilasciare una parte senza toccare il resto. Può essere far lavorare due gruppi in modo indipendente, o scalare un singolo componente. Scegli l'architettura in base a quella risposta, non in base a cosa va di moda.
+**6. La domanda decisiva non è tecnica.** Chiediti cosa deve poter fare il team fra un anno che oggi non può. Rispondi prima a questa domanda. La risposta ti dice quali parti meritano confini separati e quali no.
+
+In pratica: se il team è piccolo e le parti che cambiano sono poche, parti da un monolite modulare. Migra con lo strangolamento progressivo ed estrai servizi solo dove la risposta al punto 6 lo richiede.

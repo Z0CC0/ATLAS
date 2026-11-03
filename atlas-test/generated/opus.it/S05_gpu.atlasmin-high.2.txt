@@ -1,9 +1,9 @@
-Soprattutto generazione fotogrammi, non rasterizzatore puro: lì guadagno reale circa 10-15%.
+La 5080 va soprattutto meglio nella generazione di fotogrammi. Sul rasterizzatore puro il guadagno reale è solo del 10-15% circa.
 
-Architettura: Blackwell su 5080, Ada Lovelace su 4080.
+Architettura: Blackwell sulla 5080, Ada Lovelace sulla 4080.
 
-Memoria: GDDR7 contro GDDR6X, banda da circa 717 a circa 960 GB/s.
+Memoria: GDDR7 al posto della GDDR6X. La banda passa da circa 717 a circa 960 GB/s.
 
-Consumo dichiarato: da 320 a 360 W.
+Consumo dichiarato: sale da 320 a 360 W.
 
-Connettore alimentazione: sempre 16 pin.
+Il connettore di alimentazione resta a 16 pin.

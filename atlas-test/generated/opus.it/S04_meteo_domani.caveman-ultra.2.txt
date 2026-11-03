@@ -1,3 +1,8 @@
-Domani a New York mattina serena, nuvole dal pomeriggio. Massima 24 °C, minima 17 °C. Dopo le 18 pioggia al 30%, quindi conviene un ombrello se esci la sera. Vento da nord-ovest a 15 km/h. Umidità intorno al 60%.
+Domani a New York mattina serena, nuvole dal pomeriggio.
 
-Fonte: web.
+- **Temperature:** massima 24 °C, minima 17 °C.
+- **Pioggia:** 30% di probabilità dopo le 18. Se esci la sera, porta un ombrello.
+- **Vento:** da nord-ovest, 15 km/h.
+- **Umidità:** circa 60%.
+
+Fonte: previsioni dal web.

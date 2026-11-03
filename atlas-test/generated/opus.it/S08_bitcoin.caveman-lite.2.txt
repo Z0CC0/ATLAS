@@ -1,27 +1,23 @@
-Bitcoin nasce nell'ambiente cypherpunk, dove da tempo si cercava di creare denaro digitale indipendente dalle banche. Prima di Bitcoin c'erano stati tentativi come b-money e bit gold. Nessuno dei due, però, risolveva un punto decisivo: come mettere d'accordo tutti sull'ordine delle transazioni.
+Bitcoin nasce nell'ambiente cypherpunk, dove da anni si cercava di creare denaro digitale indipendente dalle istituzioni. Ci avevano già provato altri progetti, come b-money e bit gold. Nessuno però risolveva un nodo centrale: mettere d'accordo tutti sull'ordine delle transazioni.
 
 **Il documento del 2008**
 
-Nel 2008 esce un documento intitolato *Bitcoin: A Peer-to-Peer Electronic Cash System*. È firmato Satoshi Nakamoto, uno pseudonimo che nessuno è mai riuscito a collegare a una persona reale.
+Nel 2008 esce un documento intitolato *Bitcoin: A Peer-to-Peer Electronic Cash System*. È firmato Satoshi Nakamoto, uno pseudonimo che nessuno ha mai identificato.
 
-Il documento affronta il problema della doppia spesa. Un file digitale si copia facilmente, quindi niente impedisce di spendere due volte la stessa moneta. Di solito questo problema si risolve con un ente centrale, per esempio una banca, che tiene il registro e decide quale pagamento vale. Satoshi vuole farne a meno.
+Il problema che affronta è la doppia spesa. Un file digitale si copia facilmente, quindi bisogna impedire che la stessa moneta venga spesa due volte. Di solito ci pensa un ente centrale, come una banca, che tiene il registro. Satoshi vuole farne a meno.
 
 **La soluzione: blocchi e prova di lavoro**
 
-Le transazioni vengono raccolte in blocchi collegati uno all'altro in una catena. L'ordine dei blocchi è fissato da una prova di lavoro, cioè un calcolo costoso che bisogna eseguire per aggiungere ogni blocco.
-
-Questo meccanismo protegge il passato. Per modificare un blocco vecchio bisognerebbe rifare la prova di lavoro per quel blocco e per tutti quelli venuti dopo. Più un blocco è vecchio, più diventa costoso riscriverlo.
+La soluzione è una catena di blocchi, ordinata da una prova di lavoro. Ogni blocco richiede un lavoro di calcolo per essere aggiunto. Per modificare un blocco vecchio bisognerebbe rifare la prova di lavoro di quel blocco e di tutti quelli successivi. Riscrivere il passato diventa quindi molto costoso, e questo dà stabilità al registro.
 
 **Il primo blocco**
 
-Il primo blocco viene generato il 3 gennaio 2009. Contiene il titolo di un articolo del Times su un salvataggio bancario. Quel riferimento ha due funzioni. È una marca temporale, perché dimostra che il blocco non può essere stato creato prima di quella data. È anche una dichiarazione di intenti: un sistema monetario senza banche, nato mentre le banche venivano salvate con denaro pubblico.
+Il primo blocco viene generato il 3 gennaio 2009. Contiene il titolo di un articolo del Times su un salvataggio bancario. Quel riferimento ha due funzioni. È una marca temporale, perché prova che il blocco non esisteva prima di quella data. È anche una dichiarazione di intenti: Bitcoin si presenta come alternativa a un sistema finanziario che deve salvare le banche.
 
 **Le regole di emissione**
 
-Chi aggiunge un blocco riceve una ricompensa in nuovi bitcoin. All'inizio la ricompensa è di 50 bitcoin per blocco. Si dimezza ogni 210.000 blocchi, cioè circa ogni quattro anni. Per questo il totale dei bitcoin emessi si avvicina a 21 milioni, ma non li supera mai.
+Chi crea un blocco riceve una ricompensa in nuovi bitcoin. All'inizio la ricompensa è di 50 bitcoin. Si dimezza ogni 210.000 blocchi, cioè circa ogni quattro anni. Per questo il totale emesso tende a 21 milioni di bitcoin e non li supererà mai.
 
 **I primi usi e l'uscita di Satoshi**
 
-La prima transazione commerciale documentata risale al 2010: due pizze pagate 10.000 bitcoin.
-
-Nel 2011 Satoshi smette di partecipare pubblicamente al progetto. I bitcoin in suo possesso non sono mai stati spostati.
+La prima transazione commerciale documentata è del 2010: qualcuno paga due pizze 10.000 bitcoin. Nel 2011 Satoshi smette di partecipare pubblicamente al progetto. I suoi bitcoin non sono mai stati spostati.

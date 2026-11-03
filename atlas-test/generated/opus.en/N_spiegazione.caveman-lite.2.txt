@@ -1,14 +1,17 @@
-**Eventual consistency** describes what happens after a write. The replicas do not agree right away. If writes stop, they converge within a finite time. In the same region, that time is typically under a second. Across regions, it rises to seconds.
+Eventual consistency means that after a write, the replicas don't agree right away. They converge within a finite time once the writes stop. For a short window, different replicas can give different answers to the same read.
 
-**Why a system accepts it:** the trade is against availability. A system that demands strong consistency has to refuse requests when its replicas cannot talk to each other. An eventually consistent system keeps answering. So eventual consistency is not a defect to eliminate. It is a choice, and most systems that scale make it on purpose.
+**Why it exists:** the trade is against availability. A system that demands strong consistency has to refuse requests when its replicas can't talk to each other. A system with eventual consistency keeps answering and lets the replicas catch up later.
 
-**Why you should care:** it affects anyone who reads right after writing. A typical case: a user posts a comment, reloads the page, and does not see the comment. The system is not broken. The read just went to a replica that has not caught up yet. Users still experience it as a bug.
+**How long the window is:** across replicas in the same region, convergence usually takes under a second. Across regions it rises to seconds.
 
-**The common fix:** send reads to the primary replica only for the session that just wrote. Everyone else keeps reading from the replicas. The writer sees their own change, and you keep most of the scaling benefit.
+**Why you should care:** it hits anyone who reads right after writing. A user posts a comment, reloads the page, and the comment isn't there. Nothing is lost. The read went to a replica that hasn't received the write yet. To the user, though, it looks like a bug.
 
-**When it is unacceptable:** the cases are few and easy to recognise:
+**The common fix:** send reads to the primary replica for the session that just wrote, not for everyone. The writer sees their own change straight away. Everyone else keeps reading from the other replicas and sees it after the short delay.
+
+**How to think about it:** eventual consistency isn't a defect to eliminate. It's a choice, and most systems that scale make it on purpose. The question to ask is where you can't accept it. Those cases are few and easy to spot:
+
 - account balances
 - seat availability
 - uniqueness of an identifier
 
-In those cases, a stale read can cause a real error, such as spending the same money twice, selling the same seat twice, or issuing the same ID twice. They need strong consistency, even at the cost of refusing some requests. Everywhere else, eventual consistency plus read-your-own-writes for the writing session is usually the right trade.
+For those, pay the cost of strong consistency. For everything else, eventual consistency is usually the right default. Plan for the read-after-write case and use the primary-read fix where users would notice.

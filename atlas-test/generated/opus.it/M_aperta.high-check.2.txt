@@ -1,11 +1,15 @@
 conoscenza interna
 
-La domanda decisiva non è tecnica: cosa deve poter fare il team fra un anno che oggi non può.
+**Prima domanda, non tecnica:** cosa deve poter fare il team fra un anno che oggi non può. È quella che decide.
 
-Poi servono due dati sul monolite. Primo, quali parti cambiano davvero: le parti stabili non guadagnano nulla dall'essere spezzate. Secondo, dove stanno i confini delle transazioni: una transazione che attraversa due servizi diventa un problema distribuito.
+Poi due dati da raccogliere:
 
-Conta anche la dimensione del team. Sotto i cinque sviluppatori il costo operativo dei microservizi supera quasi sempre il beneficio, perché ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupa.
+Quale parte del monolite cambia davvero. Le parti stabili non guadagnano nulla dall'essere spezzate.
 
-C'è un'opzione poco citata, il **monolite modulare**: confini interni netti, un solo rilascio, e un modulo si può estrarre il giorno che serve davvero.
+Dove stanno i confini delle transazioni. Se una transazione attraversa due servizi, diventa un problema distribuito.
 
-Sul come migrare, evita la riscrittura completa in parallelo al vecchio sistema. Fallisce quasi sempre: il vecchio continua a cambiare e la copia non lo raggiunge mai. Conviene lo **strangolamento progressivo**: metti un router davanti e sposti un pezzo per volta. Il vecchio resta autorevole finché il nuovo non è verificato.
+Migrazione: evita la riscrittura completa in parallelo al vecchio sistema. Fallisce quasi sempre, perché il vecchio continua a cambiare e la copia non lo raggiunge mai. Meglio lo **strangolamento progressivo**: router davanti, un pezzo spostato per volta, vecchio autorevole finché il nuovo non è verificato.
+
+Microservizi: costano di più in operatività. Ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupi. Sotto i cinque sviluppatori quel costo supera quasi sempre il beneficio.
+
+Opzione poco citata: monolite modulare. Confini interni netti, un solo rilascio, e un modulo si estrae il giorno che serve davvero.

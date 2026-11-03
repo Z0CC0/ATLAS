@@ -1,12 +1,17 @@
-Postgres. Progetto piccolo, Postgres basta.
+Progetto piccolo: usa Postgres. Passa a Redis solo quando il volume lo impone davvero.
 
-Motivi:
-- `SELECT FOR UPDATE SKIP LOCKED` regge fino a circa mille lavori al minuto.
-- Lavoro nella stessa transazione dei dati. Mai lavoro partito con scrittura annullata.
-- Persistenza gratis. Processo muore, coda resta lì.
+**Perché Postgres:**
+- `SELECT ... FOR UPDATE SKIP LOCKED` basta fino a circa mille lavori al minuto. Per un progetto piccolo il margine è ampio.
+- Il lavoro sta nella stessa transazione dei dati. Non esiste il caso in cui il lavoro parte e la scrittura viene annullata.
+- La persistenza è gratis. Se il processo muore, la coda è ancora lì.
+- Nessun servizio in più. Usi il DB che hai già.
 
-Redis più forte su volume, latenza sotto il millisecondo. Costi:
-- Servizio in più da gestire, monitorare, aggiornare.
-- Persistenza da configurare. Senza AOF attivo, riavvio perde lavori in coda.
+**Cosa offre Redis:**
+- Regge molto più volume.
+- Ha latenza più bassa, sotto il millisecondo.
 
-Passa a Redis solo quando volume lo impone davvero.
+**Cosa costa Redis:**
+- È un servizio in più da gestire, monitorare e aggiornare.
+- La persistenza va configurata. Senza AOF attivo, un riavvio perde i lavori in coda.
+
+Parti con Postgres. Valuta Redis quando superi stabilmente i mille lavori al minuto o ti serve latenza sotto il millisecondo. Se passi a Redis, attiva AOF.

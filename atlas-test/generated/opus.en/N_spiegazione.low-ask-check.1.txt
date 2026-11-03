@@ -1,13 +1,15 @@
 internal knowledge
 
-Eventual consistency: after a write, replicas don't agree right away, but converge within finite time once writes stop.
+Eventual consistency means that after a write, replicas don't agree right away, but they converge within a finite time once writes stop.
 
-You should care because it hits whoever reads right after writing. User posts comment, reloads, doesn't see it.
+It exists because of a trade against availability. A system that demands strong consistency has to refuse requests when its replicas can't talk to each other. Eventual consistency lets the system keep answering.
 
-Gap typically short: under a second between replicas in same region, a few seconds across regions.
+You should care because it affects whoever reads right after writing. A user posts a comment, reloads the page, and doesn't see it.
 
-Price of avoiding it: availability. System demanding strong consistency has to refuse requests whenever replicas can't talk to each other. So eventual consistency not a defect to eliminate but a choice, and most systems that scale accept it deliberately.
+The window is usually short. Across replicas in the same region, convergence typically takes under a second. Across regions, it rises to seconds.
 
-Common fix for the vanished comment: read from primary replica for the session that just wrote, not for everyone.
+The common fix is to read from the primary replica only for the session that just wrote, not for everyone. The writer sees their own comment, and everyone else keeps reading from the replicas.
 
-Few cases where it's unacceptable, and easy to recognise: account balances, seat availability, uniqueness of an identifier.
+Eventual consistency isn't a defect to eliminate. It's a choice, and most systems that scale make it on purpose.
+
+The cases where it's unacceptable are few and easy to recognise: account balances, seat availability and uniqueness of an identifier. Those need strong consistency.

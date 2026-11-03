@@ -1,36 +1,40 @@
-**Eventual consistency** means that right after a write, the copies of your data (replicas) don't all agree yet. If writes stop, they catch up with each other within a finite time.
+## The short version
 
-## How long the gap lasts
+When you write data to a system that keeps several copies (replicas), those copies don't all update at the same moment. With eventual consistency, they disagree for a short while after a write. If writes stop, they all end up with the same data within a finite time.
 
-- **Replicas in the same region:** under a second
-- **Replicas in different regions:** a few seconds
+## How long "eventually" takes
+
+- **Replicas in the same region:** usually under a second.
+- **Replicas in different regions:** it goes up to a few seconds.
 
 ## Why systems accept it
 
-It's a trade against availability. A system that requires strong consistency has to refuse requests whenever its replicas can't talk to each other. A system that allows eventual consistency keeps answering.
+It's a trade against availability. Suppose replicas lose contact with each other. A system that insists on strong consistency must refuse requests until they reconnect. An eventually consistent system keeps serving requests and lets the replicas catch up later.
 
-So eventual consistency is a choice, not a defect you need to remove. Most systems that scale accept it on purpose.
+So eventual consistency isn't a bug to remove. It's a design choice, and most systems that scale make it on purpose.
 
 ## Why you should care
 
-The person it affects is the one who reads right after they write:
+The person it hurts is whoever reads right after writing. For example:
 
-1. A user posts a comment
-2. They reload the page
-3. Their comment isn't there, because the read went to a replica that hasn't caught up
+1. A user posts a comment.
+2. They reload the page.
+3. The read goes to a replica that hasn't received the write yet, so the comment isn't there.
 
-To them, that looks like a bug.
+The user thinks the post failed. They may post again or decide your app is broken.
 
-**The usual fix:** send reads to the primary replica only for the session that just wrote. Everyone else keeps reading from the replicas, so you keep the scaling benefit.
+## The usual fix
+
+Send the reads of the session that just wrote to the primary replica, which has the write. Everyone else keeps reading from any replica. The person who just wrote sees their own change, and the rest of your read traffic still gets spread across replicas.
 
 ## When it's not acceptable
 
-There are only a few of these cases, and they're easy to spot:
+There are only a few such cases, and they're easy to spot:
 
-- **Account balances**
-- **Seat availability**
-- **Unique identifiers**
+- **Account balances:** two replicas could each approve spending the same money.
+- **Seat availability:** two people could book the same seat.
+- **Unique identifiers:** two users could claim the same username or ID.
 
-In these cases, even a short disagreement between replicas causes real damage, like overdrafts, double-booked seats, or duplicate IDs. They need strong consistency.
+Use strong consistency for these. Eventual consistency is fine almost everywhere else.
 
-**Next step:** find one place in your app where a user writes something and then sees it right away. Check whether that read goes to the primary or to a replica.
+**Next:** pick one feature in your app where a user writes something and then sees it, like posting or saving a profile, and check whether that read goes to the primary.

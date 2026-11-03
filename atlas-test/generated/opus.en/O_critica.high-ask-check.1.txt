@@ -1,19 +1,17 @@
 internal knowledge
 
-I wouldn't put all of it there. Keep integrity rules in the database and business logic in the application.
+I'd advise against putting all of it in triggers. Keep integrity rules in the database, and put business logic in the application behind one entry point.
 
-The upside is real: no application path can skip the rule, not even a script someone runs by hand.
+The upside is real: no application path can skip a trigger, not even a script someone runs by hand.
 
 The costs:
 
-Triggers are invisible to anyone reading the application code. A change that looks simple can fire other triggers, and nothing records that it happened.
+Anyone reading the application code can't see triggers. A change that looks simple can set off others and leave no trace.
 
-Your team's current test tools can't cover them. The tests have to run against a real database.
+Your team's current test tools don't cover triggers. You'd need tests that run against a real database.
 
-Debugging gets harder. An error inside a trigger comes back as a failed write, with no sign of which rule caused it.
+Debugging gets harder. An error inside a trigger shows up only as a failed write and doesn't say which rule caused it.
 
-Migrations become fragile, because trigger order matters and nothing declares it.
+Migrations become fragile. Trigger order matters, and nothing declares it.
 
-The alternative: keep in the database only what protects integrity, meaning constraints, foreign keys, uniqueness and domain checks. Put the business logic in the application, behind **one entry point**.
-
-That entry point gives the same guarantee as a trigger, **but only if direct database access is limited to migrations**.
+The alternative is to split the work by type of rule. The database keeps what protects integrity: constraints, foreign keys, uniqueness and domain checks. The application holds the business logic behind a **single entry point**. That entry point gives the same guarantee as a trigger, **as long as direct database access is reserved for migrations**.

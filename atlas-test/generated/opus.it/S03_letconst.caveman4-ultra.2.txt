@@ -1,0 +1,5 @@
+**`let`**: puoi riassegnare il nome.
+
+**`const`**: non puoi riassegnare il nome, ma il valore si può modificare. Un oggetto dichiarato con `const` può quindi cambiare al suo interno.
+
+**In comune**: tutti e due hanno ambito di blocco, mentre `var` no.

@@ -1,7 +1,15 @@
 internal knowledge
 
-No, in most cases. A B-tree index on a column with only three values usually goes unused. Each value typically matches a large share of the rows, and the planner switches to a sequential scan once a filter selects more than about 5–10% of the rows.
+Usually no.
 
-You still pay for the index on every write and in disk space, so it costs you without speeding anything up.
+On a column with only three distinct values, the planner normally won't use a plain B-tree index.
 
-The exception is when one of the three values is rare. A partial index covering only that value does get used.
+It picks a sequential scan instead when the filter matches more than roughly 5-10 per cent of the rows, and with three values each one usually matches far more than that.
+
+The unused index still costs you on every write and takes up disk space.
+
+The exception is when one of the values is rare. A partial index on just that value does get used:
+
+```sql
+CREATE INDEX ON orders (id) WHERE status = 'failed';
+```

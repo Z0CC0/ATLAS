@@ -1,12 +1,14 @@
-Your pool is running out of database connections. It isn't a slow query.
+Your connection pool is running out of connections. It's a leak, not a slow query.
 
-**What's happening**
+## What's happening
 
-In the middleware at `db/session.py:47`, the connection is released only when the request succeeds. If the handler raises an exception, `release()` never runs, so that connection stays checked out until it times out. After a few hundred failed requests the pool is empty, and every request after that has to wait for a connection to come free. That's why latency keeps rising instead of requests failing straight away with an error.
+In the middleware at `db/session.py:47`, the connection only gets released when the request succeeds. If the handler raises an exception, the code never reaches `release()`, so that connection stays checked out until it times out.
 
-**The fix**
+Each failed request holds on to one connection. After a few hundred failures the pool is empty, and every request after that has to wait for a connection to free up. That's why latency keeps climbing and then the API locks up, rather than returning errors right away: requests are stuck waiting for connections the failed requests never gave back.
 
-Wrap the acquisition in `try/finally` so the connection is also released when the handler fails:
+## The fix
+
+Wrap the acquisition in `try/finally` so the connection is released on the error path too:
 
 ```python
 conn = pool.acquire()
@@ -16,13 +18,13 @@ finally:
     pool.release(conn)
 ```
 
-**Don't raise `pool_size` to fix this**
+## Don't just raise `pool_size`
 
-A bigger pool looks like it works, but it only hides the leak. It delays the moment the pool runs dry, and connections still leak on every failed request. Raise `pool_size` only after the fix is in, and only if your actual load needs more connections.
+Raising `pool_size` will look like it fixed things, but it only hides the problem. The leak is still there, so the pool still empties; it just takes longer. Put the `try/finally` fix in first. After that, only raise `pool_size` if your real load needs more connections.
 
-**Checking it**
+## Checking it
 
-Run this before and after the change. It should reproduce the lock-up before the fix and pass after it:
+Run this before and after the change. Before, it should show the exhaustion; after, it shouldn't:
 
 ```
 pytest tests/test_pool.py -k exhaustion -x

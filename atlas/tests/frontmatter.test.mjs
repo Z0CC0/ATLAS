@@ -47,7 +47,7 @@ test('the parser sees an indented folded description and loses a flush-left one'
 test('every shipped SKILL.md has a non-empty description', () => {
   const files = skills(root)
   // every skill folder is read, in the source tree (skills/ and the overlays) and in a build alike
-  const folders = ['skills', 'dev/skills', 'code/skills', 'mem/skills']
+  const folders = ['skills', 'dev/skills', 'code/skills', 'mem/skills', 'video/skills']
     .map((d) => path.join(root, d)).filter((d) => fs.existsSync(d))
     .reduce((n, d) => n + fs.readdirSync(d, { withFileTypes: true }).filter((e) => e.isDirectory()).length, 0)
   assert.ok(folders > 0 && files.length >= folders, `found ${files.length} SKILL.md for ${folders} skill folders`)

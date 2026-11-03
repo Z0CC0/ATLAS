@@ -1,8 +1,11 @@
-RTX 5080 mostly helps through frame generation. Raw rasterisation gains less.
+RTX 5080 is newer generation. Biggest gain is frame generation, not raw rasterisation.
 
-- **Architecture:** 5080 uses Blackwell. 4080 uses Ada Lovelace.
-- **Memory:** 5080 has GDDR7, 4080 has GDDR6X. Bandwidth rises from about 717 to about 960 GB/s.
-- **Performance:** biggest jump is frame generation. Rasterisation gain is about 10-15%.
-- **Power:** rated draw rises from 320 W to 360 W. Power connector stays at 16 pins.
+**Architecture:** 5080 uses Blackwell. 4080 uses Ada Lovelace.
 
-If your games support frame generation, 5080 is a clear step up. If they don't, expect only a modest gain over 4080 for 40 W more rated power.
+**Memory:** 5080 has GDDR7. 4080 has GDDR6X. Bandwidth rises from about 717 GB/s to about 960 GB/s.
+
+**Performance:** Frame generation shows the biggest jump. Raw rasterisation gain is only about 10-15%. If you play without frame generation, the 5080 feels like a modest step up, not a new tier.
+
+**Power:** Rated draw rises from 320 W to 360 W. Check that your PSU has headroom for the extra 40 W. Power connector is still 16-pin, so your existing cable fits.
+
+**Upgrade from 4080?** Only worth it if you use frame generation. For pure rasterisation, 10-15% is a small gain for the cost.

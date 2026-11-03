@@ -1,27 +1,28 @@
-Aggiungi questi sei header a ogni risposta del sito:
+Copia questo blocco nella configurazione del tuo server o hosting:
 
 ```
 Strict-Transport-Security: max-age=31536000; includeSubDomains
 Content-Security-Policy: default-src 'self'; frame-ancestors 'none'
 X-Content-Type-Options: nosniff
 Referrer-Policy: strict-origin-when-cross-origin
-X-Frame-Options: DENY
 Permissions-Policy: camera=(), microphone=(), geolocation=()
 ```
 
-## A cosa serve ciascuno
+## A cosa serve ogni header
 
-1. **Strict-Transport-Security**: obbliga il browser a usare sempre HTTPS. Il `max-age` deve essere di almeno 31536000 secondi (un anno). `includeSubDomains` estende la regola a tutti i sottodomini.
-2. **Content-Security-Policy**: con `default-src 'self'` il browser carica le risorse solo dal tuo dominio. È l'header che blocca gli script iniettati da terze parti.
-3. **X-Content-Type-Options: nosniff**: impedisce al browser di indovinare il tipo di un file. Usa solo quello dichiarato dal server.
-4. **Referrer-Policy: strict-origin-when-cross-origin**: quando un utente segue un link verso un altro sito, gli arriva solo il dominio, non il percorso completo della pagina.
-5. **Protezione dal clickjacking**: si ottiene con `X-Frame-Options: DENY` oppure con `frame-ancestors 'none'` dentro la CSP. Nel blocco sopra ci sono tutti e due. Se vuoi tenerne uno solo, basta uno dei due.
-6. **Permissions-Policy**: spegne camera, microfono e geolocalizzazione. Toglili dalla lista solo se il sito li usa davvero.
+**I cinque principali**
+1. **Strict-Transport-Security**: obbliga il browser a usare HTTPS. Il `max-age` deve essere di almeno 31536000 secondi (1 anno) e deve includere `includeSubDomains`.
+2. **Content-Security-Policy** `default-src 'self'`: blocca l'iniezione di script di terze parti.
+3. **X-Content-Type-Options: nosniff**: impedisce al browser di indovinare il tipo di contenuto.
+4. **Referrer-Policy: strict-origin-when-cross-origin**: il percorso completo delle tue pagine non viene inviato ad altri siti.
+5. **Protezione dal clickjacking**: c'è già, è il `frame-ancestors 'none'` dentro la CSP. In alternativa puoi usare `X-Frame-Options: DENY`.
 
-## Da non mettere
+**Uno in più**
+- **Permissions-Policy**: spegne camera, microfono e geolocalizzazione. Se il sito usa una di queste funzioni, togli la voce corrispondente.
 
-**X-XSS-Protection**: è deprecato. I browser moderni lo ignorano e nelle versioni vecchie creava vulnerabilità. Se la configurazione attuale lo contiene, cancellalo.
+**Da non mettere**
+- **X-XSS-Protection**: è deprecato. I browser moderni lo ignorano e nelle versioni vecchie introduceva vulnerabilità. Se c'è già, toglilo.
 
-Tempo stimato: circa 10 minuti per inserirli nella configurazione del server o dell'hosting.
+Tempo stimato: circa 10 minuti se modifichi un solo file di configurazione.
 
-Prossimo passo: dimmi dove è ospitato il sito (Nginx, Apache, Netlify, Cloudflare Pages…) e ti scrivo la configurazione pronta da incollare.
+Prossimo passo: dimmi dove è ospitato il sito (Nginx, Apache, Netlify, Cloudflare…) e ti scrivo la sintassi esatta da incollare.

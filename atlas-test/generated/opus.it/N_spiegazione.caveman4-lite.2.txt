@@ -1,0 +1,7 @@
+La consistenza eventuale vuol dire questo: dopo una scrittura, le repliche di un dato non sono subito d'accordo. Se le scritture si fermano, però, arrivano allo stesso valore entro un tempo finito. Sulla stessa regione di solito ci mettono meno di un secondo. Fra regioni diverse arrivano a qualche secondo.
+
+**Perché ti interessa:** è il costo della disponibilità. Un sistema con consistenza forte deve rifiutare le richieste quando le repliche non riescono a parlarsi. Quella eventuale non è un difetto da eliminare ma una scelta. La maggior parte dei sistemi che scalano la accetta di proposito.
+
+**Dove la noti:** quando qualcuno legge subito dopo aver scritto. Un utente pubblica un commento, ricarica la pagina e non lo vede. Di solito si risolve leggendo dalla replica primaria, ma solo per la sessione che ha appena scritto. Tutti gli altri continuano a leggere dalle repliche.
+
+**Quando non va bene:** i casi sono pochi e si riconoscono facilmente. Sono i saldi di conto, la disponibilità di posti e l'unicità di un identificativo. Lì ti serve la consistenza forte. Per il resto, quella eventuale di solito basta.

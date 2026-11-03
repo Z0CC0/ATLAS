@@ -1,3 +1,3 @@
 internal knowledge
 
-Yes. The same is true of every empty collection: list, tuple, dict, set and string.
+Yes. Same for every empty collection: list, tuple, dict, set and string.

@@ -1,11 +1,11 @@
-La consistenza eventuale vuol dire che, dopo una scrittura, le repliche non concordano subito, ma convergono entro un tempo finito se le scritture si fermano.
+Consistenza eventuale significa che, dopo una scrittura, le repliche non concordano subito, ma convergono entro un tempo finito se le scritture si fermano.
 
-Ti interessa perché è il prezzo della disponibilità. Un sistema che pretende consistenza forte deve rifiutare le richieste quando le repliche non si parlano. Uno eventuale continua a rispondere.
+Ti interessa perché il problema compare quando qualcuno legge subito dopo aver scritto: l'utente pubblica un commento, ricarica la pagina e non lo vede.
 
-Il problema lo vedi soprattutto quando qualcuno legge subito dopo aver scritto. Un utente pubblica un commento, ricarica la pagina e non lo trova. La soluzione comune è leggere dalla replica primaria solo per la sessione che ha appena scritto, non per tutte.
+La finestra di disallineamento di solito è breve: sotto il secondo fra repliche nella stessa regione, fino a qualche secondo fra regioni diverse.
 
-La finestra è breve. Tra repliche nella stessa regione la convergenza di solito richiede meno di un secondo. Fra regioni diverse sale a qualche secondo.
+Rimedio comune: la sessione che ha appena scritto legge dalla replica primaria. Lo fa solo quella sessione, non tutte.
 
-Non è un difetto da eliminare ma una scelta. La maggior parte dei sistemi che scalano la accetta di proposito.
+Si accetta per un compromesso con la disponibilità. Un sistema che pretende consistenza forte deve rifiutare richieste quando le repliche non si parlano. Quindi non è un difetto da eliminare, ma una scelta: la maggior parte dei sistemi che scalano la accetta di proposito.
 
-Dove non è accettabile, i casi sono pochi e si riconoscono subito: i saldi di conto, la disponibilità dei posti e l'unicità di un identificativo. Lì serve la consistenza forte. Nel resto dei casi, quella eventuale di solito basta.
+Non è accettabile in pochi casi, facili da riconoscere: saldi di conto, disponibilità di posti, unicità di un identificativo.

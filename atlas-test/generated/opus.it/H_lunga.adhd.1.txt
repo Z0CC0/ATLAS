@@ -1,27 +1,28 @@
-**In breve:** la cache fa risparmiare quando mandi molte richieste che iniziano tutte con lo stesso testo lungo. Metti le parti che non cambiano all'inizio e quelle che cambiano alla fine.
+**Regola pratica: metti in cima al prompt quello che non cambia e in fondo quello che cambia.** Il resto spiega perché.
 
 ## Come funziona
 
-- La cache salva l'inizio di una richiesta dopo che è già stato elaborato. Se la richiesta successiva comincia allo stesso modo, quella parte non la paghi di nuovo per intero.
-- Vale solo per l'inizio della richiesta. Se cambia anche un solo carattere, da quel punto in poi la cache non serve più.
+- La cache salva il **prefisso** di una richiesta già elaborato.
+- Se la richiesta successiva inizia allo stesso modo, quella parte non la paghi di nuovo per intero.
+- Il riuso vale **solo per il prefisso**. Se un solo carattere all'inizio è diverso, da quel punto in poi non si riusa più niente.
 
-## Il costo
+## Come costruire il prompt
 
-1. **Prima richiesta:** costa di più. Salvare nella cache costa più di una lettura normale.
-2. **Dalla seconda richiesta in poi:** qui cominci a risparmiare.
-3. **Con tanti turni:** più la conversazione va avanti, più risparmi.
+1. **Prima le parti stabili:** istruzioni di sistema, documentazione allegata, definizioni degli strumenti.
+2. **Dopo le parti che cambiano:** il messaggio dell'utente, i dati del turno.
+3. **Niente valori variabili in alto.** Basta una voce di sistema che cambia a ogni turno, per esempio un orario, per perdere il riuso di tutto ciò che viene dopo.
+
+## Costi
+
+- **Prima richiesta: costa di più.** Scrivere nella cache costa più di una lettura normale.
+- **Dalla seconda in poi: risparmi.** Più turni fai, più il risparmio cresce.
 
 ## Quando conviene
 
-**Sì:** conversazioni lunghe con un contesto grande che non cambia, per esempio:
-- istruzioni di sistema
-- documentazione allegata
-- definizioni degli strumenti
+| Conviene | Non conviene |
+|---|---|
+| Conversazioni lunghe | Richieste singole |
+| Contesto grande e stabile (istruzioni, documenti, strumenti) | Richieste tutte diverse fra loro |
+| Molti turni che riusano lo stesso inizio | Paghi la scrittura in cache e non la rileggi mai |
 
-**No:** richieste singole e diverse tra loro. Paghi il salvataggio nella cache ma non lo riusi mai.
-
-## L'errore da evitare
-
-Non mettere all'inizio qualcosa che cambia a ogni turno, come un orario nelle istruzioni di sistema. Tutto quello che viene dopo non viene più riusato, e il risparmio sparisce.
-
-**Da fare subito:** apri il tuo prompt di sistema e controlla se all'inizio c'è un valore che cambia a ogni turno (orario, data, ID). Se c'è, spostalo in fondo.
+**Prossimo passo:** apri il tuo prompt di sistema e cerca valori che cambiano a ogni richiesta, come data, ora o ID. Se ne trovi, spostali in fondo.

@@ -1,31 +1,17 @@
-x86 went through three phases. From 1978 to 1995 each chip added features to the architecture. From 1995 on, x86 was a translation layer over a different machine. After the Pentium 4, the focus moved from clock speed to more cores, and later to the risks of speculative execution.
+x86 started as 16-bit compatibility, picked up protected mode, 32 bits, caches and parallel pipelines, became an interface over a different machine underneath, then switched from chasing clock speed to adding cores.
 
-**Building the architecture (1978–1993)**
+**Starting point.** Story begins slightly before eighties: 8086 of 1978, 16-bit chip grown out of 8080 and compatible with it at source level. That compatibility habit shapes everything after.
 
-The 8086 of 1978 was 16-bit. It grew out of the 8080 and could run 8080 code after recompiling the source, not the binaries.
+**Protected mode.** 80286 of 1982 introduces protected mode, with one awkward flaw: once in it, no way back to real mode without reboot. 80386 of 1985 fixes direction of travel: 32 bits, paged virtual memory, and virtual 8086 mode, so old real-mode software runs inside new protected environment.
 
-The 80286 of 1982 introduced protected mode. Once a program switched into it, the only way back to real mode was a reboot.
+**Integration and parallelism.** 486 of 1989 pulls first-level cache and maths coprocessor onto chip. Pentium of 1993 goes superscalar: two integer pipelines that can retire two instructions per cycle.
 
-The 80386 of 1985 was the big step. It brought 32-bit computing, paged virtual memory and virtual 8086 mode, which let old real-mode programs run inside the new protected environment.
+**Turning point.** Pentium Pro of 1995 introduces out-of-order execution and translates x86 instructions into internal micro-operations. From there x86 becomes interface, no longer real machine underneath.
 
-The 486 of 1989 put the first-level cache and the maths coprocessor on the same chip as the processor.
+**Frequency race and its end.** Pentium 4 of 2000 chases clock speed with very long pipeline and hits power wall. From 2006, with Core 2, direction shifts from frequency to core count.
 
-The Pentium of 1993 was superscalar. It had two integer pipelines and could finish two instructions per cycle.
+**64 bits.** In 2003 AMD extends architecture to 64 bits with AMD64, and Intel adopts same instruction set. First time dominant extension does not come from Intel.
 
-**The break (1995)**
+**Vectors.** Across generations vector extensions keep growing: MMX, SSE, AVX, AVX-512.
 
-The Pentium Pro of 1995 introduced out-of-order execution. It also translated x86 instructions into internal micro-operations. From then on, x86 was an interface, not the real machine underneath. That idea explains everything that followed.
-
-**Speed, 64-bit and cores (2000–2006)**
-
-The Pentium 4 of 2000 chased clock speed with a very long pipeline and hit the power wall: faster chips were using too much power.
-
-In 2003 AMD extended the architecture to 64-bit with AMD64, and Intel adopted the same instruction set. It was the first time the dominant extension to x86 did not come from Intel.
-
-From 2006, starting with the Core 2, the direction changed from higher clock speeds to more cores.
-
-Over the same generations, the vector extensions kept growing: MMX, then SSE, then AVX, then AVX-512.
-
-**Today**
-
-The complexity now sits in the layers below the instruction set: branch prediction, the cache hierarchy and speculative execution. In 2018, Spectre and Meltdown showed that speculative execution had carried a security cost nobody had priced.
+**Today.** Complexity now sits in layers below instruction set: branch prediction, cache hierarchy, speculative execution. Spectre and Meltdown in 2018 showed that speculative execution carried security cost nobody had priced.

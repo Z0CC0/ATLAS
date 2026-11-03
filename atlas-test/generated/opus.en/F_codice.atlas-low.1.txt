@@ -1,4 +1,4 @@
-Wrap function in closure that holds one timer, and reset that timer on every call:
+Wrap function in closure holding one timer; each call cancels previous timer and starts new one, so `fn` runs only after `ms` of silence.
 
 ```js
 function debounce(fn, ms) {
@@ -10,12 +10,14 @@ function debounce(fn, ms) {
 }
 ```
 
-`clearTimeout` has to run before every new `setTimeout`. Without it, timers pile up and function fires more than once.
+Three details matter.
 
-`t` must live in closure, not inside returned function. Otherwise every call gets its own timer and no debouncing happens.
+`clearTimeout(t)` must run before every new `setTimeout`. Otherwise timers pile up and function fires more than once.
 
-Arguments get forwarded with spread (`...args`). Without it, called function receives nothing.
+`t` lives in closure, not inside returned function. Declared inside, every call would get its own timer and no debouncing would happen.
 
-This version returns nothing. If return value matters, you need a Promise.
+`...args` forwards arguments. Without spread, called function receives nothing.
 
-If you want the opposite, running immediately and then ignoring calls for a period, you need throttle, which is a different function.
+This version returns nothing. If return value matters, you need Promise.
+
+For opposite behavior, running immediately and then ignoring calls for period, you want throttle, which is different function.

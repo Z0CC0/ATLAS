@@ -1,18 +1,14 @@
-La cache conserva la parte iniziale di una richiesta già elaborata, cioè il prefisso. Le richieste successive che iniziano allo stesso modo non ripagano per intero quel prefisso.
+**Cosa fa.** La cache conserva il prefisso di una richiesta già elaborato. Le richieste successive che iniziano allo stesso modo non ripagano quel prefisso per intero.
 
-**Come funziona**
-- Il riuso vale solo per il prefisso. Basta un carattere diverso all'inizio: da quel punto in poi non c'è più riuso.
-- Metti quindi prima le parti stabili e dopo quelle che cambiano. Mai il contrario.
-- Attenzione alle voci di sistema che cambiano a ogni turno, per esempio un orario. Una voce così annulla il riuso di tutto quello che viene dopo, anche se il resto è identico. Mettila in fondo o toglila.
+**Limite chiave: vale solo il prefisso.** Basta un carattere diverso all'inizio e da quel punto in poi non c'è più riuso. Quindi:
+- Metti prima le parti stabili e dopo quelle che cambiano, mai il contrario.
+- Non mettere in testa una voce di sistema che cambia a ogni turno, come un orario. Quella voce annulla il riuso di tutto quello che viene dopo.
 
-**Costi**
-- Scrivere nella cache costa più di una lettura normale. Per questo la prima richiesta costa di più.
-- Il guadagno arriva dalla seconda richiesta in poi e cresce con il numero di turni.
+**Costi.** Scrivere nella cache costa più di una lettura normale, quindi la prima richiesta è più cara. Il guadagno arriva dalla seconda richiesta in avanti e cresce con il numero di turni.
 
-**Quando conviene**
-- Conviene nelle conversazioni lunghe con un contesto grande e stabile: istruzioni di sistema, documentazione allegata, definizioni degli strumenti. Paghi la scrittura una volta sola e rileggi molte volte.
+**Quando conviene:** conversazioni lunghe con un contesto grande e stabile, per esempio:
+- istruzioni di sistema
+- documentazione allegata
+- definizioni di strumenti
 
-**Quando non conviene**
-- Non conviene con richieste singole e diverse fra loro. Paghi la scrittura, più cara, e non rileggi mai niente.
-
-In pratica, conviene quando lo stesso inizio si ripete per molti turni e quello che cambia sta in fondo.
+**Quando non conviene:** richieste singole e diverse fra loro. Lì paghi la scrittura nella cache senza mai rileggerla.

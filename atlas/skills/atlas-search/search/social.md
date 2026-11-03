@@ -33,4 +33,4 @@ COVERAGE
 
 Do not name a private person unless the request is about them and they posted publicly in their own name. A handle does not need repeating to make the point.
 
-If the question needs a network the lines cannot reach, say what it would take in one line: the person's own browser, or a key of their own.
+If the question needs a network the lines cannot reach, say what it would take in one line: the person's own browser, or a key of their own. The disadvantages of each are in `connections.md`, beside this file.

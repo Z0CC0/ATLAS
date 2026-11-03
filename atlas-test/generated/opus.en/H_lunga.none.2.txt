@@ -1,23 +1,28 @@
-**Prompt caching** lets the model reuse work it has already done. When a request comes in, the system keeps the part it has already processed, which is the beginning of the request (the prefix). If a later request starts the same way, that part isn't paid for again. Only the new part at the end is.
+Prompt caching saves the part of a request the model has already processed, which is the **prefix**. When a later request starts with exactly the same content, that part is reused and you don't pay full price to process it again.
 
-**The match has to be exact, from the start.** Caching only works on the prefix. If one character differs near the start, nothing from that point on can be reused. It doesn't matter how much of the rest is the same.
+## Only the prefix is reused
 
-This decides how you should order a prompt. Stable parts go first and parts that change go last:
+Reuse runs from the start of the request and stops at the first difference. If one character changes near the beginning, nothing after that point can be reused, even if the rest is identical.
+
+So put the stable content first and the content that changes last:
 
 1. System instructions
 2. Tool definitions
 3. Attached documentation
-4. The conversation so far
-5. The new message
+4. The conversation and new user messages
 
-If you reverse that order, the changing part sits at the front and the cache never gets used.
+If you reverse that order, the changing content sits at the front and every request misses the cache.
 
-A common way to break it by accident is to put something at the top of the system prompt that changes every turn, like a clock or a timestamp. The prefix is then different on every request, so nothing after that line is ever reused. That includes all the stable content you placed carefully below it. Move values like that to the end, or leave them out.
+One easy mistake: a system line that changes on every turn, such as the current time, breaks reuse for everything after it. If you need something like that, put it after the stable block, not inside it.
 
-**What it costs.** Writing to the cache costs more than a normal read, so the first request is more expensive than it would be without caching. The savings start with the second request that reuses the prefix, and they grow with each turn after that.
+## What it costs
 
-**When it pays off:**
-- **Worth it:** long conversations with a large stable context, such as detailed system instructions, attached documentation or many tool definitions. You pay the write once and read it back on every turn.
-- **Not worth it:** single requests that are all different from each other. You pay the extra write cost each time and never read the cache back, so it ends up costing more than not caching.
+Writing to the cache costs more than a normal read, so the **first request is more expensive** than it would be without caching. The savings start on the **second request** and keep growing with each turn that reuses the same prefix.
 
-In short, caching works well when a large block of text stays the same at the front and is reused over many turns. It wastes money when nothing repeats.
+## When it pays off
+
+**It pays off for** long conversations with a large stable context, such as long system instructions, lots of attached documentation or many tool definitions. You pay the write once, then every later turn reuses it.
+
+**It doesn't pay off for** one-off requests that are all different from each other. You pay the higher cost to write the cache and never read it back, so caching makes those requests more expensive.
+
+As a rule of thumb, caching is worth it when a large part of your requests stays the same across many calls and comes before the parts that change.

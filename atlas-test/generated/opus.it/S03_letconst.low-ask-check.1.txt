@@ -1,16 +1,7 @@
 conoscenza interna
 
-Differenza sta nella riassegnazione: `let` la permette, `const` no.
+`let` permette di riassegnare la variabile, `const` invece no.
 
-`const` blocca solo il nome, non il valore. Oggetto dichiarato con `const` può quindi cambiare al suo interno:
+Però `const` blocca solo il nome, non il valore. Se dichiari un oggetto con `const`, puoi comunque modificarne il contenuto. Quello che non puoi fare è assegnare un altro valore allo stesso nome.
 
-```js
-const utente = { nome: "Anna" };
-utente.nome = "Luca";   // consentito: cambia il contenuto
-utente = {};            // errore: riassegnazione del nome
-
-let contatore = 0;
-contatore = 1;          // consentito
-```
-
-Entrambi hanno ambito di blocco, a differenza di `var`.
+Tutti e due valgono solo dentro il blocco in cui li dichiari, mentre `var` no.

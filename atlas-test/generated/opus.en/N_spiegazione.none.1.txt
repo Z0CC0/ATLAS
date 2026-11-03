@@ -1,32 +1,16 @@
-**Eventual consistency** describes what happens in a system that keeps several copies (replicas) of the same data. After a write, the replicas don't agree right away. If writes stop, they all reach the same state within a finite time.
+**Eventual consistency** describes what happens when your data lives on several replicas. After a write, the replicas don't all agree right away. If writes stop, they converge on the same value within a finite time. For a while, different replicas can give different answers to the same question.
 
-## How long "eventually" takes
+**Why systems accept it.** The alternative costs availability. A system that demands strong consistency has to refuse requests whenever its replicas can't talk to each other, because otherwise it might serve stale data. Eventual consistency keeps answering, accepting that some answers will briefly be out of date. That's why it isn't a defect to engineer away. It's a choice, and most systems that scale make it on purpose.
 
-Not long. Replicas in the same region usually converge in under a second. Across regions it rises to a few seconds.
+**When you'll notice it.** It mostly hurts someone who reads right after writing. A user posts a comment, reloads the page, and the comment isn't there. Their read went to a replica that hadn't caught up yet. The data isn't lost, but to the user it looks broken.
 
-## Why systems accept it
+**How long the window lasts.** Between replicas in the same region, convergence usually takes under a second. Across regions it rises to seconds. That's short, but it's long enough to catch the "post then reload" case.
 
-You're trading consistency against availability. A system that demands strong consistency has to refuse requests whenever its replicas can't talk to each other. A system that accepts eventual consistency keeps answering. It just answers from a replica that may be slightly behind.
+**The usual fix.** You don't need strong consistency everywhere to solve this. Route reads to the primary replica only for the session that just wrote. The person who posted the comment sees it immediately. Everyone else keeps reading from replicas, and it doesn't matter to them if they see it a second later.
 
-So eventual consistency isn't a defect to get rid of. It's a choice, and most systems that scale make it on purpose.
+**When it's genuinely not acceptable.** These cases are few and easy to recognise:
+- **Account balances:** two replicas can't each approve spending the same money.
+- **Seat availability:** you can't sell the same seat twice.
+- **Uniqueness of an identifier:** two users can't both claim the same username or ID.
 
-## Where you'll notice it
-
-It affects anyone who reads right after writing. For example, a user posts a comment, reloads the page, and the comment isn't there. The write worked, but the reload hit a replica that hasn't caught up yet. To the user it looks like the post failed.
-
-The usual fix is narrow. For the session that just wrote, send reads to the primary replica. Everyone else keeps reading from the other replicas. The person who posted sees their comment, and you haven't made the whole system strongly consistent to get there.
-
-## When it's unacceptable
-
-There are only a few cases, and they're easy to recognise:
-
-- **Account balances**: two reads that disagree can mean spending money that isn't there.
-- **Seat availability**: the same seat gets sold twice.
-- **Uniqueness of an identifier**: two records end up with the same ID.
-
-## Why you should care
-
-If you build or use anything that runs on more than one machine, you're probably already working with eventual consistency. In practice this means two things:
-
-- Design for the read-after-write case so users don't think their actions were lost.
-- Check whether any of your data is like balances, seats or unique IDs. That data needs strong consistency. Everything else can usually live with a second or two of disagreement.
+**Why you should care:** For most of your data, eventual consistency is the right trade, and fighting it costs you availability for nothing. Put your effort into two things: handle read-your-own-write with session-level reads from the primary, and pick out the few places, like money, inventory and unique IDs, that really need strong guarantees.

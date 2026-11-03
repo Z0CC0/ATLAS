@@ -1,3 +1,5 @@
+Avvolgi la funzione in una chiusura che azzera il timer a ogni chiamata:
+
 ```js
 function debounce(fn, ms) {
   let t;
@@ -8,13 +10,15 @@ function debounce(fn, ms) {
 }
 ```
 
-La funzione parte solo quando le chiamate si fermano per `ms` millisecondi. Tre punti da non sbagliare:
+Uso: `const onResize = debounce(() => console.log('fine resize'), 300);` poi `window.addEventListener('resize', onResize);`
 
-`clearTimeout` va chiamato prima di ogni nuovo `setTimeout`. Senza, i timer si accumulano e la funzione parte più volte.
+Perché funziona così:
 
-`t` deve stare nella chiusura, fuori dalla funzione restituita. Se la sposti dentro, ogni chiamata ha il suo timer e il debounce non avviene.
+`clearTimeout` va chiamato prima di ogni nuovo `setTimeout`, altrimenti i timer si accumulano e la funzione parte più volte.
 
-Gli argomenti vanno inoltrati con lo spread (`...args`). Senza, `fn` li riceve vuoti.
+`t` deve stare nella chiusura, non dentro la funzione restituita, altrimenti ogni chiamata avrebbe il proprio timer e il debounce non avverrebbe.
+
+Gli argomenti vanno inoltrati con lo spread (`...args`), altrimenti `fn` li riceve vuoti.
 
 Questa versione non restituisce niente. Se ti serve il valore di ritorno, devi usare una Promise.
 

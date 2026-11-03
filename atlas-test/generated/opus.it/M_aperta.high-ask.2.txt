@@ -1,12 +1,13 @@
-Prima dell'architettura, una domanda non tecnica: cosa deve poter fare il tuo team fra un anno che oggi non può? Da lì dipende tutto il resto.
+Prima dell'architettura, una domanda: cosa deve poter fare il team fra un anno che oggi non può? La domanda decisiva è questa, e non è tecnica.
 
-Poi due dati sul monolite:
+Poi due dati dal monolite.
 
-1. Quali parti cambiano davvero. Spezzare le parti stabili non ti fa guadagnare nulla.
-2. Dove passano i confini delle transazioni. Una transazione divisa fra due servizi diventa un problema distribuito.
+**Quali parti cambiano davvero.** Le parti stabili non guadagnano nulla a essere spezzate.
 
-Sul come migrare: evita la riscrittura completa in parallelo, perché fallisce quasi sempre. Il vecchio sistema continua a cambiare e la copia non lo raggiunge mai. Conviene lo strangolamento progressivo: metti un router davanti e sposti un pezzo alla volta. Il vecchio resta la fonte autorevole finché il nuovo non è verificato.
+**Dove stanno i confini delle transazioni.** Se una transazione attraversa due servizi, diventa un problema distribuito.
 
-I microservizi costano di più da gestire: ogni servizio vuole il suo rilascio, monitoraggio, log, allarmi e una persona che se ne occupa. Se siete meno di cinque sviluppatori, questo costo quasi sempre supera il beneficio.
+Su come migrare: evita la riscrittura completa in parallelo. Fallisce quasi sempre, perché il vecchio sistema continua a cambiare e la copia non lo raggiunge mai. Meglio lo strangolamento progressivo: un router davanti, un pezzo spostato alla volta, e il vecchio resta autorevole finché il nuovo non è verificato.
 
-C'è un'opzione di cui si parla poco, il **monolite modulare**: confini interni netti e un solo rilascio. Il giorno in cui serve davvero, puoi estrarre un modulo come servizio a parte.
+Sui microservizi, conta il costo operativo. Ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupi. Sotto i cinque sviluppatori quel costo supera quasi sempre il beneficio.
+
+C'è un'opzione poco citata: il monolite modulare. Confini interni netti, un solo rilascio, e puoi estrarre un modulo il giorno che serve davvero.

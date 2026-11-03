@@ -1,16 +1,16 @@
-HTTPS: HTTP dentro canale cifrato TLS.
+HTTPS: HTTP dentro canale cifrato da TLS.
 
-Come parte connessione:
+Come nasce il canale:
 
 1. Client apre connessione, dichiara versioni TLS e cifrari supportati.
 
 2. Server sceglie cifrario e versione, manda proprio certificato.
 
-3. Client verifica firma del certificato, risalendo catena fino a radice già in memoria.
+3. Client verifica firma del certificato risalendo catena fino a radice già in memoria.
 
 4. Client e server concordano chiave di sessione, oggi tipicamente con scambio Diffie-Hellman su curve ellittiche.
 
-5. Da lì traffico cifrato e autenticato: chi sta in mezzo non può leggerlo né modificarlo.
+5. Da qui traffico cifrato e autenticato: chi sta in mezzo non può né leggerlo né modificarlo.
 
 Certificato: lega nome di dominio a chiave pubblica, firmato da autorità di certificazione.
 

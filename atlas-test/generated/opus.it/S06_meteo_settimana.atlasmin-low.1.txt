@@ -1,17 +1,19 @@
-Settimana variabile a New York: fine settimana più caldo, pioggia mercoledì e domenica.
+Settimana variabile a New York: piogge mercoledì e domenica, fine settimana più caldo.
 
-Lunedì: sereno, 24 gradi, minima 17.
+Lunedì: sereno, 24°, minima 17°
 
-Martedì: nuvoloso, 22 gradi, minima 16, pioggia debole in serata.
+Martedì: nuvoloso, 22°, minima 16°, pioggia debole in serata
 
-Mercoledì: pioggia per gran parte del giorno, 19 gradi, minima 15.
+Mercoledì: pioggia per gran parte del giorno, 19°, minima 15°
 
-Giovedì: schiarite, 21 gradi, minima 14.
+Giovedì: schiarite, 21°, minima 14°
 
-Venerdì: sereno, 25 gradi, minima 16.
+Venerdì: sereno, 25°, minima 16°
 
-Sabato: sereno e caldo, 28 gradi, minima 19.
+Sabato: sereno e caldo, 28°, minima 19°
 
-Domenica: temporali nel pomeriggio, 26 gradi, minima 18.
+Domenica: temporali nel pomeriggio, 26°, minima 18°
 
-Ombrello utile soprattutto mercoledì e domenica pomeriggio. Dati presi dal web.
+Ombrello utile soprattutto mercoledì e domenica pomeriggio. Martedì sera basta qualcosa per la pioggia debole.
+
+Dati presi dal web.

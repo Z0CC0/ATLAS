@@ -1,27 +1,27 @@
 internal knowledge
 
-Don't change the type in place. Add a new integer column next to the old one, move the data over gradually, and drop the old column only at the end.
+Don't run `ALTER TABLE ... ALTER COLUMN ... TYPE integer` directly. It rewrites the whole table while holding an ACCESS EXCLUSIVE lock, so the service is down for the entire rewrite. Do the change in these steps instead, in this order:
 
-A direct `ALTER TABLE ALTER COLUMN TYPE` rewrites the whole table while holding an ACCESS EXCLUSIVE lock. On ten million rows, that means the service is down for as long as the rewrite takes.
-
-Do it in this order:
-
-1. Check that every existing value can be converted. Count the rows where the value is not all digits. If that count isn't zero, deal with those rows before going further.
+1. Check that every existing value can be converted. Count the rows that are not all digits, for example:
+   ```sql
+   SELECT count(*) FROM t WHERE colonna !~ '^[0-9]+$';
+   ```
+   If the count isn't zero, fix those rows before going on.
 
 2. Add the new column:
-```sql
-ALTER TABLE t ADD COLUMN colonna_int integer;
-```
+   ```sql
+   ALTER TABLE t ADD COLUMN colonna_int integer;
+   ```
 
-3. Fill it in batches of ten thousand rows, so no long lock is held on the table.
+3. Fill `colonna_int` in batches of 10,000 rows, so no long lock is held on the table.
 
-4. Add a trigger that keeps the two columns in step while the migration runs. That way, writes that happen during and after the backfill also reach `colonna_int`.
+4. Add a trigger that keeps `colonna` and `colonna_int` in step while the migration runs, so rows written during the backfill stay consistent.
 
-5. Change the code to read from the new column, and ship it.
+5. Change the application code to read from `colonna_int`, and ship it.
 
-6. Only then, drop the old column:
-```sql
-ALTER TABLE t DROP COLUMN colonna;
-```
+6. Only after that, drop the old column:
+   ```sql
+   ALTER TABLE t DROP COLUMN colonna;
+   ```
 
-**Step 6 can't be undone.** Once the column is dropped, the data comes back only with a restore from backup. Don't run it until the code reading `colonna_int` is live and working.
+**Step 6 can't be undone.** Once the column is dropped, its data only comes back by restoring from backup. Don't run it until the code reading `colonna_int` has shipped.

@@ -1,0 +1,23 @@
+**x86 dal 1978 a oggi**
+
+**Le origini (1978–1985).** Tutto parte un po' prima degli anni ottanta, con l'8086 del 1978. È un processore a 16 bit nato come evoluzione dell'8080. Il codice sorgente scritto per l'8080 si poteva portare sull'8086, quindi la compatibilità era a livello di sorgente. Questo legame col passato segna tutta la storia successiva.
+
+L'80286 del 1982 introduce la modalità protetta. Ha però un limite pesante: una volta entrati in modalità protetta, non si torna a quella reale senza riavviare.
+
+L'80386 del 1985 è il vero salto. Porta i 32 bit, la memoria virtuale paginata e la modalità virtuale 8086, con cui il vecchio software reale gira dentro l'ambiente protetto.
+
+**Integrazione e parallelismo (1989–1995).** Il 486 del 1989 porta dentro il chip la cache di primo livello e il coprocessore matematico, che prima erano esterni.
+
+Il Pentium del 1993 è superscalare. Ha due pipeline intere e può ritirare due istruzioni per ciclo.
+
+Il Pentium Pro del 1995 è la svolta concettuale. Introduce l'esecuzione fuori ordine e traduce le istruzioni x86 in micro-operazioni interne. Da qui x86 diventa un'interfaccia: la macchina reale che esegue il codice è un'altra cosa, nascosta sotto.
+
+**La corsa alla frequenza e il suo limite (2000–2006).** Il Pentium 4 del 2000 punta tutto sulla frequenza, con una pipeline lunghissima. Finisce per sbattere contro il muro del consumo.
+
+Nel 2003 AMD estende l'architettura a 64 bit con AMD64, e Intel adotta lo stesso insieme di istruzioni. È la prima volta che l'estensione dominante di x86 non viene da Intel.
+
+Dal 2006, con il Core 2, la direzione cambia: non si cerca più la frequenza, si aumenta il numero di nuclei.
+
+**Vettori.** Lungo tutto questo percorso le estensioni vettoriali crescono per generazioni: MMX, poi SSE, poi AVX, fino ad AVX-512.
+
+**Oggi.** La complessità non sta più nell'insieme di istruzioni ma negli strati sotto: predizione dei salti, gerarchia di cache, esecuzione speculativa. Proprio lì è emerso il problema più serio degli ultimi anni. Nel 2018 Spectre e Meltdown hanno mostrato che l'esecuzione speculativa aveva un costo di sicurezza che nessuno aveva mai considerato.

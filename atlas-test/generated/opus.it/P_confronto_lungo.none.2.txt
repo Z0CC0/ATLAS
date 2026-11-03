@@ -1,20 +1,26 @@
-Con un migliaio di richieste al minuto non devi scegliere una sola delle tre opzioni. Scrivi i log su file locali e metti accanto un raccoglitore che li spedisce altrove. In questo modo l'applicazione non aspetta mai che un log venga scritto.
+Con un migliaio di richieste al minuto ti consiglio **file locali più un raccoglitore che li spedisce altrove**. L'applicazione scrive su disco e non aspetta mai che il log arrivi a destinazione. Invio, indicizzazione e conservazione li gestisce il raccoglitore, separato dall'API.
 
-Qualunque soluzione tu scelga, la scrittura del log non deve stare nel percorso critico della richiesta. Le tre opzioni sono queste:
+Ecco perché nessuna delle tre opzioni va bene da sola.
 
 **Solo file**
-Non costano niente e non aggiungono dipendenze, ma hanno dei limiti:
-- per cercare hai solo grep;
-- la rotazione la devi configurare a mano, altrimenti il disco si riempie;
-- se hai più macchine non puoi cercare su tutte insieme e devi collegarti a ognuna.
+- Non costa niente e non dipende da nulla.
+- Per cercare hai solo `grep`.
+- La rotazione devi configurarla a mano, altrimenti il disco si riempie.
+- Se hai più macchine non puoi cercare su tutte insieme: devi collegarti a ognuna.
 
 **Servizio gestito**
-Hai ricerca immediata, allarmi e conservazione automatica, ma:
-- paghi in base al volume, e a mille richieste al minuto il volume cresce in fretta;
-- i log escono dalla tua infrastruttura, quindi devi togliere i dati personali prima di spedirli.
+- La ricerca è immediata, hai gli allarmi e la conservazione è automatica.
+- Si paga a volume, e a mille richieste al minuto il volume cresce in fretta. Tieni d'occhio la fattura.
+- I log escono dalla tua infrastruttura, quindi devi ripulirli dai dati personali prima che partano.
 
 **Database**
-La ricerca è comoda e la conosci già. Il problema nasce se usi lo stesso database dell'applicazione: il carico dei log e quello delle richieste sono molto diversi e si fanno concorrenza. Sotto carico i log occupano cache e connessioni che servivano alle richieste vere.
+- La ricerca è comoda e la conosci già.
+- Se scrivi i log nello stesso database dell'applicazione, metti in competizione due carichi molto diversi.
+- Sotto carico, i log occupano cache e connessioni che servivano alle richieste vere. Rischi di rallentare l'API proprio quando c'è più traffico.
 
-**Perché file più raccoglitore**
-Tieni il vantaggio dei file: la scrittura locale costa poco e non blocca la richiesta. La ricerca su più macchine passa alla destinazione verso cui il raccoglitore spedisce, che può essere un servizio gestito o un sistema separato dal database dell'applicazione. Se la destinazione è un servizio gestito, valgono comunque due avvertenze: tieni d'occhio il volume, che determina il costo, e ripulisci i dati personali prima che i log escano.
+**Come metterlo in pratica**
+1. L'API scrive i log su file locali, con la rotazione configurata fin dal primo giorno.
+2. Un raccoglitore legge quei file e li spedisce a una destinazione centrale, che può essere un servizio gestito o uno storage tuo.
+3. Se la destinazione è esterna, i dati personali vanno tolti prima dell'invio. Se il volume diventa caro, puoi decidere cosa spedire e cosa tenere solo in locale.
+
+Qualunque soluzione scegli, oggi o in futuro, la regola resta la stessa: **la scrittura del log non deve stare nel percorso critico della richiesta**. Se una richiesta deve aspettare che il log venga scritto, il problema c'è anche con la tecnologia migliore.

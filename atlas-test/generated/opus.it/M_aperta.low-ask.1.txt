@@ -1,9 +1,9 @@
-Prima di scegliere l'architettura chiediti cosa deve poter fare il team fra un anno che oggi non può. È la domanda decisiva, e non è tecnica.
+Prima dell'architettura conviene chiarire cosa deve poter fare il team fra un anno che oggi non può. Questa domanda decide più di qualsiasi scelta tecnica.
 
-Poi servono due dati sul monolite. Il primo: quali parti cambiano davvero. Le parti stabili non guadagnano nulla dall'essere spezzate. Il secondo: dove stanno i confini delle transazioni. Una transazione che attraversa due servizi diventa un problema distribuito.
+Poi due dati sul monolite attuale. Primo: quali parti cambiano davvero. Le parti stabili non guadagnano nulla dall'essere spezzate, quindi lasciale dove sono. Secondo: dove stanno i confini delle transazioni. Una transazione divisa fra due servizi diventa un problema distribuito, quindi i tagli vanno lungo quei confini, non attraverso.
 
-Evita la riscrittura completa in parallelo al vecchio sistema. Fallisce quasi sempre, perché il vecchio continua a cambiare e la copia non lo raggiunge mai. L'alternativa è lo strangolamento progressivo: metti un router davanti e sposti un pezzo per volta. Il vecchio resta autorevole finché il nuovo non è verificato.
+Sul metodo, evita la riscrittura completa in parallelo. Fallisce quasi sempre, perché il vecchio sistema continua a cambiare e la copia non lo raggiunge mai. Funziona meglio lo strangolamento progressivo. Metti un router davanti, sposti un pezzo per volta e lasci che il vecchio resti autorevole finché il nuovo non è verificato.
 
-Valuta anche il costo operativo, che nei microservizi è più alto. Ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupi. Sotto i cinque sviluppatori quel costo supera quasi sempre il beneficio.
+Sui microservizi, fai i conti con il costo operativo. Ogni servizio richiede rilascio, monitoraggio, log, allarmi e una persona che se ne occupi. Se il team ha meno di cinque sviluppatori, quel costo supera quasi sempre il beneficio.
 
-C'è poi un'opzione poco citata: il **monolite modulare**. Ha confini interni netti e un solo rilascio, e ti permette di estrarre un modulo il giorno in cui serve davvero.
+C'è anche un'opzione di cui si parla poco: il monolite modulare. Ha confini interni netti, un solo rilascio, e ti lascia estrarre un modulo come servizio il giorno in cui serve davvero. Se il team è piccolo, o se non sai ancora quali parti cambieranno, di solito è il punto di partenza più sensato.

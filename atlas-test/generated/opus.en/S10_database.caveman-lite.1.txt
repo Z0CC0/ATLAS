@@ -1,29 +1,24 @@
-**Start with Postgres alone.** Add Elasticsearch or ClickHouse later, and only when a specific workload shows the need in measured numbers.
+**Recommendation:** Start with Postgres alone. Add Elasticsearch or ClickHouse later, and only when a specific workload proves it needs one with real numbers.
 
-## Why Postgres first
+**Why Postgres is the base**
 
-Postgres covers all four of your workloads acceptably. It is not outstanding at any of them. Orders decide the choice: they need real transactions, and Postgres gives you real transactions.
+Postgres handles all four of your workloads acceptably. It isn't outstanding at any of them. It gives you real transactions, and on orders you can't do without those. That one requirement rules out most of the alternatives as your main store.
 
-- **Orders:** strong. It has full transactions.
-- **Catalogue:** acceptable.
-- **Text search:** built in. It is good enough below a million documents and weak above that.
-- **Analytics:** fine up to tens of millions of rows. Above that, scans get slow.
+**Option by option**
 
-## The alternatives
+- **Postgres:** Its built-in text search is good enough below about a million documents and weak above that. Analytics run fine up to tens of millions of rows, and after that the scans get slow.
+- **MySQL:** It's equivalent to Postgres on orders. It's weaker on data types and complex queries, so it offers no advantage here.
+- **MongoDB:** Variable schemas make the catalogue easier. However, multi-document transactions arrived late and are costly, which is a bad fit for orders.
+- **Elasticsearch:** It's far better at text search, with better relevance, synonyms and typo tolerance. It isn't an authoritative store, so it can't replace your main database. Another database has to feed it.
+- **ClickHouse:** It's far better at analytics, because its columnar scans are orders of magnitude faster. It's not suitable for orders, because point updates are its weak spot.
 
-- **MySQL:** equivalent to Postgres on orders. It is weaker on data types and complex queries, so it gives you no advantage here.
-- **MongoDB:** variable schemas make the catalogue easier. Multi-document transactions arrived late and are expensive, and orders depend on transactions. That makes MongoDB a poor fit for your main store.
-- **Elasticsearch:** far better at text search, with better relevance, synonyms and typo tolerance. It is not an authoritative store. It must be fed from another database and cannot replace that database.
-- **ClickHouse:** far better at analytics. Its columnar scans are orders of magnitude faster. It is not suitable for orders because point updates are its weak spot.
+**Where this usually ends up**
 
-## Where this usually ends up
+The common mature setup is Postgres as the authoritative store, with Elasticsearch and ClickHouse fed from it. Don't build that on day one. Each system you add brings two problems: keeping it in sync and keeping its data aligned with Postgres. The real cost isn't the licence. It's the time your people spend keeping each system running.
 
-The usual mature setup is Postgres as the authoritative store, with Elasticsearch and ClickHouse fed from it. You do not need to build that on day one.
+**When to add each one**
 
-Each system you add creates two problems: keeping it in sync and keeping its data aligned with Postgres. The real cost is not the licence. It is the time your people spend keeping each extra system running.
+- **Elasticsearch:** Add it when search quality or catalogue size outgrows Postgres. Below a million documents, adding it is almost always premature.
+- **ClickHouse:** Add it when your analytics pass tens of millions of rows and you can measure the scans getting slow.
 
-## When to add each one
-
-- **Elasticsearch:** add it when the catalogue grows past about a million documents, or when you measure that search quality is not good enough. Below a million documents it is almost always premature.
-- **ClickHouse:** add it when analytics grows past tens of millions of rows and you measure that scans have become too slow.
-- **Neither:** stay on Postgres alone until one of those limits is real and measured.
+If you need to share this comparison with your team, I can turn it into a page.

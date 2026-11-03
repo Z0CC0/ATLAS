@@ -1,15 +1,15 @@
-Bitcoin came from cypherpunk circles. Earlier designs such as b-money and bit gold tried to create digital money. None of them solved how to agree on the order of transactions.
+Bitcoin grew out of the cypherpunk scene. Earlier designs such as b-money and bit gold tried to build digital cash. None solved ordering: deciding which transaction came first without someone in charge.
 
-In 2008 a paper appeared: *Bitcoin: A Peer-to-Peer Electronic Cash System*. It was signed Satoshi Nakamoto, a pseudonym. Nobody has ever found out who used it.
+**Paper (2008).** Paper appears titled *Bitcoin: A Peer-to-Peer Electronic Cash System*. Signed Satoshi Nakamoto, a pseudonym. Real author never identified.
 
-The paper tackled double spending. Digital money is only data, so the same coin could be spent twice. Normally a central body keeps the ledger and blocks this. Bitcoin removed that central body.
+**Problem.** Double spending. Digital money is easy to copy, so the same coin could be spent twice. Usual fix is a central body keeping the ledger. Paper wants no such body.
 
-Its answer was a chain of blocks, put in order by proof of work. Each block costs real computing effort to make. To change an old block, an attacker must redo the work for that block and for every block after it. So rewriting history is very expensive, and the ledger stays trustworthy without anyone in charge.
+**Solution.** Chain of blocks, ordered by proof of work. Each block needs costly computation. Rewriting a past block means redoing proof of work for that block and every later block. So the past gets more expensive to change as the chain grows.
 
-The first block was created on 3 January 2009. It contains a Times headline about a bank bailout. The headline does two jobs. It proves the block was not made before that date. It also states the project's purpose: money that does not depend on banks.
+**Genesis block (3 January 2009).** First block contains the headline of a Times article about a bank bailout. That reference does two jobs. It is a timestamp: block cannot predate that headline. It is also a statement of intent: money outside the bank-bailout system.
 
-The supply rules were fixed from the start. The block reward began at 50 bitcoin. It halves every 210,000 blocks, which is about every four years. So the total supply approaches 21 million and never goes higher.
+**Issuance rules.** Block reward starts at 50 bitcoin. Reward halves every 210,000 blocks, roughly every four years. Total issued tends toward 21 million and no further.
 
-In 2010 came the first documented purchase: two pizzas, paid for with 10,000 bitcoin.
+**First real use (2010).** First documented commercial transaction: two pizzas, paid with 10,000 bitcoin.
 
-In 2011 Satoshi stopped taking part in public. Satoshi's bitcoin have never moved since.
+**Creator exits (2011).** Satoshi stops public participation. Satoshi's bitcoin have never been moved.

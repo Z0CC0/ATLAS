@@ -1,11 +1,11 @@
-**Local files plus a collector that ships them elsewhere.** At a thousand requests a minute, that keeps the application from ever waiting on a log write.
+Local files plus a collector that ships them elsewhere. At a thousand requests a minute, that's the sensible setup, because the application never waits on a log write.
 
-Rule that always holds: writing the log must not sit in the request's critical path.
+Whatever you pick, writing the log must not sit in the critical path of the request.
 
-Why not one option on its own:
+**Files alone** cost nothing and add no dependency. The downsides: searching means grep, and you have to set up rotation by hand or the disk fills. There's also no way to search across several machines; you'd have to connect to each one.
 
-**Files alone** cost nothing and add no dependency. But searching means grep, and you have to set up rotation by hand or the disk fills. You also can't search across several machines; you have to connect to each one.
+**A managed service** gives instant search, alerts and automatic retention. But you pay by volume, and at your traffic the volume grows fast. The logs also leave your infrastructure, so you have to strip personal data before they go.
 
-**Managed service** gives instant search, alerts and automatic retention. But you pay by volume, and at your rate the volume grows fast. The logs also leave your own infrastructure, so you have to strip personal data before they go.
+**A database** makes searching familiar and convenient. But if you write logs into the application's own database, two very different workloads compete with each other. Under load, the logs fill caches and use up connections that the real requests needed.
 
-**Database** search is familiar and convenient. But writing logs into the application's own database makes two very different workloads compete. Under load, the logs fill caches and connections that the real requests needed.
+The collector setup gets you the low cost of files without grep on every machine. Where it ships the logs is up to you: a managed service, as long as you strip personal data first, or a separate store.

@@ -1,13 +1,14 @@
-Per un progetto piccolo scegli **Postgres**. Passa a Redis solo quando il volume lo richiede davvero.
+Per un progetto piccolo ti conviene **Postgres**. Passa a Redis solo quando il volume lo richiede davvero.
 
-**Perché Postgres:**
-- **Ti basta.** Con `SELECT ... FOR UPDATE SKIP LOCKED` regge fino a circa mille lavori al minuto.
-- **Lavoro e dati restano coerenti.** Il lavoro viene inserito nella stessa transazione dei dati. Non può quindi succedere che il lavoro parta mentre la scrittura viene annullata.
-- **La persistenza è già inclusa.** Se il processo muore, la coda è ancora lì.
+**Perché Postgres va bene adesso**
+- **Regge il carico che ti serve.** Con `SELECT ... FOR UPDATE SKIP LOCKED` più worker possono prendere lavori dalla stessa tabella senza pestarsi i piedi. Funziona bene fino a circa mille lavori al minuto, e per un progetto piccolo è un margine ampio.
+- **Il lavoro è coerente con i dati.** Il lavoro viene inserito nella stessa transazione della scrittura che lo genera. Se la transazione viene annullata, sparisce anche il lavoro. Non può succedere che un lavoro parta per una scrittura che in realtà non è mai avvenuta.
+- **La persistenza ce l'hai già.** Se il processo muore, la coda è ancora nel database e i worker riprendono da dove erano rimasti.
+- **Non aggiungi niente da gestire.** Usi il database che hai già.
 
-**Cosa ti darebbe Redis, e a che prezzo:**
+**Cosa ti darebbe Redis, e a che prezzo**
 - Regge molto più volume e ha una latenza più bassa, sotto il millisecondo.
-- È però un servizio in più da gestire, monitorare e aggiornare.
-- La persistenza devi configurarla tu: senza AOF attivo, un riavvio perde i lavori in coda.
+- Però è un servizio in più da gestire, monitorare e aggiornare.
+- La persistenza va configurata: senza AOF attivo, un riavvio fa perdere i lavori in coda.
 
-Finché resti sotto i mille lavori al minuto circa, Redis ti porta solo complessità in più.
+Quindi parti con Postgres. Quando ti avvicini stabilmente ai mille lavori al minuto, o ti serve una latenza che Postgres non riesce a darti, valuta Redis. A quel punto ricordati di attivare l'AOF.

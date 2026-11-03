@@ -1,9 +1,13 @@
-Bitcoin came from the cypherpunk scene. Earlier designs like b-money and bit gold had tried to create digital money but never solved ordering: deciding which transaction came first.
+Bitcoin came out of a 2008 paper, **Bitcoin: A Peer-to-Peer Electronic Cash System**, signed by Satoshi Nakamoto, a pseudonym never identified.
 
-In 2008 a paper titled *Bitcoin: A Peer-to-Peer Electronic Cash System* appeared, signed Satoshi Nakamoto. That was a pseudonym, and the person behind it has never been identified. The paper tackled double spending, meaning the same money spent twice, without a central body keeping the ledger. Its answer was a chain of blocks ordered by proof of work. Rewriting the past becomes expensive, because an attacker would have to redo the work for every block that came after.
+Roots in cypherpunk scene. Earlier attempts such as b-money and bit gold got close but never solved ordering: agreeing which transaction came first.
 
-The first block was generated on 3 January 2009. It contains the headline of a Times article about a bank bailout. That headline works as a timestamp and also as a statement of intent.
+Core problem the paper tackles: double spending, meaning the same money spent twice, without a central body keeping the ledger. Satoshi's answer: a chain of blocks ordered by proof of work. Each block costs computation, so rewriting the past gets expensive. Anyone changing an old block would have to redo the work for every later block too.
 
-Issuance was fixed from the start. The block reward began at 50 bitcoin and halves every 210,000 blocks, roughly every four years. Because of that, the total supply approaches 21 million and never goes past it.
+First block generated on 3 January 2009. It carries the headline of a Times article about a bank bailout. That reference works both as a timestamp and as a statement of intent.
 
-The first documented commercial transaction came in 2010, when someone paid 10,000 bitcoin for two pizzas. In 2011 Satoshi stopped taking part publicly, and Satoshi's bitcoin have never been moved.
+Issuance fixed from start. Block reward begins at 50 bitcoin and halves every 210,000 blocks, roughly every four years. Total supply therefore tends toward 21 million and never goes beyond.
+
+First documented commercial transaction came in 2010: two pizzas paid for with 10,000 bitcoin.
+
+In 2011 Satoshi stopped taking part publicly. Their bitcoin have never been moved.

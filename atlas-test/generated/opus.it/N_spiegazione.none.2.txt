@@ -1,31 +1,29 @@
-**Consistenza eventuale** significa che, dopo una scrittura, le copie dei dati (le repliche) non sono subito d'accordo tra loro. Se poi le scritture si fermano, arrivano a coincidere entro un tempo finito. Per un momento, quindi, repliche diverse possono darti risposte diverse, ma alla fine si allineano.
+La consistenza eventuale descrive come si comporta un sistema che tiene più copie (repliche) degli stessi dati. Quando scrivi qualcosa, le repliche non sono d'accordo subito: per un po' alcune hanno il dato nuovo e altre quello vecchio. Se le scritture si fermano, però, tutte arrivano allo stesso stato entro un tempo finito.
 
 ## Perché esiste
 
-È un compromesso con la disponibilità. Un sistema che pretende consistenza forte deve rifiutare le richieste quando le repliche non riescono a parlarsi, perché non può garantire che tutte vedano lo stesso dato. Chi accetta la consistenza eventuale continua invece a rispondere, anche se per un po' qualche risposta non è aggiornata.
+È un compromesso con la disponibilità. Se le repliche smettono di comunicare tra loro, un sistema che pretende la consistenza forte deve rifiutare le richieste, perché non può garantire di darti il dato aggiornato. Un sistema a consistenza eventuale invece continua a rispondere e accetta che, per un breve periodo, le risposte possano essere diverse.
 
-Per questo non va trattata come un difetto da eliminare. È una scelta, e la maggior parte dei sistemi che scalano la fa apposta.
+Per questo non va considerata un difetto da eliminare. È una scelta, e la maggior parte dei sistemi che scalano la fa di proposito.
 
-## Dove te ne accorgi
+## Quando ti accorgi del problema
 
-Il caso tipico riguarda chi legge subito dopo aver scritto. Un utente pubblica un commento, ricarica la pagina e il commento non c'è. La scrittura è andata a buon fine, ma la lettura è arrivata a una replica che non l'ha ancora ricevuta. Per l'utente sembra un errore.
+Succede soprattutto a chi legge subito dopo aver scritto. Un utente pubblica un commento, ricarica la pagina e il commento non c'è. La scrittura è riuscita, ma la lettura è andata a una replica che non l'aveva ancora ricevuta. Per l'utente sembra che il sistema abbia perso il dato.
 
-Di solito si risolve così: la sessione che ha appena scritto legge dalla replica primaria. Tutti gli altri continuano a leggere dalle repliche normali. Chi ha scritto vede subito la propria modifica, e il resto del traffico mantiene i vantaggi delle repliche.
+Quanto dura questa finestra? Tra repliche nella stessa regione di solito resta sotto il secondo. Tra regioni diverse arriva a qualche secondo.
 
-## Quanto dura il disallineamento
+## Come si risolve di solito
 
-Tra repliche nella stessa regione di solito si allineano in meno di un secondo. Tra regioni diverse si sale a qualche secondo. Nella maggior parte dei casi è una finestra breve, ma abbastanza lunga da causare il problema del commento che "sparisce".
+La soluzione comune è mandare le letture alla replica primaria, ma solo per la sessione che ha appena scritto. Chi ha pubblicato il commento lo vede subito. Tutti gli altri continuano a leggere dalle repliche e possono vederlo con un po' di ritardo senza accorgersene. In questo modo il carico resta distribuito e il caso che dà fastidio è coperto.
 
 ## Quando non va bene
 
-I casi in cui non è accettabile sono pochi e facili da riconoscere:
+I casi in cui la consistenza eventuale non è accettabile sono pochi e facili da riconoscere:
 
-- **saldi di conto**
-- **disponibilità di posti**
-- **unicità di un identificativo**
+- **i saldi di un conto**
+- **la disponibilità di posti** (per esempio quando due persone non devono prenotare lo stesso posto)
+- **l'unicità di un identificativo** (quando due utenti non devono poter prendere lo stesso nome)
 
-In questi casi una lettura non aggiornata può portare a una decisione sbagliata che non si può correggere dopo.
+## Perché ti riguarda
 
-## Perché dovrebbe interessarti
-
-Ti aiuta a capire dove serve davvero la consistenza forte e dove no. Nella maggior parte dei dati puoi accettare la consistenza eventuale e guadagnare in disponibilità e scalabilità. Nel caso di chi rilegge subito ciò che ha scritto basta la lettura dalla primaria per quella sessione. La garanzia forte ti serve solo per quei pochi casi dell'elenco sopra.
+Se progetti o usi un sistema con repliche, prima o poi i tuoi utenti vedranno dati vecchi per un momento. Ti conviene saperlo prima, così puoi coprire il caso "ho appena scritto e non lo vedo" e usare la consistenza forte solo dove serve davvero, invece di pagarne il costo in disponibilità ovunque.

@@ -1,22 +1,22 @@
-Conoscenza interna.
+*Conoscenza interna*
 
-Per un sito statico servono sei header, e uno va tolto.
+Per un sito statico ti bastano sei header. Il settimo, X-XSS-Protection, non va messo.
 
-**Strict-Transport-Security**: `max-age=31536000; includeSubDomains` (almeno 31536000 secondi). Obbliga il browser a usare HTTPS.
+Strict-Transport-Security con `max-age` di almeno 31536000 secondi e `includeSubDomains`, così il browser è obbligato a usare HTTPS.
 
-**Content-Security-Policy**: `default-src 'self'`. È l'header che blocca l'iniezione di script di terze parti.
+Content-Security-Policy con `default-src 'self'`: è l'header che blocca l'iniezione di script di terze parti.
 
-X-Content-Type-Options: `nosniff`. Impedisce al browser di indovinare il tipo di contenuto.
+X-Content-Type-Options impostato a `nosniff`, così il browser non prova a indovinare il tipo di contenuto.
 
-Referrer-Policy: `strict-origin-when-cross-origin`. Evita che il percorso completo arrivi ad altri siti.
+Referrer-Policy impostato a `strict-origin-when-cross-origin`, così il percorso completo delle tue pagine non viene inviato ad altri siti.
 
-X-Frame-Options: `DENY`. Protegge dal clickjacking. In alternativa puoi aggiungere `frame-ancestors 'none'` dentro la Content-Security-Policy.
+X-Frame-Options impostato a `DENY`, oppure `frame-ancestors 'none'` dentro la Content-Security-Policy, per difenderti dal clickjacking.
 
-Permissions-Policy: spegne camera, microfono e geolocalizzazione, se il sito non li usa.
+Permissions-Policy per disattivare camera, microfono e geolocalizzazione, se il sito non li usa.
 
-X-XSS-Protection non va messo. È deprecato e i browser moderni lo ignorano. Nelle versioni vecchie introduceva vulnerabilità.
+Non mettere **X-XSS-Protection**: è deprecato, i browser moderni lo ignorano e nelle versioni più vecchie introduceva vulnerabilità.
 
-Esempio completo:
+Esempio:
 
 ```
 Strict-Transport-Security: max-age=31536000; includeSubDomains

@@ -1,10 +1,21 @@
-For a static site, set these six headers:
+Static site still need these headers:
 
-- **`Strict-Transport-Security`**: set `max-age` to at least `31536000` seconds and add `includeSubDomains`. The browser then always uses HTTPS.
-- **`Content-Security-Policy`**: start with `default-src 'self'`. This blocks script injected from third-party sources.
-- **`X-Content-Type-Options: nosniff`**: the browser stops guessing the content type.
-- **`Referrer-Policy: strict-origin-when-cross-origin`**: other sites don't see the full path of your pages.
-- **Clickjacking protection**: use `X-Frame-Options: DENY`, or put `frame-ancestors 'none'` in the `Content-Security-Policy`.
-- **`Permissions-Policy`**: turn off camera, microphone and geolocation if the site doesn't use them.
+- **Strict-Transport-Security**: `max-age=31536000; includeSubDomains` or longer. Browser then use HTTPS only.
+- **Content-Security-Policy**: `default-src 'self'`. This header block third-party script injection.
+- **X-Content-Type-Options**: `nosniff`. Browser then not guess content type.
+- **Referrer-Policy**: `strict-origin-when-cross-origin`. Full path not leak to other sites.
+- **Clickjacking protection**: `X-Frame-Options: DENY`, or `frame-ancestors 'none'` inside CSP.
+- **Permissions-Policy**: switch off camera, microphone, geolocation if site not use them.
 
-Leave out **`X-XSS-Protection`**. It is deprecated and modern browsers ignore it. Older browser versions that did use it gained vulnerabilities from it.
+Do not set **X-XSS-Protection**. Header is deprecated. Modern browsers ignore it, and older versions introduced vulnerabilities.
+
+Example:
+
+```
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+Content-Security-Policy: default-src 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+X-Frame-Options: DENY
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+```

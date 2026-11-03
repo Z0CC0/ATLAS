@@ -1,4 +1,4 @@
-**Meteo a New York questa settimana: prendi l'ombrello per mercoledì e domenica.** Il weekend è la parte più calda.
+**Ombrello mercoledì e domenica pomeriggio. Il weekend è la parte più calda della settimana.**
 
 | Giorno | Cielo | Max | Min |
 |---|---|---|---|
@@ -10,8 +10,10 @@
 | Sabato | Sereno e caldo | 28° | 19° |
 | Domenica | Temporali nel pomeriggio | 26° | 18° |
 
-- **Pioggia che conta:** mercoledì, quasi tutto il giorno, e domenica pomeriggio con i temporali. Martedì sera piove solo un po'.
-- **Giorni migliori per stare fuori:** lunedì, venerdì e sabato, tutti sereni. Sabato è il giorno più caldo con 28°.
-- **Domenica:** se hai programmi all'aperto, fissali la mattina.
+- **Piogge significative:** mercoledì (quasi tutto il giorno) e domenica (temporali nel pomeriggio).
+- **Giorno più fresco:** mercoledì, 19°.
+- **Giorno più caldo:** sabato, 28°, ed è anche il migliore per stare all'aperto.
 
-Dati presi dal web.
+Le previsioni vengono dal web.
+
+Prossimo passo: se hai in programma attività all'aperto mercoledì o domenica pomeriggio, spostale a sabato.

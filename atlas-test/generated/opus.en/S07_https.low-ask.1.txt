@@ -1,17 +1,17 @@
-HTTPS: plain HTTP carried inside channel that TLS encrypts. Before any page data moves, client and server run handshake to set that channel up:
+HTTPS is ordinary HTTP carried inside a channel encrypted by TLS. Before any HTTP goes over the connection, the client and server run a TLS handshake:
 
-1. Client opens connection, lists TLS versions and ciphers it supports.
+1. The client opens the connection and says which TLS versions and ciphers it supports.
 
-2. Server picks one version and one cipher, sends back its certificate.
+2. The server picks a cipher and a version, and sends its certificate.
 
-3. Client checks certificate. Certificate binds domain name to public key, signed by certificate authority. Client verifies signature by walking chain of signers up to root certificate it already holds.
+3. The certificate binds a domain name to a public key and is signed by a certificate authority. The client checks that signature by walking the chain up to a root certificate it already holds.
 
-4. Client and server agree session key, today typically through elliptic curve Diffie-Hellman exchange.
+4. The client and server agree on a session key. Today this is usually done with an elliptic curve Diffie-Hellman exchange.
 
-From then on, all traffic encrypted and authenticated. Anyone in the middle can neither read it nor modify it.
+The session key is symmetric because asymmetric encryption costs too much to use on real traffic.
 
-Session key symmetric because asymmetric encryption costs too much for real traffic. Asymmetric cryptography only helps set the connection up. Symmetric key then carries the actual data.
+From then on, all traffic is encrypted and authenticated. Anyone in the middle can neither read it nor modify it.
 
-TLS 1.3 completes handshake in single round trip. TLS 1.2 needed two.
+TLS 1.3 completes the handshake in a single round trip. TLS 1.2 needs two.
 
-One common misreading: certificate says **nothing about who runs site**. It proves only that whoever controls that domain also controls that key.
+One limit is often misunderstood. The certificate says nothing about who runs the site. It only says that whoever controls that domain controls that key.

@@ -1,17 +1,27 @@
-Before choosing an architecture, find out which part of the monolith actually changes. Stable parts gain nothing from being split. Leave them alone.
+Before choosing an architecture, answer these questions in this order.
 
-Next, map where your transactions start and end. A transaction that ends up spanning two services becomes a distributed problem. So draw service lines around transactions, never through them.
+**1. Which part changes?**
+Map where change happens in the monolith. Only that part is worth restructuring. Stable parts gain nothing from being split, so leave them alone.
 
-**Don't rewrite everything alongside the old system.** A full parallel rewrite almost always fails. The old system keeps changing and the copy never catches up.
+**2. Where are your transaction boundaries?**
+Find which operations must commit together. A service boundary through a transaction turns it into a distributed problem. Draw boundaries around transactions, never through them.
 
-**Strangle it one piece at a time instead:**
-1. Put a router in front of the monolith.
-2. Move one piece to the new code.
-3. Keep the old system as the source of truth until the new piece is verified.
-4. Repeat with the next piece.
+**3. How will you migrate?**
+Skip the parallel full rewrite. It almost always fails, because the old system keeps changing and the copy never catches up. Strangle the old system progressively instead:
+- Put a router in front of the monolith.
+- Move one piece at a time behind the router.
+- Keep the old system authoritative until the new piece is verified.
 
-**Know what microservices cost to run.** Every service needs its own releases, monitoring, logs, alerts and a person who looks after it. With fewer than five developers, that cost almost always exceeds the benefit.
+**4. Can you afford microservices?**
+Each service needs releases, monitoring, logs, alerts, and one person who owns it. Below five developers, that operational cost almost always exceeds the benefit.
 
-**Consider a modular monolith.** Few people mention this option. You get sharp internal boundaries and a single release. You can still extract a module the day you genuinely need to.
+**5. Have you considered a modular monolith?**
+Few people mention it, but it often fits best:
+- sharp internal boundaries between modules
+- one release
+- you can extract a module into a service when you really need to, not before
 
-**The deciding question isn't technical.** Ask what your team must be able to do a year from now that it can't do today. Choose the architecture that makes that possible, and nothing bigger.
+**6. The deciding question is not technical.**
+Ask what your team must be able to do a year from now that it cannot do today. Pick the architecture that makes that possible, and nothing beyond it.
+
+If your team is small and the changing part is small, a modular monolith built by strangling the old system is probably the right start.

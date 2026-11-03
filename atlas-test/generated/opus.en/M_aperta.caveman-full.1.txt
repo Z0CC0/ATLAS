@@ -1,18 +1,23 @@
-Start from the problem you have, not from a target architecture.
+Before picking an architecture, answer one question: **what must your team be able to do a year from now that it cannot do today?** That question is not technical, and it decides everything below.
 
-**1. Find what actually changes.** Look at which parts of the monolith get touched often. Stable parts gain nothing from being split, so leave them where they are.
+**1. Map what changes.**
+Find which parts of the monolith change often. Stable parts gain nothing from being split, so leave them where they are. Put your effort only where change happens.
 
-**2. Map transaction boundaries.** A transaction that spans two services becomes a distributed problem. Draw each service boundary so that every transaction stays inside one service.
+**2. Map transaction boundaries.**
+Find where transactions start and end. A transaction that spans two services becomes a distributed problem. Draw your cuts so each transaction stays inside one unit.
 
-**3. Don't do a parallel full rewrite.** A full rewrite running beside the old system almost always fails. The old system keeps changing, so the copy never catches up.
+**3. Don't do a parallel full rewrite.**
+Rebuilding the whole thing next to the old system almost always fails. The old system keeps changing, and the copy never catches up.
 
-**4. Strangle it progressively instead:**
-1. Put a router in front of the monolith.
-2. Move one piece at a time behind the router.
-3. Keep the old system authoritative until you have verified the new piece.
+**4. Strangle it step by step instead.**
+- Put a router in front of the monolith.
+- Move one piece at a time behind the router.
+- Keep the old system authoritative until the new piece is verified.
 
-**5. Count the operations cost of microservices.** Every service needs its own releases, monitoring, logs, alerts and a person who looks after it. Below five developers, this cost almost always exceeds the benefit.
+**5. Count the operational cost of microservices.**
+Every service needs its own releases, monitoring, logs, alerts, and a person who looks after it. With fewer than five developers, that cost almost always exceeds the benefit.
 
-**6. Consider a modular monolith.** It is the option nobody mentions. You get sharp internal boundaries and one release. You can still extract a module on the day you genuinely need to.
+**6. Consider a modular monolith.**
+It's the option nobody mentions. You get sharp internal boundaries and one release. You can still extract a module the day you genuinely need to. For a small team it's often the right target. It also works well as the first step of the strangling approach.
 
-**7. The deciding question is not technical.** Ask what your team must be able to do a year from now that it cannot do today. Pick the architecture that makes that possible, and nothing bigger.
+**Suggested order:** first define your one-year goal. Then map where change happens and where transactions sit. Choose a modular monolith or services based on team size and goal. Migrate piece by piece behind the router, never as a big-bang rewrite.

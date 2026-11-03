@@ -1,15 +1,15 @@
-Prima della tecnica: cosa deve poter fare il tuo team fra un anno che oggi non può. Questa domanda decide l'architettura.
+**Prima di tutto: cosa deve poter fare il team fra un anno che oggi non può.** La domanda decisiva non è tecnica.
 
-Poi due dati da raccogliere.
+Poi due dati:
 
-Primo: quali parti del monolite cambiano davvero. Le parti stabili non guadagnano nulla dall'essere spezzate.
+1. Quali parti del monolite cambiano davvero. Spezzare parti stabili non porta nessun guadagno.
 
-Secondo: dove stanno i confini delle transazioni. Una transazione che attraversa due servizi diventa un problema distribuito.
+2. Dove stanno i confini delle transazioni. Una transazione che attraversa due servizi diventa un problema distribuito.
 
-Sul metodo, evita la riscrittura completa in parallelo al vecchio sistema: fallisce quasi sempre. Il vecchio continua a cambiare e la copia non lo raggiunge mai.
+Evita una riscrittura completa in parallelo al vecchio sistema: fallisce quasi sempre, perché il vecchio continua a cambiare e la copia non lo raggiunge mai.
 
-Meglio lo strangolamento progressivo. Metti un router davanti al monolite e sposti un pezzo per volta. Il vecchio resta autorevole finché il nuovo non è verificato.
+Usa invece lo strangolamento progressivo: metti un router davanti e sposta un pezzo per volta. Il vecchio resta autorevole finché il nuovo non è verificato.
 
-Sulla forma, considera il costo operativo dei microservizi. Ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupa. Sotto i cinque sviluppatori quel costo supera quasi sempre il beneficio.
+I microservizi costano di più in operatività: ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupi. Sotto i cinque sviluppatori quel costo supera quasi sempre il beneficio.
 
-C'è anche un'opzione di cui si parla poco: il **monolite modulare**. Ha confini interni netti e un solo rilascio. Ti lascia estrarre un modulo il giorno in cui serve davvero.
+**Valuta il monolite modulare**, l'opzione poco citata: confini interni netti, un solo rilascio, e puoi estrarre un modulo il giorno che serve davvero.

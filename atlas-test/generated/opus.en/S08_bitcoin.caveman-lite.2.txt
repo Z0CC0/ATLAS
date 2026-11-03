@@ -1,15 +1,11 @@
-Bitcoin grew out of the cypherpunk scene. The people there had wanted digital money for years. Earlier designs such as b-money and bit gold got close, but none of them solved one problem: how to agree on the order of transactions.
+Bitcoin came out of the cypherpunk scene. People there had tried for years to build digital money. Earlier designs such as b-money and bit gold got part of the way, but none of them solved ordering: how to agree on which transaction came first.
 
-**The problem.** Digital money is easy to copy, so the same coin can be spent twice. The usual fix is a central body that keeps the ledger and decides which payment came first. Bitcoin set out to prevent this double spending without any such central body.
+In 2008 a paper titled *Bitcoin: A Peer-to-Peer Electronic Cash System* appeared under the name Satoshi Nakamoto. The name is a pseudonym, and the person behind it has never been identified. The paper deals with double spending, which means spending the same digital coin twice, and it does this without a central body keeping the ledger.
 
-**The paper.** In 2008 a paper appeared, signed Satoshi Nakamoto. The paper was titled *Bitcoin: A Peer-to-Peer Electronic Cash System*. The name is a pseudonym, and nobody has ever identified who used it.
+Its solution is a chain of blocks ordered by proof of work. Each block requires computational work, and each new block builds on the ones before it. To rewrite a past transaction, an attacker would have to redo the proof of work for that block and for every block after it. That cost is what protects the history.
 
-**The solution.** Transactions are grouped into blocks, and each block links to the one before it, forming a chain. A proof of work fixes the order of the blocks. Each block costs computing effort to produce. If someone wanted to rewrite a past block, they would have to redo the work for that block and for every block after it. That makes changing history expensive, so the order holds without anyone in charge.
+The first block was generated on 3 January 2009. It contains the headline of a Times article about a bank bailout. The headline proves the block was not created before that date, so it works as a timestamp. It also states what the project was for: money that does not depend on banks being rescued.
 
-**The first block.** The network started on 3 January 2009 with its first block. That block contains the headline of a Times article about a bank bailout. The headline proves the block was not created before that date. It also states the project's intent: money that does not depend on banks and bailouts.
+The issuance rules were fixed from the start. Each block originally paid a reward of 50 bitcoin. That reward halves every 210,000 blocks, which is roughly every four years. Because of the halvings, the total supply approaches 21 million bitcoin and will never go beyond it.
 
-**The supply.** New bitcoin enter circulation as a reward for producing blocks. The reward started at 50 bitcoin. It halves every 210,000 blocks, which takes roughly four years. Because of this, the total ever issued approaches 21 million and never goes past it.
-
-**First real use.** The first documented commercial transaction came in 2010: someone paid 10,000 bitcoin for two pizzas.
-
-**Satoshi leaves.** Satoshi stopped taking part publicly in 2011. The bitcoin Satoshi held have never been moved.
+The first documented commercial transaction took place in 2010, when someone paid 10,000 bitcoin for two pizzas. In 2011 Satoshi stopped taking part in public. The bitcoin attributed to Satoshi have never been moved.

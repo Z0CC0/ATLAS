@@ -1,11 +1,11 @@
-Use local files plus a collector that ships them elsewhere, so your API never waits on a log write.
+**Local files, plus a collector that ships them elsewhere.** At a thousand requests a minute, that way the application never waits on a log write.
 
-The rule that always holds: writing the log must stay out of the request's critical path.
+Whatever you pick, writing the log must not sit in the critical path of the request.
 
-Files alone cost nothing and add no dependency. But searching them means grep. Rotation has to be set up by hand, or the disk fills. Searching across several machines isn't possible either; you have to connect to each one.
+Files alone cost nothing and add no dependency. But searching means grep, and you have to set up rotation yourself or the disk fills. Across several machines there's no shared search, so you'd connect to each one in turn.
 
-A managed service gives instant search, alerts and automatic retention. You pay by volume, though, and at a thousand requests a minute that volume grows fast. Your logs also leave your own infrastructure, so you have to strip personal data before they go.
+A managed service gives you instant search, alerts and automatic retention. You pay by volume, though, and at a thousand requests a minute that volume grows fast. Your logs also leave your own infrastructure, so you must strip personal data before they are sent.
 
-A database makes searching familiar and convenient. Writing logs into your application's own database, though, puts two very different workloads in competition. Under load, logs fill the caches and connections your real requests needed.
+A database makes searching familiar and convenient. The catch is that putting logs in the application's own database makes two very different workloads compete. Under load, the logs take up caches and connections that real requests needed.
 
-The collector gives you the benefits of both. Writing to a local file is cheap and never blocks the request. The collector then forwards the logs to wherever you search them, whether that's a managed service or separate storage.
+Files plus a collector give you each option's strengths without its weak points. Writing to a local file is cheap and doesn't block the request. The collector moves logs off each machine, so you can search them in one place.

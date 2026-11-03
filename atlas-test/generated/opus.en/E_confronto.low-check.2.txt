@@ -1,10 +1,10 @@
 internal knowledge
 
-**Postgres**, for a small project. Switch to Redis only when volume actually requires it.
+Postgres, for a small project. Move to Redis only when volume really requires it.
 
-Postgres with `SELECT FOR UPDATE SKIP LOCKED` handles up to roughly a thousand jobs per minute, likely more than a small project needs.
+Postgres with `SELECT FOR UPDATE SKIP LOCKED` handles up to roughly a thousand jobs per minute, likely enough for your project.
 
-Job lives in same transaction as data, so a job never starts while its matching write gets rolled back.
+Jobs share the transaction with your data, so a job never starts while its write gets rolled back.
 
 Persistence comes free: if the process dies, the queue survives.
 

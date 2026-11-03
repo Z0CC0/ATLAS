@@ -1,19 +1,18 @@
-La cache dei prompt conserva la parte iniziale di una richiesta dopo che è stata elaborata. Le richieste successive che cominciano allo stesso modo riusano quella parte e non la ripagano per intero.
+La cache dei prompt conserva il prefisso di una richiesta già elaborato. Così le richieste successive che iniziano allo stesso modo non lo ripagano per intero.
 
 **Come funziona**
 
-Il riuso vale solo per il prefisso, cioè per la parte iniziale identica. Se un solo carattere cambia all'inizio, tutto quello che viene dopo non è più riusato. Per questo conta l'ordine:
+La cache lavora solo sul prefisso. Basta un carattere diverso all'inizio e da quel punto in poi non c'è più riuso. Per questo l'ordine conta: metti prima le parti stabili e dopo quelle che cambiano, non il contrario.
 
-- Metti prima le parti stabili, come le istruzioni di sistema, la documentazione allegata e le definizioni degli strumenti.
-- Metti dopo le parti che cambiano, come il messaggio dell'utente o i dati del turno.
-
-Un errore frequente è una voce di sistema che cambia a ogni turno, per esempio un orario, messa in alto. Quella voce annulla il riuso di tutto quello che la segue. Spostala in fondo oppure toglila.
+Attenzione alle voci di sistema che cambiano a ogni turno, per esempio un orario. Una voce così annulla il riuso di tutto quello che viene dopo.
 
 **Costi**
 
-Scrivere nella cache costa più di una lettura normale, quindi la prima richiesta costa di più. Il guadagno comincia dalla seconda richiesta e cresce con il numero di turni che riusano lo stesso prefisso.
+Scrivere nella cache costa più di una lettura normale, quindi la prima richiesta è più cara. Il guadagno arriva dalla seconda richiesta in poi e cresce con il numero di turni.
 
 **Quando conviene**
 
-- **Sì:** nelle conversazioni lunghe con un contesto grande e stabile, come istruzioni di sistema estese, documentazione allegata o molte definizioni di strumenti. Paghi la scrittura una volta e poi rileggi a ogni turno.
-- **No:** nelle richieste singole e diverse fra loro. In quel caso paghi la scrittura e non rileggi mai niente, quindi spendi di più senza nessun guadagno.
+- **Sì:** conversazioni lunghe con un contesto grande e stabile, come istruzioni di sistema, documentazione allegata e definizioni di strumenti.
+- **No:** richieste singole e diverse fra loro. In quel caso paghi la scrittura e non rileggi mai la cache.
+
+In pratica, se riusi spesso lo stesso inizio e lo tieni identico, la cache ti fa risparmiare. Se ogni richiesta è diversa, ti costa di più.

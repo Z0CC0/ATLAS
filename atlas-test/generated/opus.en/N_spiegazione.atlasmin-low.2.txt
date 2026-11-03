@@ -1,13 +1,9 @@
-Eventual consistency means that after a write, replicas don't agree right away. If writes stop, they converge within a finite time.
+Eventual consistency: after a write, replicas don't agree right away, but they converge within a finite time once writes stop.
 
-**Why care:** it affects whoever reads right after writing. A user posts a comment, reloads the page, and doesn't see it.
+You care if your users read right after they write. Someone posts a comment, reloads, and the comment isn't there, because the reload hit a replica that hasn't caught up yet. How long that lasts depends on distance: replicas in the same region usually converge in under a second, while across regions it rises to seconds.
 
-It's a trade against availability. A system that demands strong consistency has to refuse requests when its replicas can't talk to each other.
+Usual fix: send reads to the primary replica only for the session that just wrote, not for everyone. The writer sees their own comment straight away, and everyone else keeps reading from the replicas.
 
-The window is short. Across replicas in the same region, convergence usually takes under a second. Across regions, it takes seconds.
+Why accept it at all: the trade is against availability. A system that demands strong consistency has to refuse requests whenever its replicas can't talk to each other. So eventual consistency isn't a defect to eliminate. It's a choice, and most systems that scale make it deliberately.
 
-The common fix is to send reads to the primary replica for the session that just wrote, not for everyone. The person who wrote sees their comment, and everyone else keeps reading from the replicas.
-
-It isn't a defect to eliminate but a choice. Most systems that scale accept it deliberately.
-
-The cases where it's unacceptable are few and easy to recognise: account balances, seat availability and uniqueness of an identifier.
+Cases where it's unacceptable are few and easy to recognise: account balances, seat availability, and uniqueness of an identifier. Use strong consistency there and accept eventual consistency everywhere else.

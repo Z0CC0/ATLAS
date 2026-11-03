@@ -10,14 +10,16 @@ function debounce(fn, ms) {
 }
 ```
 
-Each call cancels the pending timer and starts a new one, so `fn` runs only once the calls stop for `ms` milliseconds.
+Usage: `const onResize = debounce(handleResize, 200);`
 
-`clearTimeout` has to run before every new `setTimeout`. Otherwise timers pile up and `fn` fires more than once.
+Three details make it work:
 
-`t` has to live in the closure, not inside the returned function. Otherwise every call gets its own timer and nothing gets debounced.
+Call `clearTimeout` before every new `setTimeout`. Without it, timers pile up and the function fires more than once.
 
-`...args` forwards the arguments. Without it, `fn` receives nothing.
+Keep `t` in the closure, not inside the returned function. Otherwise every call gets its own timer and nothing gets debounced.
 
-This version returns nothing. If you need `fn`'s return value, use a Promise.
+Pass the arguments through with the spread (`...args`). Otherwise the called function receives nothing.
 
-If you want the opposite, running right away and then ignoring calls for a while, you need a throttle. That's a different function.
+This version returns nothing. If you need the return value, use a Promise.
+
+If you want the function to run immediately and then ignore calls for a while, that's a throttle, which is a different function.

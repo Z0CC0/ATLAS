@@ -10,12 +10,12 @@ function debounce(fn, ms) {
 }
 ```
 
-`clearTimeout` va chiamato prima di ogni nuovo `setTimeout`, altrimenti i timer si accumulano e la funzione parte più volte.
+`clearTimeout` prima di ogni nuovo `setTimeout`: altrimenti i timer si accumulano e la funzione parte più volte.
 
-`t` deve stare nella chiusura, non dentro la funzione restituita. Altrimenti ogni chiamata ha il proprio timer e il debounce non avviene.
+`t` deve stare nella chiusura, **non** dentro la funzione restituita: altrimenti ogni chiamata ha il proprio timer e il debounce non avviene.
 
-Argomenti inoltrati con lo spread (`...args`), altrimenti `fn` li riceve vuoti.
+Argomenti inoltrati con lo spread (`...args`): altrimenti la funzione chiamata li riceve vuoti.
 
-Questa versione non restituisce niente. Se serve il valore di ritorno, serve una Promise.
+Questa versione non restituisce niente. Se ti serve il valore di ritorno, ti serve una Promise.
 
-Per eseguire subito e poi ignorare le chiamate per un periodo serve invece un throttle, che è un'altra funzione.
+Se vuoi il caso opposto, cioè eseguire subito e poi ignorare le chiamate per un periodo, ti serve un throttle, che è un'altra funzione.

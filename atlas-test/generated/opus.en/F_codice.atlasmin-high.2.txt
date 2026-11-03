@@ -1,5 +1,3 @@
-Closure plus `clearTimeout`/`setTimeout`:
-
 ```js
 function debounce(fn, ms) {
   let t;
@@ -10,12 +8,12 @@ function debounce(fn, ms) {
 }
 ```
 
-Call `clearTimeout` before every new `setTimeout`. Otherwise timers pile up and the function fires more than once.
+Call `clearTimeout` before every new `setTimeout`. Without it, timers pile up and the function fires more than once.
 
-`t` lives in the closure, not inside the returned function. Otherwise each call gets its own timer and nothing is debounced.
+Keep `t` in the closure, not inside the returned function. Inside it, every call gets its own timer and nothing is debounced.
 
-Arguments are forwarded with the spread (`...args`). Without it, `fn` receives nothing.
+Forward the arguments with the spread (`...args`), or `fn` receives nothing.
 
 This version returns nothing. If you need the return value, use a Promise.
 
-To run immediately and then ignore calls for a period, you want a throttle, which is a different function.
+If you want the function to run immediately and then ignore calls for a while, you need a throttle, which is a different function.

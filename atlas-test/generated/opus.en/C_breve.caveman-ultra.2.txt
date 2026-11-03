@@ -1,3 +1,9 @@
-Usually no. On a column with only three distinct values, the planner normally doesn't use a B-tree index. When a filter matches more than about 5–10% of rows, a sequential scan is cheaper, so the planner picks that. You still pay for the index on every write, and it takes up disk space.
+Usually no. B-tree index on low-cardinality column normally goes unused. Filter matching more than roughly 5-10% of rows makes planner choose sequential scan. Index still costs writes and disk space.
 
-The exception is when one of the three values is rare. A partial index on just that value does get used.
+Exception: one value is rare. Partial index on that rare value works:
+
+```sql
+CREATE INDEX orders_failed_idx ON orders (id) WHERE status = 'failed';
+```
+
+Queries filtering `status = 'failed'` use this index. Index stays small, and writes for other values skip it.

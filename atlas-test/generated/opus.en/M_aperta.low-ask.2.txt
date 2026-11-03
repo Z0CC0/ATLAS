@@ -1,13 +1,19 @@
-Start with the question that isn't technical: what must your team be able to do a year from now that it can't do today? That answer should drive the architecture. Before you pick one, find out two things:
+Start from what team must be able to do a year from now that it cannot do today. That question decides architecture, not technology.
 
-1. Which part of the monolith actually changes. Stable parts gain nothing from being split, so leave them alone.
+Before choosing, map two things in monolith:
 
-2. Where the transaction boundaries sit. A transaction that spans two services becomes a distributed problem, so draw service lines where transactions already end.
+Which parts actually change. Stable parts gain nothing from being split, so leave them alone.
 
-On how to migrate: a full rewrite running in parallel with the old system almost always fails. The PHP code keeps changing and the copy never catches up. Use progressive strangling instead. Put a router in front, move one piece at a time, and keep the old system authoritative until each new piece is verified.
+Where transaction boundaries sit. Transaction spanning two services becomes distributed problem, so draw service lines where transactions already end, never through them.
 
-On microservices: they cost more to operate. Every service needs its own releases, monitoring, logs, alerts, and a person who looks after it. With fewer than five developers, that cost almost always exceeds the benefit.
+Then check team size against operational cost. Every microservice wants its own releases, monitoring, logs, alerts and person who looks after it. Below five developers, that cost almost always exceeds benefit.
 
-**The option nobody mentions is a modular monolith.** It has sharp internal boundaries and one release, and you can still pull a module out into its own service the day that is genuinely needed.
+Consider **modular monolith**, option nobody mentions: sharp internal boundaries, one release, and freedom to extract module the day it's genuinely needed. Often gives you most of what microservices promise without operational bill.
 
-How many developers will work on the new service?
+On how to migrate: avoid full rewrite running in parallel with old system. It almost always fails, because old one keeps changing and copy never catches up. Use **progressive strangling** instead:
+
+1. Put router in front of monolith.
+
+2. Move one piece at a time, starting with parts that change.
+
+3. Keep old system authoritative until new piece is verified.

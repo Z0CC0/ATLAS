@@ -1,11 +1,11 @@
-**File locali più raccoglitore** che li spedisce altrove: a mille richieste al minuto è la scelta ragionevole, perché l'applicazione non aspetta mai la scrittura del log.
+Usa file locali e un raccoglitore che li spedisce altrove. A mille richieste al minuto è la scelta ragionevole, perché l'applicazione non aspetta mai la scrittura del log.
 
-Regola che vale sempre: scrittura del log fuori dal percorso critico della richiesta.
+**Regola che vale sempre: la scrittura del log non deve stare nel percorso critico della richiesta.**
 
-Perché nessuna delle tre da sola:
+Ognuna delle tre opzioni, da sola, ha un limite:
 
-File e basta: costo zero, nessuna dipendenza, ma si cerca solo con grep. Rotazione va configurata a mano, altrimenti disco si riempie. Con più macchine non esiste una ricerca unica, bisogna collegarsi a ognuna.
+Solo file: costo zero e nessuna dipendenza, ma cerchi con grep. Su più macchine la ricerca non esiste, quindi devi collegarti a ognuna. La rotazione va configurata a mano, altrimenti il disco si riempie.
 
-Servizio gestito: ricerca immediata, allarmi, conservazione automatica, ma si paga per volume, e a mille richieste al minuto volume cresce in fretta. Log escono dalla tua infrastruttura, quindi vanno ripuliti dai dati personali prima di uscire.
+Servizio gestito: ricerca immediata, allarmi e conservazione automatica. Però si paga per volume, e a mille richieste al minuto il volume cresce in fretta. I log escono dalla tua infrastruttura, quindi vanno ripuliti dai dati personali prima che escano. Questo vale anche se è il raccoglitore a spedirli al servizio.
 
-Database: ricerca comoda e nota, ma log nello stesso database dell'applicazione mettono in competizione due carichi molto diversi. Sotto carico riempiono cache e connessioni che servivano alle richieste vere.
+Database: la ricerca è comoda e nota. Ma se scrivi i log nello stesso database dell'applicazione metti in competizione due carichi molto diversi. Sotto carico, i log riempiono cache e connessioni che servivano alle richieste vere.

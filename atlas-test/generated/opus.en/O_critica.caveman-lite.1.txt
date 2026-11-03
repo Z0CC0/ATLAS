@@ -1,17 +1,15 @@
-I wouldn't put all of it there. Keep integrity rules in the database and business logic in the application.
+I wouldn't put all of it in triggers. The guarantee you want is real, but you can get it more cheaply another way.
 
-**What you'd gain is real.** If a trigger enforces a rule, nothing can skip it. That covers every application path and even a script someone runs by hand.
+**What you gain:** no application path can skip the rule. That includes a script someone runs by hand.
 
-**What it would cost you:**
+**What it costs you:**
+- **Hidden behavior.** Nobody reading the application code can see triggers. A change that looks simple can fire other triggers and leave no trace.
+- **Testing.** Your team's current test tools won't cover triggers. You'll need tests that run against a real database.
+- **Debugging.** An error inside a trigger shows up only as a failed write. It doesn't say which rule caused it.
+- **Migrations.** Trigger order matters, but nothing declares that order. Migrations become fragile as a result.
 
-- **Rules you can't see.** Someone reading the application code never sees the triggers. A change that looks simple can fire other triggers and leave no trace.
-- **Testing.** Your team's current test tools don't cover triggers. You'd need tests that run against a real database.
-- **Debugging.** When a trigger raises an error, you only see a failed write. The error doesn't say which rule caused it.
-- **Migrations.** Trigger order matters, but nothing declares it. That makes migrations fragile.
+**What I'd do instead:** split the work by its purpose.
+- **Database:** keep only what protects integrity: constraints, foreign keys, uniqueness and domain checks.
+- **Application:** put the business logic here, behind a single entry point that every write goes through.
 
-**What I'd do instead:**
-
-- Keep in the database only what protects integrity: constraints, foreign keys, uniqueness and domain checks.
-- Put the business logic in the application, behind a single entry point that every write goes through.
-
-That entry point gives you the same guarantee as a trigger, with one condition: only migrations get direct access to the database. If you enforce that condition, nothing can bypass the rules. The logic also stays visible, you can test it with your current tools, and its errors tell you which rule failed.
+That single entry point gives you the same guarantee as the trigger, with one condition: only migrations get direct access to the database. If you enforce that rule, nobody can bypass the logic, and it stays visible, testable and debuggable.

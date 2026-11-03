@@ -1,17 +1,13 @@
-Il vantaggio che cerchi c'è davvero: se la regola sta in un trigger, nessun percorso applicativo può saltarla, nemmeno uno script lanciato a mano. Però lo paghi caro, e secondo me la stessa garanzia si ottiene in un altro modo.
+Il vantaggio che cerchi è reale. Con la logica nei trigger nessun percorso applicativo può saltare la regola, nemmeno uno script lanciato a mano. Però spostarci *tutta* la logica di business ha costi che secondo me superano il beneficio:
 
-**Cosa ti costa mettere tutto nei trigger**
-
-- **Non si vedono.** Chi legge il codice applicativo non sa che esistono. Una modifica che sembra semplice ne fa scattare altre, e nel codice non ne resta traccia.
-- **Non si testano con gli strumenti che il team usa già.** Per verificarli servono test che girano su un database vero.
-- **Il debug peggiora.** Se un trigger va in errore, vedi solo che la scrittura è fallita. Non ti dice quale regola l'ha bloccata.
+- **Il codice non dice più tutto.** Chi legge l'applicazione non vede i trigger. Una modifica che sembra semplice ne fa partire altre, e nel codice non ne resta traccia.
+- **I test si complicano.** Gli strumenti che il team usa già non bastano più: servono test che girano contro un database vero.
+- **Il debug peggiora.** Se un trigger va in errore, vedi solo che la scrittura è fallita, senza sapere quale regola l'ha bloccata.
 - **Le migrazioni diventano fragili.** L'ordine in cui scattano i trigger conta, ma non è scritto da nessuna parte.
 
-**Cosa farei al posto tuo**
+Ti propongo di dividere così:
 
-Dividerei le responsabilità in due:
+- **Nel database** metti solo ciò che protegge l'integrità dei dati: vincoli, chiavi esterne, unicità, controlli di dominio.
+- **Nell'applicazione** metti la logica di business, con un solo punto di ingresso da cui passano tutte le scritture.
 
-- **Nel database** metterei solo ciò che protegge l'integrità dei dati: vincoli, chiavi esterne, unicità, controlli di dominio.
-- **Nell'applicazione** metterei la logica di business, con un solo punto di ingresso da cui passano tutte le scritture.
-
-Quel punto di ingresso ti dà la stessa garanzia del trigger, a una condizione: l'accesso diretto al database deve essere riservato alle migrazioni. Se nessuno può scrivere sulle tabelle senza passare dall'applicazione, nessuno può aggirare la regola. In più la logica resta leggibile, si testa con gli strumenti che usate già e, quando fallisce, sai quale regola l'ha fatta fallire.
+Questo punto di ingresso unico ti dà la stessa garanzia del trigger, a una condizione: l'accesso diretto al database deve essere riservato alle migrazioni. Così nessuno salta le regole, e queste restano visibili nel codice, facili da testare e da correggere.

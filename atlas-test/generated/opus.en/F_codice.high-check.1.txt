@@ -10,12 +10,12 @@ function debounce(fn, ms) {
 }
 ```
 
-Call `clearTimeout` before every new `setTimeout`. Without it, timers pile up and the function fires more than once.
+`clearTimeout` must run before every new `setTimeout`. Without it, timers pile up and the function fires more than once.
 
-Keep `t` in the closure, not inside the returned function. Otherwise every call gets its own timer and nothing is debounced.
+`t` belongs in the closure, not inside the returned function. Inside, every call gets its own timer, so no debouncing happens.
 
-Pass the arguments on with the spread. Without it, `fn` receives nothing.
+Arguments are passed on with the spread. Without it, `fn` receives nothing.
 
-This version returns nothing. If you need the return value, use a Promise.
+Returns nothing. If you need the return value, use a Promise.
 
-If you want the opposite, running right away and then ignoring calls for a while, that's a throttle, which is a different function.
+To run immediately and then ignore calls for a period, use a throttle instead. That's a different function.

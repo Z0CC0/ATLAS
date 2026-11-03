@@ -1,36 +1,36 @@
-## Cos'è la consistenza eventuale
+Ti riguarda ogni volta che un utente scrive un dato e lo rilegge subito dopo. Se nel tuo sistema succede, ti serve sapere come funziona.
 
-Dopo una scrittura, le repliche dei tuoi dati possono non essere d'accordo per un po'. Non concordano subito, ma **convergono entro un tempo finito**, a patto che le scritture si fermino.
+## Cos'è
 
-Quanto dura quel "po'":
-- **repliche nella stessa regione:** di solito meno di un secondo
-- **repliche in regioni diverse:** si arriva a qualche secondo
+Con la consistenza eventuale, dopo una scrittura le repliche del database non sono d'accordo subito. Se le scritture si fermano, arrivano allo stesso valore entro un tempo finito.
 
-## Perché esiste: è una scelta, non un difetto
+Tempi tipici di convergenza:
+- **repliche nella stessa regione:** sotto il secondo
+- **repliche in regioni diverse:** qualche secondo
 
-Il compromesso è con la **disponibilità**. Un sistema che pretende consistenza forte deve rifiutare le richieste quando le repliche non riescono a comunicare tra loro. Un sistema a consistenza eventuale continua a rispondere.
+## Perché esiste: il compromesso
 
-Per questo la maggior parte dei sistemi che scalano la accetta di proposito. Non devi eliminarla: devi gestirla.
+Si rinuncia a un po' di consistenza per avere più **disponibilità**. Un sistema con consistenza forte deve rifiutare le richieste quando le repliche non riescono a comunicare tra loro. Un sistema eventualmente consistente continua a rispondere.
 
-## Perché dovrebbe interessarti
+Quindi non è un difetto da eliminare: è una scelta. La maggior parte dei sistemi che scalano la accetta di proposito.
 
-Il problema lo vede chi legge subito dopo aver scritto. Scenario tipico:
+## Dove lo noti in pratica
+
+Il problema tipico riguarda chi legge subito dopo aver scritto:
 
 1. L'utente pubblica un commento
 2. Ricarica la pagina
-3. Il commento non c'è
+3. Il commento non c'è, perché la lettura è arrivata a una replica non ancora aggiornata
 
-Per l'utente sembra un bug, anche se il sistema funziona come previsto.
+**Soluzione comune:** solo la sessione che ha appena scritto legge dalla replica primaria. Tutte le altre sessioni continuano a leggere dalle repliche. L'utente vede subito il suo commento e il carico resta distribuito.
 
-**La soluzione comune:** la sessione che ha appena scritto legge dalla replica primaria. Tutte le altre sessioni continuano a leggere dalle repliche normali. Così chi ha scritto vede subito il proprio commento e tu non perdi i vantaggi delle repliche.
+## Quando non va bene
 
-## Quando invece non va bene
+I casi sono pochi e si riconoscono facilmente:
+- saldi di conto
+- disponibilità di posti
+- unicità di un identificativo
 
-I casi in cui non è accettabile sono pochi e facili da riconoscere:
-- **saldi di conto**
-- **disponibilità di posti**
-- **unicità di un identificativo**
+In questi casi due repliche in disaccordo, anche solo per un secondo, possono vendere lo stesso posto due volte o spendere lo stesso saldo due volte. Qui serve la consistenza forte.
 
-In questi casi serve la consistenza forte, con il costo di dover a volte rifiutare richieste.
-
-**Prossimo passo:** elenca i dati del tuo sistema e segna quali rientrano in quei tre casi. Tutto il resto può convivere con la consistenza eventuale.
+**Prossimo passo (2 minuti):** prendi il tuo sistema e cerca dati come saldi, posti o ID univoci. Quelli richiedono consistenza forte. Per tutto il resto puoi probabilmente accettare la consistenza eventuale.

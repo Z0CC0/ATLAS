@@ -1,21 +1,23 @@
-A mille richieste al minuto conviene scrivere su file locali e aggiungere un raccoglitore che li spedisce altrove. Così l'applicazione non aspetta mai la scrittura del log.
+Usa **file locali più un raccoglitore** che li spedisce altrove. A mille richieste al minuto è la scelta ragionevole: l'applicazione non aspetta mai la scrittura del log.
 
-**File da soli**
-- Costo zero, nessuna dipendenza.
-- La ricerca si fa solo con `grep`.
-- La rotazione va configurata a mano, altrimenti il disco si riempie.
-- Con più macchine non puoi cercare in un punto solo. Devi collegarti a ciascuna.
+**Regola che vale sempre:** la scrittura del log non deve stare nel percorso critico della richiesta. Qualunque soluzione scegli, l'API risponde senza aspettare il log.
+
+Perché non le altre opzioni da sole:
+
+**Solo file**
+- Pro: costo zero, nessuna dipendenza.
+- Contro: la ricerca è `grep`.
+- Contro: la rotazione va configurata a mano, altrimenti il disco si riempie.
+- Contro: la ricerca su più macchine non esiste. Devi collegarti a ognuna.
 
 **Servizio gestito**
-- Hai ricerca immediata, allarmi e conservazione automatica.
-- Paghi in base al volume, e a mille richieste al minuto il volume cresce in fretta.
-- I log escono dalla tua infrastruttura. Prima di spedirli devi togliere i dati personali.
+- Pro: ricerca immediata, allarmi e conservazione automatica.
+- Contro: paghi per volume. A mille richieste al minuto il volume cresce in fretta.
+- Contro: i log escono dalla tua infrastruttura. Devi ripulirli dai dati personali prima che escano.
 
 **Database**
-- La ricerca è comoda e la conosci già.
-- Se scrivi i log nello stesso database dell'applicazione, metti in competizione due carichi molto diversi.
-- Sotto carico, i log occupano cache e connessioni che servono alle richieste vere.
+- Pro: ricerca comoda e nota.
+- Contro: scrivere log nello stesso database dell'applicazione mette in competizione due carichi molto diversi.
+- Contro: sotto carico, i log riempiono cache e connessioni che servono alle richieste vere.
 
-**Scelta consigliata:** file locali più un raccoglitore. L'applicazione scrive solo in locale. Il raccoglitore spedisce i log in un secondo momento, anche a un servizio gestito se vuoi ricerca e allarmi. In quel caso ricorda di togliere i dati personali prima dell'invio e di configurare la rotazione dei file.
-
-Qualunque soluzione scegli, vale sempre una regola: la scrittura del log non deve stare nel percorso critico della richiesta.
+Con file più raccoglitore tieni i vantaggi dei file: costo basso, nessuna dipendenza nel percorso della richiesta. Il raccoglitore porta i log in un punto unico, così risolvi la ricerca su più macchine. Se la destinazione è un servizio gestito, ricorda due cose: controlla il volume e togli i dati personali prima dell'invio. Configura comunque la rotazione dei file locali.

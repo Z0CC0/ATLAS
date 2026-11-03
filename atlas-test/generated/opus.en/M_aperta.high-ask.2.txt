@@ -1,21 +1,13 @@
-Two questions decide it: which parts of your monolith actually change, and what your team must be able to do a year from now that it can't today. The second is not a technical question.
+Start with what the team must be able to do a year from now that it can't do today. That question isn't technical, and it decides the architecture.
 
-**Before choosing**
+Find which parts of the monolith actually change. Stable parts gain nothing from being split.
 
-Find which parts actually change. Splitting out stable parts gains nothing.
+Map where the transaction boundaries sit. A transaction spanning two services becomes a distributed problem.
 
-Map where the transaction boundaries sit. A transaction split across two services becomes a distributed problem.
+Count the operational cost. Every microservice needs releases, monitoring, logs, alerts and a person who looks after it. Below five developers that cost almost always exceeds the benefit.
 
-**Rewrite strategy**
+Consider the modular monolith, the option nobody mentions. It gives sharp internal boundaries and one release, and you can extract a module the day it's genuinely needed.
 
-Avoid a full rewrite built in parallel with the old system. It almost always fails, because the old system keeps changing and the copy never catches up.
+**Avoid a full rewrite running in parallel with the old system.** It almost always fails: the old system keeps changing and the copy never catches up.
 
-Strangle it progressively instead. Put a router in front, move one piece at a time, and keep the old system authoritative until the new piece is verified.
-
-**Architecture**
-
-Microservices cost more to operate. Every service needs releases, monitoring, logs, alerts and someone who looks after it.
-
-With fewer than five developers, that cost almost always outweighs the benefit.
-
-A modular monolith is the option people tend to overlook. It has sharp internal boundaries and one release, and you can pull a module out the day you genuinely need to.
+**Strangle it progressively instead.** Put a router in front and move one piece at a time. Keep the old system authoritative until the new one is verified.

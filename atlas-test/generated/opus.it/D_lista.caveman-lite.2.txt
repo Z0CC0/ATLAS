@@ -1,19 +1,19 @@
-Per un sito statico metterei questi sei header e ne toglierei uno.
+Per un sito con solo pagine statiche ti bastano sei header. Un settimo, spesso consigliato, va invece tolto.
 
-**Da mettere:**
+**Da impostare**
 
-- **`Strict-Transport-Security: max-age=31536000; includeSubDomains`**: obbliga il browser a usare sempre HTTPS. Il `max-age` deve valere almeno 31536000 secondi.
-- **`Content-Security-Policy: default-src 'self'`**: è l'header che blocca l'iniezione di script di terze parti. Quasi tutta la protezione contro gli script esterni dipende da questo.
+- **`Strict-Transport-Security`**: obbliga il browser a usare HTTPS. Usa un `max-age` di almeno 31536000 secondi e aggiungi `includeSubDomains`.
+- **`Content-Security-Policy`**: con `default-src 'self'` blocca l'iniezione di script di terze parti. È l'header più importante.
 - **`X-Content-Type-Options: nosniff`**: impedisce al browser di indovinare il tipo di contenuto.
-- **`Referrer-Policy: strict-origin-when-cross-origin`**: evita di far uscire il percorso completo delle tue pagine verso altri siti.
-- **Protezione dal clickjacking**: usa `X-Frame-Options: DENY`, oppure aggiungi `frame-ancestors 'none'` dentro la Content-Security-Policy. Basta una delle due.
-- **`Permissions-Policy`**: spegne camera, microfono e geolocalizzazione. Mettilo se il sito non usa queste funzioni, come succede di solito con le pagine statiche.
+- **`Referrer-Policy: strict-origin-when-cross-origin`**: quando un utente segue un link verso un altro sito, il percorso completo della pagina non viene inviato.
+- **Protezione dal clickjacking**: hai due opzioni. Puoi usare `X-Frame-Options: DENY` oppure aggiungere `frame-ancestors 'none'` alla `Content-Security-Policy`.
+- **`Permissions-Policy`**: disattiva camera, microfono e geolocalizzazione, se il sito non li usa.
 
-**Da togliere:**
+**Da omettere**
 
-- **`X-XSS-Protection`**: è deprecato e va omesso. I browser moderni lo ignorano, e nelle versioni vecchie introduceva vulnerabilità. Se la configurazione attuale lo contiene, rimuovilo.
+- **`X-XSS-Protection`**: è deprecato. I browser moderni lo ignorano, e nelle versioni vecchie introduceva vulnerabilità.
 
-Un esempio d'insieme, con il clickjacking gestito dalla CSP:
+**Esempio di valori**
 
 ```
 Strict-Transport-Security: max-age=31536000; includeSubDomains
@@ -22,3 +22,5 @@ X-Content-Type-Options: nosniff
 Referrer-Policy: strict-origin-when-cross-origin
 Permissions-Policy: camera=(), microphone=(), geolocation=()
 ```
+
+In questo esempio il clickjacking è gestito da `frame-ancestors 'none'` dentro la CSP. Se preferisci, puoi aggiungere anche `X-Frame-Options: DENY`.

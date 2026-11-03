@@ -1,15 +1,15 @@
-I'd advise against putting all business logic in triggers. Keep only the integrity rules in the database.
+I wouldn't put all of it in triggers. Put integrity rules in the database and business logic in the application.
 
-**What you gain is real.** No application path can skip the rule. Not even a script someone runs by hand.
+**Upside is real.** With triggers, no application path can skip the rule. Not even a script someone runs by hand.
 
-**What you pay:**
-- **Hidden behavior.** Someone reading the application code can't see triggers. A change that looks simple can fire other triggers and leave no trace.
+**Cost is high:**
+- **Hidden behavior.** People reading application code can't see triggers. A change that looks simple can fire other triggers and leave no trace in the code.
 - **Testing.** Your team's current test tools don't cover triggers. You'd need tests that run against a real database.
-- **Debugging.** An error inside a trigger shows up as a failed write. It doesn't tell you which rule caused it.
-- **Migrations.** They become fragile. Trigger order matters, and nothing in the schema declares that order.
+- **Debugging.** An error inside a trigger shows up only as a failed write. It doesn't say which rule caused it.
+- **Migrations get fragile.** Trigger order matters, and nothing declares that order anywhere.
 
-**What I'd do instead:**
-- **In the database:** only what protects integrity: constraints, foreign keys, uniqueness and domain checks.
-- **In the application:** the business logic, behind a single entry point that every write must go through.
+**Better split:**
+- **Database keeps integrity rules:** constraints, foreign keys, uniqueness and domain checks.
+- **Application keeps business logic** behind a single entry point. Every write goes through that one path.
 
-That entry point gives you the same guarantee as a trigger, with one condition: only migrations get direct access to the database. Nobody else writes to it outside the entry point, not even with a hand-run script. If you can't enforce that rule, the trigger's advantage comes back, and you'll have to weigh it against the costs above.
+**Same guarantee, if you hold one rule:** only migrations get direct database access. Then nothing can bypass the entry point, which is the guarantee you wanted from triggers. You also keep logic that people can see, test with your current tools and debug.

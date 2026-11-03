@@ -35,6 +35,7 @@ const ORDER = [
   'atlasmin-low', 'atlasmin-high',
   'minx-low', 'minx-high', 'minx2-low', 'minx2-high',
   'caveman-lite', 'caveman-full', 'caveman-ultra',
+  'caveman4-lite', 'caveman4-full', 'caveman4-ultra',
   'adhd',
   'style-low', 'style-high',
 ];

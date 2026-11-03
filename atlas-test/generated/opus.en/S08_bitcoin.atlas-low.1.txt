@@ -1,11 +1,13 @@
-Bitcoin started as a 2008 paper, "Bitcoin: A Peer-to-Peer Electronic Cash System," signed Satoshi Nakamoto. That name is a pseudonym and has never been identified.
+Bitcoin came out of the cypherpunk scene, which had already tried to create digital money with designs such as b-money and bit gold. None of them solved one key problem: how to order transactions without someone in charge.
 
-It grew out of the cypherpunk scene. Earlier attempts such as b-money and bit gold never solved ordering. That left double spending open: without a central body keeping the ledger, nothing stopped someone spending the same coin twice.
+In 2008 a paper titled "Bitcoin: A Peer-to-Peer Electronic Cash System" appeared, signed Satoshi Nakamoto. That name is a pseudonym, and the person behind it has never been identified. The paper set out to stop double spending, where the same money is spent twice, without a central body keeping the ledger.
 
-The paper's answer was a chain of blocks ordered by proof of work. Proof of work makes rewriting the past expensive, because the work would have to be redone for every later block.
+Its solution was a chain of blocks ordered by proof of work. Each block takes real computing work to produce. To change an old block, an attacker would have to redo that work for the block and for every block after it, so rewriting the past becomes very expensive.
 
-The first block was generated on 3 January 2009. It carries the headline of a Times article about a bank bailout, which works both as a timestamp and as a statement of intent.
+The first block was generated on 3 January 2009. It contains the headline of a Times article about a bank bailout. That headline proves the block was not made before that date, and it also signals what the project stood for.
 
-The block reward started at 50 bitcoin and halves every 210,000 blocks, roughly every four years. Because of this, the total ever issued tends toward 21 million and goes no further.
+New bitcoin come from the block reward. It started at 50 bitcoin and halves every 210,000 blocks, which is roughly every four years. Because of this, the total number of bitcoin approaches 21 million and never goes past it.
 
-The first documented commercial transaction came in 2010: two pizzas paid for with 10,000 bitcoin. In 2011 Satoshi stopped taking part publicly, and Satoshi's bitcoin have never been moved.
+The first documented commercial transaction came in 2010, when someone paid 10,000 bitcoin for two pizzas.
+
+Satoshi stopped taking part in public in 2011. The bitcoin Satoshi held have never been moved.

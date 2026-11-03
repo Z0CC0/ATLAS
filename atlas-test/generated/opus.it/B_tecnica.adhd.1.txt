@@ -1,4 +1,4 @@
-Applica questa modifica al middleware in `db/session.py:47`:
+Apri `db/session.py:47` e avvolgi l'acquisizione della connessione in un `try/finally`:
 
 ```python
 conn = pool.acquire()
@@ -8,27 +8,29 @@ finally:
     pool.release(conn)
 ```
 
-## Cosa succede
+## Cosa sta succedendo
 
-Il problema è l'**esaurimento del connection pool**. Non è una query lenta.
+Il pool di connessioni si esaurisce. Il problema non è una query lenta.
 
-- In `db/session.py:47` la connessione viene rilasciata solo quando la richiesta va a buon fine.
-- Se l'handler solleva un'eccezione, il codice non arriva mai a `release()`. La connessione resta occupata fino al timeout.
-- Dopo qualche centinaio di richieste fallite il pool è vuoto e ogni nuova richiesta resta in attesa di una connessione libera.
-- Per questo le latenze crescono invece di comparire subito degli errori.
+1. Nel middleware la connessione viene rilasciata solo quando la richiesta va a buon fine.
+2. Se l'handler solleva un'eccezione, `release()` non viene mai eseguito. La connessione resta occupata fino al timeout.
+3. Dopo qualche centinaio di richieste fallite il pool è vuoto. Ogni richiesta successiva resta in attesa di una connessione libera.
+4. Per questo vedi latenze che crescono, invece di errori immediati.
 
-Con il `try/finally` la connessione viene rilasciata anche quando l'handler va in errore.
+Con il `finally` la connessione viene rilasciata anche quando c'è un errore.
 
 ## Cosa non fare
 
-**Non aumentare `pool_size` come soluzione.** Sembra funzionare, ma nasconde soltanto il problema: il pool si esaurisce più tardi, e intanto le connessioni continuano a restare occupate. Aumenta `pool_size` solo dopo aver applicato la correzione, e solo se il carico reale lo richiede.
+Non aumentare `pool_size` adesso. Sembra risolvere, ma sposta solo più avanti il momento in cui il pool si esaurisce. Le connessioni continuano a perdersi.
+
+Aumentalo solo dopo aver applicato la correzione, e solo se il carico reale lo richiede.
 
 ## Passi
 
-1. Esegui `pytest tests/test_pool.py -k exhaustion -x` per riprodurre il problema prima della modifica.
-2. Sostituisci il codice in `db/session.py:47` con lo snippet in alto.
-3. Esegui di nuovo lo stesso comando per confermare che il problema è risolto.
+1. Esegui `pytest tests/test_pool.py -k exhaustion -x` per vedere il problema prima della modifica.
+2. Applica il `try/finally` in `db/session.py:47`.
+3. Riesegui lo stesso comando per confermare che il pool non si esaurisce più.
 
-Tempo: circa 10 minuti.
+In tutto circa 10 minuti.
 
-Prossimo passo: esegui `pytest tests/test_pool.py -k exhaustion -x` adesso, così vedi il problema prima di toccare il codice.
+Prossimo passo: esegui `pytest tests/test_pool.py -k exhaustion -x` e guarda dove fallisce.

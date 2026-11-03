@@ -1,16 +1,18 @@
-Prima di scegliere l'architettura, chiarisci tre punti: cosa cambia, dove stanno le transazioni e cosa serve al team.
+Prima dell'architettura servono dati. Due in particolare.
 
-**1. Quale parte del monolite cambia davvero.** Parti di codice stabili non guadagnano nulla dall'essere spezzate. Separa solo dove c'è movimento reale.
+**1. Quale parte del monolite cambia davvero.** Spezzare parti stabili non porta nessun guadagno. Separa solo dove c'è movimento.
 
-**2. Dove stanno i confini delle transazioni.** Una transazione che attraversa due servizi diventa un problema distribuito. Traccia questi confini prima di tagliare.
+**2. Dove stanno i confini delle transazioni.** Se una transazione attraversa due servizi, diventa un problema distribuito. Disegna i confini in modo che ogni transazione resti dentro un solo servizio.
 
-**3. Come migri.** Non riscrivere tutto in parallelo al sistema vecchio. Quasi sempre fallisce: il vecchio continua a cambiare e la copia non lo raggiunge mai. Usa invece lo strangolamento progressivo:
-- Metti un router davanti al monolite.
-- Sposta un pezzo per volta.
-- Il vecchio resta autorevole finché il nuovo non è verificato.
+**Come migrare: evita la riscrittura completa in parallelo.** Quasi sempre fallisce. Il vecchio sistema continua a cambiare e la copia non lo raggiunge mai.
 
-**4. Quanto costano i microservizi.** In operatività costano di più. Ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupa. Sotto i cinque sviluppatori quel costo supera quasi sempre il beneficio.
+Usa invece lo strangolamento progressivo:
+1. Metti un router davanti al monolite PHP.
+2. Sposta un pezzo per volta dietro il router.
+3. Il vecchio sistema resta autorevole finché il nuovo pezzo non è verificato.
 
-**5. Considera il monolite modulare.** È l'opzione poco citata: confini interni netti e un solo rilascio. Puoi estrarre un modulo il giorno che serve davvero.
+**Costo reale dei microservizi.** Costano di più in operatività. Ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupa. Se il team ha meno di cinque sviluppatori, quel costo supera quasi sempre il beneficio.
 
-**6. La domanda che decide non è tecnica.** Chiediti cosa deve poter fare il tuo team fra un anno che oggi non può. Scegli l'architettura in base a quella risposta.
+**Opzione poco citata: il monolite modulare.** Ha confini interni netti e un solo rilascio. Quando un modulo ne ha davvero bisogno, lo estrai quel giorno, non prima. Spesso è il punto di partenza giusto, anche come tappa intermedia dello strangolamento.
+
+**Domanda decisiva, e non è tecnica:** cosa deve poter fare il team fra un anno che oggi non può? Parti da questa risposta. Poi scegli l'architettura che la rende possibile al costo più basso.

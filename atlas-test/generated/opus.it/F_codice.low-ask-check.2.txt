@@ -1,4 +1,4 @@
-Conoscenza interna.
+conoscenza interna
 
 ```js
 function debounce(fn, ms) {
@@ -10,18 +10,16 @@ function debounce(fn, ms) {
 }
 ```
 
-Uso: `const onResize = debounce(handler, 300);` e poi chiami `onResize` quante volte vuoi. `handler` parte solo dopo 300 ms senza nuove chiamate.
+Uso: `const salva = debounce(salvaBozza, 300);` e poi chiami `salva(testo)` quante volte vuoi. `salvaBozza` parte una sola volta, 300 ms dopo l'ultima chiamata.
 
-Punti che la fanno funzionare:
+Tre dettagli da rispettare:
 
 `clearTimeout(t)` va chiamato prima di ogni nuovo `setTimeout`. Senza, i timer si accumulano e la funzione parte più volte.
 
-`t` deve stare nella chiusura, fuori dalla funzione restituita. Se la dichiari dentro, ogni chiamata ha il proprio timer e il debounce non avviene.
+`t` deve stare nella chiusura, fuori dalla funzione restituita. Se la sposti dentro, ogni chiamata ha il proprio timer e il debounce non avviene.
 
 Gli argomenti vanno inoltrati con lo spread (`...args`). Senza, `fn` li riceve vuoti.
 
-Limiti:
-
-Questa versione non restituisce niente. Se ti serve il valore di ritorno di `fn`, devi usare una Promise.
+Questa versione non restituisce niente. Se ti serve il valore di ritorno, devi usare una Promise.
 
 Se invece vuoi eseguire subito e poi ignorare le chiamate per un certo periodo, ti serve un throttle, che è un'altra funzione.

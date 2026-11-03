@@ -1,15 +1,23 @@
-conoscenza interna
+*Conoscenza interna*
 
-Bitcoin nasce nell'ambiente cypherpunk. Prima c'erano stati b-money e bit gold, ma nessuno dei due risolveva l'ordinamento delle transazioni.
+Bitcoin nasce nel 2008 dall'ambiente cypherpunk, con un documento firmato Satoshi Nakamoto, pseudonimo mai identificato: "Bitcoin: A Peer-to-Peer Electronic Cash System".
 
-Nel 2008 esce un documento firmato Satoshi Nakamoto, uno pseudonimo mai identificato. Il titolo è "Bitcoin: A Peer-to-Peer Electronic Cash System". Affronta il problema della doppia spesa senza un ente centrale che tenga il registro.
+Prima c'erano stati altri tentativi, come b-money e bit gold, che però non risolvevano l'ordinamento delle transazioni. Il documento affronta proprio questo problema: impedire la doppia spesa senza un ente centrale che tenga il registro.
 
-La soluzione è una catena di blocchi, ordinata da una prova di lavoro. Riscrivere il passato diventa costoso, perché la prova andrebbe rifatta per ogni blocco successivo.
+La soluzione è una catena di blocchi ordinata da una prova di lavoro. Riscrivere il passato costa caro, perché la prova andrebbe rifatta per ogni blocco successivo.
 
-Il primo blocco viene generato il 3 gennaio 2009. Contiene il titolo di un articolo del Times su un salvataggio bancario, che fa sia da marca temporale sia da dichiarazione di intenti.
+Il primo blocco viene generato il 3 gennaio 2009. Contiene il titolo di un articolo del Times su un salvataggio bancario, che serve sia da marca temporale sia da dichiarazione di intenti.
 
-La ricompensa parte da 50 bitcoin per blocco e si dimezza ogni 210.000 blocchi, circa ogni quattro anni. Per questo il totale emesso tende a 21 milioni e non li supera mai.
+Le regole di emissione:
+
+la ricompensa per blocco parte da 50 bitcoin;
+
+si dimezza ogni 210.000 blocchi, circa ogni quattro anni;
+
+il totale emesso tende a 21 milioni e non li supera.
 
 Nel 2010 avviene la prima transazione commerciale documentata: due pizze pagate 10.000 bitcoin.
 
 Nel 2011 Satoshi smette di partecipare pubblicamente. I suoi bitcoin non sono mai stati spostati.
+
+Non ho verificato questi fatti con altre fonti, perché mi hai chiesto di usare solo quelli che mi hai dato.

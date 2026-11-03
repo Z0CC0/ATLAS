@@ -1,17 +1,11 @@
-Eventual consistency: after a write, replicas don't agree right away, but they converge within finite time once writes stop.
+Eventual consistency means that after a write, replicas don't agree right away. If writes stop, they converge within a finite time.
 
-**Why it exists:** it's the price of availability. A system demanding strong consistency has to refuse requests whenever replicas can't talk to each other. Accepting eventual consistency keeps the system answering.
+**Why you should care:** it hits whoever reads right after writing. A user posts a comment, reloads, and doesn't see it.
 
-**Where you'll feel it:** reading right after writing. A user posts a comment, reloads, and doesn't see it. Convergence across replicas in the same region usually takes under a second. Across regions it rises to seconds, so that reload can easily land on a replica that's behind.
+How long the gap lasts: under a second across replicas in the same region, and seconds across regions.
 
-Common fix: send reads to the primary replica for the session that just wrote, not for everyone. That user sees their own comment, and everyone else keeps reading from any replica.
+Why systems accept it: the trade-off is against availability. A system that demands strong consistency has to refuse requests when its replicas cannot talk to each other. So eventual consistency isn't a defect to eliminate but a choice, and most systems that scale make it deliberately.
 
-Why you should care: it's not a defect to eliminate. It's a choice, and most systems that scale make it deliberately. Your job is to spot the few cases where it's unacceptable. They're easy to recognise:
+Common fix for the reload problem: read from the primary replica for the session that just wrote, not for everyone.
 
-Account balances
-
-Seat availability
-
-Uniqueness of an identifier
-
-Those need strong consistency. Nearly everything else can live with replicas catching up.
+**Where it's unacceptable:** the cases are few and easy to recognise: account balances, seat availability, and uniqueness of an identifier.

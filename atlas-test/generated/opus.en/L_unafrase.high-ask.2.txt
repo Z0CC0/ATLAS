@@ -1,1 +1,1 @@
-Yes. Same holds for every empty collection: list, tuple, dict, set and string.
+Yes. Every empty collection is falsy: list, tuple, dict, set and string.

@@ -1,4 +1,4 @@
-*conoscenza interna*
+conoscenza interna
 
 ```js
 function debounce(fn, ms) {
@@ -10,16 +10,12 @@ function debounce(fn, ms) {
 }
 ```
 
-Uso: `const salva = debounce(salvaBozza, 300);` e poi chiami `salva(...)` quante volte vuoi. `salvaBozza` parte una volta sola, 300 ms dopo l'ultima chiamata.
+`clearTimeout` va chiamato prima di ogni nuovo `setTimeout`, altrimenti i timer si accumulano e la funzione parte più volte.
 
-Tre dettagli da non sbagliare:
+`t` deve stare nella chiusura, non dentro la funzione restituita. Altrimenti ogni chiamata avrebbe il proprio timer e il debounce non avverrebbe.
 
-**`clearTimeout(t)` prima di ogni nuovo `setTimeout`.** Se lo togli, i timer si accumulano e la funzione parte più volte.
+Argomenti inoltrati con lo spread (`...args`), altrimenti `fn` li riceve vuoti.
 
-`let t` va nella chiusura, fuori dalla funzione restituita. Se la sposti dentro, ogni chiamata ha il suo timer e il debounce non avviene.
+Questa versione non restituisce niente. Se ti serve il valore di ritorno, serve una Promise.
 
-`...args` inoltra gli argomenti. Senza lo spread, `fn` li riceve vuoti.
-
-Questa versione non restituisce niente. Se ti serve il valore di ritorno di `fn`, devi usare una Promise.
-
-Se invece vuoi il caso opposto, cioè eseguire subito e poi ignorare le chiamate per un periodo, ti serve un throttle, che è un'altra funzione.
+Caso opposto, cioè eseguire subito e poi ignorare le chiamate per un periodo: serve un throttle, che è un'altra funzione.

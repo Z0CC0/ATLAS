@@ -1,6 +1,10 @@
-Yes. An empty list is falsy, so `if my_list:` runs only when the list has at least one item. The same is true of every empty collection: an empty list, tuple, dict, set or string is falsy.
+Yes. An empty list is falsy, so `if my_list:` runs only when the list has at least one element.
+
+The same is true of every empty collection: an empty list, tuple, dict, set or string all count as false in a boolean context.
 
 ```python
-if not []:
-    print("empty")  # this runs
+for empty in ([], (), {}, set(), ""):
+    print(bool(empty))   # False every time
 ```
+
+So the idiomatic way to check whether a collection is empty is `if not items:`. You don't need `if len(items) == 0:`.

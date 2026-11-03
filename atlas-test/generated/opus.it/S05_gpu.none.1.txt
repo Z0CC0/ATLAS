@@ -1,16 +1,12 @@
-In breve, la RTX 5080 è un'evoluzione della 4080. Rispetto alla generazione precedente non cambia molto.
+La RTX 5080 è il modello successivo alla RTX 4080, ma il salto è meno ampio di quanto si possa pensare.
 
-**Cosa cambia**
-- **Architettura:** la 5080 usa Blackwell, la 4080 usa Ada Lovelace.
-- **Memoria:** la 5080 passa alla GDDR7, mentre la 4080 usa la GDDR6X. La banda di memoria sale da circa 717 a circa 960 GB/s.
-- **Consumo:** quello dichiarato passa da 320 a 360 W. Serve quindi un po' più di margine sull'alimentatore.
+**Architettura e memoria**
+La 5080 usa la nuova architettura Blackwell, mentre la 4080 usa Ada Lovelace. Cambia anche la memoria: la 5080 monta GDDR7 al posto delle GDDR6X della 4080. Per questo la banda di memoria passa da circa 717 a circa 960 GB/s.
 
-**Cosa resta uguale**
-- Il connettore di alimentazione è sempre a 16 pin, quindi non servono cavi o adattatori diversi.
+**Prestazioni**
+Nel rasterizzatore puro, cioè nei giochi senza tecniche di generazione dei fotogrammi, il guadagno reale è intorno al 10-15%. Il miglioramento più grande riguarda la generazione di fotogrammi. Il vantaggio della 5080 quindi si vede soprattutto nei giochi che la supportano.
 
-**Prestazioni reali**
-Il salto più grande riguarda la generazione di fotogrammi, non il rasterizzatore puro. Nei giochi che non usano la generazione di fotogrammi il guadagno reale è del 10-15% circa.
+**Consumi e alimentazione**
+Il consumo dichiarato sale da 320 a 360 watt. Conviene quindi controllare di avere un po' di margine sull'alimentatore. Il connettore resta lo stesso a 16 pin, quindi da questo lato non cambia niente.
 
-**Conclusione pratica**
-- **Se hai già una 4080:** passare alla 5080 conviene soprattutto se usi molto la generazione di fotogrammi. Altrimenti il miglioramento è modesto.
-- **Se parti da zero:** la 5080 è la scelta più moderna, ma consuma un po' di più.
+**In sintesi:** se hai già una 4080, nel rasterizzatore puro il passaggio alla 5080 porta un miglioramento contenuto. Ha più senso se ti interessa molto la generazione di fotogrammi. Se invece parti da una scheda più vecchia e devi scegliere fra le due, la 5080 è la più moderna.

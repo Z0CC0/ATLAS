@@ -1,11 +1,13 @@
-Domani a New York porta una giacca leggera o un ombrello se esci la sera.
+Se esci la sera, porta un ombrello leggero: dopo le 18 c'è il 30% di probabilità di pioggia.
 
-- **Mattina:** cielo sereno.
-- **Pomeriggio:** arrivano le nuvole.
-- **Dopo le 18:** 30% di probabilità di pioggia.
-- **Temperature:** massima 24 °C, minima 17 °C.
-- **Vento e umidità:** vento da nord-ovest a 15 km/h, umidità intorno al 60%.
+Domani a New York:
 
-Se hai cose da fare all'aperto, falle entro il pomeriggio.
+- **Mattina:** cielo sereno
+- **Pomeriggio:** arrivano le nuvole
+- **Temperature:** massima 24 °C, minima 17 °C
+- **Vento:** da nord-ovest, 15 km/h
+- **Umidità:** circa 60%
 
-_Fonte: dati meteo presi dal web._
+Di giorno basta una maglietta. Per la sera prendi una giacca leggera, perché la temperatura scende verso i 17 °C.
+
+*Fonte: dati meteo dal web.*

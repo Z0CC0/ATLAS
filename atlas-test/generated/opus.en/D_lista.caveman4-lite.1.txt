@@ -1,0 +1,21 @@
+Set these six headers. Skip `X-XSS-Protection`.
+
+- **`Strict-Transport-Security`**: makes the browser use HTTPS. Set `max-age` to at least `31536000` seconds and add `includeSubDomains`.
+- **`Content-Security-Policy`**: `default-src 'self'` blocks third-party script injection.
+- **`X-Content-Type-Options: nosniff`**: stops the browser from guessing the content type.
+- **`Referrer-Policy: strict-origin-when-cross-origin`**: other sites do not get your full URL path.
+- **Clickjacking protection**: set `X-Frame-Options: DENY`, or put `frame-ancestors 'none'` in the CSP.
+- **`Permissions-Policy`**: if the site does not use the camera, microphone or geolocation, turn them off.
+
+Example:
+
+```
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+Content-Security-Policy: default-src 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+X-Frame-Options: DENY
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+```
+
+Do not send `X-XSS-Protection`. It is deprecated. Modern browsers ignore it, and in older browsers it caused security vulnerabilities.

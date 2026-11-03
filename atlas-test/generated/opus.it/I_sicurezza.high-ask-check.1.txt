@@ -1,11 +1,11 @@
-Conoscenza interna.
+conoscenza interna
 
-No. Tutto ciò che arriva al browser si può leggere, e l'offuscamento si aggira aprendo gli strumenti per sviluppatori o guardando le richieste di rete.
+No. Anche se offuscata, la chiave arriva comunque al browser, e tutto quello che arriva al browser si può leggere. Basta aprire gli strumenti per sviluppatori o guardare le richieste di rete per annullare l'offuscamento.
 
-Tieni la chiave sul server. Il frontend chiama un endpoint del tuo backend, ed è il backend a chiamare il servizio.
+Tieni la chiave sul server. Il frontend chiama un endpoint del tuo backend, ed è il backend a chiamare il servizio con la chiave.
 
-Metti un limite di frequenza su quell'endpoint. Senza limite chiunque può usare la tua chiave gratis passando dal tuo backend.
+Metti un limite di frequenza su quell'endpoint. Altrimenti chiunque può usarlo per sfruttare la tua chiave gratis.
 
 Se la chiave è già stata pubblicata, considerala compromessa e ruotala subito. Toglierla dal codice non basta.
 
-Non basta nemmeno toglierla con un nuovo commit. Resta nella cronologia del repository, e chi ha già un clone ce l'ha.
+Non basta nemmeno rimuoverla con un nuovo commit. Resta nella cronologia del repository, e chiunque abbia un clone ce l'ha già.

@@ -1,4 +1,4 @@
-Set these six headers on every response, and leave out `X-XSS-Protection`:
+Add these response headers to every page:
 
 ```
 Strict-Transport-Security: max-age=31536000; includeSubDomains
@@ -9,16 +9,20 @@ X-Frame-Options: DENY
 Permissions-Policy: camera=(), microphone=(), geolocation=()
 ```
 
-**What each one does**
+## What each one does
 
-1. **Strict-Transport-Security** makes the browser use HTTPS. Set `max-age` to at least 31536000 seconds (one year) and add `includeSubDomains`.
+**Core protection**
+1. **Strict-Transport-Security** makes the browser use HTTPS only. Set `max-age` to at least 31536000 seconds (1 year) and include `includeSubDomains`.
 2. **Content-Security-Policy** with `default-src 'self'` blocks scripts injected from third-party sources.
-3. **X-Content-Type-Options: nosniff** stops the browser from guessing the content type of a file.
-4. **Referrer-Policy: strict-origin-when-cross-origin** stops the full path of your URLs from being sent to other sites.
-5. **Clickjacking protection:** use `X-Frame-Options: DENY` or `frame-ancestors 'none'` inside the CSP. One is enough. The block above sets both, which is harmless.
+3. **X-Content-Type-Options: nosniff** stops the browser from guessing a file's content type.
 
-**Permissions-Policy:** turns off camera, microphone and geolocation. Only set it if your site doesn't use them. If a page needs one of them, remove it from the list.
+**Leaks and embedding**
+1. **Referrer-Policy: strict-origin-when-cross-origin** stops your full URL path from being sent to other sites.
+2. **Clickjacking:** you need only one of these two. Use `frame-ancestors 'none'` inside the CSP or `X-Frame-Options: DENY`. The block above sets both, which is also fine.
+3. **Permissions-Policy** turns off camera, microphone and geolocation. Leave a feature out of the list if your site actually uses it.
 
-**Don't set X-XSS-Protection.** It's deprecated. Modern browsers ignore it, and older browsers that support it had vulnerabilities caused by it.
+## Leave this one out
 
-Next: add the block above to your server or host's headers config and reload one page. Check the response headers in the browser's DevTools Network tab.
+**X-XSS-Protection** is deprecated, so don't set it. Modern browsers ignore it, and in older browsers it created vulnerabilities.
+
+Next: paste the block into your server or host's header config, then open your site in browser DevTools → Network → click the page → check that the response headers include all six (about 10 minutes).

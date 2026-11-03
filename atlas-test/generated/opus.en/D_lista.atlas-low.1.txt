@@ -1,26 +1,15 @@
-Set six headers, and leave out X-XSS-Protection.
+For a static site, set these six headers and leave out a seventh:
 
-Strict-Transport-Security: `max-age=31536000; includeSubDomains` at minimum. This makes the browser use HTTPS for your domain and all its subdomains.
+Strict-Transport-Security: max-age=31536000; includeSubDomains. This forces the browser to use HTTPS. The max-age should be at least 31536000 seconds (one year).
 
-Content-Security-Policy: `default-src 'self'`. This blocks scripts injected from third-party origins.
+Content-Security-Policy: default-src 'self'. This blocks scripts injected from third-party sources. Add frame-ancestors 'none' to the same header to protect against clickjacking.
 
-X-Content-Type-Options: `nosniff`. This stops the browser from guessing a file's content type.
+X-Frame-Options: DENY. This also protects against clickjacking. It does the same job as frame-ancestors 'none', so you only need one of them.
 
-Referrer-Policy: `strict-origin-when-cross-origin`. Other sites see only your origin, not the full path of the page.
+X-Content-Type-Options: nosniff. This stops the browser from guessing the content type of a file.
 
-X-Frame-Options: `DENY`. This protects against clickjacking. You can instead add `frame-ancestors 'none'` to the Content-Security-Policy.
+Referrer-Policy: strict-origin-when-cross-origin. This keeps the full path of your pages from being sent to other sites.
 
-Permissions-Policy: if the site doesn't use the camera, microphone or geolocation, turn them off, for example `camera=(), microphone=(), geolocation=()`.
+Permissions-Policy: camera=(), microphone=(), geolocation=(). This turns off those features. Only do this if your site doesn't use them.
 
-Don't send X-XSS-Protection at all. It's deprecated, modern browsers ignore it, and in older browsers it created vulnerabilities.
-
-For example:
-
-```
-Strict-Transport-Security: max-age=31536000; includeSubDomains
-Content-Security-Policy: default-src 'self'; frame-ancestors 'none'
-X-Content-Type-Options: nosniff
-Referrer-Policy: strict-origin-when-cross-origin
-X-Frame-Options: DENY
-Permissions-Policy: camera=(), microphone=(), geolocation=()
-```
+**Don't set X-XSS-Protection.** It is deprecated. Modern browsers ignore it, and in older browsers it introduced vulnerabilities.

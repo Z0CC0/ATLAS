@@ -1,1 +1,1 @@
-It's 14:20 in London.
+It's 14:20 in London right now (local time).

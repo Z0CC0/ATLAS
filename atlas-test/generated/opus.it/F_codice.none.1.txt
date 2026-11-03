@@ -1,6 +1,6 @@
-Ecco un debounce senza librerie:
+Ecco una versione senza librerie:
 
-```javascript
+```js
 function debounce(fn, ms) {
   let t;
   return (...args) => {
@@ -10,22 +10,20 @@ function debounce(fn, ms) {
 }
 ```
 
-Funziona così: ogni chiamata cancella il timer precedente e ne avvia uno nuovo. `fn` quindi parte solo quando passano `ms` millisecondi senza nuove chiamate.
+Un esempio d'uso:
 
-Tre dettagli sono essenziali:
-
-- **`clearTimeout(t)` va chiamato prima di ogni nuovo `setTimeout`.** Se lo togli, i timer si accumulano e la funzione parte più volte.
-- **`let t` deve stare nella chiusura, fuori dalla funzione restituita.** Se lo sposti dentro, ogni chiamata ha il suo timer e il debounce non avviene.
-- **Gli argomenti vanno inoltrati con lo spread (`...args`).** Senza, `fn` li riceve vuoti.
-
-Per usarlo:
-
-```javascript
+```js
 const onResize = debounce(() => console.log('resize finito'), 200);
 window.addEventListener('resize', onResize);
 ```
 
-Due limiti da conoscere:
+**Come funziona e cosa non cambiare**
 
-- Questa versione non restituisce niente. Se ti serve il valore di ritorno di `fn`, devi farle restituire una Promise.
-- Se vuoi il comportamento opposto, cioè eseguire subito e poi ignorare le chiamate per un certo periodo, ti serve un throttle, che è un'altra funzione.
+- **`clearTimeout` va prima di ogni nuovo `setTimeout`.** Ogni chiamata cancella il timer precedente e ne avvia uno nuovo, quindi `fn` parte solo quando le chiamate si fermano per `ms` millisecondi. Se togli `clearTimeout`, i timer si accumulano e la funzione parte più volte.
+- **`let t` deve stare nella chiusura, fuori dalla funzione restituita.** Così tutte le chiamate condividono lo stesso timer. Se lo sposti dentro la arrow function, ogni chiamata ha il suo timer e il debounce non avviene.
+- **Gli argomenti passano con lo spread (`...args`).** Senza lo spread `fn` li riceve vuoti. Per esempio, un handler di `input` non riceverebbe l'evento.
+
+**Limiti**
+
+- **Non restituisce niente.** Il wrapper non dà il valore di ritorno di `fn`. Se ti serve, devi far restituire una Promise al wrapper.
+- **Se vuoi l'effetto opposto ti serve un throttle.** Il debounce aspetta che le chiamate si fermino. Se invece vuoi eseguire subito e poi ignorare le chiamate per un certo periodo, ti serve un throttle, che è un'altra funzione.

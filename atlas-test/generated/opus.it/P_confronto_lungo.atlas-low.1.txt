@@ -1,11 +1,11 @@
-**File locali più un raccoglitore che li spedisce altrove.** A mille richieste al minuto è la scelta ragionevole: l'applicazione non aspetta mai la scrittura del log.
+**File locali più un raccoglitore che li spedisce altrove.** Così l'applicazione non aspetta mai la scrittura del log.
 
-Regola che vale sempre, qualunque cosa scegli: la scrittura del log non deve stare nel percorso critico della richiesta.
+Regola che vale in ogni caso: scrittura del log fuori dal percorso critico della richiesta.
 
-Perché nessuna delle tre basta da sola:
+Perché non solo file: costo zero e nessuna dipendenza, ma ricerca solo con grep e rotazione da configurare a mano, altrimenti disco pieno. Su più macchine ricerca unica impossibile, bisogna collegarsi a ognuna.
 
-Solo file: costo zero e nessuna dipendenza, ma la ricerca si fa con grep. Su più macchine non si può cercare in un colpo solo: bisogna collegarsi a ognuna. La rotazione va configurata a mano, altrimenti il disco si riempie.
+Perché non solo servizio gestito: ricerca immediata, allarmi e conservazione automatica, ma si paga per volume, e a mille richieste al minuto volume cresce in fretta. Inoltre log escono dalla tua infrastruttura, quindi vanno ripuliti dai dati personali prima di uscire.
 
-Servizio gestito: ricerca immediata, allarmi e conservazione automatica. Però si paga per volume, e a mille richieste al minuto il volume cresce in fretta. In più i log escono dalla tua infrastruttura, quindi prima di mandarli fuori vanno ripuliti dai dati personali. Questo vale anche se il raccoglitore li spedisce a un servizio gestito.
+Perché non database: ricerca comoda e nota, ma log nello stesso database dell'applicazione mettono in competizione due carichi molto diversi. Sotto carico riempiono cache e connessioni che servivano alle richieste vere.
 
-Database: la ricerca è comoda e la conosci già. Ma se scrivi i log nello stesso database dell'applicazione, metti in competizione due carichi molto diversi. Sotto carico i log occupano cache e connessioni che servivano alle richieste vere.
+Con raccoglitore tieni file locali come buffer economico e mandi log dove ricerca funziona. Se destinazione è servizio gestito, valgono comunque costo per volume e pulizia dei dati personali.

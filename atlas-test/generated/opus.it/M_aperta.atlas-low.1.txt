@@ -1,13 +1,13 @@
-Prima di tutto chiediti cosa dovrà poter fare il team fra un anno che oggi non può. Questa è **la domanda decisiva, e non è tecnica**. Il resto serve a rispondere a quella.
+Prima dell'architettura, chiediti cosa deve poter fare il tuo team fra un anno che oggi non può. È una domanda di prodotto e di organizzazione, non tecnica, e da lì dipende tutto il resto.
 
-Poi ti servono due dati sul monolite.
+Poi servono due dati sul monolite.
 
-Quali parti cambiano davvero. Quelle stabili non guadagnano nulla dall'essere spezzate, quindi lasciale dove sono.
+**Quali parti cambiano davvero.** Quelle stabili non guadagnano nulla a essere spezzate: lasciale dove sono.
 
-Dove stanno i confini delle transazioni. Se una transazione finisce a cavallo di due servizi, diventa un problema distribuito.
+**Dove finiscono le transazioni.** Se una transazione attraversa due servizi, diventa un problema distribuito. I confini vanno tracciati in modo che ogni transazione resti dentro un solo servizio.
 
-Sul metodo, evita la riscrittura completa in parallelo al vecchio sistema. Fallisce quasi sempre, perché il vecchio continua a cambiare e la copia non lo raggiunge mai. Conviene lo strangolamento progressivo: metti un router davanti e sposti un pezzo per volta. Il vecchio sistema resta autorevole finché il nuovo non è verificato.
+Sulla strategia di migrazione, evita la riscrittura completa in parallelo. Fallisce quasi sempre, perché il vecchio sistema continua a cambiare e la copia non lo raggiunge mai. Conviene lo strangolamento progressivo: metti un router davanti al monolite e sposti un pezzo alla volta. Il PHP resta la fonte autorevole finché il nuovo pezzo non è verificato.
 
-Sull'architettura, fai i conti con la dimensione del team. Ogni microservizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupi. Sotto i cinque sviluppatori questo costo operativo supera quasi sempre il beneficio.
+Sulla forma finale, i microservizi non sono gratis. Ogni servizio richiede rilascio, monitoraggio, log, allarmi e una persona che se ne occupa. Sotto i cinque sviluppatori quel costo operativo supera quasi sempre il beneficio.
 
-Considera anche il **monolite modulare**, l'opzione di cui si parla poco. Ha confini interni netti e un solo rilascio. Il giorno che ti serve davvero, puoi estrarre un modulo come servizio a parte.
+C'è anche un'opzione di cui si parla poco: il monolite modulare. Ha confini interni netti e un solo rilascio, e puoi estrarre un modulo come servizio il giorno in cui serve davvero. Se il team è piccolo, è probabilmente il punto di partenza più sensato.

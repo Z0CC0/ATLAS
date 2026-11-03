@@ -1,21 +1,11 @@
-Eventual consistency: after a write, replicas don't agree right away, but they converge within finite time once writes stop.
+Eventual consistency: after a write, replicas don't agree right away, but they converge within a finite time once writes stop.
 
-It's a trade against availability. A system demanding strong consistency has to refuse requests whenever replicas can't talk to each other. Eventual consistency keeps answering.
+How long that takes: under a second across replicas in the same region, and up to seconds across regions.
 
-Why you should care: it bites whoever reads right after writing. A user posts a comment, reloads, and doesn't see it.
+Why you'd accept it: the alternative costs availability. A system that demands strong consistency has to refuse requests whenever its replicas can't talk to each other. So eventual consistency isn't a defect to stamp out. It's a deliberate choice, and most systems that scale make it on purpose.
 
-Gap usually short. Replicas in the same region typically converge in under a second. Across regions it rises to seconds.
+Where you'll feel it: the person who reads right after writing. A user posts a comment, reloads the page, and the comment isn't there.
 
-Common fix: route reads to the primary replica for the session that just wrote, not for everyone. The writer sees their own comment, and everyone else keeps reading from nearby replicas.
+Common fix: for the session that just wrote, read from the primary replica. Everyone else keeps reading from the other replicas, so you don't route all traffic to the primary.
 
-**Not a defect to eliminate but a choice.** Most systems that scale accept it deliberately.
-
-Cases where it's unacceptable are few and easy to recognise:
-
-account balances
-
-seat availability
-
-uniqueness of an identifier
-
-Outside those, design around the read-after-write moment and accept the rest.
+When it's not acceptable: the cases are few and easy to spot. Examples are account balances, seat availability and identifiers that must be unique. Those need strong consistency. Nearly everything else can live with replicas being a second or so behind.

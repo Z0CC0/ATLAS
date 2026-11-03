@@ -1,35 +1,40 @@
-**Eventual consistency means that after you write data, your copies of it (replicas) don't agree right away. If the writes stop, they converge within a finite time.** You should care because it decides what your users see right after they change something.
+**Short version:** after a write, your replicas disagree for a moment, and then they catch up. Most of the time that's fine. It becomes a problem when the user who just wrote something reads it back right away.
 
-## What it looks like in practice
+## What it is
 
-A user posts a comment and reloads the page. The comment isn't there. The write reached one replica, and the reload read from another replica that hasn't caught up yet.
+When you write data, the replicas don't all get the update at the same instant. If writes stop, they **converge within a finite time**. Until then, different replicas can return different answers.
 
-How long the gap lasts:
-- **Replicas in the same region:** usually under a second
-- **Replicas across regions:** it rises to seconds
-
-The effect is short, but it lands on exactly the person who just acted, and they notice.
+How long "a moment" lasts:
+- **Same region:** usually under a second
+- **Across regions:** a few seconds
 
 ## Why systems accept it
 
-You're trading consistency against availability. A system that demands strong consistency has to **refuse requests** when its replicas can't talk to each other. An eventually consistent system keeps answering and catches up later.
+It's a trade against **availability**. A system that demands strong consistency has to **refuse requests** when its replicas can't talk to each other. Eventual consistency lets the system keep answering.
 
-So this isn't a defect to eliminate. It's a choice, and most systems that scale make it deliberately.
+So it's not a defect you need to remove. It's a choice, and most systems that scale make it on purpose.
+
+## Where it hurts
+
+The person affected is whoever **reads right after writing**:
+
+1. User posts a comment
+2. User reloads the page
+3. The read goes to a replica that hasn't caught up, so the comment isn't there
+
+Everyone else reading a second later never notices.
 
 ## The usual fix
 
-Send reads to the primary replica **for the session that just wrote**, not for everyone.
-- The person who posted the comment sees it immediately.
-- Everyone else keeps reading from the replicas and gets the comment within a second or a few seconds.
-- The load stays spread out, because only a small share of reads goes to the primary.
+For the **session that just wrote**, send reads to the **primary replica**. Don't do this for everyone. Everyone else keeps reading from replicas, so you keep the scaling benefit and fix the one case users actually see.
 
 ## When it's not acceptable
 
-There are only a few such cases, and they're easy to recognise:
-1. **Account balances**
-2. **Seat availability**
-3. **Uniqueness of an identifier**
+There are only a few cases, and they're easy to spot:
+- **Account balances**
+- **Seat availability**
+- **Uniqueness of an identifier** (e.g. no two users with the same username)
 
-In all three, two replicas that briefly disagree can produce a real error, such as the same seat sold twice or the same ID given out twice. Those need strong consistency. Everything else can usually live with a lag of about a second.
+If your data isn't like these, eventual consistency is very likely the right default.
 
-**Next:** find one place in your app where a user writes something and then reads it right away, and check which replica that read goes to.
+**Next:** pick one write path in your app, like posting a comment, and check whether the next read for that user goes to the primary or to a replica.

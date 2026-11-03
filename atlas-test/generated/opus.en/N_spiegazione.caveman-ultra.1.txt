@@ -1,20 +1,18 @@
-**Eventual consistency:** after a write, replicas do not agree right away. If writes stop, they converge within a finite time.
+**Eventual consistency:** after a write, replicas don't agree right away. If writes stop, they converge within a finite time.
 
-**Convergence times:**
-- Same region: under one second.
-- Across regions: several seconds.
+**How long:** under 1 second across replicas in the same region. Seconds across regions.
 
-**Why accept it:** the trade is against availability. A system that demands strong consistency must refuse requests when its replicas cannot talk to each other. Eventual consistency keeps the system serving requests.
+**Why it exists:** it trades consistency for availability. A strongly consistent system must refuse requests when replicas can't talk to each other. An eventually consistent system keeps serving.
 
-**Why you should care:** it hits anyone who reads right after writing. A user posts a comment, reloads the page, and the comment is not there. To that user, the app looks broken.
+**Why you should care:** it hits users who read right after they write. Example: a user posts a comment, reloads the page, and the comment is missing.
 
-**Common fix:** send reads to the primary replica only for the session that just wrote. Everyone else keeps reading from replicas. The writer sees their own change, and you keep the scaling benefit.
+**Common fix:** send reads to the primary replica only for the session that just wrote. Other users keep reading from any replica.
 
-**Mindset:** eventual consistency is not a defect to remove. It is a choice, and most systems that scale make it on purpose.
+**How to think about it:** it's a choice, not a defect to remove. Most systems that scale accept it on purpose.
 
-**Where it is not acceptable:** these cases are few and easy to spot:
+**When you can't accept it:** these cases are few and easy to spot:
 - account balances
 - seat availability
-- uniqueness of an identifier
+- unique identifiers
 
-Use strong consistency for these. Use eventual consistency for the rest.
+Outside those cases, accept it and fix read-after-write per session.

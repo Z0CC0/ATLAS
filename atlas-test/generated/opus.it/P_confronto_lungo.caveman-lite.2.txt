@@ -1,17 +1,22 @@
-Con mille richieste al minuto conviene scrivere i log su **file locali** e aggiungere un **raccoglitore** che li spedisce altrove. L'applicazione scrive su disco e prosegue. Il raccoglitore spedisce i log in un secondo momento, quindi l'applicazione non aspetta mai la scrittura del log.
+Usa file locali più un raccoglitore che li spedisce altrove. Con mille richieste al minuto è la scelta ragionevole: l'applicazione scrive su disco e non aspetta mai la scrittura del log. La ricerca e la conservazione avvengono fuori dall'applicazione.
 
-Qualunque soluzione scegli, vale una regola: **la scrittura del log non deve stare nel percorso critico della richiesta.**
+**Solo file**
+- Costo zero e nessuna dipendenza.
+- La ricerca è `grep`.
+- La rotazione va configurata a mano, altrimenti il disco si riempie.
+- Con più macchine non puoi cercare in un solo punto. Devi collegarti a ognuna.
 
-**Perché non solo file**
-Costano zero e non aggiungono dipendenze. Però la ricerca si fa con grep. Se hai più macchine, non puoi cercare su tutte insieme: devi collegarti a ognuna. Inoltre la rotazione va configurata a mano, altrimenti il disco si riempie. Nella soluzione consigliata i file restano, ma solo come buffer locale.
+**Servizio gestito**
+- Hai ricerca immediata, allarmi e conservazione automatica.
+- Paghi per volume. Con mille richieste al minuto il volume cresce in fretta.
+- I log escono dalla tua infrastruttura. Prima dell'invio devi ripulirli dai dati personali.
 
-**Perché non subito un servizio gestito**
-Offre ricerca immediata, allarmi e conservazione automatica. Però paghi in base al volume, e a mille richieste al minuto il volume cresce in fretta. Inoltre i log escono dalla tua infrastruttura. Prima dell'invio devi quindi ripulirli dai dati personali. Il servizio gestito può comunque essere la destinazione del raccoglitore, se accetti costi e pulizia dei dati.
+**Database**
+- La ricerca è comoda e già nota.
+- Se scrivi i log nello stesso database dell'applicazione, metti in competizione due carichi molto diversi.
+- Sotto carico i log occupano cache e connessioni che servono alle richieste vere.
 
-**Perché non il database dell'applicazione**
-Cercare con una query è comodo e familiare. Però i log e le richieste dell'applicazione sono carichi molto diversi, e nello stesso database entrano in competizione. Sotto carico, i log occupano cache e connessioni che servivano alle richieste vere.
+**In pratica**
+L'applicazione scrive file locali. Il raccoglitore li legge e li spedisce, per esempio a un servizio gestito. Così hai la ricerca centralizzata senza rallentare le richieste. Se scegli un servizio gestito, ricorda due cose: tieni d'occhio il volume e ripulisci i dati personali prima dell'invio.
 
-**In pratica:**
-1. Scrivi i log su file locali e configura subito la rotazione.
-2. Aggiungi un raccoglitore che legge quei file e li spedisce a una destinazione centrale.
-3. Se la destinazione è un servizio gestito, rimuovi i dati personali prima dell'invio e controlla quanto costa il volume.
+Questa regola vale con qualsiasi scelta: la scrittura del log non deve mai stare nel percorso critico della richiesta.

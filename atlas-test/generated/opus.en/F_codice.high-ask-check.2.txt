@@ -10,12 +10,14 @@ function debounce(fn, ms) {
 }
 ```
 
-Call `clearTimeout` before every new `setTimeout`. If you skip it, timers pile up and the function fires more than once.
+Use: `const onResize = debounce(() => console.log('resized'), 200);`
 
-Keep `t` in the closure, not inside the returned function. If each call gets its own timer, nothing is debounced.
+`clearTimeout` must run before every new `setTimeout`. Otherwise timers pile up, function fires more than once.
 
-Forward the arguments with the spread (`...args`). Without it, `fn` receives nothing.
+`t` must live in closure, not inside returned function. Otherwise every call gets own timer, no debouncing.
 
-This version returns nothing. If you need the return value, use a Promise.
+Forward arguments with spread (`...args`). Otherwise `fn` receives nothing.
 
-If you want the function to run immediately and then ignore calls for a period, you need a throttle. That's a different function.
+Returns nothing. Return value matters: need Promise.
+
+Run immediately, then ignore for a period: that's throttle, different function.

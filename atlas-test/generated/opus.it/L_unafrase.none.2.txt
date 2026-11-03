@@ -1,6 +1,14 @@
-Sì: in un contesto booleano una lista vuota è falsa. Lo stesso vale per tutte le collezioni vuote: lista, tupla, dizionario, insieme e stringa.
+Sì, in Python una lista vuota è falsa in un contesto booleano. Lo stesso vale per tutte le collezioni vuote: liste, tuple, dizionari, insiemi e stringhe.
 
 ```python
 if not []:
     print("la lista vuota è falsa")
+
+bool([])   # False
+bool(())   # False
+bool({})   # False
+bool(set())  # False
+bool("")   # False
 ```
+
+Per controllare se una collezione è vuota basta quindi scrivere `if not lista:`.

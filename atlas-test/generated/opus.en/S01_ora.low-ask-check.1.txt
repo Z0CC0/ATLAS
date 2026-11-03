@@ -1,3 +1,3 @@
-Internal knowledge.
+internal knowledge
 
-It's 14:20 in London.
+14:20

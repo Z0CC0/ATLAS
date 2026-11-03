@@ -1,18 +1,16 @@
-x86 grew by piling features onto one compatible instruction set, until x86 became an interface over a different machine underneath.
+x86 went from Intel making ever richer chips, to x86 becoming an interface over a different machine, to frequency giving way to core count and security.
 
-**1978, 8086:** 16 bit. Grew out of 8080, compatible at source level.
+1978, 8086: 16 bit, grown out of 8080, compatible at source level. Base everything later sits on.
 
 1982, 80286: protected mode. No way back to real mode without reboot.
 
-1985, 80386: 32 bit, paged virtual memory, virtual 8086 mode.
+1985, 80386: 32 bit, paged virtual memory, virtual 8086 mode. Old real-mode code can now run inside protected mode, which fixes 286's dead end.
 
-1989, 486: first-level cache and maths coprocessor pulled onto chip.
+1989, 486: first level cache and maths coprocessor pulled onto chip.
 
-1993, Pentium: superscalar. Two integer pipelines, can retire two instructions per cycle.
+1993, Pentium: superscalar. Two integer pipelines, up to two instructions retired per cycle.
 
-1995, Pentium Pro: out-of-order execution. Translates x86 instructions into internal micro-operations.
-
-**From here, x86 is an interface, no longer the real machine underneath.**
+1995, Pentium Pro: out of order execution. x86 instructions translated into internal micro-operations. Biggest turn in the story: from here x86 is an interface, no longer the real machine underneath.
 
 2000, Pentium 4: chases frequency with very long pipeline, hits power wall.
 
@@ -22,6 +20,6 @@ x86 grew by piling features onto one compatible instruction set, until x86 becam
 
 Across generations, vector extensions grow: MMX, SSE, AVX, AVX-512.
 
-Today, complexity sits in layers below: branch prediction, cache hierarchy, speculative execution.
+Today: complexity sits in layers below instruction set: branch prediction, cache hierarchy, speculative execution.
 
 2018, Spectre and Meltdown: speculative execution carried security cost nobody had priced.

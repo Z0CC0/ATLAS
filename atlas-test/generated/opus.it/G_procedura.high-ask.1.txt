@@ -1,11 +1,11 @@
-Non usare `ALTER TABLE ALTER COLUMN TYPE` diretto: riscrive tutta la tabella tenendo un ACCESS EXCLUSIVE lock, quindi il servizio resta fermo per tutta la durata. Conviene invece migrare su una colonna nuova, in quest'ordine:
+Non usare `ALTER TABLE ... ALTER COLUMN TYPE` diretto: riscrive tutta la tabella tenendo un ACCESS EXCLUSIVE lock, quindi il servizio resta fermo per tutta la durata. Conviene migrare passando per una colonna nuova, in quest'ordine:
 
-1. Verifica che ogni valore esistente sia convertibile: conta le righe che non contengono solo cifre.
+1. Verifica che ogni valore esistente sia convertibile. Conta le righe che non contengono solo cifre. Se il conteggio non è zero, sistema quelle righe prima di andare avanti.
 
 2. Aggiungi la colonna nuova:
-```sql
-ALTER TABLE t ADD COLUMN colonna_int integer
-```
+   ```sql
+   ALTER TABLE t ADD COLUMN colonna_int integer;
+   ```
 
 3. Riempila a blocchi da diecimila righe per volta, così non tieni un lock lungo sulla tabella.
 
@@ -13,9 +13,9 @@ ALTER TABLE t ADD COLUMN colonna_int integer
 
 5. Cambia il codice perché legga dalla colonna nuova e rilascialo.
 
-6. Solo dopo il rilascio, elimina la colonna vecchia:
-```sql
-ALTER TABLE t DROP COLUMN colonna
-```
+6. Solo dopo, elimina la colonna vecchia:
+   ```sql
+   ALTER TABLE t DROP COLUMN colonna;
+   ```
 
-Il sesto passo è irreversibile: una volta eliminata la colonna, i dati tornano solo con un ripristino da backup.
+Il sesto passo è irreversibile. Una volta eliminata la colonna, i dati tornano solo con un ripristino da backup. Fallo solo quando il codice nuovo è già in produzione e legge correttamente da `colonna_int`.

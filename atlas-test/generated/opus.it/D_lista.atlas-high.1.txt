@@ -1,26 +1,15 @@
-Per un sito statico metti questi sei header e togli X-XSS-Protection.
+Per un sito statico bastano questi sei header, più uno da togliere.
 
-`Strict-Transport-Security` con `max-age` di almeno 31536000 secondi e `includeSubDomains`: obbliga il browser a usare HTTPS.
+**Strict-Transport-Security**: `max-age=31536000; includeSubDomains`. Il valore di max-age deve essere di almeno 31536000 secondi. Obbliga il browser a usare HTTPS.
 
-`Content-Security-Policy` con `default-src 'self'`: blocca l'iniezione di script di terze parti.
+**Content-Security-Policy**: `default-src 'self'`. È l'header che blocca l'iniezione di script di terze parti.
 
-`X-Content-Type-Options: nosniff`: impedisce al browser di indovinare il tipo di contenuto.
+X-Content-Type-Options: `nosniff`. Impedisce al browser di indovinare il tipo di contenuto.
 
-`Referrer-Policy: strict-origin-when-cross-origin`: evita che il percorso completo arrivi ad altri siti.
+Referrer-Policy: `strict-origin-when-cross-origin`. Evita che il percorso completo delle tue pagine arrivi ad altri siti.
 
-`X-Frame-Options: DENY`, oppure `frame-ancestors 'none'` dentro la `Content-Security-Policy`: protegge dal clickjacking.
+X-Frame-Options: `DENY`, contro il clickjacking. In alternativa puoi aggiungere `frame-ancestors 'none'` dentro la Content-Security-Policy.
 
-`Permissions-Policy`: spegne camera, microfono e geolocalizzazione, se il sito non li usa.
+Permissions-Policy: spegne camera, microfono e geolocalizzazione, se il sito non li usa. Ad esempio `camera=(), microphone=(), geolocation=()`.
 
-Non mettere `X-XSS-Protection`. È deprecato e i browser moderni lo ignorano. Nelle versioni vecchie introduceva vulnerabilità.
-
-Esempio:
-
-```
-Strict-Transport-Security: max-age=31536000; includeSubDomains
-Content-Security-Policy: default-src 'self'; frame-ancestors 'none'
-X-Content-Type-Options: nosniff
-Referrer-Policy: strict-origin-when-cross-origin
-X-Frame-Options: DENY
-Permissions-Policy: camera=(), microphone=(), geolocation=()
-```
+X-XSS-Protection non va messo. È deprecato e i browser moderni lo ignorano. Nelle versioni vecchie dei browser, invece, introduceva vulnerabilità.

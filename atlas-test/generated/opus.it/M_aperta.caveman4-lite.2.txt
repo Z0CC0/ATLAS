@@ -1,0 +1,19 @@
+Prima dell'architettura, chiarisci cosa deve poter fare il team fra un anno che oggi non può. È la domanda decisiva, e non è tecnica. Il resto serve a rispondere a quella.
+
+**Dati da raccogliere prima**
+1. **Quali parti del monolite cambiano davvero.** Le parti stabili non guadagnano nulla dall'essere spezzate. Lasciale dove sono.
+2. **Dove stanno i confini delle transazioni.** Se una transazione attraversa due servizi, diventa un problema distribuito. Taglia lungo quei confini, non attraverso.
+
+**Come migrare**
+- Evita la riscrittura completa in parallelo al vecchio sistema. Fallisce quasi sempre: il vecchio continua a cambiare e la copia non lo raggiunge mai.
+- Usa lo strangolamento progressivo:
+  1. Metti un router davanti al monolite.
+  2. Sposta un pezzo per volta.
+  3. Il vecchio sistema resta la fonte autorevole finché il nuovo pezzo non è verificato.
+
+**Quanto costano i microservizi**
+- Costano di più da gestire. Ogni servizio richiede rilascio, monitoraggio, log, allarmi e una persona che se ne occupi.
+- Con meno di cinque sviluppatori, questo costo supera quasi sempre il beneficio.
+
+**L'opzione di cui si parla poco: il monolite modulare**
+Ha confini interni netti e un solo rilascio. Puoi estrarre un modulo come servizio il giorno in cui serve davvero. Se il team è piccolo, o non sai ancora quali parti cambieranno, di solito è il punto di partenza più sicuro.

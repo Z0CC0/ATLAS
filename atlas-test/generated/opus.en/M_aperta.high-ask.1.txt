@@ -1,15 +1,13 @@
-Start from what the team must be able to do a year from now that it can't today. That question isn't technical, and it decides the architecture.
+Start from what team must do in a year that it cannot do today; that question, not technology, picks architecture.
 
-Then look at the code:
+1. **Which parts actually change.** Stable parts gain nothing from being split.
 
-1. Which parts of the monolith actually change. Stable parts gain nothing from being split.
+2. **Where transaction boundaries sit.** Transaction spanning two services becomes distributed problem.
 
-2. Where the transaction boundaries sit. A transaction spanning two services becomes a distributed problem.
+Avoid full parallel rewrite: almost always fails. Old system keeps changing, copy never catches up.
 
-Don't rewrite from scratch in parallel with the old system. That almost always fails: the old system keeps changing and the copy never catches up.
+Prefer progressive strangling instead. Router in front, move one piece at a time, old system stays authoritative until new piece verified.
 
-Strangle it instead. Put a router in front and move one piece at a time. The old system stays authoritative until the new piece is verified.
+Microservices cost more in operations: every service wants releases, monitoring, logs, alerts, and a person looking after it. Below five developers, that cost almost always exceeds benefit.
 
-Microservices cost more to run. Every service needs releases, monitoring, logs, alerts and a person who looks after it. Below five developers, that cost almost always exceeds the benefit.
-
-Consider a **modular monolith**. It has sharp internal boundaries and one release, and you can extract a module the day it's genuinely needed.
+Consider modular monolith, the option nobody mentions: sharp internal boundaries, one release, and a module extracted only the day it is genuinely needed.

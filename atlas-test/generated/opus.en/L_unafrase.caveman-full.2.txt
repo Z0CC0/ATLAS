@@ -1,1 +1,1 @@
-Yes. An empty list is falsy, so `if my_list:` is skipped when the list is empty. This applies to every empty collection: list, tuple, dict, set and string.
+Yes. Empty list is falsy in boolean context. Same rule for every empty collection: list, tuple, dict, set and string.

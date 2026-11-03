@@ -1,9 +1,11 @@
-Use local files plus a collector that ships them elsewhere, so application never waits on a log write.
+Write to local files and run a collector that ships them elsewhere. At a thousand requests a minute, that way the application never waits on a log write.
 
-One rule holds whatever you pick: writing log must not sit in critical path of request.
+One rule holds whatever you choose: writing the log must never sit in the critical path of the request.
 
-Files on their own cost nothing and add no dependency. Searching means grep, though. Rotation has to be configured by hand, or disk fills. Once you run several machines, there's no way to search across them; you connect to each one.
+Files alone cost nothing and add no dependency. Searching them means grep, though. You have to set up rotation by hand or the disk fills. Across several machines there's no search at all: you connect to each one.
 
-Managed service gives instant search, alerts and automatic retention. You pay by volume, and at a thousand requests a minute volume grows fast. Logs also leave your own infrastructure, so personal data has to be stripped before they go.
+A managed service gives instant search, alerts and automatic retention. You pay by volume, and at a thousand requests a minute that volume grows fast. Logs also leave your own infrastructure, so you have to strip personal data before they go.
 
-Database makes searching familiar and convenient. Writing logs into application's own database, though, puts two very different workloads in competition. Under load, logs fill caches and connections your real requests needed.
+A database feels familiar and convenient to search. Putting logs in the application's own database, though, makes two very different workloads compete. Under load, logs fill caches and take connections that the real requests needed.
+
+Files plus a collector give you most of both. The write stays local and cheap, and search happens wherever the collector sends the logs. That could be a managed service if you accept the cost and the personal data stripping.

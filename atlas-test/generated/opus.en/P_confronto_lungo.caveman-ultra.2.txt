@@ -1,15 +1,21 @@
-Use local files plus a collector that ships them elsewhere. At 1,000 requests a minute, this setup keeps the application from ever waiting on a log write.
+Use local files plus a collector that ships them elsewhere. At 1,000 requests/minute, the application then never waits on a log write.
 
-One rule holds whatever you choose: the log write must never sit in the request's critical path.
+One rule holds whatever you pick: writing the log must not sit in the critical path of the request.
 
-**Files alone:** No cost and no dependency. Searching means grep. You must configure rotation by hand, or the disk fills. You also can't search across several machines, so you have to connect to each one.
+**Files alone**
+- Zero cost, no dependency.
+- Searching means grep.
+- You have to configure rotation by hand, or the disk fills.
+- You can't search across several machines. You have to connect to each one.
 
-**Managed service:** You get instant search, alerts and automatic retention. You pay by volume, though, and at 1,000 requests a minute the volume grows fast. The logs also leave your own infrastructure, so you must strip personal data before they go.
+**Managed service**
+- Search is instant, and you get alerts and automatic retention.
+- You pay by volume. At 1,000 requests/minute, volume grows fast.
+- The logs leave your own infrastructure. Strip personal data before they go.
 
-**Application's own database:** Searching is familiar and convenient. The problem is that logs and requests are very different workloads, and they compete. Under load, logs fill the caches and connections that real requests needed. Avoid this option.
+**Database**
+- Searching is familiar and convenient.
+- Writing logs into the application's own database puts two very different workloads in competition.
+- Under load, the logs fill caches and connections that the real requests needed.
 
-**What to do:**
-1. Write logs to local files.
-2. Configure rotation from day one.
-3. Run a collector that ships the files to a central place. That fixes the multi-machine search problem.
-4. If the collector ships to a managed service, strip personal data first. Watch the volume and the bill.
+**What to do:** have the application write to local files with rotation configured. A collector reads those files and ships them to wherever you search them. If you send them to a managed service, strip personal data in the collector and keep an eye on volume cost. Don't send them to the application's database.

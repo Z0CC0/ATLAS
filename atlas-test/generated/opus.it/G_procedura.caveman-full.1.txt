@@ -1,18 +1,26 @@
-Non usare `ALTER TABLE ... ALTER COLUMN TYPE` diretto. Riscrive tutta la tabella con un lock `ACCESS EXCLUSIVE`, quindi il servizio resta fermo per tutta la durata della riscrittura. Su dieci milioni di righe conviene fare la migrazione a passi.
+Non usare `ALTER TABLE ... ALTER COLUMN TYPE` diretto. Riscrive tutta la tabella e tiene un `ACCESS EXCLUSIVE` lock per tutta la durata. Con dieci milioni di righe il servizio resta fermo per tutto quel tempo. Conviene migrare in più passi, nell'ordine indicato qui sotto.
 
-1. **Controlla i dati.** Conta le righe di `colonna` che non contengono solo cifre. Se il conteggio non è zero, correggi quelle righe prima di andare avanti.
+1. **Verifica che i dati siano convertibili.** Conta le righe in cui `colonna` non contiene solo cifre. Se il conteggio non è zero, sistema quei valori prima di andare avanti.
+   ```sql
+   SELECT count(*) FROM t WHERE colonna !~ '^[0-9]+$';
+   ```
+
 2. **Aggiungi la colonna nuova.**
    ```sql
    ALTER TABLE t ADD COLUMN colonna_int integer;
    ```
-3. **Aggiungi un trigger** che tenga allineate `colonna` e `colonna_int` per tutta la migrazione. Così le scritture fatte durante la copia arrivano anche nella colonna nuova.
-4. **Riempi `colonna_int` a blocchi di diecimila righe.** Ogni blocco tiene il lock per poco tempo, quindi la tabella resta usabile.
-5. **Cambia il codice** perché legga da `colonna_int` e rilascialo.
-6. **Solo dopo il rilascio, elimina la colonna vecchia.**
 
-> **Attenzione:** questo passo non si può annullare. Una volta eliminata `colonna`, i suoi dati si recuperano solo ripristinando un backup. Esegui il comando solo quando il codice rilasciato legge già da `colonna_int`.
+3. **Aggiungi un trigger** che tenga allineate le due colonne durante la migrazione. Così i valori inseriti o modificati mentre lavori finiscono anche in `colonna_int`.
+
+4. **Riempi `colonna_int` a blocchi di 10.000 righe per volta.** Ogni blocco tiene il lock per poco tempo, quindi la tabella resta usabile.
+
+5. **Cambia il codice perché legga da `colonna_int` e rilascialo.** Controlla che in produzione funzioni tutto.
+
+6. **Solo dopo, elimina la colonna vecchia.**
+
+> **Attenzione:** questo passo è irreversibile. Dopo il `DROP` i dati di `colonna` si recuperano solo ripristinando un backup. Eseguilo solo quando il codice nuovo è in produzione e funziona.
 > ```sql
 > ALTER TABLE t DROP COLUMN colonna;
 > ```
 
-Ho messo il trigger prima del riempimento per non perdere le scritture che avvengono durante la copia. Nei tuoi punti il trigger veniva dopo il riempimento.
+Fino al passo 5 puoi tornare indietro, perché la colonna vecchia c'è ancora. Il passo 6 è l'unico senza ritorno.

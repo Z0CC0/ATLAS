@@ -1,21 +1,13 @@
 internal knowledge
 
-Eventual consistency: after a write, replicas don't agree right away, but they converge within a finite time once writes stop.
+Eventual consistency: after a write, replicas don't agree right away, but converge within finite time once writes stop.
 
-Why care: it hits whoever reads right after writing. User posts a comment, reloads, and doesn't see it.
+Why care: it hits whoever reads right after writing. User posts comment, reloads page, comment missing. To them, that looks like a bug.
 
-How long the gap lasts: usually under a second across replicas in the same region, rising to seconds across regions.
+How long the gap lasts: usually under a second across replicas in same region, seconds across regions.
 
-Why systems accept it: the trade is against availability. A system demanding strong consistency has to refuse requests when replicas cannot talk to each other. Most systems that scale accept eventual consistency deliberately. It's a choice, not a defect to eliminate.
+Why systems accept it: trade against availability. System demanding strong consistency has to refuse requests whenever replicas cannot talk to each other. So eventual consistency not defect to eliminate but choice. Most systems that scale accept it deliberately.
 
-Common fix for the reload problem: read from the primary replica for the session that just wrote, not for everyone. The writer sees their own comment, and everyone else keeps reading from replicas.
+Common fix for missing-comment problem: session that just wrote reads from primary replica. Only that session, not everyone, so rest of traffic keeps benefits of replicas.
 
-Where it's unacceptable: few cases, and easy to recognise.
-
-Account balances
-
-Seat availability
-
-Uniqueness of an identifier
-
-Outside those, the question to ask is who reads right after writing, and whether that session should go to the primary.
+Where it's unacceptable: few cases, easy to spot. Account balances, seat availability, uniqueness of an identifier. For those, pay for strong consistency. Everywhere else, design for the gap instead of fighting it.

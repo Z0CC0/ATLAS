@@ -1,15 +1,20 @@
-**Usa Postgres.** Per un progetto piccolo è la scelta giusta. Passa a Redis solo quando il volume lo richiede davvero.
+**Usa Postgres.** Passa a Redis solo quando il volume lo richiede davvero.
 
-**Perché Postgres:**
-1. **Regge il tuo carico.** Con `SELECT ... FOR UPDATE SKIP LOCKED` arriva a circa mille lavori al minuto.
-2. **Stessa transazione dei dati.** Il lavoro viene salvato nella stessa transazione della scrittura che lo genera. Se la scrittura viene annullata, anche il lavoro sparisce. Non può partire un lavoro legato a dati che non esistono.
-3. **Persistenza già inclusa.** Se il processo muore, la coda resta nel database.
-4. **Nessun servizio in più.** Usi il database che hai già.
+## Perché Postgres va bene adesso
 
-**Cosa costa Redis:**
-- Un servizio in più da gestire, monitorare e aggiornare.
-- La persistenza va configurata a mano. Se AOF non è attivo, un riavvio cancella i lavori in coda.
+1. **Regge il tuo carico.** Con `SELECT ... FOR UPDATE SKIP LOCKED` arrivi fino a circa 1.000 lavori al minuto.
+2. **Lavoro e dati nella stessa transazione.** Non può capitare che il lavoro parta mentre la scrittura dei dati viene annullata.
+3. **La persistenza è già inclusa.** Se il processo muore, la coda resta lì.
+4. **Niente servizi in più.** Usi il database che hai già.
 
-**Quando passare a Redis:** quando superi stabilmente i circa mille lavori al minuto o ti serve una latenza sotto il millisecondo. In quel caso regge molto più volume.
+## Cosa ti darebbe Redis, e cosa costa
 
-Prossimo passo: crea una tabella `jobs` e fai prelevare i lavori ai worker con `FOR UPDATE SKIP LOCKED`.
+- **Pro:** regge molto più volume e ha una latenza più bassa, sotto il millisecondo.
+- **Contro:** è un servizio in più da gestire, monitorare e aggiornare.
+- **Contro:** la persistenza va configurata a mano. Se AOF non è attivo, un riavvio perde i lavori in coda.
+
+## Quando cambiare
+
+Il segnale è che ti avvicini ai 1.000 lavori al minuto, oppure che hai bisogno di una latenza sotto il millisecondo. Prima di quel punto, Redis aggiunge lavoro di gestione senza un vantaggio che serva a un progetto piccolo.
+
+Prossimo passo: crea una tabella `jobs` e scrivi il worker che prende i lavori con `FOR UPDATE SKIP LOCKED`.

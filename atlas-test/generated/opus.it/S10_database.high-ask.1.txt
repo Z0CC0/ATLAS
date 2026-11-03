@@ -1,15 +1,19 @@
-Parti solo con Postgres. Aggiungi un altro sistema solo quando un carico specifico lo impone, e dimostralo con i numeri.
+**Parti con Postgres da solo.** Aggiungi altri sistemi solo quando un carico specifico lo richiede, con numeri alla mano.
 
-**Postgres** regge in modo accettabile tutti e quattro i tuoi carichi, ma nessuno in modo eccellente. Ha transazioni serie, e sugli ordini non sono negoziabili. La ricerca testuale integrata basta sotto il milione di documenti e diventa debole sopra. Regge l'analisi fino a decine di milioni di righe, poi le scansioni diventano lente.
+**Postgres** regge tutti e quattro i carichi in modo accettabile, nessuno in modo eccellente. Ha transazioni serie, e sugli ordini non si negozia. La ricerca testuale integrata basta sotto il milione di documenti, sopra diventa debole. Regge l'analisi fino a decine di milioni di righe, poi le scansioni rallentano.
 
-MySQL è equivalente sugli ordini. È più debole su tipi di dato e query complesse.
+**MySQL** è equivalente sugli ordini. È più debole su tipi di dato e query complesse, quindi non c'è motivo di preferirlo.
 
-MongoDB semplifica il catalogo grazie agli schemi variabili. Le transazioni multi-documento però sono arrivate tardi e costano, e gli ordini ne hanno bisogno.
+**MongoDB** semplifica il catalogo con schemi variabili. Le transazioni multi-documento però sono arrivate tardi e costano, e questo pesa sugli ordini.
 
-Elasticsearch è molto superiore nella ricerca testuale: rilevanza, sinonimi, tolleranza agli errori di battitura. Non è un archivio autorevole: va alimentato da un altro database, non lo sostituisce. Aggiungerlo prima del milione di documenti è quasi sempre prematuro.
+**Elasticsearch** è molto superiore sulla ricerca testuale: rilevanza, sinonimi, tolleranza agli errori di battitura. Non è un archivio autorevole, quindi va alimentato da un altro database e non lo sostituisce. Aggiungerlo prima del milione di documenti è quasi sempre prematuro.
 
-ClickHouse è molto superiore nell'analisi, perché le scansioni colonnari stanno avanti di ordini di grandezza. Non va usato per gli ordini, perché gli aggiornamenti puntuali sono il suo punto debole.
+**ClickHouse** è molto superiore sull'analisi: le scansioni colonnari stanno avanti di ordini di grandezza. Non va usato per gli ordini, perché gli aggiornamenti puntuali sono il suo punto debole.
 
-La configurazione tipica, quando i volumi la giustificano, è Postgres come archivio autorevole, con Elasticsearch e ClickHouse alimentati da lì.
+La configurazione tipica a regime è Postgres come archivio autorevole, con Elasticsearch e ClickHouse alimentati da lì. Ogni sistema aggiunto però porta due problemi: la sincronizzazione e l'allineamento dei dati. Il costo vero dei sistemi specializzati non è la licenza, ma il tempo delle persone che li tengono in piedi.
 
-**Ogni sistema che aggiungi porta un problema di sincronizzazione e uno di allineamento dei dati.** Il costo vero dei sistemi specializzati non è la licenza, ma il tempo delle persone che li tengono in piedi.
+In pratica:
+
+1. Ordini, catalogo, ricerca e analisi tutti su Postgres.
+2. Elasticsearch quando superi il milione di documenti e la ricerca integrata non basta più.
+3. ClickHouse quando l'analisi supera le decine di milioni di righe e le scansioni diventano lente.

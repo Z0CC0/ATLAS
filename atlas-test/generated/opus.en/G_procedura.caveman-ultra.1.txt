@@ -1,21 +1,23 @@
-Don't run a direct `ALTER TABLE ... ALTER COLUMN ... TYPE integer`. On ten million rows it rewrites the whole table under an `ACCESS EXCLUSIVE` lock. Your service is down until the rewrite finishes.
+Don't use a direct `ALTER TABLE ... ALTER COLUMN ... TYPE integer`. That command rewrites the whole table while holding an ACCESS EXCLUSIVE lock. Your service stays down until the rewrite finishes, and on ten million rows that takes a while.
 
-Do the change in six steps, in this order:
+Do the change in six steps instead, in this order:
 
-1. **Check that every value converts.** Count the rows whose value is not all digits. The count must be zero before you go on.
-   ```sql
-   SELECT count(*) FROM t WHERE colonna !~ '^[0-9]+$';
-   ```
+1. **Check that every value converts.** Count the rows whose value is not all digits. If the count is not zero, fix those rows before you start.
+
 2. **Add the new column.**
    ```sql
    ALTER TABLE t ADD COLUMN colonna_int integer;
    ```
-3. **Fill the new column in batches of 10,000 rows.** Small batches mean no long lock on the table.
-4. **Add a trigger that keeps both columns in step.** Writes that arrive during the migration then reach `colonna_int` too.
-5. **Change the code to read from `colonna_int` and ship it.**
-6. **Only after step 5 is live, drop the old column.**
 
-> **Warning:** You can't undo step 6. Once you drop the column, its data comes back only if you restore from backup. Don't run it until the new code reads from `colonna_int` in production.
+3. **Fill the new column in batches of 10,000 rows.** Small batches mean no long lock is held on the table, so the service keeps running.
+
+4. **Add a trigger that keeps both columns in step.** Rows written during the migration then reach `colonna_int` too.
+
+5. **Change the code to read from `colonna_int`, and ship it.**
+
+6. **Only after that, drop the old column.**
+
+> **Warning:** Step 6 cannot be undone. After you drop the column, the only way to get its data back is a restore from backup. Run it only when the new code is live and working on `colonna_int`.
 > ```sql
 > ALTER TABLE t DROP COLUMN colonna;
 > ```

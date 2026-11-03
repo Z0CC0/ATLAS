@@ -1,0 +1,28 @@
+x86 history splits into three eras: building the architecture up, hiding it behind a translation layer, then hitting physical and security limits.
+
+**1. Building the base (1978–1989)**
+
+- **8086 (1978)**: 16 bit. It grew out of the 8080 and stayed compatible at source level, not binary. That set the pattern: each step carries the past forward.
+- **80286 (1982)**: added protected mode. One flaw: there was no way back to real mode without a reboot.
+- **80386 (1985)**: the real turning point. It brought 32 bit, paged virtual memory and virtual 8086 mode. Virtual 8086 mode let old real-mode code run inside the protected environment, which fixed the 286's one-way trap.
+- **486 (1989)**: moved the first-level cache and the maths coprocessor onto the chip. Parts that used to sit outside became part of the CPU.
+
+**2. Parallelism and the split between interface and machine (1993–2000)**
+
+- **Pentium (1993)**: superscalar. It had two integer pipelines that could retire two instructions per cycle.
+- **Pentium Pro (1995)**: added out-of-order execution. It also translated x86 instructions into internal micro-operations. This is the key conceptual break. From here on, x86 is an interface, not the real machine underneath.
+- **Pentium 4 (2000)**: chased clock frequency with a very long pipeline and hit the power wall. Raising clock speed stopped being a workable path.
+
+**3. Change of direction (2003–2006)**
+
+- **AMD64 (2003)**: AMD extended the architecture to 64 bit, and Intel adopted the same instruction set. This was the first time the dominant extension did not come from Intel.
+- **Core 2 (2006)**: the focus shifted from frequency to core count. More cores replaced faster clocks.
+- Across all these generations the vector extensions kept growing: MMX, SSE, AVX, AVX-512.
+
+**4. Today: complexity below the surface**
+
+The instruction set is the visible surface. The hard engineering now sits in the layers below it: branch prediction, the cache hierarchy and speculative execution. **Spectre and Meltdown (2018)** showed that speculative execution carried a security cost nobody had priced. The same machinery that made the hidden machine fast also made it leak data.
+
+**The common thread**
+
+Compatibility never broke, from the 8086 to today. To keep it, the visible architecture slowly became a contract layered over a very different machine. Most of the later progress, and most of the later problems, come from what happens inside that hidden machine.

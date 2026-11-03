@@ -1,5 +1,9 @@
 internal knowledge
 
-Usually not. On a column with only three distinct values, a B-tree index normally goes unused. The planner picks a sequential scan when the filter selects more than roughly 5-10 per cent of the rows. The index still costs you writes and disk space.
+Usually no. A B-tree index on a low-cardinality column is normally not used.
 
-The exception is when one value is rare. A partial index on that value does work.
+The planner picks a sequential scan when the filter selects more than roughly 5-10% of rows.
+
+The index still costs writes and disk space.
+
+Exception: if one value is rare and you filter on it, a partial index on that value does work.

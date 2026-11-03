@@ -1,21 +1,23 @@
-Scegli **file locali più un raccoglitore** che li spedisce altrove. A mille richieste al minuto l'applicazione così non aspetta mai la scrittura del log.
+A 1000 richieste al minuto conviene combinare due cose. L'API scrive i log su **file locali**. Un **raccoglitore** legge quei file e li spedisce altrove. Così l'applicazione non aspetta mai la scrittura del log.
 
-Regola da rispettare sempre: la scrittura del log non deve stare nel percorso critico della richiesta.
+**Regola che vale sempre:** la scrittura del log non deve stare nel percorso critico della richiesta. Qualunque soluzione scegli, rispetta questa regola.
+
+Perché non usare una sola opzione:
 
 **Solo file**
-- Costo zero, nessuna dipendenza.
-- Ricerca solo con `grep`.
-- Rotazione da configurare a mano, altrimenti il disco si riempie.
-- Con più macchine non puoi cercare in un punto solo. Devi collegarti a ognuna.
+- Costa zero e non ha dipendenze.
+- Per cercare hai solo `grep`.
+- La rotazione va configurata a mano, altrimenti il disco si riempie.
+- Non puoi cercare su più macchine insieme: devi collegarti a ognuna.
 
-**Servizio gestito**
-- Ricerca immediata, allarmi e conservazione automatica.
-- Paghi per volume. A mille richieste al minuto il volume cresce in fretta.
-- I log escono dalla tua infrastruttura. Prima di spedirli, togli i dati personali.
+**Solo servizio gestito**
+- La ricerca è immediata, ci sono gli allarmi e la conservazione è automatica.
+- Paghi per volume. A 1000 richieste al minuto il volume cresce in fretta.
+- I log escono dalla tua infrastruttura. Prima di spedirli devi togliere i dati personali.
 
 **Database**
-- Ricerca comoda e già nota.
-- Se scrivi i log nello stesso database dell'applicazione, metti in competizione due carichi molto diversi.
-- Sotto carico, i log occupano cache e connessioni che servono alle richieste vere.
+- La ricerca è comoda e la conosci già.
+- Se usi lo stesso database dell'applicazione, metti in competizione due carichi molto diversi.
+- Sotto carico i log occupano cache e connessioni che servono alle richieste vere.
 
-Con file più raccoglitore, la scrittura resta locale e veloce. Il raccoglitore porta i log dove vuoi cercarli. Se come destinazione scegli un servizio gestito, controlla il costo per volume. Pulisci anche i dati personali prima che i log escano.
+Con file locali e raccoglitore il file fa da buffer veloce e locale. La destinazione finale ti dà la ricerca centralizzata. Se la destinazione è un servizio gestito, controlla due cose: il costo per volume e la pulizia dei dati personali prima della spedizione.

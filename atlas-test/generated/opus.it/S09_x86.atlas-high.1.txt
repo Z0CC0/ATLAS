@@ -1,25 +1,23 @@
-Da processore a 16 bit a interfaccia sopra macchina molto più complessa.
+Partenza prima degli anni ottanta: 8086, 1978, 16 bit, evoluzione dell'8080, compatibile a livello di sorgente.
 
-8086 (1978): 16 bit, evoluzione dell'8080, compatibile a livello di sorgente.
+80286, 1982: modalità protetta. Ritorno a modalità reale impossibile senza riavvio.
 
-80286 (1982): modalità protetta, ma ritorno a modalità reale solo riavviando.
+80386, 1985: 32 bit, memoria virtuale paginata, modalità virtuale 8086.
 
-80386 (1985): 32 bit, memoria virtuale paginata, modalità virtuale 8086.
+486, 1989: cache di primo livello e coprocessore matematico integrati nel chip.
 
-486 (1989): cache primo livello e coprocessore matematico integrati nel chip.
+Pentium, 1993: superscalare. Due pipeline intere, fino a due istruzioni ritirate per ciclo.
 
-Pentium (1993): superscalare, due pipeline intere, fino a due istruzioni ritirate per ciclo.
+Pentium Pro, 1995: esecuzione fuori ordine, istruzioni x86 tradotte in micro-operazioni interne. Da qui x86 è un'interfaccia, non più macchina reale sottostante.
 
-Pentium Pro (1995): esecuzione fuori ordine, istruzioni x86 tradotte in micro-operazioni interne. Da qui **x86 è interfaccia, non più macchina reale sotto**.
+Pentium 4, 2000: scommessa sulla frequenza, pipeline lunghissima. Si ferma contro il muro del consumo.
 
-Pentium 4 (2000): tutto su frequenza, pipeline lunghissima, poi muro del consumo.
+2003: AMD estende l'architettura a 64 bit con AMD64, Intel adotta stesso insieme di istruzioni. Prima volta che l'estensione dominante non viene da Intel.
 
-AMD64 (2003): AMD porta architettura a 64 bit, Intel adotta stesso insieme di istruzioni. Prima estensione dominante non venuta da Intel.
-
-Core 2 (2006): direzione cambia, da frequenza a numero di nuclei.
+2006, Core 2: direzione cambia, da frequenza a numero di nuclei.
 
 Estensioni vettoriali cresciute per generazioni: MMX, SSE, AVX, AVX-512.
 
 Oggi complessità negli strati sotto: predizione dei salti, gerarchia di cache, esecuzione speculativa.
 
-Spectre e Meltdown (2018): l'esecuzione speculativa aveva un costo di sicurezza mai considerato.
+2018: Spectre e Meltdown mostrano che l'esecuzione speculativa aveva un costo di sicurezza mai considerato.

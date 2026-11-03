@@ -1,11 +1,13 @@
 internal knowledge
 
-Eventual consistency means that after a write, replicas don't agree right away. If writes stop, they converge within a finite time.
+Eventual consistency: after a write, replicas don't agree right away, but they converge within finite time once writes stop.
 
-Why you should care: it affects anyone who reads right after writing. A user posts a comment, reloads, and doesn't see it. Within one region, replicas usually converge in under a second. Across regions it takes seconds.
+**Why you should care:** it hits whoever reads right after writing. A user posts a comment, reloads, and doesn't see it. That looks like a bug to them, even though system works as designed.
 
-The usual fix is to read from the primary replica, but only for the session that just wrote, not for everyone.
+Why systems accept it: the trade is against availability. A system demanding strong consistency has to refuse requests whenever replicas can't talk to each other. Most systems that scale choose eventual consistency deliberately. So treat it as a choice, not a defect to eliminate.
 
-The trade is against availability. A system that demands strong consistency has to refuse requests when its replicas can't talk to each other. So eventual consistency isn't a defect to eliminate. It's a choice, and most systems that scale make it on purpose.
+How long the gap lasts: across replicas in the same region, usually under a second. Across regions it rises to seconds.
 
-Where it's unacceptable, the cases are few and easy to recognise: account balances, seat availability, and uniqueness of an identifier.
+Common fix for the comment problem: send reads to the primary replica for the session that just wrote, not for everyone. The writer sees their own change right away, and everyone else keeps reading from replicas.
+
+Where you can't accept it: the cases are few and easy to spot. Account balances, seat availability, and uniqueness of an identifier. For these, use strong consistency and accept the cost to availability.

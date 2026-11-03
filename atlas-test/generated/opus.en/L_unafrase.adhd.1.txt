@@ -1,3 +1,13 @@
-Yes, an empty list is falsy in Python, so `if my_list:` runs only when the list has items.
+Yes. An empty list is falsy, so `if my_list:` skips its block when the list is empty.
 
-The same is true of every empty collection: an empty list, tuple, dict, set or string is falsy.
+This is true for every empty collection, not only lists. An empty list, tuple, dict, set or string is falsy in a boolean context:
+
+```python
+bool([])     # False
+bool(())     # False
+bool({})     # False
+bool(set())  # False
+bool("")     # False
+```
+
+You can check for emptiness with `if not items:`. You don't need `len(items) == 0`.

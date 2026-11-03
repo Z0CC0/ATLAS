@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="110" viewBox="0 0 860 110" role="img" aria-label="ATLAS in numbers">
+<title>ATLAS in numbers</title>
+<rect x="0.5" y="0.5" width="859" height="109" rx="14" fill="#000000" stroke="#ffffff"/>
+<text x="107.5" y="58" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="34" fill="#ff1f1f" font-weight="700" text-anchor="middle">51%</text>
+<text x="107.5" y="84" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#98989d" text-anchor="middle">less output at high, every fact kept</text>
+
+<text x="322.5" y="58" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="34" fill="#f5f5f7" font-weight="700" text-anchor="middle">3,356</text>
+<text x="322.5" y="84" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#98989d" text-anchor="middle">tokens on the first turn at low</text>
+<line x1="215" y1="20" x2="215" y2="90" stroke="#6e6e73"/>
+<text x="537.5" y="58" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="34" fill="#f5f5f7" font-weight="700" text-anchor="middle">6</text>
+<text x="537.5" y="84" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#98989d" text-anchor="middle">commands</text>
+<line x1="430" y1="20" x2="430" y2="90" stroke="#6e6e73"/>
+<text x="752.5" y="58" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="34" fill="#f5f5f7" font-weight="700" text-anchor="middle">2</text>
+<text x="752.5" y="84" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" fill="#98989d" text-anchor="middle">subagents</text>
+<line x1="645" y1="20" x2="645" y2="90" stroke="#6e6e73"/>
+</svg>

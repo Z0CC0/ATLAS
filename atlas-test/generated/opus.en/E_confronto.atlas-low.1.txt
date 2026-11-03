@@ -1,9 +1,11 @@
-**Postgres.** For a small project, start with it and move to Redis only when the volume really calls for it.
+**Postgres**, until volume genuinely calls for Redis.
 
-With `SELECT FOR UPDATE SKIP LOCKED` it handles up to roughly a thousand jobs per minute.
+With `SELECT FOR UPDATE SKIP LOCKED`, Postgres handles up to roughly a thousand jobs per minute, plenty for small project.
 
-Jobs live in the same transaction as your data. A job can never start while the write it depends on gets rolled back.
+Job lives in same transaction as data, so job can never start while matching write gets rolled back.
 
-You get persistence for free: if the process dies, the queue survives.
+Persistence comes free: if process dies, queue still there.
 
-Redis handles far more volume with latency under a millisecond. The cost is one more service to run, monitor and upgrade. Persistence also has to be configured: without AOF enabled, a restart loses the queued jobs.
+Redis handles far more volume, with latency under a millisecond. But it means one more service to run, monitor and upgrade. Persistence also needs configuring: without AOF enabled, restart loses queued jobs.
+
+Start on Postgres; move to Redis when volume outgrows it.

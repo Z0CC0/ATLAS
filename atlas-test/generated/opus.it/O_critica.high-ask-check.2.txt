@@ -1,13 +1,19 @@
 conoscenza interna
 
-Non ti consiglio di metterci tutta la logica. Il vantaggio è reale: nessun percorso applicativo può saltare la regola, nemmeno uno script eseguito a mano. Però costa:
+Sconsiglio di mettere tutta la logica di business nei trigger. Meglio tenere nel database solo l'integrità.
 
-**Invisibili:** chi legge il codice applicativo non vede i trigger. Una modifica che sembra semplice ne attiva altre senza lasciare traccia.
+Il vantaggio c'è: nessun percorso applicativo può saltare la regola, nemmeno uno script lanciato a mano.
 
-**Test:** non si testano con gli strumenti che il team usa già. Servono prove che girano contro un database vero.
+I costi però sono questi:
 
-**Debug:** un errore dentro un trigger arriva come fallimento della scrittura, senza dire quale regola l'ha causato.
+Trigger invisibili a chi legge il codice applicativo. Una modifica che sembra semplice ne attiva altre senza lasciare traccia.
 
-**Migrazioni:** diventano fragili, perché l'ordine dei trigger conta ma non è dichiarato da nessuna parte.
+Non si testano con gli strumenti che il team usa già. Servono test che girano contro un database vero.
 
-Alternativa: tieni nel database solo ciò che protegge l'integrità, cioè vincoli, chiavi esterne, unicità e controlli di dominio. Metti la logica di business nell'applicazione, dietro un solo punto di ingresso. Dà la stessa garanzia del trigger, a patto che l'accesso diretto al database sia riservato alle migrazioni.
+Debug peggiore. Un errore dentro un trigger arriva come scrittura fallita, senza dire quale regola l'ha causato.
+
+Migrazioni fragili. L'ordine dei trigger conta, ma non è dichiarato da nessuna parte.
+
+Alternativa: nel database solo ciò che protegge l'integrità, cioè vincoli, chiavi esterne, unicità e controlli di dominio. La logica di business va nell'applicazione, dietro **un solo punto di ingresso**.
+
+Questo dà la stessa garanzia del trigger, **purché l'accesso diretto al database sia riservato alle migrazioni**.

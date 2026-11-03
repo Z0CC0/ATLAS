@@ -1,5 +1,5 @@
-`const` impedisce di riassegnare il nome, `let` invece permette la riassegnazione.
+`let` permette di riassegnare la variabile, `const` no.
 
-`const` blocca solo il nome, non il valore: un oggetto dichiarato con `const` può comunque cambiare al suo interno.
+Con `const` non puoi riassegnare il nome, però il valore si può modificare: un oggetto dichiarato con `const` può cambiare al suo interno.
 
 Entrambi hanno ambito di blocco, a differenza di `var`.

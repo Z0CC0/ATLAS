@@ -1,14 +1,16 @@
-**Cos'è.** Dopo una scrittura le repliche non concordano subito. Se le scritture si fermano, convergono entro un tempo finito. Nella stessa regione di solito serve meno di un secondo, fra regioni diverse qualche secondo.
+**Cos'è**: dopo una scrittura, le repliche non concordano subito. Se le scritture si fermano, convergono entro un tempo finito.
 
-**Perché esiste.** Il compromesso è con la disponibilità. Un sistema che pretende consistenza forte deve rifiutare richieste quando le repliche non si parlano. La consistenza eventuale non è un difetto da eliminare, è una scelta. La maggior parte dei sistemi che scalano la accetta di proposito.
+**Quanto dura**: con repliche nella stessa regione, di solito sotto il secondo. Fra regioni diverse sale a qualche secondo.
 
-**Perché ti interessa.** Colpisce chi legge subito dopo aver scritto. Esempio tipico: l'utente pubblica un commento, ricarica la pagina e non lo vede. Per lui sembra un bug.
+**Perché esiste**: è un compromesso con la disponibilità. Un sistema che pretende consistenza forte deve rifiutare richieste quando le repliche non comunicano fra loro. Per questo non è un difetto da eliminare ma una scelta. La maggior parte dei sistemi che scalano la accetta di proposito.
 
-**Come si risolve.** Per la sessione che ha appena scritto, leggi dalla replica primaria. Gli altri utenti continuano a leggere dalle repliche normali.
+**Perché ti interessa**: colpisce chi legge subito dopo aver scritto. Esempio: l'utente pubblica un commento, ricarica la pagina e non lo vede. Per lui il commento è sparito.
 
-**Quando non va bene.** I casi sono pochi e facili da riconoscere:
-- saldi di un conto
+**Soluzione comune**: la sessione che ha appena scritto legge dalla replica primaria. Le altre sessioni continuano a leggere dalle repliche. Così l'autore vede subito la sua scrittura e il carico resta distribuito.
+
+**Dove non basta**: i casi sono pochi e riconoscibili:
+- saldi di conto
 - disponibilità di posti
 - unicità di un identificativo
 
-In questi casi serve la consistenza forte. Per il resto, di solito la consistenza eventuale va bene.
+Lì serve consistenza forte. Nel resto dei casi, accettala e gestisci la lettura dopo la scrittura.

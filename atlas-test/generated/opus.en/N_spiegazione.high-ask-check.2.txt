@@ -1,15 +1,15 @@
 internal knowledge
 
-Eventual consistency means replicas don't agree right after a write. They converge within a finite time once writes stop.
+After a write, replicas don't agree right away. If writes stop, they converge within a finite time.
 
-Why you should care: a user posts a comment, reloads, and doesn't see it. It bites anyone who reads right after writing.
+Why care: it hits anyone who reads right after writing. A user posts a comment, reloads, and doesn't see it.
 
-Usual fix: read from the primary replica for the session that just wrote, not for everyone.
+Common fix: the session that just wrote reads from the primary replica. Everyone else keeps reading from the other replicas.
 
-Convergence usually takes under a second between replicas in the same region, and seconds across regions.
+Typical delay: under a second between replicas in the same region. Across regions it rises to seconds.
 
-The trade is against availability. Strong consistency has to refuse requests when replicas can't talk to each other.
+The trade is against availability. A system that demands strong consistency has to refuse requests when its replicas can't talk to each other.
 
-So it's not a defect to eliminate. It's a choice, and most systems that scale accept it deliberately.
+**It's a choice, not a defect to eliminate.** Most systems that scale accept it deliberately.
 
-The cases where it's unacceptable are few and easy to recognise: account balances, seat availability and identifier uniqueness.
+**It's unacceptable in only a few cases, and they're easy to spot:** account balances, seat availability, and uniqueness of an identifier.

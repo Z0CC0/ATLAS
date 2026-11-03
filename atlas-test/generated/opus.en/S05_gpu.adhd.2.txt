@@ -1,15 +1,22 @@
-**Short version:** if you want more real-world speed in games, the RTX 5080 is only about 10–15% faster than the 4080. Its big improvement is frame generation.
+The biggest difference is **frame generation**. In raw rasterisation (traditional rendering without AI-generated frames), the RTX 5080 is only about **10–15% faster** than the RTX 4080.
 
 **What changed**
 
-1. **Architecture:** the 5080 is built on Blackwell, and the 4080 on Ada Lovelace.
-2. **Memory:** the 5080 uses GDDR7 instead of GDDR6X. Bandwidth goes up from about 717 to about 960 GB/s.
-3. **Performance:** frame generation is where the 5080 pulls clearly ahead. Without it, in normal rasterised rendering, expect roughly 10–15% more.
-4. **Power:** rated draw goes up from 320 W to 360 W, so check that your PSU has headroom.
-5. **Connector:** it's still the same 16-pin plug, so your cable setup stays the same.
+| | RTX 4080 | RTX 5080 |
+|---|---|---|
+| Architecture | Ada Lovelace | Blackwell |
+| Memory | GDDR6X | GDDR7 |
+| Memory bandwidth | ~717 GB/s | ~960 GB/s |
+| Rated power draw | 320 W | 360 W |
+| Power connector | 16-pin | 16-pin (unchanged) |
 
-**What it means for you:** if you already own a 4080, the upgrade mostly pays off in games that use frame generation. If you're buying new, the 5080 is the better card, but its lead in raw performance is small.
+**What this means for you**
 
-Source: internal knowledge (the facts you provided), not checked against current benchmarks.
+- **Games that support frame generation:** this is where the 5080 pulls clearly ahead.
+- **Games that don't:** expect a modest gain of about 10–15%.
+- **Power:** the 5080 draws 40 W more, so check that your power supply has headroom.
+- **Cables:** it uses the same 16-pin connector as the 4080, so your existing cable setup carries over.
 
-**Next:** check whether the games you play most support frame generation. That decides whether the upgrade is worth it for you.
+**Bottom line:** if you already own a 4080, the upgrade is mostly worth it for frame generation. If you're choosing between the two new, the 5080 is the more future-proof card.
+
+**Next:** list the 2–3 games you play most and check whether they support frame generation. That decides whether the 5080 is worth it for you.

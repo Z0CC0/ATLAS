@@ -1,11 +1,17 @@
-Ecco il meteo della settimana a New York (dati dal web):
+Ecco il meteo della settimana a New York (fonte: web):
 
-- **Lunedì**: sereno, massima 24°, minima 17°.
-- **Martedì**: nuvoloso, 22° di massima e 16° di minima, con pioggia debole in serata.
-- **Mercoledì**: pioggia per gran parte del giorno, 19° di massima e 15° di minima.
-- **Giovedì**: schiarite, 21° di massima e 14° di minima.
-- **Venerdì**: sereno, 25° di massima e 16° di minima.
-- **Sabato**: sereno e caldo, 28° di massima e 19° di minima.
-- **Domenica**: temporali nel pomeriggio, 26° di massima e 18° di minima.
+| Giorno | Cielo | Max | Min |
+|---|---|---|---|
+| **Lunedì** | Sereno | 24° | 17° |
+| **Martedì** | Nuvoloso, pioggia debole in serata | 22° | 16° |
+| **Mercoledì** | Pioggia per gran parte del giorno | 19° | 15° |
+| **Giovedì** | Schiarite | 21° | 14° |
+| **Venerdì** | Sereno | 25° | 16° |
+| **Sabato** | Sereno e caldo | 28° | 19° |
+| **Domenica** | Temporali nel pomeriggio | 26° | 18° |
 
-Porta l'ombrello mercoledì e domenica pomeriggio: sono gli unici due giorni con precipitazioni significative. Martedì sera può cadere qualche goccia. Il fine settimana è il periodo più caldo. Sabato è la giornata migliore per stare all'aperto.
+La settimana inizia con cielo sereno. Martedì si annuvola e verso sera arriva una pioggia debole. Mercoledì è il giorno più fresco e piove per buona parte della giornata. Giovedì tornano le schiarite e venerdì il cielo è di nuovo sereno.
+
+Il fine settimana è il periodo più caldo. Sabato è la giornata migliore, con sole e 28°. Anche domenica fa caldo, ma nel pomeriggio sono previsti temporali, quindi conviene organizzare le attività all'aperto al mattino.
+
+I giorni con precipitazioni significative sono due, mercoledì e domenica: in quei giorni porta l'ombrello.

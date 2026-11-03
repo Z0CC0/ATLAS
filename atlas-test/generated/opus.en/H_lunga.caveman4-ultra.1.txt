@@ -1,0 +1,11 @@
+**How it works:** the cache stores the already-processed prefix of a request. A later request that starts the same way skips paying for that part again.
+
+**Prefix only.** If one character near the start differs, nothing is reused from that point on. So put the stable parts first and the changing parts after, not the other way round.
+
+**Cost:** writing to the cache costs more than a normal read, so the first request is more expensive. The savings start from the second request and grow with every turn.
+
+**Pays off:** long conversations with a large stable context, such as system instructions, attached documentation and tool definitions.
+
+**Doesn't pay off:** one-off requests that differ from each other. You pay for the write and never read it back.
+
+**Trap:** a line in the system prompt that changes every turn, such as a clock, breaks reuse for everything after it. Put it at the end or remove it.

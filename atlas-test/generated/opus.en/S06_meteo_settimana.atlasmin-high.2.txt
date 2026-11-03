@@ -1,8 +1,8 @@
-New York, week: mostly dry, rain Wednesday and Sunday, warmest at weekend.
+Weekend warmest; significant rain Wednesday and Sunday.
 
 Monday: clear, 24 degrees, low 17
 
-Tuesday: cloudy, 22 degrees, low 16, light rain in evening
+Tuesday: cloudy, 22 degrees, low 16, light rain evening
 
 Wednesday: rain most of day, 19 degrees, low 15
 
@@ -14,6 +14,4 @@ Saturday: clear, warm, 28 degrees, low 19
 
 Sunday: afternoon thunderstorms, 26 degrees, low 18
 
-Significant rain only Wednesday and Sunday. Weekend warmest stretch.
-
-Source: web.
+Source: web

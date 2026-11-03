@@ -1,15 +1,25 @@
-conoscenza interna
+*Conoscenza interna*
 
-**Domanda decisiva, non tecnica: cosa deve poter fare il team fra un anno che oggi non può.** Architettura segue da lì.
+Prima dell'architettura, decidi cosa il team deve poter fare fra un anno che oggi non può. Non è una domanda tecnica, ma è quella decisiva. Tutto il resto viene dopo.
 
-Prima di decidere servono due dati.
+**Dati da raccogliere prima**
 
-Quali parti del monolite cambiano davvero: parti stabili non guadagnano nulla dall'essere spezzate.
+Quali parti del monolite cambiano davvero. Spezzare le parti stabili non porta nessun guadagno.
 
-Dove stanno i confini delle transazioni: transazione che attraversa due servizi diventa problema distribuito.
+Dove stanno i confini delle transazioni. Una transazione divisa fra due servizi diventa un problema distribuito.
 
-Conta la dimensione del team. Microservizi costano di più in operatività: ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupa. Sotto cinque sviluppatori quel costo supera quasi sempre il beneficio.
+**Come migrare**
 
-Opzione poco citata: **monolite modulare**. Confini interni netti, un solo rilascio, possibilità di estrarre un modulo il giorno che serve davvero.
+Evita di riscrivere tutto in parallelo al sistema vecchio: fallisce quasi sempre. Il vecchio continua a cambiare e la copia non lo raggiunge mai.
 
-Sul come migrare, evita riscrittura completa in parallelo al vecchio sistema: fallisce quasi sempre, perché il vecchio continua a cambiare e la copia non lo raggiunge mai. Alternativa: strangolamento progressivo. Router davanti, un pezzo spostato per volta, vecchio autorevole finché il nuovo non è verificato.
+Meglio lo strangolamento progressivo:
+
+1. Metti un router davanti al monolite.
+2. Sposta un pezzo per volta.
+3. Il vecchio resta la fonte autorevole finché il nuovo non è verificato.
+
+**Quale architettura**
+
+I microservizi costano di più da gestire. Ogni servizio richiede rilascio, monitoraggio, log, allarmi e una persona che se ne occupi. Sotto i cinque sviluppatori questo costo supera quasi sempre il beneficio.
+
+Considera anche il monolite modulare, l'opzione di cui si parla poco. Ha confini interni netti e un solo rilascio, e puoi estrarre un modulo il giorno in cui serve davvero.

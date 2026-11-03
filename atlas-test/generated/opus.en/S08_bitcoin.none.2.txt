@@ -1,23 +1,27 @@
-Bitcoin came out of the cypherpunk scene, where people had been trying for years to build digital money that didn't depend on a bank or other central authority. Earlier designs such as b-money and bit gold came close, but none of them solved one key problem: agreeing on the order in which transactions happened.
+# How Bitcoin came about
+
+Bitcoin came out of the cypherpunk scene, a community that wanted to use cryptography to protect individual autonomy. People there had tried to create digital money before. Proposals such as b-money and bit gold got close, but none of them solved one key problem: getting everyone to agree on the order of transactions without trusting a central authority.
 
 ## The paper
 
-In 2008 a paper titled *Bitcoin: A Peer-to-Peer Electronic Cash System* appeared, signed by Satoshi Nakamoto. That name is a pseudonym, and the person or people behind it have never been identified.
+In 2008 a paper appeared titled *Bitcoin: A Peer-to-Peer Electronic Cash System*. It was signed Satoshi Nakamoto, a pseudonym that has never been linked to a real person.
 
-The paper tackles **double spending**. Digital money is just data, so what stops someone from spending the same coin twice? Normally a central body keeps the ledger and settles that question. Bitcoin's goal was to prevent double spending without one.
+The paper tackled **double spending**. Digital money is just data, and data can be copied, so something has to stop the same coin from being spent twice. Normally a bank or other central body keeps the ledger and settles disputes. Satoshi wanted a system that worked without one.
 
-## The solution
+The solution was a **chain of blocks ordered by proof of work**. Transactions are grouped into blocks, and each block is linked to the one before it. To add a block, participants have to spend real computational effort. This makes the history very hard to rewrite. To change an old block, an attacker would have to redo the proof of work for that block and for every block after it. The further back a transaction is, the more expensive it becomes to alter. This gave the network the reliable ordering that earlier attempts had lacked.
 
-Transactions are grouped into blocks, and the blocks are linked into a chain whose order is fixed by a **proof of work**. That settles the ordering problem the earlier attempts couldn't. It also protects the history. Changing an old block would mean redoing the proof of work for that block and for every block after it, so rewriting the past gets more expensive the further back you go.
+## The first block
 
-## The launch
+The network started on 3 January 2009, when the first block was generated. It contained the headline of a Times article about a bank bailout. The headline did two jobs. It worked as a timestamp, proving the block couldn't have been created before that day. It was also a statement of intent: a new monetary system launched in the middle of a financial crisis, with a reminder of what it was meant to be an alternative to.
 
-The first block was generated on 3 January 2009. It contains the headline of a Times article about a bank bailout. That headline works as a timestamp, because the block can't be older than the newspaper. It also reads as a statement of intent: a currency with no central body keeping the ledger, launched just as banks were being rescued.
+## A fixed supply
 
-## The supply rules
+The issuance rules were built in from the start. Whoever produces a block receives a reward in new bitcoin. That reward started at 50 bitcoin and halves every 210,000 blocks, which is roughly every four years. Because of these halvings, the total number of bitcoin approaches 21 million and will never go past it.
 
-New bitcoin enter circulation as a reward for each block. The reward started at 50 bitcoin and halves every 210,000 blocks, which is roughly every four years. Because of this, the total amount ever issued approaches 21 million and never goes beyond it.
+## First real-world use
 
-## Early use and Satoshi's exit
+For a while bitcoin was mostly an experiment. The first documented commercial transaction came in 2010, when someone paid 10,000 bitcoin for two pizzas. It is often cited as the moment bitcoin was first used to buy something in the real world.
 
-The first documented commercial transaction came in 2010, when someone paid 10,000 bitcoin for two pizzas. In 2011 Satoshi stopped taking part in public, and the bitcoin attributed to them have never been moved.
+## Satoshi steps away
+
+In 2011 Satoshi stopped taking part publicly. The bitcoin attributed to them have never been moved. Bitcoin carried on without its creator, which fits a system designed to need no central figure.

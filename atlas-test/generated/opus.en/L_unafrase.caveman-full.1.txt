@@ -1,6 +1,1 @@
-Yes. An empty list is falsy in a boolean context. The same holds for every empty collection: list, tuple, dict, set and string.
-
-```python
-if not []:
-    print("empty")  # runs
-```
+Yes. Empty list is falsy, so `if []:` skips its body. Same rule covers every empty collection: list, tuple, dict, set and string.

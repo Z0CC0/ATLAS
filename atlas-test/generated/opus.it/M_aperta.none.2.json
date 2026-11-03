@@ -1,9 +1,9 @@
 {
-  "output_tokens": 1003,
-  "thinking_tokens": 55,
-  "cache_creation_input_tokens": 13963,
-  "cache_read_input_tokens": 19793,
+  "output_tokens": 1029,
+  "thinking_tokens": 61,
+  "cache_creation_input_tokens": 3167,
+  "cache_read_input_tokens": 20669,
   "input_tokens": 2,
   "model": "claude-opus-5-5",
-  "duration_ms": 11630
+  "duration_ms": 10671
 }

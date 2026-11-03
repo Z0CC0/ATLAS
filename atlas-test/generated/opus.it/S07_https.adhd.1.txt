@@ -1,25 +1,30 @@
-HTTPS è HTTP normale che viaggia dentro un canale cifrato da TLS. Il sito e il browser si parlano come sempre. Prima però costruiscono insieme quel canale protetto.
+**In breve:** HTTPS è normale HTTP che viaggia dentro un canale cifrato creato da TLS. Prima che passi qualsiasi dato HTTP, client e server fanno una "stretta di mano" (handshake) per mettersi d'accordo su come cifrare.
 
-## Come si costruisce il canale (handshake)
+## L'handshake, passo per passo
 
-1. **Il client apre la connessione.** Dice quali versioni di TLS e quali cifrari supporta.
-2. **Il server sceglie.** Indica quale cifrario e quale versione usare e manda il suo certificato.
-3. **Il client controlla il certificato.** Il certificato lega un nome di dominio a una chiave pubblica ed è firmato da un'autorità di certificazione. Il client verifica la firma risalendo la catena fino a una radice che ha già in memoria. Se la catena non arriva a una radice che conosce, il certificato non è verificato.
+1. **Il client apre la connessione** e dichiara quali versioni di TLS e quali cifrari supporta.
+2. **Il server risponde** scegliendo versione e cifrario tra quelli proposti, e manda il proprio certificato.
+3. **Il client verifica il certificato.** Il certificato lega un nome di dominio a una chiave pubblica ed è firmato da un'autorità di certificazione. Il client controlla la firma risalendo la catena di certificati fino a una radice che ha già in memoria. Se la catena non arriva a una radice nota, il certificato non è affidabile.
 4. **Client e server concordano una chiave di sessione.** Oggi di solito lo fanno con uno scambio Diffie-Hellman su curve ellittiche.
+5. **Da qui in poi tutto il traffico HTTP è cifrato** con quella chiave.
 
-## Perché serve una chiave di sessione
+## Perché una chiave simmetrica
 
-La chiave di sessione è **simmetrica**: la stessa chiave serve a cifrare e a decifrare. La cifratura asimmetrica (a chiave pubblica e privata) costa troppo per cifrare il traffico vero. Si usa quindi il meccanismo asimmetrico solo per stabilire di chi fidarsi, e quello simmetrico per trasportare i dati.
+La chiave di sessione è simmetrica: client e server usano la stessa chiave. Il motivo è il costo. La cifratura asimmetrica (chiave pubblica/privata) è troppo lenta per il traffico vero. Si usa solo nella fase iniziale, poi si passa alla simmetrica.
 
-## Cosa ottieni alla fine
+## Cosa ottieni
 
-Da quel momento il traffico è **cifrato e autenticato**. Chi sta in mezzo tra te e il server non può leggerlo e non può modificarlo.
+Dopo l'handshake il traffico è:
+- **cifrato:** chi sta in mezzo non lo può leggere
+- **autenticato:** chi sta in mezzo non lo può modificare senza che ve ne accorgiate
 
 ## TLS 1.2 e TLS 1.3
 
-- **TLS 1.2:** l'handshake richiede due giri di andata e ritorno.
-- **TLS 1.3:** ne basta uno. La connessione sicura quindi è pronta prima.
+- **TLS 1.2:** l'handshake richiede due giri di andata e ritorno tra client e server.
+- **TLS 1.3:** basta un solo giro, quindi la connessione parte prima.
 
 ## Cosa il certificato NON garantisce
 
-Il certificato non dice nulla su chi gestisce il sito. Dice solo che **quel dominio controlla quella chiave**. Una connessione HTTPS valida significa che stai parlando in modo sicuro con quel dominio. Non significa che chi lo gestisce sia affidabile.
+Il certificato non dice niente su chi gestisce il sito. Dice solo che quel dominio controlla quella chiave. Un sito di phishing con un certificato valido resta un sito di phishing: il lucchetto conferma che la connessione è cifrata, non che il sito è onesto.
+
+Prova adesso: clicca il lucchetto nella barra del browser su un sito qualsiasi e apri il certificato. Vedrai il dominio e la catena di autorità fino alla radice.

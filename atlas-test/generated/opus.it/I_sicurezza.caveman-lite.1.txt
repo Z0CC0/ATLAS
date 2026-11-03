@@ -1,10 +1,12 @@
-No. Offuscarla non basta: tutto ciò che arriva al browser è leggibile. Per annullare l'offuscamento basta aprire gli strumenti per sviluppatori o guardare le richieste di rete.
+No, offuscarla non basta. Tutto ciò che arriva al browser è leggibile. Chiunque annulla l'offuscamento aprendo gli strumenti per sviluppatori o guardando le richieste di rete.
 
-**Come farlo bene:**
+**Come fare invece:**
+
 1. Tieni la chiave sul server.
-2. Fai chiamare al frontend un endpoint del tuo backend. Poi è il backend a chiamare il servizio con la chiave.
-3. Metti un limite di frequenza su quell'endpoint. Senza limite, chiunque può usare la tua chiave gratis passando dal tuo backend.
+2. Fai chiamare al frontend un endpoint del tuo backend. Il backend poi chiama il servizio esterno con la chiave.
+3. Metti un limite di frequenza (rate limit) su quell'endpoint. Senza limite, chiunque può usarlo per sfruttare gratis la tua chiave.
 
-**Se hai già pubblicato la chiave:**
+**Se la chiave è già stata pubblicata:**
+
 - Considerala compromessa e ruotala subito. Toglierla dal codice non basta.
-- Toglierla con un nuovo commit non basta: la chiave resta nella cronologia del repository. Chi ha già un clone ce l'ha comunque.
+- Rimuoverla con un nuovo commit non basta. La chiave resta nella cronologia del repository, e chi ha già un clone la possiede.

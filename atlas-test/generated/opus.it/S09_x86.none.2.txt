@@ -1,39 +1,37 @@
-# L'evoluzione di x86, dagli anni Ottanta a oggi
+# L'evoluzione dell'x86, dagli anni Ottanta a oggi
 
-## Le origini: compatibilità prima di tutto
+## Le origini: un'eredità da rispettare
 
-Tutto comincia con l'**8086** del 1978, un processore a 16 bit. Non nasce da zero: è un'evoluzione dell'8080 e ne mantiene la compatibilità a livello di sorgente. Questo principio, cioè non abbandonare il software già scritto, accompagnerà l'architettura per tutta la sua storia.
+Per capire l'x86 degli anni Ottanta bisogna partire da poco prima, dall'**8086 del 1978**. Era un processore a 16 bit e nacque come evoluzione dell'8080. Non era compatibile a livello binario con il predecessore, ma lo era a livello di sorgente: il codice scritto per l'8080 si poteva riportare sul nuovo chip senza riscriverlo da zero. Questa attenzione per ciò che esisteva già è il filo conduttore di tutta la storia che segue.
 
-Nel 1982 arriva l'**80286**, che introduce la **modalità protetta**. Il limite è pesante: una volta entrati in modalità protetta non si può tornare a quella reale senza riavviare il processore.
+## Gli anni Ottanta: protezione e 32 bit
 
-## Il salto ai 32 bit
+L'**80286 del 1982** introdusse la **modalità protetta**, il primo passo verso sistemi operativi capaci di isolare i programmi tra loro. Il progetto però aveva un limite: una volta entrati in modalità protetta, non si poteva tornare alla modalità reale senza riavviare la macchina. Era un problema serio in un mondo in cui quasi tutto il software girava ancora in modalità reale.
 
-Il vero cambio di passo è l'**80386** del 1985. Porta i **32 bit**, la **memoria virtuale paginata** e la **modalità virtuale 8086**, con cui il vecchio software gira dentro il nuovo ambiente. È la base su cui poggiano i sistemi operativi moderni.
+La svolta vera arrivò con l'**80386 del 1985**. Portò i **32 bit** e la **memoria virtuale paginata**, cioè le basi dei sistemi operativi moderni. Aggiunse anche la **modalità virtuale 8086**, che permetteva di eseguire i vecchi programmi in modalità reale dentro un ambiente protetto. In pratica risolveva il problema lasciato aperto dal 286.
 
-Il **486** del 1989 non cambia il modello di programmazione, ma porta dentro il chip due componenti che prima stavano fuori: la **cache di primo livello** e il **coprocessore matematico**.
+Il **486 del 1989** puntò sull'integrazione. Portò dentro il chip la **cache di primo livello** e il **coprocessore matematico**, che fino ad allora erano componenti separati.
 
-## Più istruzioni per ciclo
+## Gli anni Novanta: il processore cambia natura
 
-Con il **Pentium** del 1993 l'attenzione passa dal fare le cose al farne più di una alla volta. È un processore **superscalare**: ha due pipeline intere e può ritirare due istruzioni per ciclo.
+Con il **Pentium del 1993** l'x86 diventò **superscalare**. Aveva due pipeline intere e poteva ritirare due istruzioni per ciclo di clock invece di una.
 
-Il **Pentium Pro** del 1995 è forse la svolta più profonda di tutta la storia di x86. Introduce l'**esecuzione fuori ordine** e **traduce le istruzioni x86 in micro-operazioni interne**. Da qui in poi x86 diventa un'interfaccia: il linguaggio che il software vede, ma non più la macchina che esegue davvero il lavoro.
+Il cambiamento più profondo, anche se meno visibile, arrivò con il **Pentium Pro del 1995**. Introdusse l'**esecuzione fuori ordine**: il processore riordina le istruzioni per tenere sempre occupate le unità di calcolo. Soprattutto, iniziò a **tradurre le istruzioni x86 in micro-operazioni interne**, più semplici. Da quel momento l'x86 non è più la macchina reale. È un'interfaccia, un contratto con il software, mentre sotto lavora un motore di esecuzione diverso.
 
-## Il muro della frequenza
+## Gli anni Duemila: il muro e il cambio di rotta
 
-Con il **Pentium 4** del 2000 Intel scommette sulla frequenza e costruisce una pipeline lunghissima per spingere il clock sempre più in alto. La strategia si ferma contro il **muro del consumo**.
+Il **Pentium 4 del 2000** scommise tutto sulla **frequenza**. Usava una pipeline lunghissima per spingere i gigahertz il più in alto possibile, ma andò a sbattere contro il **muro del consumo**: oltre una certa soglia, il calore e l'energia richiesti diventavano insostenibili.
 
-## AMD e i 64 bit
+Nel frattempo successe una cosa senza precedenti. Nel **2003 AMD** estese l'architettura a **64 bit con AMD64**, e Intel adottò lo stesso insieme di istruzioni. Era la prima volta che l'estensione dominante dell'x86 non veniva da Intel.
 
-Nel 2003 è **AMD** a estendere l'architettura a 64 bit con **AMD64**, e Intel finisce per adottare lo stesso insieme di istruzioni. È la prima volta che l'estensione dominante di x86 non arriva da Intel.
+Dal **2006**, con il **Core 2**, la direzione cambiò in modo deciso. Le prestazioni non si cercavano più nella frequenza ma nel **numero di nuclei**, cioè più core sullo stesso chip.
 
-## Più nuclei, più vettori
+Lungo tutto questo percorso è cresciuta anche la capacità di calcolo vettoriale, una generazione dopo l'altra: **MMX**, poi **SSE**, poi **AVX** e infine **AVX-512**. Ognuna permette di applicare la stessa operazione a quantità sempre maggiori di dati in parallelo.
 
-Dal 2006, con il **Core 2**, la direzione cambia: la crescita delle prestazioni non viene più dall'aumento della frequenza ma dal **numero di nuclei**.
+## Oggi: la complessità sta sotto la superficie
 
-Intanto le estensioni vettoriali crescono generazione dopo generazione: **MMX**, poi **SSE**, poi **AVX**, fino ad **AVX-512**.
+L'interfaccia x86 è ancora lì, ma la complessità vera si trova negli strati sottostanti: la **predizione dei salti**, la **gerarchia di cache** e l'**esecuzione speculativa**, in cui il processore porta avanti in anticipo il lavoro che probabilmente servirà.
 
-## Oggi: la complessità è sotto la superficie
+Proprio questa ricerca delle prestazioni ha mostrato il suo lato nascosto nel **2018**, con **Spectre e Meltdown**. Queste vulnerabilità hanno rivelato che l'esecuzione speculativa aveva un **costo di sicurezza** che nessuno aveva mai considerato. Le tracce lasciate dai calcoli fatti in anticipo, anche quelli poi scartati, potevano far trapelare dati che avrebbero dovuto restare protetti.
 
-Oggi la complessità di un processore x86 sta negli strati che il programmatore non vede: la **predizione dei salti**, la **gerarchia di cache** e l'**esecuzione speculativa**. Proprio quest'ultima ha mostrato il suo lato nascosto nel 2018, quando **Spectre e Meltdown** hanno rivelato che aveva un costo di sicurezza che nessuno aveva mai considerato.
-
-Riassumendo, x86 è partito come un processore a 16 bit compatibile con il suo predecessore ed è diventato un'interfaccia stabile sopra una macchina interna sempre più sofisticata. Proprio quella sofisticazione ha finito per creare problemi nuovi.
+In sintesi, l'x86 è passato dall'essere un'architettura semplice e visibile all'essere una facciata compatibile sopra macchine sempre più sofisticate. Spectre e Meltdown hanno ricordato che anche ciò che resta nascosto sotto quella facciata ha delle conseguenze.

@@ -1,16 +1,15 @@
-**No.** Put the key on your server, not in the frontend.
+No. Move the key to your server. Obfuscating it doesn't protect it. Anything the browser receives can be read. Someone opens the developer tools or looks at the network requests and has your key in seconds.
 
-Obfuscation doesn't protect it. Anything that reaches the browser can be read. Someone only has to open the developer tools or look at the network requests to get it.
+**What to do instead:**
 
-**How to set it up:**
+1. Store the key on your backend only.
+2. Add a backend endpoint that calls the service using the key.
+3. Have the frontend call your own endpoint, never the service directly.
+4. Put a rate limit on that endpoint. Without one, anyone can call it and use your key for free.
 
-1. Store the key on your server only.
-2. Have your frontend call an endpoint on your own backend. That endpoint then calls the service using the key.
-3. Add a rate limit to that endpoint. Without one, anyone can use it to run requests on your key for free.
+**If the key has already been published** (shipped in frontend code or pushed to a repo):
 
-**If the key was ever published** (in a deployed frontend or a public repo), treat it as compromised:
+1. Rotate it now. Treat it as compromised. Removing it from the code isn't enough.
+2. Deleting it in a new commit doesn't make it go away. The key stays in the repository history, and anyone who already cloned the repo has it. Rotating is the only real fix.
 
-1. Rotate it now, before you do anything else.
-2. Don't count on removing it from the code or from a commit. It stays in the repository history, and anyone who already cloned the repo has it.
-
-**Next:** check whether the key has ever been in a deployed build or a pushed commit. If it has, rotate it first.
+Next: if the key has ever been in the browser or a commit, open the service's dashboard and generate a new key. That takes about 2 minutes.

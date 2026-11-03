@@ -1,15 +1,26 @@
-Per un sito statico conviene impostare questi sei header:
+Per un sito statico servono sei header, e uno va tolto.
 
-Strict-Transport-Security con max-age di almeno 31536000 secondi e includeSubDomains. Obbliga il browser a usare HTTPS.
+**Strict-Transport-Security**: impostalo con `max-age` di almeno 31536000 secondi e `includeSubDomains`. Così il browser è obbligato a usare HTTPS.
 
-Content-Security-Policy con default-src 'self'. È l'header che blocca l'iniezione di script di terze parti.
+**Content-Security-Policy**: impostala con `default-src 'self'`. È l'header che blocca l'iniezione di script di terze parti.
 
-X-Content-Type-Options: nosniff. Impedisce al browser di indovinare il tipo di contenuto.
+**X-Content-Type-Options**: impostalo a `nosniff`. Così il browser non prova a indovinare il tipo di contenuto.
 
-Referrer-Policy: strict-origin-when-cross-origin. Evita che il percorso completo delle tue pagine arrivi ad altri siti.
+**Referrer-Policy**: impostalo a `strict-origin-when-cross-origin`. Così il percorso completo delle tue pagine non viene inviato ad altri siti.
 
-X-Frame-Options: DENY, oppure frame-ancestors 'none' dentro la Content-Security-Policy. Serve contro il clickjacking.
+**X-Frame-Options**: impostalo a `DENY`, contro il clickjacking. In alternativa puoi aggiungere `frame-ancestors 'none'` dentro la Content-Security-Policy.
 
-Permissions-Policy per spegnere camera, microfono e geolocalizzazione, se il sito non li usa.
+**Permissions-Policy**: se il sito non usa camera, microfono e geolocalizzazione, usalo per spegnerli.
 
-Non mettere invece X-XSS-Protection. È deprecato e i browser moderni lo ignorano. Nelle versioni più vecchie dei browser introduceva addirittura delle vulnerabilità.
+**X-XSS-Protection**: non metterlo. È deprecato e i browser moderni lo ignorano. Nelle versioni vecchie dei browser introduceva vulnerabilità.
+
+Un esempio:
+
+```
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+Content-Security-Policy: default-src 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+X-Frame-Options: DENY
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+```

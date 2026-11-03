@@ -1,7 +1,7 @@
-The biggest gain on the 5080 is in frame generation. In raw rasterisation it's only about 10-15 per cent faster.
+RTX 5080 mostly brings better frame generation. On rasterisation it gains only about 10-15 per cent over the 4080.
 
-Architecture: the 5080 uses Blackwell, the 4080 uses Ada Lovelace.
+Architecture moves from Ada Lovelace (4080) to Blackwell (5080).
 
-Memory: the 5080 has GDDR7 instead of GDDR6X, and bandwidth rises from about 717 to about 960 GB/s.
+Memory changes from GDDR6X to GDDR7, and bandwidth rises from about 717 to about 960 gigabytes per second.
 
-Power: rated draw goes up from 320 to 360 W. Both cards use the same 16-pin power connector.
+Rated power draw goes from 320 to 360 watts. The 16-pin power connector stays the same, so a cable that fits the 4080 also fits the 5080.

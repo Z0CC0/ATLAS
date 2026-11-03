@@ -1,23 +1,29 @@
 internal knowledge
 
-Don't run `ALTER TABLE ... ALTER COLUMN TYPE` directly. On ten million rows it rewrites the whole table while holding an ACCESS EXCLUSIVE lock, so the service is down for the whole rewrite. Use a new column and switch over in six steps, in this order:
+Don't run `ALTER TABLE ... ALTER COLUMN TYPE` directly. It rewrites the whole table while holding an ACCESS EXCLUSIVE lock, so the service is down for the entire rewrite. Move the data into a new column instead, in this order:
 
-1. Check that every existing value can be converted. Count the rows whose value is not all digits. If the count isn't zero, fix those rows before going further.
+1. Make sure every existing value converts. Count the rows that are not all digits. If the count isn't zero, fix those rows before you go on.
 
-2. Add the new column:
+   ```sql
+   SELECT count(*) FROM t WHERE colonna !~ '^[0-9]+$';
+   ```
+
+2. Add the new column.
+
    ```sql
    ALTER TABLE t ADD COLUMN colonna_int integer;
    ```
 
-3. Fill `colonna_int` in batches of ten thousand rows, so no long lock is held on the table.
+3. Fill the new column in batches of ten thousand rows, so no long lock is held on the table.
 
-4. Add a trigger that keeps `colonna` and `colonna_int` in step while the migration runs, so writes that happen during the backfill aren't lost.
+4. Add a trigger that keeps the two columns in step while the migration runs, so rows written during the backfill also land in the new column.
 
 5. Change the code to read from `colonna_int`, and ship it.
 
-6. Only after the code is live and reading from the new column, drop the old one:
+6. Only after step 5 is in production, drop the old column.
+
    ```sql
    ALTER TABLE t DROP COLUMN colonna;
    ```
 
-**Step 6 can't be undone.** Once `colonna` is dropped, its data comes back only by restoring from a backup. Until then, the old column is your way back if anything goes wrong.
+**Step 6 is irreversible.** Once you drop the column, the data comes back only by restoring from a backup. Don't run it until the new column is fully populated and the shipped code is reading from it without problems.

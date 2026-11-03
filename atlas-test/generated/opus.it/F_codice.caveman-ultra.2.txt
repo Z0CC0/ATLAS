@@ -1,4 +1,6 @@
-```js
+Ecco l'implementazione:
+
+```javascript
 function debounce(fn, ms) {
   let t;
   return (...args) => {
@@ -8,12 +10,20 @@ function debounce(fn, ms) {
 }
 ```
 
-Tre punti da rispettare:
+Esempio d'uso:
 
-- **`clearTimeout` prima di ogni `setTimeout`.** Senza questa chiamata i timer si accumulano e `fn` parte più volte.
-- **`t` nella chiusura, fuori dalla funzione restituita.** Se `t` sta dentro, ogni chiamata ha il proprio timer e il debounce non avviene.
-- **Argomenti inoltrati con lo spread (`...args`).** Senza spread, `fn` li riceve vuoti.
+```javascript
+const onResize = debounce(() => console.log('resize'), 200);
+window.addEventListener('resize', onResize);
+```
 
-Limite: questa versione non restituisce niente. Se ti serve il valore di ritorno, usa una Promise.
+Punti critici:
 
-Vuoi eseguire subito e poi ignorare le chiamate per un periodo? Quello è il caso opposto: serve un throttle, che è un'altra funzione.
+- **`clearTimeout` prima di ogni nuovo `setTimeout`.** Senza questa chiamata si accumulano timer e la funzione parte più volte.
+- **`t` nella chiusura, non dentro la funzione restituita.** Altrimenti ogni chiamata ha il proprio timer e il debounce non avviene.
+- **Argomenti inoltrati con lo spread (`...args`).** Senza spread la funzione chiamata li riceve vuoti.
+
+Limiti:
+
+- Questa versione non restituisce niente. Se ti serve il valore di ritorno, usa una Promise.
+- Per il caso opposto, cioè eseguire subito e poi ignorare le chiamate per un periodo, ti serve un throttle. Il throttle è un'altra funzione.

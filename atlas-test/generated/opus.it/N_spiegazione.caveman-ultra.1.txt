@@ -1,16 +1,16 @@
-**Consistenza eventuale**: dopo una scrittura, le repliche non concordano subito. Se le scritture si fermano, convergono entro un tempo finito. Nella stessa regione di solito serve meno di un secondo. Fra regioni diverse servono alcuni secondi.
+**Consistenza eventuale** significa questo: dopo una scrittura, le repliche non concordano subito. Se le scritture si fermano, le repliche convergono entro un tempo finito.
 
-**Perché ti interessa**: il problema tocca chi legge subito dopo aver scritto. L'utente pubblica un commento, ricarica la pagina e il commento non c'è. Per lui è un bug, anche se il sistema funziona come previsto.
+**Perché ti interessa:** il problema tocca chi legge subito dopo aver scritto. Esempio: un utente pubblica un commento, ricarica la pagina e non vede il commento. Per l'utente sembra un bug, anche se il sistema funziona come previsto.
 
-**Da dove nasce**: dal compromesso con la disponibilità. Un sistema con consistenza forte deve rifiutare le richieste quando le repliche non comunicano tra loro. La consistenza eventuale invece continua a rispondere.
+**Quanto dura:** con repliche nella stessa regione, la convergenza tipica richiede meno di un secondo. Fra regioni diverse arriva a qualche secondo.
 
-**Soluzione comune**: fai leggere dalla replica primaria la sessione che ha appena scritto. Non serve farlo per tutte le sessioni. Così l'utente vede il suo commento e gli altri continuano a leggere dalle repliche.
+**Perché esiste:** è un compromesso con la disponibilità. Un sistema con consistenza forte deve rifiutare richieste quando le repliche non comunicano fra loro. La consistenza eventuale quindi non è un difetto da eliminare. È una scelta, e la maggior parte dei sistemi che scalano la accetta di proposito.
 
-**Come considerarla**: non è un difetto da eliminare, è una scelta. La maggior parte dei sistemi che scalano la accetta di proposito.
+**Soluzione comune:** la sessione che ha appena scritto legge dalla replica primaria. Le altre sessioni no. L'utente vede subito il proprio commento, e il resto del traffico continua a usare le repliche.
 
-**Dove non va bene**: i casi sono pochi e facili da riconoscere:
+**Quando non va bene:** i casi sono pochi e facili da riconoscere:
 - saldi di conto
 - disponibilità di posti
 - unicità di un identificativo
 
-In questi casi serve la consistenza forte. Negli altri casi di solito la consistenza eventuale basta.
+In questi casi serve consistenza forte. Negli altri, accetta la consistenza eventuale e gestisci solo la lettura subito dopo la scrittura.

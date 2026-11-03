@@ -1,197 +1,352 @@
 {
-  "date": "2026-09-26",
+  "date": "2026-11-03",
   "model": "claude-opus-5-5",
-  "rules": "an earlier revision of the rules",
-  "caveman": "caveman 2.7.0 (commit 2fd153c, installed on this machine on 2026-09-26)",
+  "judge": "claude-sonnet-5-5",
   "saving": {
     "en": {
-      "atlas-low": 36.87135053682426,
-      "atlas-high": 45.978527029572426,
-      "low-ask": 35.59050668675833,
-      "low-check": 38.15219438689019,
-      "low-ask-check": 38.91504991523828,
-      "high-ask": 46.119796571859105,
-      "high-check": 47.26878884912413,
-      "high-ask-check": 45.51704652476926,
-      "atlasmin-low": 40.08287813147485,
-      "atlasmin-high": 47.20286306272368,
-      "caveman-lite": 11.367489169335093,
-      "caveman-full": 21.548314183462043,
-      "caveman-ultra": 28.423431908080616,
-      "adhd": -2.32623846298738
+      "none": 0,
+      "atlas-low": 41.52095708190412,
+      "atlas-high": 51.64393876014389,
+      "low-ask": 42.66711285869656,
+      "low-check": 40.73454362921443,
+      "low-ask-check": 42.18187902618589,
+      "high-ask": 52.75663013469421,
+      "high-check": 50.121308458127665,
+      "high-ask-check": 50.623274491759396,
+      "atlasmin-low": 43.67941102652054,
+      "atlasmin-high": 52.94905044758637,
+      "caveman-lite": 19.852756630134692,
+      "caveman-full": 27.89257926880281,
+      "caveman-ultra": 37.36300510332134,
+      "caveman4-lite": 32.895507403999,
+      "caveman4-full": 32.99590061072534,
+      "caveman4-ultra": 44.50765498201289,
+      "adhd": 5.990128001338576
     },
     "it": {
-      "atlas-low": 36.54857142857143,
-      "atlas-high": 43.29904761904762,
-      "low-ask": 38.37714285714286,
-      "low-check": 34.17142857142857,
-      "low-ask-check": 35.47428571428571,
-      "high-ask": 43.116190476190475,
-      "high-check": 41.760000000000005,
-      "high-ask-check": 41.21904761904762,
-      "atlasmin-low": 38.50666666666667,
-      "atlasmin-high": 43.992380952380955,
-      "caveman-lite": 9.874285714285715,
-      "caveman-full": 21.462857142857143,
-      "caveman-ultra": 25.53142857142857,
-      "adhd": -1.7371428571428573
+      "none": 0,
+      "atlas-low": 39.46848381601363,
+      "atlas-high": 50.11925042589438,
+      "low-ask": 39.5366269165247,
+      "low-check": 38.52810902896081,
+      "low-ask-check": 40.66098807495741,
+      "high-ask": 49.89437819420784,
+      "high-check": 48.38160136286201,
+      "high-ask-check": 48.35434412265759,
+      "atlasmin-low": 41.79897785349234,
+      "atlasmin-high": 50.30323679727427,
+      "caveman-lite": 20.374787052810902,
+      "caveman-full": 28.892674616695057,
+      "caveman-ultra": 35.04599659284497,
+      "caveman4-lite": 33.465076660988075,
+      "caveman4-full": 32.279386712095395,
+      "caveman4-ultra": 40.78364565587734,
+      "adhd": 6.909710391822828
     }
   },
   "lost": {
     "en": {
-      "atlas-low": [
-        1,
-        263
+      "adhd": [
+        0,
+        176,
+        0,
+        0
       ],
       "atlas-high": [
         0,
-        263
-      ],
-      "low-ask": [
-        1,
-        263
-      ],
-      "low-check": [
+        176,
         0,
-        263
+        0
       ],
-      "low-ask-check": [
+      "atlas-low": [
         0,
-        263
-      ],
-      "high-ask": [
+        176,
         0,
-        263
-      ],
-      "high-check": [
-        1,
-        263
-      ],
-      "high-ask-check": [
-        0,
-        263
-      ],
-      "atlasmin-low": [
-        0,
-        263
+        0
       ],
       "atlasmin-high": [
         0,
-        263
-      ],
-      "caveman-lite": [
+        176,
         0,
-        263
+        0
+      ],
+      "atlasmin-low": [
+        0,
+        176,
+        0,
+        0
       ],
       "caveman-full": [
         0,
-        263
+        176,
+        0,
+        0
+      ],
+      "caveman-lite": [
+        0,
+        176,
+        0,
+        0
       ],
       "caveman-ultra": [
         0,
-        263
+        176,
+        0,
+        0
       ],
-      "adhd": [
-        1,
-        263
+      "caveman4-full": [
+        0,
+        176,
+        0,
+        0
+      ],
+      "caveman4-lite": [
+        0,
+        176,
+        0,
+        0
+      ],
+      "caveman4-ultra": [
+        0,
+        176,
+        0,
+        0
+      ],
+      "high-ask-check": [
+        0,
+        176,
+        0,
+        0
+      ],
+      "high-ask": [
+        0,
+        176,
+        0,
+        0
+      ],
+      "high-check": [
+        0,
+        176,
+        0,
+        0
+      ],
+      "low-ask-check": [
+        0,
+        176,
+        0,
+        0
+      ],
+      "low-ask": [
+        0,
+        176,
+        0,
+        0
+      ],
+      "low-check": [
+        0.5,
+        176,
+        0,
+        1
+      ],
+      "none": [
+        0,
+        176,
+        0,
+        0
       ]
     },
     "it": {
-      "atlas-low": [
+      "adhd": [
         0,
-        264
+        176,
+        0,
+        0
       ],
       "atlas-high": [
-        1,
-        264
-      ],
-      "low-ask": [
         0,
-        264
-      ],
-      "low-check": [
+        176,
         0,
-        264
+        0
       ],
-      "low-ask-check": [
+      "atlas-low": [
         0,
-        264
-      ],
-      "high-ask": [
-        1,
-        264
-      ],
-      "high-check": [
-        1,
-        264
-      ],
-      "high-ask-check": [
+        176,
         0,
-        264
-      ],
-      "atlasmin-low": [
-        1,
-        264
+        0
       ],
       "atlasmin-high": [
-        1,
-        264
+        0,
+        176,
+        0,
+        0
       ],
-      "caveman-lite": [
-        1,
-        264
+      "atlasmin-low": [
+        0,
+        176,
+        0,
+        0
       ],
       "caveman-full": [
+        1,
+        176,
         0,
-        264
+        2
+      ],
+      "caveman-lite": [
+        0,
+        176,
+        0,
+        0
       ],
       "caveman-ultra": [
         0,
-        264
-      ],
-      "adhd": [
+        176,
         0,
-        264
+        0
+      ],
+      "caveman4-full": [
+        0,
+        176,
+        0,
+        0
+      ],
+      "caveman4-lite": [
+        0,
+        176,
+        0,
+        0
+      ],
+      "caveman4-ultra": [
+        0,
+        176,
+        0,
+        0
+      ],
+      "high-ask-check": [
+        0,
+        176,
+        0,
+        0
+      ],
+      "high-ask": [
+        0.5,
+        176,
+        0,
+        1
+      ],
+      "high-check": [
+        0,
+        176,
+        0,
+        0
+      ],
+      "low-ask-check": [
+        0,
+        176,
+        0,
+        0
+      ],
+      "low-ask": [
+        0,
+        176,
+        0,
+        0
+      ],
+      "low-check": [
+        0,
+        176,
+        0,
+        0
+      ],
+      "none": [
+        0,
+        176,
+        0,
+        0
       ]
     }
   },
-  "noise": {
-    "en": 0.43322659634582783,
-    "it": 0.5561904761904761
+  "noneLost": {
+    "en": 1,
+    "it": 0
   },
-  "real_input_over_none": {
-    "atlas-low": 2207.25,
-    "atlas-high": 2303.75,
-    "low-ask": 2493.5,
-    "low-check": 3456.75,
-    "low-ask-check": 3831.0,
-    "high-ask": 2716.75,
-    "high-check": 3714.5,
-    "high-ask-check": 4177.75,
-    "atlasmin-low": 1650.25,
-    "atlasmin-high": 1832.5,
-    "caveman-lite": 2027.25,
-    "caveman-full": 2086.25,
-    "caveman-ultra": 2126.0,
-    "adhd": 2501.25
+  "controls": {
+    "en": {
+      "foreignSaidPresent": {
+        "n": 864,
+        "wrong": 0
+      },
+      "verbatimSaidAbsent": {
+        "n": 833,
+        "wrong": 3
+      }
+    },
+    "it": {
+      "foreignSaidPresent": {
+        "n": 864,
+        "wrong": 0
+      },
+      "verbatimSaidAbsent": {
+        "n": 833,
+        "wrong": 0
+      }
+    }
   },
-  "desc": {
-    "atlas": 1973,
-    "atlas-solo": 922,
-    "atlas-min": 153,
-    "caveman": 1281
+  "planted": {
+    "en": {
+      "removed": 60,
+      "removedSaidPresent": 9,
+      "kept": 55,
+      "keptSaidAbsent": 0
+    },
+    "it": {
+      "removed": 60,
+      "removedSaidPresent": 4,
+      "kept": 58,
+      "keptSaidAbsent": 0
+    }
   },
-  "inj": {
-    "atlas-low": 1409,
-    "atlas-high": 1531,
-    "low-ask": 1672,
-    "low-check": 2250,
-    "low-ask-check": 2513,
-    "high-ask": 1794,
-    "high-check": 2491,
-    "high-ask-check": 2754,
-    "atlasmin-low": 1082,
-    "atlasmin-high": 1204
+  "billedOutput": {
+    "en": {
+      "adhd": 3.830911492734478,
+      "atlas-high": -37.59954708435554,
+      "atlas-low": -28.684657482543873,
+      "atlasmin-high": -42.44197018305341,
+      "atlasmin-low": -31.979618795999244,
+      "caveman-full": -26.620117003208154,
+      "caveman-lite": -18.924325344404604,
+      "caveman-ultra": -34.32345725608605,
+      "caveman4-full": -31.38705416116248,
+      "caveman4-lite": -30.941687110775618,
+      "caveman4-ultra": -41.61539913191168,
+      "high-ask-check": -25.702962823174186,
+      "high-ask": -38.07133421400265,
+      "high-check": -33.13455368937535,
+      "low-ask-check": -11.809775429326288,
+      "low-ask": -25.733157199471595,
+      "low-check": -11.86638988488394,
+      "none": 0
+    },
+    "it": {
+      "adhd": 5.394770246255395,
+      "atlas-high": -35.08504696623508,
+      "atlas-low": -24.644579842599647,
+      "atlasmin-high": -39.15333841076416,
+      "atlasmin-low": -24.803249555724804,
+      "caveman-full": -24.812769738512312,
+      "caveman-lite": -18.523102310231025,
+      "caveman-ultra": -31.664127951256667,
+      "caveman4-full": -29.855293221629854,
+      "caveman4-lite": -31.77837014470678,
+      "caveman4-ultra": -37.896674282812896,
+      "high-ask-check": -17.352119827367353,
+      "high-ask": -32.92079207920792,
+      "high-check": -19.894008631632392,
+      "low-ask-check": -1.044046712363544,
+      "low-ask": -19.459253617669457,
+      "low-check": -3.697004315816197,
+      "none": 0
+    }
   },
   "rem": {
     "atlas-low": 27,
@@ -208,90 +363,5 @@
     "caveman-full": 60,
     "caveman-ultra": 66
   },
-  "session": {
-    "atlas:atlas-low": [
-      -10.54371098269785,
-      -28.494198270833436
-    ],
-    "atlas:atlas-high": [
-      -17.015037324310033,
-      -35.360990714140534
-    ],
-    "atlas:low-ask": [
-      -7.2413247719506035,
-      -26.38145189059466
-    ],
-    "atlas:low-check": [
-      -1.9930614791593688,
-      -25.305031818142425
-    ],
-    "atlas:low-ask-check": [
-      0.9903321852380031,
-      -23.89161696730437
-    ],
-    "atlas:high-ask": [
-      -12.784243524024786,
-      -32.867654540973945
-    ],
-    "atlas:high-check": [
-      -8.081894424562051,
-      -32.48625883134173
-    ],
-    "atlas:high-ask-check": [
-      -2.4742970719084405,
-      -28.83330130919658
-    ],
-    "atlas-solo:atlas-low": [
-      -15.798710982697846,
-      -29.20674064371479
-    ],
-    "atlas-solo:atlas-high": [
-      -22.270037324310024,
-      -36.073533087021886
-    ],
-    "atlas-solo:low-ask": [
-      -12.496324771950604,
-      -27.093994263476016
-    ],
-    "atlas-solo:low-check": [
-      -7.248061479159369,
-      -26.017574191023783
-    ],
-    "atlas-solo:low-ask-check": [
-      -4.264667814761997,
-      -24.604159340185724
-    ],
-    "atlas-solo:high-ask": [
-      -18.039243524024787,
-      -33.5801969138553
-    ],
-    "atlas-solo:high-check": [
-      -13.336894424562052,
-      -33.19880120422309
-    ],
-    "atlas-solo:high-ask-check": [
-      -7.729297071908441,
-      -29.545843682077937
-    ],
-    "atlas-min:atlasmin-low": [
-      -25.013522399070755,
-      -32.69053511093516
-    ],
-    "atlas-min:atlasmin-high": [
-      -29.43012200755232,
-      -37.8732152278913
-    ],
-    "caveman-lite": [
-      15.670362558189607,
-      1.5880956090370517
-    ],
-    "caveman-full": [
-      7.0306643368404185,
-      -7.26338227332909
-    ],
-    "caveman-ultra": [
-      2.927569760245424,
-      -11.512345493991871
-    ]
-  }
+  "cavemanNew": "4.0.1"
 }

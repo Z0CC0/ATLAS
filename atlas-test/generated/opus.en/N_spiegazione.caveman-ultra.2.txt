@@ -1,14 +1,18 @@
-**Eventual consistency:** after a write, replicas do not agree right away. They converge within a finite time, provided writes stop.
+**Eventual consistency:** after a write, replicas disagree for a while. Once writes stop, replicas converge within finite time.
 
-**Why it exists:** it trades against availability. Strong consistency forces a system to refuse requests when replicas cannot talk to each other. Eventual consistency keeps the system answering.
+**How long:** same region, usually under one second. Across regions, it rises to seconds.
 
-**Where it hurts you:** reads right after a write. Your user posts a comment, reloads, and does not see it. Same region, replicas usually converge in under a second. Across regions, convergence takes seconds.
+**Why it exists:** you trade it against availability. Strong consistency forces the system to refuse requests when replicas cannot talk to each other. Eventual consistency keeps serving them.
 
-**Common fix:** route reads to the primary replica only for the session that just wrote. Everyone else keeps reading from replicas.
+**Why you should care:** the problem hits whoever reads right after writing. A user posts a comment, reloads, and the comment is missing. Users see that as a bug.
 
-**Why care:** treat it as a design choice, not a defect to remove. Most systems that scale accept it on purpose. Your job is to know where it is unacceptable. Those cases are few and easy to spot:
+**Common fix:** the session that just wrote reads from the primary replica. Everyone else keeps reading from the other replicas. Primary load stays low.
+
+**Mindset:** eventual consistency is not a defect to eliminate. It is a choice. Most systems that scale accept it on purpose.
+
+**Where you cannot accept it:** these cases are few and easy to recognise:
 - account balances
 - seat availability
 - identifier uniqueness
 
-Use strong consistency there. Accept eventual consistency everywhere else.
+These need strong consistency. Everything else can usually tolerate a second or two of lag.

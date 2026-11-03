@@ -1,11 +1,11 @@
-Prompt caching saves the part of a request that stays the same between calls, so you only pay for it once. It pays off when many requests share a large stable beginning.
+Prompt caching saves the part of a request that has already been processed, called the prefix. Later requests that start the same way don't pay to process that part again.
 
-The cache keeps the already-processed prefix of a request. Any later request that starts the same way doesn't pay to process that part again. Reuse works only on the prefix: if one character differs near the start, nothing from that point on is reused.
+It only works on the prefix. If even one character near the start differs, nothing from that point on can be reused.
 
-So order matters. Put the stable parts first and the parts that change after them, never the other way round. A line near the top that changes every turn, such as a clock in the system prompt, stops reuse of everything after it.
+So put stable parts first and changing parts after, never the other way round. A system line that changes every turn, such as a clock, stops reuse of everything after it.
 
-Writing to the cache costs more than a normal read, so the first request is more expensive. You start saving from the second request, and the savings grow with each turn.
+Writing to the cache costs more than a normal read, so your first request costs more. Savings start with the second request and grow with each turn.
 
-**When it pays off:** long conversations with a large stable context, such as system instructions, attached documentation and tool definitions. That context is written once and then read on every turn.
+It pays off on long conversations with a large context that stays the same: system instructions, attached documentation, tool definitions.
 
-**When it doesn't:** single requests that differ from each other. You pay the extra cost of writing to the cache and never read it back.
+It doesn't pay off when you send single requests that all differ. You pay for the write and never read it back.

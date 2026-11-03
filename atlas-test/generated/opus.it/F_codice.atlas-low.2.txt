@@ -1,6 +1,6 @@
-Usa una chiusura che conserva il timer e lo azzera a ogni chiamata:
+Chiusura che conserva un timer, cancellato e ricreato a ogni chiamata:
 
-```js
+```javascript
 function debounce(fn, ms) {
   let t;
   return (...args) => {
@@ -10,16 +10,12 @@ function debounce(fn, ms) {
 }
 ```
 
-Uso: `const onResize = debounce(handler, 200);`, poi chiami `onResize` quante volte vuoi. `handler` parte una sola volta, 200 ms dopo l'ultima chiamata.
+`clearTimeout` va chiamato prima di ogni nuovo `setTimeout`. Senza, i timer si accumulano e la funzione parte più volte.
 
-Punti da non sbagliare:
+`t` deve stare nella chiusura, non dentro la funzione restituita. Altrimenti ogni chiamata avrebbe il proprio timer e il debounce non avverrebbe.
 
-**`clearTimeout` prima di ogni nuovo `setTimeout`**: senza, i timer si accumulano e la funzione parte più volte.
+Gli argomenti vanno inoltrati con lo spread (`...args`), altrimenti la funzione chiamata li riceve vuoti.
 
-`t` va dichiarata nella chiusura, non dentro la funzione restituita. Altrimenti ogni chiamata ha il proprio timer e il debounce non avviene.
+Questa versione non restituisce niente. Se ti serve il valore di ritorno, devi usare una Promise.
 
-Argomenti inoltrati con lo spread (`...args`): senza, `fn` li riceve vuoti.
-
-Questa versione non restituisce niente. Se ti serve il valore di ritorno di `fn`, devi usare una Promise.
-
-Se invece vuoi eseguire subito e poi ignorare le chiamate per un certo periodo, ti serve un throttle, che è un'altra funzione.
+Se ti serve il contrario, cioè eseguire subito e poi ignorare le chiamate per un certo periodo, devi usare un throttle, che è un'altra funzione.

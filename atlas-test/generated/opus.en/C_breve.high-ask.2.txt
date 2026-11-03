@@ -1,7 +1,5 @@
-Usually not. On a column with only three distinct values, a B-tree index is normally not used.
+Usually no. On a column with only three distinct values, the planner normally won't use a B-tree index. It picks a sequential scan whenever the filter matches more than about 5–10% of the rows.
 
-The planner prefers a sequential scan when the filter selects more than roughly 5-10% of rows.
+The index still costs extra work on every write and takes disk space.
 
-You would still pay for the index in slower writes and extra disk space.
-
-The exception is a partial index on the rare value, which does work.
+The exception is a partial index on the rare value, which does get used.

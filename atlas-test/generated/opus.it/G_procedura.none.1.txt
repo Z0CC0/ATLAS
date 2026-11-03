@@ -1,23 +1,23 @@
-Non usare `ALTER TABLE ... ALTER COLUMN ... TYPE` direttamente. Su dieci milioni di righe riscrive tutta la tabella e tiene un lock ACCESS EXCLUSIVE per tutta la durata: il servizio resta fermo finché non ha finito.
+Su una tabella da dieci milioni di righe in produzione non conviene usare un `ALTER TABLE ... ALTER COLUMN ... TYPE integer` diretto. Riscrive tutta la tabella tenendo un lock `ACCESS EXCLUSIVE`, quindi il servizio resta fermo per tutto il tempo dell'operazione.
 
-Conviene invece migrare con una colonna nuova, in sei passi:
+Conviene invece migrare per gradi, così la tabella resta sempre utilizzabile:
 
-1. **Controlla i dati.** Conta le righe in cui la colonna contiene qualcosa di diverso da sole cifre. Ogni valore esistente deve essere convertibile in intero, quindi il conteggio deve dare zero. Se non è zero, sistema quelle righe prima di andare avanti.
+1. **Controlla che i dati si possano convertire.** Prima di toccare qualsiasi cosa, conta le righe in cui la colonna contiene anche caratteri che non sono cifre. Se il conteggio non è zero, sistema quei valori prima di andare avanti.
 
-2. **Aggiungi la colonna nuova.**
+2. **Aggiungi una colonna nuova di tipo integer:**
    ```sql
    ALTER TABLE t ADD COLUMN colonna_int integer;
    ```
 
-3. **Riempila a blocchi di diecimila righe alla volta.** In questo modo nessun lock sulla tabella dura a lungo.
+3. **Aggiungi un trigger che tenga allineate le due colonne.** Così durante la migrazione ogni modifica a `colonna` arriva anche a `colonna_int`.
 
-4. **Aggiungi un trigger che tenga allineate le due colonne** per tutta la migrazione. Così anche le scritture che arrivano nel frattempo finiscono in `colonna_int`.
+4. **Riempi la colonna nuova a blocchi da diecimila righe per volta.** Un unico grande UPDATE terrebbe un lock lungo sulla tabella, mentre a blocchi ogni lock dura poco.
 
-5. **Modifica il codice perché legga dalla colonna nuova e rilascialo.**
+5. **Cambia il codice perché legga da `colonna_int` e rilascialo.** Verifica che l'applicazione funzioni con la colonna nuova prima di andare oltre.
 
-6. **Solo a questo punto elimina la colonna vecchia.**
+6. **Solo alla fine, elimina la colonna vecchia:**
    ```sql
    ALTER TABLE t DROP COLUMN colonna;
    ```
 
-Il sesto passo non si può annullare: dopo il `DROP` i dati della colonna vecchia si recuperano solo ripristinando un backup. Eseguilo solo quando il codice nuovo è in produzione e legge già da `colonna_int`.
+Attenzione: quest'ultimo passo è irreversibile. Una volta eliminata la colonna, i dati non tornano se non con un ripristino da backup. Fallo solo quando sei sicuro che il codice nuovo legge correttamente dalla colonna nuova.

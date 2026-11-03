@@ -1,26 +1,59 @@
-x86 history splits into three eras: first the instruction set grows, then clock speed rises, then parallelism and speculation carry performance.
+## Origin: 8086 (1978)
 
-**Foundations (1978–1985)**
-- **8086 (1978):** 16 bit. Grows out of 8080, compatible at source level. Old code needs recompile, not rewrite. Compatibility is the pattern from day one.
-- **80286 (1982):** Introduces protected mode. Flaw: no way back to real mode without reboot. That makes the mode awkward in practice.
-- **80386 (1985):** Big leap. Brings 32 bit, paged virtual memory and virtual 8086 mode. Virtual 8086 mode lets old real-mode code run inside protected environment, so the 286 dead end gets fixed. Modern operating systems build on this chip's model.
+16-bit chip. Grows out of 8080. Compatible at source level, so 8080 code ports with reassembly, not rewrite. This choice sets pattern for next four decades: never break old software.
 
-**Integration and parallelism inside one core (1989–1995)**
-- **486 (1989):** Pulls first level cache and maths coprocessor onto the chip. Fewer trips off-chip, much faster.
-- **Pentium (1993):** Superscalar. Two integer pipelines can retire two instructions per cycle.
-- **Pentium Pro (1995):** Key turning point. Introduces out of order execution. Translates x86 instructions into internal micro-operations. From here x86 is an interface, no longer the real machine underneath. Chip keeps the old instruction set outside and runs a different engine inside.
+## Protection and 32 bit (1982–1985)
 
-**Frequency race and its end (2000–2006)**
-- **Pentium 4 (2000):** Chases frequency with very long pipeline. Hits power wall. Higher clocks now cost too much power and heat.
-- **AMD64 (2003):** AMD extends architecture to 64 bit. Intel adopts same instruction set. First time dominant extension does not come from Intel.
-- **Core 2 (2006):** Direction shifts from frequency to core count. More cores replace higher clocks.
+**80286 (1982)** adds protected mode, first step toward real multitasking OS. Flaw: no way back to real mode without reboot. Old DOS software and new protected OS cannot mix cleanly.
 
-**Throughout: vector extensions**
-Each generation widens vector units: MMX, then SSE, then AVX, then AVX-512. More data processed per instruction.
+**80386 (1985)** fixes this and is real turning point:
+- 32-bit registers and addressing.
+- Paged virtual memory, base for modern OS memory management.
+- Virtual 8086 mode, so old real-mode programs run inside protected environment. Compatibility problem from 286 solved.
 
-**Today**
-Complexity sits in the layers below the instruction set: branch prediction, cache hierarchy, speculative execution. Performance comes from guessing ahead and keeping data close.
+## Integration (1989)
 
-That guessing has a cost. Spectre and Meltdown (2018) show speculative execution carried a security cost nobody had priced.
+**486 (1989)** moves first-level cache and maths coprocessor onto chip. Before 486, both were separate parts. Theme from here: more of system lives on die.
 
-**Big picture:** x86 kept backward compatibility for more than 40 years. It did this by turning the instruction set into a stable interface over machines that kept changing underneath. That same hidden machinery now drives both the speed and some of the risk.
+## Parallelism inside one core (1993–1995)
+
+**Pentium (1993)** is superscalar. Two integer pipelines, up to two instructions retired per cycle.
+
+**Pentium Pro (1995)** is deeper break. Two changes:
+- Out-of-order execution: chip reorders work to keep units busy.
+- x86 instructions translated into internal micro-operations.
+
+Key consequence: from here x86 is interface, not real machine underneath. Instruction set becomes contract with software. Hardware behind contract free to change.
+
+## Frequency race ends (2000)
+
+**Pentium 4 (2000)** chases clock speed with very long pipeline. Hits power wall: more frequency costs too much power and heat. Strategy is dead end.
+
+## 64 bit from outside Intel (2003)
+
+AMD extends architecture to 64 bit with **AMD64** in 2003. Intel adopts same instruction set. First time dominant x86 extension does not come from Intel.
+
+## Cores instead of clock (2006)
+
+From **Core 2 (2006)** direction shifts from frequency to core count. Performance growth now comes from parallel cores, not faster single core.
+
+## Vector extensions (across generations)
+
+SIMD width and capability grow step by step: **MMX, SSE, AVX, AVX-512**. Each generation processes more data per instruction for media, science and numeric work.
+
+## Today: complexity below the interface
+
+Real complexity now sits in layers software does not see:
+- Branch prediction
+- Cache hierarchy
+- Speculative execution
+
+Same story as Pentium Pro, pushed further. x86 stays stable on top, machine underneath keeps getting more aggressive.
+
+## Bill arrives (2018)
+
+**Spectre and Meltdown (2018)** show speculative execution carried security cost nobody had priced. Tricks that made hidden machine fast also leak data across boundaries that interface promised to protect.
+
+## Arc in one line
+
+16-bit chip with source compatibility to 8080 becomes stable interface over hidden, speculative, multi-core machine. Pushes for speed came in order: integration, parallel pipelines, frequency, core count. Each step kept old code running. Last step showed hidden machine has its own risks.

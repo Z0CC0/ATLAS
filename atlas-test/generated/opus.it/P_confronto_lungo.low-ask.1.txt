@@ -1,11 +1,11 @@
-Scrivi i log su file locali e usa un raccoglitore che li spedisce altrove. Con mille richieste al minuto è la scelta ragionevole, perché l'applicazione non aspetta mai la scrittura del log.
+File locali più raccoglitore che li spedisce altrove. Applicazione non aspetta mai scrittura del log.
 
-**La scrittura del log non deve stare nel percorso critico della richiesta.** Questa regola vale qualunque soluzione tu scelga.
+Regola valida in ogni caso: **scrittura del log mai nel percorso critico della richiesta**.
 
-Nessuna delle tre opzioni va bene da sola:
+Perché non solo file: costo zero, nessuna dipendenza, ma ricerca solo con grep. Rotazione va configurata a mano, altrimenti disco si riempie. Con più macchine, nessuna ricerca unica: bisogna collegarsi a ognuna.
 
-Solo file: costo zero e nessuna dipendenza. Però cerchi con grep e devi configurare la rotazione a mano, altrimenti il disco si riempie. Con più macchine non puoi cercare in tutte insieme: devi collegarti a ognuna.
+Perché non solo servizio gestito: ricerca immediata, allarmi, conservazione automatica, ma si paga per volume. A mille richieste al minuto volume cresce in fretta. Inoltre log escono dalla tua infrastruttura, quindi vanno ripuliti dai dati personali prima di uscire.
 
-Servizio gestito: offre ricerca immediata, allarmi e conservazione automatica. Però si paga per volume, e a mille richieste al minuto il volume cresce in fretta. Inoltre i log escono dalla tua infrastruttura, quindi devi togliere i dati personali prima che escano.
+Perché non database: ricerca comoda e nota, ma log nello stesso database dell'applicazione mettono in competizione due carichi molto diversi. Sotto carico, log occupano cache e connessioni che servivano alle richieste vere.
 
-Database: la ricerca è comoda e la conosci già. Però se scrivi i log nello stesso database dell'applicazione metti in competizione due carichi molto diversi. Sotto carico i log occupano cache e connessioni che servivano alle richieste vere.
+Raccoglitore unisce vantaggi: scrittura locale veloce e ricerca centralizzata, dove log arrivano. Se destinazione è servizio gestito, valgono comunque costo per volume e pulizia dei dati personali.

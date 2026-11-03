@@ -83,9 +83,10 @@ nothing.
 |---|---|---|
 | `atlas` | the dials, six commands, the research and browser subagents | 2,232 |
 | `atlas-min` | compression only: one command, no `ask`, no `check`, no provenance marker | 1,085 |
-| `atlas-code` | `atlas` plus coding and documents: review, fix, plan, test, ship, spec, changelog and the rest | 5,903 |
+| `atlas-code` | `atlas` plus coding and documents: review, fix, plan, test, ship, spec, changelog and the rest | 5,752 |
 | `atlas-mem` | `atlas` plus review, fix and commit, a memory and a reader of shipped programs | 3,101 |
-| `atlas-max` | everything: `atlas-code` and `atlas-mem` together. Install it instead of those two, never beside them: two builds inject the rules twice | 6,197 |
+| `atlas-video` | `atlas` plus video: written with a framework on this machine, or recorded from the screen | 2,462 |
+| `atlas-max` | everything: `atlas-code`, `atlas-mem` and `atlas-video` together. Install it instead of those two, never beside them: two builds inject the rules twice | 6,275 |
 
 ## The per-turn reminder
 

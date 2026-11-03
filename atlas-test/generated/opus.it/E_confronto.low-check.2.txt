@@ -1,11 +1,13 @@
-*Conoscenza interna*
+conoscenza interna
 
-**Postgres.** Su un progetto piccolo conviene. Passa a Redis solo quando il volume lo impone davvero.
+Postgres.
 
-Con `SELECT FOR UPDATE SKIP LOCKED` regge fino a circa mille lavori al minuto.
+Con SELECT FOR UPDATE SKIP LOCKED regge fino a circa mille lavori al minuto, quanto basta per progetto piccolo.
 
-Il lavoro sta nella stessa transazione dei dati. Quindi non capita mai che un lavoro parta e la scrittura venga annullata.
+Lavoro sta nella stessa transazione dei dati: non può succedere che lavoro parta e scrittura venga annullata.
 
-La persistenza è gratis: se il processo muore, la coda resta lì.
+Persistenza gratis: se processo muore, coda ancora lì.
 
-Redis regge molto più volume e ha una latenza più bassa, sotto il millisecondo. In cambio è un servizio in più da gestire, monitorare e aggiornare. Inoltre la persistenza va configurata: senza AOF attivo, un riavvio perde i lavori in coda.
+Redis regge molto più volume, con latenza più bassa, sotto il millisecondo. Però porta servizio in più da gestire, monitorare e aggiornare. Persistenza va configurata: senza AOF attivo, riavvio perde lavori in coda.
+
+Passa a Redis solo quando volume lo impone davvero.

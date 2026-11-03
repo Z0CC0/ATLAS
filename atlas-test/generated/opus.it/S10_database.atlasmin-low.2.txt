@@ -1,15 +1,17 @@
-**Parti da Postgres da solo.** Aggiungi altri sistemi solo quando un carico specifico lo impone, con numeri alla mano.
+Parti da **Postgres solo**. Aggiungi un altro sistema solo quando un carico specifico lo impone, con numeri alla mano.
 
-Postgres copre tutti e quattro i carichi in modo accettabile, nessuno in modo eccellente. Sugli ordini dà transazioni serie, e lì non sono negoziabili. La ricerca testuale integrata basta sotto il milione di documenti, sopra diventa debole. Regge l'analisi fino a decine di milioni di righe, poi le scansioni rallentano.
+Postgres regge tutti e quattro i carichi in modo accettabile, nessuno in modo eccellente. Sugli ordini offre transazioni serie, e lì non sono negoziabili. La ricerca testuale integrata basta sotto il milione di documenti, sopra diventa debole. Regge l'analisi fino a decine di milioni di righe, poi le scansioni diventano lente.
 
-MySQL equivale a Postgres sugli ordini, ma è più debole su tipi di dato e query complesse. Non ha motivo di preferirlo.
+Le alternative:
 
-MongoDB semplifica il catalogo, perché gestisce schemi variabili. Però le transazioni multi-documento sono arrivate tardi e costano, e questo pesa sugli ordini.
+MySQL: equivalente sugli ordini, più debole su tipi di dato e query complesse.
 
-Elasticsearch è molto superiore sulla ricerca testuale: rilevanza, sinonimi, tolleranza agli errori di battitura. Non è però un archivio autorevole: va alimentato da un altro database, non lo sostituisce. Aggiungerlo prima del milione di documenti è quasi sempre prematuro.
+MongoDB: semplifica il catalogo con schemi variabili, ma le transazioni multi-documento sono arrivate tardi e costano. Sugli ordini questo pesa.
 
-ClickHouse è molto superiore sull'analisi: le scansioni colonnari sono avanti di ordini di grandezza. Non va usato per gli ordini, perché gli aggiornamenti puntuali sono il suo punto debole.
+Elasticsearch: molto superiore nella ricerca testuale, per rilevanza, sinonimi e tolleranza agli errori di battitura. Però non è un archivio autorevole: va alimentato da un altro database, non lo sostituisce. Aggiungerlo prima del milione di documenti è quasi sempre prematuro.
 
-Se crescerai, la configurazione tipica è Postgres come archivio autorevole, con Elasticsearch e ClickHouse alimentati da lì.
+ClickHouse: molto superiore nell'analisi, con scansioni colonnari ordini di grandezza avanti. Non va bene per gli ordini, perché gli aggiornamenti puntuali sono il suo punto debole.
 
-Ogni sistema che aggiungi porta due problemi: tenere sincronizzati i sistemi e mantenere allineati i dati. Il costo vero dei sistemi specializzati non è la licenza. È il tempo delle persone che li tengono in piedi.
+Se un giorno i numeri lo richiederanno, la configurazione tipica è **Postgres come archivio autorevole**, con Elasticsearch e ClickHouse alimentati da lì.
+
+Ogni sistema aggiunto porta un problema di sincronizzazione e uno di allineamento dei dati. Il costo vero dei sistemi specializzati non è la licenza, ma il tempo delle persone che li tengono in piedi.

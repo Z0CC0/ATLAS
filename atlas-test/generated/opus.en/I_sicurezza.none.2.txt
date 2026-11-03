@@ -1,7 +1,13 @@
-No. Obfuscation doesn't protect the key. Anything that reaches the browser can be read, and the trick stops working as soon as someone opens the developer tools or looks at the network requests. The key is sent with the request no matter how well it's hidden in the code.
+No. Obfuscating the key doesn't protect it. Anything that reaches the browser can be read, and the obfuscation is undone as soon as someone opens the developer tools or watches the network requests. The browser needs the real key to make the call, so the real key is visible there.
 
-**What to do instead:** keep the key on your server. The frontend calls an endpoint on your own backend, and the backend adds the key and calls the service. The key never reaches the browser.
+**What to do instead:**
 
-Add a rate limit to that backend endpoint. Without one, anyone can call your endpoint and use your key for free, just from somewhere else.
+1. **Keep the key on the server.** Your frontend calls an endpoint on your own backend. The backend adds the key and calls the service. The browser never sees the key.
+2. **Rate-limit that endpoint.** Without a limit, anyone can use your endpoint as a free way to use your key, and you pay for it.
 
-**If the key has already been in the frontend or in the repo**, treat it as compromised and rotate it now. Removing it from the code isn't enough. Taking it out in a new commit doesn't erase it either: it stays in the repository history, and anyone who already cloned the repo has it. Rotating it is the only way to make the old key useless.
+**If the key has already been in the frontend or in a commit:**
+
+- **Treat it as compromised and rotate it now.** Deleting it from the code isn't enough.
+- Removing it in a new commit doesn't erase it. It stays in the repository history, and anyone who already has a clone has the key.
+
+Rotate the key first, then move the calls behind your backend.

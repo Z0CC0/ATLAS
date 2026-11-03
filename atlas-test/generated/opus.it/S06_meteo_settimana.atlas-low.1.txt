@@ -1,17 +1,17 @@
-Settimana a New York per lo più serena. Precipitazioni significative solo mercoledì e domenica, fine settimana periodo più caldo.
+Settimana per lo più bella a New York, con pioggia mercoledì e temporali domenica pomeriggio.
 
-Lunedì: sereno, 24 gradi, minima 17
+Lunedì: sereno, massima 24°, minima 17°
 
-Martedì: nuvoloso, 22 gradi, minima 16, pioggia debole in serata
+Martedì: nuvoloso, massima 22°, minima 16°, pioggia debole in serata
 
-Mercoledì: pioggia per gran parte del giorno, 19 gradi, minima 15
+Mercoledì: pioggia per gran parte del giorno, massima 19°, minima 15°
 
-Giovedì: schiarite, 21 gradi, minima 14
+Giovedì: schiarite, massima 21°, minima 14°
 
-Venerdì: sereno, 25 gradi, minima 16
+Venerdì: sereno, massima 25°, minima 16°
 
-Sabato: sereno e caldo, 28 gradi, minima 19
+Sabato: sereno e caldo, massima 28°, minima 19°
 
-Domenica: temporali nel pomeriggio, 26 gradi, minima 18
+Domenica: temporali nel pomeriggio, massima 26°, minima 18°
 
-Dati presi dal web.
+Precipitazioni significative solo mercoledì e domenica. Fine settimana periodo più caldo.

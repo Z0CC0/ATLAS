@@ -1,17 +1,21 @@
-conoscenza interna
+Conoscenza interna.
 
-Quella di x86 è la storia di un'interfaccia che resta uguale mentre la macchina sotto cambia del tutto.
+x86 nasce come estensione compatibile di un processore a 16 bit. Oggi è un'interfaccia stabile, sopra macchine interne completamente diverse.
 
-Si parte dall'8086 del 1978, a 16 bit. Nasce come evoluzione dell'8080 ed è compatibile con lui a livello di sorgente. Questo peso del passato accompagna tutta la famiglia.
+Il punto di partenza è l'8086 del 1978, a 16 bit. Intel lo progetta come evoluzione dell'8080 e garantisce compatibilità a livello di sorgente: chi aveva software per 8080 poteva portarlo senza riscriverlo. Questa scelta segna tutta la storia successiva, perché ogni generazione deve portarsi dietro quelle precedenti.
 
-L'80286 del 1982 introduce la modalità protetta, ma a metà: una volta entrati, per tornare alla modalità reale bisogna riavviare. L'80386 del 1985 completa il lavoro. Porta i 32 bit e la memoria virtuale paginata, e con la modalità virtuale 8086 fa girare il vecchio software dentro il nuovo sistema.
+Nel 1982 arriva l'80286, con la modalità protetta, base per sistemi operativi multitasking seri. Il limite: dalla modalità protetta non si torna alla modalità reale senza riavviare, un problema concreto per chi doveva ancora eseguire vecchi programmi DOS.
 
-Il 486 del 1989 mette dentro il chip la cache di primo livello e il coprocessore matematico, che prima stavano fuori. Il Pentium del 1993 è superscalare: ha due pipeline intere e può ritirare due istruzioni per ciclo.
+L'80386 del 1985 rappresenta la vera svolta. Porta i 32 bit, la memoria virtuale paginata e la modalità virtuale 8086, che risolve il problema del 286: i vecchi programmi in modalità reale girano dentro un ambiente protetto. Qui x86 diventa adatto a sistemi operativi moderni.
 
-Il Pentium Pro del 1995 è il vero punto di svolta. Esegue le istruzioni fuori ordine e traduce le istruzioni x86 in micro-operazioni interne. **Da lì x86 è un'interfaccia, non più la macchina reale che sta sotto.**
+Con il 486 del 1989 entrano nel chip la cache di primo livello e il coprocessore matematico, fino ad allora separati. Il Pentium del 1993 è superscalare: due pipeline intere che possono ritirare due istruzioni per ciclo.
 
-Il Pentium 4 del 2000 scommette tutto sulla frequenza, con una pipeline lunghissima, e va a sbattere contro il muro del consumo. Nel 2003 AMD estende l'architettura a 64 bit con AMD64 e Intel adotta lo stesso insieme di istruzioni. È la prima volta che l'estensione dominante non arriva da Intel. Dal 2006, con il Core 2, la direzione cambia: si smette di inseguire la frequenza e si aumenta il numero di nuclei.
+Il passaggio concettuale più importante arriva con il Pentium Pro del 1995. Introduce l'esecuzione fuori ordine e traduce le istruzioni x86 in micro-operazioni interne. Da quel momento x86 smette di essere la macchina reale: diventa un'interfaccia, un contratto verso il software, mentre sotto lavora un motore diverso.
 
-Intanto le estensioni vettoriali crescono generazione dopo generazione: MMX, SSE, AVX, AVX-512.
+Il Pentium 4 del 2000 punta tutto sulla frequenza, con una pipeline lunghissima, e sbatte contro il muro del consumo: oltre una certa soglia, alzare i clock non è più sostenibile.
 
-Oggi la complessità sta negli strati sotto l'interfaccia: predizione dei salti, gerarchia di cache, esecuzione speculativa. Nel 2018 Spectre e Meltdown hanno mostrato che **l'esecuzione speculativa aveva un costo di sicurezza a cui nessuno aveva pensato**.
+Nel 2003 cambia anche chi guida. AMD estende l'architettura a 64 bit con AMD64 e Intel adotta lo stesso insieme di istruzioni. È la prima volta che l'estensione dominante di x86 non viene da Intel.
+
+Dal 2006, con il Core 2, la direzione cambia: non più frequenza ma numero di nuclei. In parallelo crescono, generazione dopo generazione, le estensioni vettoriali: MMX, poi SSE, AVX, infine AVX-512.
+
+Oggi la complessità non sta più nell'insieme di istruzioni ma negli strati sotto: predizione dei salti, gerarchia di cache, esecuzione speculativa. Nel 2018 Spectre e Meltdown hanno mostrato che l'esecuzione speculativa, introdotta per guadagnare prestazioni, aveva un costo di sicurezza che nessuno aveva considerato.

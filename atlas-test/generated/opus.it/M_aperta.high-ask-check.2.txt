@@ -1,15 +1,15 @@
-Conoscenza interna.
+conoscenza interna
 
-La domanda che decide non è tecnica: che cosa deve poter fare il team fra un anno che oggi non può.
+La domanda decisiva non è tecnica: cosa deve poter fare il team fra un anno che oggi non può. Parti da lì.
 
-Prima di scegliere l'architettura, ti servono due dati sul monolite.
+Poi servono due dati, in quest'ordine:
 
-Primo, quale parte cambia davvero. Le parti stabili non guadagnano nulla dall'essere spezzate.
+1. Quali parti del monolite cambiano davvero. Le parti stabili non guadagnano nulla dall'essere spezzate.
 
-Secondo, dove stanno i confini delle transazioni. Una transazione che attraversa due servizi diventa un problema distribuito.
+2. Dove stanno i confini delle transazioni. Una transazione divisa fra due servizi diventa un problema distribuito.
 
-Evita la riscrittura completa in parallelo al vecchio sistema: fallisce quasi sempre, perché il vecchio continua a cambiare e la copia non lo raggiunge mai. Conviene lo strangolamento progressivo. Metti un router davanti al monolite e sposta un pezzo per volta. Il vecchio sistema resta autorevole finché il nuovo non è verificato.
+**Migrazione:** evita di riscrivere tutto in parallelo al vecchio sistema. Fallisce quasi sempre, perché il vecchio continua a cambiare e la copia non lo raggiunge mai. Meglio lo strangolamento progressivo: un router davanti, un pezzo spostato per volta, e il vecchio resta autorevole finché il nuovo non è verificato.
 
-I microservizi costano di più da gestire: ogni servizio vuole il suo rilascio, monitoraggio, log, allarmi e una persona che se ne occupa. Sotto i cinque sviluppatori quel costo supera quasi sempre il beneficio.
+**Microservizi:** costano di più da gestire. Ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupi. Sotto i cinque sviluppatori quel costo supera quasi sempre il beneficio.
 
-C'è poi un'opzione di cui si parla poco, il monolite modulare. Ha confini interni netti e un solo rilascio, e ti permette di estrarre un modulo il giorno in cui serve davvero.
+Opzione poco citata: il monolite modulare. Confini interni netti, un solo rilascio, e un modulo si può estrarre il giorno che serve davvero.

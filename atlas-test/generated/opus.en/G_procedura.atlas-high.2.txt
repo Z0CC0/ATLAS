@@ -1,20 +1,23 @@
-Don't run `ALTER TABLE ... ALTER COLUMN TYPE` directly. It rewrites the whole table while holding an ACCESS EXCLUSIVE lock, so the service is down for the entire rewrite. Move the data to a new column instead, in this order:
+Don't ALTER the column type in place. Migrate in six steps, in this order.
 
-1. Check that every existing value can be converted: count the rows that are not all digits. Fix those rows before you go on.
+Why not in place: `ALTER TABLE t ALTER COLUMN colonna TYPE integer` rewrites the whole table while holding an ACCESS EXCLUSIVE lock. The service is down until the rewrite finishes, which on ten million rows can take a long time.
+
+1. Count the rows whose value is not all digits. If the count isn't zero, fix those rows before going further, because they can't be converted.
 
 2. Add the new column:
    ```sql
    ALTER TABLE t ADD COLUMN colonna_int integer;
    ```
 
-3. Fill it in batches of ten thousand rows, so no long lock is held on the table.
+3. Fill `colonna_int` in batches of 10,000 rows. That way no long lock is held on the table.
 
-4. Add a trigger that keeps the two columns in step for the rest of the migration.
+4. Add a trigger that keeps `colonna` and `colonna_int` in step for the rest of the migration, so rows written during the backfill are also covered.
 
-5. Change the code to read from `colonna_int`, and ship it.
+5. Change the code to read from `colonna_int`, then ship it.
 
-6. Only after all of that, drop the old column:
+6. Only after step 5 is live, drop the old column:
    ```sql
    ALTER TABLE t DROP COLUMN colonna;
    ```
-   You can't undo this step. Once the column is dropped, the data only comes back by restoring from a backup. Run it only after step 5 is shipped and working.
+
+Step 6 can't be undone. Once you drop the column, its data comes back only by restoring from a backup. Don't run it until the new column is confirmed correct in production.

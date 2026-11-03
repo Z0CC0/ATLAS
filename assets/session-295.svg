@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="290" viewBox="0 0 860 290" role="img" aria-label="A 295-turn session at low against no plugin">
+<title>A 295-turn session at low against no plugin</title>
+<rect x="0.5" y="0.5" width="859" height="289" rx="14" fill="#000000" stroke="#ffffff"/>
+<text x="28" y="34" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="17" fill="#f5f5f7" font-weight="600">A 295-turn session at low against no plugin</text>
+<text x="198" y="76" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#f5f5f7" text-anchor="end">atlas-min</text>
+<rect x="240.0" y="62" width="520.0" height="19" rx="4" fill="#ff1f1f"/>
+<text x="768" y="76" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#f5f5f7" >-36%</text>
+<text x="198" y="108" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#f5f5f7" text-anchor="end">atlas</text>
+<rect x="289.8" y="94" width="470.2" height="19" rx="4" fill="#ff1f1f"/>
+<text x="768" y="108" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#f5f5f7" >-33%</text>
+<text x="198" y="140" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" text-anchor="end">atlas-video</text>
+<rect x="293.4" y="126" width="466.6" height="19" rx="4" fill="#6e6e73"/>
+<text x="768" y="140" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" >-33%</text>
+<text x="198" y="172" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" text-anchor="end">atlas-mem</text>
+<rect x="302.8" y="158" width="457.2" height="19" rx="4" fill="#6e6e73"/>
+<text x="768" y="172" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" >-32%</text>
+<text x="198" y="204" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" text-anchor="end">atlas-code</text>
+<rect x="341.4" y="190" width="418.6" height="19" rx="4" fill="#6e6e73"/>
+<text x="768" y="204" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" >-29%</text>
+<text x="198" y="236" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" text-anchor="end">atlas-max</text>
+<rect x="349.0" y="222" width="411.0" height="19" rx="4" fill="#6e6e73"/>
+<text x="768" y="236" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" >-29%</text>
+<line x1="760.0" y1="56" x2="760.0" y2="248" stroke="#ffffff"/>
+<text x="28" y="276" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#6e6e73" >Left of the line is cheaper than no plugin, right of it costs more. 500-token answers.</text>
+</svg>

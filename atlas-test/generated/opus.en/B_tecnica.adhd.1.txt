@@ -1,4 +1,4 @@
-Wrap the connection acquisition in `db/session.py:47` in `try/finally` so the connection is released even when the handler fails:
+Wrap the connection acquire and release in `db/session.py:47` in `try/finally`:
 
 ```python
 conn = pool.acquire()
@@ -10,27 +10,23 @@ finally:
 
 ## What's happening
 
-It's **connection pool exhaustion**. A slow query isn't the cause.
+The cause is connection pool exhaustion. It is not a slow query.
 
-1. The middleware at `db/session.py:47` releases the connection only when the request succeeds.
-2. When a handler raises an exception, `release()` never runs. The connection stays held until it times out.
-3. After a few hundred failed requests, the pool is empty and every new request waits for a free connection.
-4. That's why latency keeps rising and then the API locks up, instead of throwing errors right away.
+- The middleware at `db/session.py:47` releases the connection only when the handler succeeds.
+- When the handler raises an exception, `release()` never runs. The connection stays held until it times out.
+- After a few hundred failed requests the pool is empty, and every request after that waits for a connection.
+- Requests wait instead of failing, so you see latency climbing until the API locks up, not immediate errors.
 
-## Don't raise `pool_size` yet
+The `finally` block runs on the error path too, so connections from failed requests go back to the pool.
 
-A bigger pool looks like a fix, but it only hides the problem. The pool still empties, just later, because connections are still leaking.
+## Don't raise `pool_size` first
 
-Raise `pool_size` only after the fix is in, and only if your real load needs it.
+Raising `pool_size` looks like a fix, but it only hides the leak. A bigger pool takes longer to empty, so the lockup comes later, but connections still leak. Raise it only after the fix is in, and only if your real load needs it.
 
-## Check it
+## Steps (about 10 minutes)
 
-Run this before and after the change:
+1. Run `pytest tests/test_pool.py -k exhaustion -x` to reproduce the exhaustion before the change.
+2. Apply the `try/finally` change at `db/session.py:47`.
+3. Run `pytest tests/test_pool.py -k exhaustion -x` again. It should pass now.
 
-```
-pytest tests/test_pool.py -k exhaustion -x
-```
-
-It should reproduce the lockup before the fix and pass after it.
-
-Next: open `db/session.py` at line 47 and paste in the snippet above. That takes about 5 minutes, plus one test run.
+Next: run the pytest command in step 1 and check that it shows the exhaustion.

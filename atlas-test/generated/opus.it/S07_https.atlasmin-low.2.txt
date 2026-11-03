@@ -1,15 +1,17 @@
-HTTPS è HTTP che viaggia dentro un canale cifrato da TLS. Prima di scambiare dati, client e server fanno una stretta di mano (handshake):
+HTTPS è HTTP che viaggia dentro un canale cifrato da TLS. Prima che passi qualsiasi richiesta HTTP, client e server preparano questo canale con uno scambio iniziale, l'handshake.
 
 1. Il client apre la connessione e dichiara quali versioni di TLS e quali cifrari supporta.
 
-2. Il server sceglie versione e cifrario e manda il proprio certificato. Il certificato lega un nome di dominio a una chiave pubblica ed è firmato da un'autorità di certificazione.
+2. Il server sceglie versione e cifrario e invia il proprio certificato.
 
-3. Il client verifica la firma risalendo la catena di certificati fino a una radice che ha già in memoria.
+3. Il client verifica il certificato. Il certificato lega un nome di dominio a una chiave pubblica ed è firmato da un'autorità di certificazione. Il client controlla la firma risalendo la catena fino a una radice che ha già in memoria.
 
-4. Client e server concordano una chiave di sessione, oggi di solito con uno scambio Diffie-Hellman su curve ellittiche. È una chiave simmetrica perché la cifratura asimmetrica costa troppo per il traffico vero e proprio.
+4. Client e server concordano una chiave di sessione, oggi di solito con uno scambio Diffie-Hellman su curve ellittiche.
 
-5. Da quel momento il traffico è cifrato e autenticato: chi sta in mezzo non può né leggerlo né modificarlo.
+5. Da quel momento il traffico è cifrato e autenticato. Chi sta in mezzo non può leggerlo né modificarlo.
 
-TLS 1.3 completa questo scambio in un solo giro di andata e ritorno, mentre TLS 1.2 ne richiede due.
+La chiave di sessione è simmetrica perché la cifratura asimmetrica costa troppo per il traffico vero. La crittografia asimmetrica serve solo a stabilire la connessione.
 
-Il lucchetto non garantisce chi gestisce il sito. Il certificato dice solo che quel dominio controlla quella chiave.
+TLS 1.3 fa tutto l'handshake in un solo giro di andata e ritorno. TLS 1.2 ne richiede due.
+
+Il certificato **non dice nulla su chi gestisce il sito**. Garantisce solo che quel dominio controlla quella chiave. Un lucchetto nel browser vuol dire che stai parlando davvero con quel dominio, non che quel dominio sia affidabile.

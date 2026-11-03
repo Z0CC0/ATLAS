@@ -1,15 +1,15 @@
-conoscenza interna
+internal knowledge
 
-**Te lo sconsiglio.** Vantaggio reale, ma costi pesanti.
+Sconsiglio di mettere tutta la logica di business nei trigger. Vantaggio reale: nessun percorso applicativo può saltare regola, nemmeno script eseguito a mano. Però costo alto:
 
-Vantaggio: nessun percorso applicativo può saltare regola, nemmeno script eseguito a mano.
+Trigger invisibili a chi legge codice applicativo. Modifica che sembra semplice ne attiva altre senza lasciare traccia.
 
-Trigger invisibili a chi legge codice applicativo: modifica che sembra semplice ne attiva altre senza lasciare traccia.
+Non testabili con strumenti che team usa già: servono prove che girano contro database vero.
 
-Non si testano con strumenti che team usa già: servono prove che girano contro database vero.
+Debug peggiore. Errore dentro trigger arriva come fallimento della scrittura, senza dire quale regola l'ha causato.
 
-Debug peggiore: errore dentro trigger arriva come fallimento della scrittura, senza dire quale regola l'ha causato.
+Migrazioni fragili: ordine dei trigger conta, ma non dichiarato da nessuna parte.
 
-Migrazioni fragili: ordine dei trigger conta e non è dichiarato da nessuna parte.
+Alternativa: in database solo ciò che protegge integrità, cioè vincoli, chiavi esterne, unicità, controlli di dominio. Logica di business nell'applicazione, dietro **un solo punto di ingresso**.
 
-**Alternativa:** in database solo ciò che protegge integrità (vincoli, chiavi esterne, unicità, controlli di dominio). Logica di business in applicazione, dietro un solo punto di ingresso. Quel punto dà stessa garanzia del trigger, purché accesso diretto al database resti riservato alle migrazioni.
+Quel punto di ingresso unico dà stessa garanzia del trigger, purché **accesso diretto al database resti riservato alle migrazioni**.

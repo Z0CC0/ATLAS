@@ -1,13 +1,15 @@
-x86 è passato da CPU a 16 bit a un'interfaccia stabile. Sotto quell'interfaccia oggi lavora una macchina molto diversa.
+Da fine anni settanta a oggi x86 ha cambiato tre volte direzione: prima più bit e protezione della memoria, poi più istruzioni per ciclo e frequenza, infine più nuclei e più complessità negli strati interni.
 
-Punto di partenza: 8086, 1978, 16 bit. Nasce come evoluzione dell'8080 e resta compatibile a livello di sorgente. Questa scelta, cioè cambiare senza rompere ciò che esiste, accompagna tutta la storia successiva.
+Punto di partenza: 8086 del 1978, processore a 16 bit nato come evoluzione dell'8080, compatibile a livello di sorgente. Già da qui la compatibilità con quanto venuto prima diventa regola della famiglia.
 
-Anni ottanta: si costruiscono le fondamenta. 80286 (1982) introduce modalità protetta, ma per tornare a modalità reale serve riavviare. 80386 (1985) risolve molto: porta 32 bit, memoria virtuale paginata e modalità virtuale 8086, che permette di eseguire vecchio codice dentro nuovo ambiente. 486 (1989) porta dentro il chip cache di primo livello e coprocessore matematico.
+Nel 1982 l'80286 introduce modalità protetta, con un limite: da lì non si torna a modalità reale senza riavviare. Nel 1985 l'80386 risolve gran parte dei problemi e porta 32 bit, memoria virtuale paginata e modalità virtuale 8086, che permette di far girare vecchio software dentro il nuovo ambiente. Base dei sistemi operativi moderni nasce qui.
 
-Anni novanta: cambia il modo di eseguire istruzioni. Pentium (1993) è superscalare: ha due pipeline intere e può ritirare due istruzioni per ciclo. Svolta vera arriva con Pentium Pro (1995). Introduce esecuzione fuori ordine e traduce istruzioni x86 in micro-operazioni interne. **Da lì x86 diventa interfaccia, non più macchina reale sotto.**
+Nel 1989 il 486 integra nel chip cache di primo livello e coprocessore matematico, prima componenti separati. Nel 1993 Pentium diventa superscalare: due pipeline intere, capaci di ritirare due istruzioni per ciclo.
 
-Anni duemila: due correzioni di rotta. Pentium 4 (2000) punta tutto sulla frequenza con pipeline lunghissima e sbatte contro muro del consumo. Nel 2003 AMD estende architettura a 64 bit con AMD64, e Intel adotta stesso insieme di istruzioni. Per la prima volta estensione dominante non viene da Intel. Dal 2006, con Core 2, direzione passa da frequenza a numero di nuclei.
+Svolta concettuale arriva con Pentium Pro del 1995: esecuzione fuori ordine, e istruzioni x86 tradotte in micro-operazioni interne. Da quel momento x86 non è più la macchina reale ma un'interfaccia, sotto cui lavora un motore diverso.
 
-Nel frattempo estensioni vettoriali crescono per generazioni: MMX, SSE, AVX, AVX-512.
+Pentium 4 del 2000 punta tutto sulla frequenza, con pipeline lunghissima, e sbatte contro il muro del consumo. Nel 2003 AMD estende l'architettura a 64 bit con AMD64, e Intel adotta lo stesso insieme di istruzioni: per la prima volta l'estensione dominante non viene da Intel. Dal 2006, con Core 2, la direzione cambia: non più frequenza ma numero di nuclei.
 
-Oggi complessità sta negli strati sotto: predizione dei salti, gerarchia di cache, esecuzione speculativa. Nel 2018 Spectre e Meltdown mostrano che esecuzione speculativa aveva **costo di sicurezza mai considerato**.
+In parallelo crescono per generazioni le estensioni vettoriali: MMX, SSE, AVX, AVX-512.
+
+Oggi la complessità sta negli strati sotto l'interfaccia: predizione dei salti, gerarchia di cache, esecuzione speculativa. Proprio quest'ultima, con Spectre e Meltdown nel 2018, si rivela avere un costo di sicurezza che nessuno aveva mai considerato.

@@ -1,30 +1,36 @@
-For a site that only serves static pages, set these six headers and leave out a seventh.
+A static site has a small attack surface, but these headers still matter. Here's what to set and why.
 
 **Set these:**
 
-1. **`Strict-Transport-Security: max-age=31536000; includeSubDomains`** makes the browser always use HTTPS. Use a max-age of at least 31536000 seconds (one year), and include subdomains.
+1. **`Strict-Transport-Security: max-age=31536000; includeSubDomains`**
+   This makes the browser always use HTTPS for your domain and its subdomains. Use a max-age of at least 31536000 seconds (one year).
 
-2. **`Content-Security-Policy: default-src 'self'`** stops injected third-party scripts from running. This is the most important one.
+2. **`Content-Security-Policy: default-src 'self'`**
+   This header does the most to block third-party script injection. It only lets the browser load resources from your own origin. If you add CDNs, fonts or analytics later, you'll need to allow those sources here.
 
-3. **`X-Content-Type-Options: nosniff`** stops the browser from guessing a file's content type. It uses the type your server declares.
+3. **`X-Content-Type-Options: nosniff`**
+   This stops the browser from guessing a file's content type. It has to trust the type your server sends.
 
-4. **`Referrer-Policy: strict-origin-when-cross-origin`** keeps your full URL path from being sent to other sites when visitors follow links away from yours.
+4. **`Referrer-Policy: strict-origin-when-cross-origin`**
+   When someone follows a link to another site, that site only sees your origin, not the full path of the page they came from.
 
-5. **`X-Frame-Options: DENY`** protects against clickjacking. You can get the same effect by adding `frame-ancestors 'none'` to your Content-Security-Policy instead.
+5. **Clickjacking protection.** Use one of these two:
+   - `X-Frame-Options: DENY`, or
+   - `frame-ancestors 'none'` added to your Content-Security-Policy. For example: `Content-Security-Policy: default-src 'self'; frame-ancestors 'none'`
 
-6. **`Permissions-Policy`** turns off the camera, microphone and geolocation. Include it if your site doesn't use them.
+6. **`Permissions-Policy: camera=(), microphone=(), geolocation=()`**
+   This turns off those browser features. A static site usually doesn't need them, so keep them off unless your site actually uses one.
 
 **Leave this out:**
 
-- **`X-XSS-Protection`** is deprecated. Modern browsers ignore it, and older implementations of it introduced vulnerabilities.
+- **`X-XSS-Protection`** is deprecated. Modern browsers ignore it, and in older browsers it caused vulnerabilities of its own. Don't send it. Your Content-Security-Policy does this job now.
 
-Put together, the headers look like this:
+**Combined example:**
 
 ```
 Strict-Transport-Security: max-age=31536000; includeSubDomains
 Content-Security-Policy: default-src 'self'; frame-ancestors 'none'
 X-Content-Type-Options: nosniff
 Referrer-Policy: strict-origin-when-cross-origin
-X-Frame-Options: DENY
 Permissions-Policy: camera=(), microphone=(), geolocation=()
 ```

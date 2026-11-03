@@ -1,24 +1,28 @@
-La consistenza eventuale descrive come si comporta un database replicato dopo una scrittura. Per un po' le repliche non sono d'accordo tra loro. Se le scritture si fermano, però, convergono tutte sullo stesso valore entro un tempo finito.
+La consistenza eventuale descrive come si comporta un sistema con più repliche dei dati. Dopo una scrittura, le repliche non concordano subito. Se le scritture si fermano, però, convergono sullo stesso valore entro un tempo finito.
+
+**Perché esiste**
+
+È un compromesso con la disponibilità. Un sistema che pretende consistenza forte deve rifiutare richieste quando le repliche non riescono a comunicare tra loro. Un sistema a consistenza eventuale invece continua a rispondere e lascia che le repliche si allineino dopo.
+
+Non è un difetto da eliminare, ma una scelta. La maggior parte dei sistemi che scalano la accetta di proposito.
+
+**Quanto dura l'incoerenza**
+
+- Con repliche nella stessa regione, la convergenza richiede di solito meno di un secondo.
+- Con repliche in regioni diverse, sale a qualche secondo.
 
 **Perché dovrebbe interessarti**
 
-Il caso tipico è chi legge subito dopo aver scritto. Un utente pubblica un commento, ricarica la pagina e il commento non c'è. La lettura è finita su una replica che non ha ancora ricevuto la scrittura. Per l'utente sembra un bug, anche se il sistema sta facendo il suo lavoro.
+Il problema colpisce chi legge subito dopo aver scritto. Un esempio tipico: l'utente pubblica un commento, ricarica la pagina e non lo vede. Per lui il sistema sembra rotto, anche se il commento arriverà.
 
-La finestra di disallineamento di solito è breve. Tra repliche nella stessa regione la convergenza richiede in genere meno di un secondo. Tra regioni diverse sale a qualche secondo.
+La soluzione comune è far leggere dalla replica primaria la sessione che ha appena scritto. Non serve farlo per tutti gli utenti: gli altri possono continuare a leggere dalle repliche. In questo modo chi ha scritto vede subito il proprio dato, e il resto del sistema mantiene i vantaggi della consistenza eventuale.
 
-**Perché non si elimina e basta**
+**Quando non va bene**
 
-Il prezzo è la disponibilità. Un sistema che pretende consistenza forte deve rifiutare le richieste quando le repliche non riescono a comunicare. La consistenza eventuale quindi non è un difetto da correggere, è una scelta. La maggior parte dei sistemi che scalano la accetta di proposito.
+I casi in cui non è accettabile sono pochi e facili da riconoscere:
 
-**Come gestirla in pratica**
+- saldi di conto;
+- disponibilità di posti;
+- unicità di un identificativo.
 
-Contro il problema del commento che sparisce c'è una soluzione comune. Fai leggere dalla replica primaria solo la sessione che ha appena scritto. Tutti gli altri utenti continuano a leggere dalle repliche. Così chi scrive vede subito la propria modifica e il carico resta distribuito.
-
-**Quando non è accettabile**
-
-I casi sono pochi e si riconoscono facilmente:
-- il saldo di un conto;
-- la disponibilità di posti;
-- l'unicità di un identificativo.
-
-In questi casi due repliche in disaccordo producono un errore reale: soldi spesi due volte, un posto venduto due volte, due record con lo stesso ID. Qui serve la consistenza forte. Quasi sempre, altrove, la consistenza eventuale va bene.
+In questi casi due repliche non allineate possono produrre un errore reale, per esempio un doppio prelievo, un posto venduto due volte o un ID duplicato. Lì serve consistenza forte. Per quasi tutto il resto, la consistenza eventuale va bene.

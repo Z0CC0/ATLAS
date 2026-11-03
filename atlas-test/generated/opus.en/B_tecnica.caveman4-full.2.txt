@@ -1,0 +1,21 @@
+Your connection pool is running out. The cause is not a slow query.
+
+**What happens:** the middleware at `db/session.py:47` releases the connection only on the success path. When the handler raises an exception, `release()` is never reached. The connection stays held until it times out. After a few hundred failed requests the pool is empty, and every later request waits for a connection. That is why latency keeps rising instead of requests failing right away with errors.
+
+**Fix:** wrap the acquisition in `try/finally` so the connection is also released when the handler fails:
+
+```python
+conn = pool.acquire()
+try:
+    return handler(conn, request)
+finally:
+    pool.release(conn)
+```
+
+**Don't raise `pool_size` as the fix.** It looks like it works, but it only hides the leak. A bigger pool takes longer to empty, and the leak is still there. Raise `pool_size` only after this fix is in, and only if your real load needs it.
+
+**Check it:** run this before and after the change. It should reproduce the lockup before the fix and pass after it:
+
+```
+pytest tests/test_pool.py -k exhaustion -x
+```

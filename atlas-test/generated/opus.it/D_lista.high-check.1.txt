@@ -1,17 +1,17 @@
 Conoscenza interna.
 
-Per un sito statico, queste sono le intestazioni da impostare:
+Per un sito statico metterei questi header.
 
-`Strict-Transport-Security: max-age=31536000; includeSubDomains` obbliga il browser a usare HTTPS. Il valore di max-age deve essere di almeno 31536000 secondi.
+`Strict-Transport-Security: max-age=31536000; includeSubDomains` obbliga il browser a usare HTTPS. Il max-age deve essere almeno 31536000 secondi.
 
-`Content-Security-Policy: default-src 'self'` è l'intestazione che blocca l'iniezione di script di terze parti.
+`Content-Security-Policy: default-src 'self'` blocca l'iniezione di script di terze parti. È **l'header più importante** contro gli script estranei.
 
 `X-Content-Type-Options: nosniff` impedisce al browser di indovinare il tipo di contenuto.
 
-`Referrer-Policy: strict-origin-when-cross-origin` evita che il percorso completo delle tue pagine arrivi ad altri siti.
+`Referrer-Policy: strict-origin-when-cross-origin` evita che il percorso completo delle tue pagine arrivi agli altri siti.
 
 `X-Frame-Options: DENY` protegge dal clickjacking. In alternativa puoi aggiungere `frame-ancestors 'none'` dentro la Content-Security-Policy.
 
-`Permissions-Policy` spegne camera, microfono e geolocalizzazione, se il sito non li usa.
+`Permissions-Policy` spegne camera, microfono e geolocalizzazione. Se il sito non li usa, ti conviene disattivarli.
 
-Non mettere invece **X-XSS-Protection**. È deprecata e i browser moderni la ignorano. Nelle versioni vecchie dei browser introduceva anche delle vulnerabilità.
+**Non mettere `X-XSS-Protection`.** È deprecato e i browser moderni lo ignorano. Nelle versioni vecchie dei browser poteva anche introdurre vulnerabilità.

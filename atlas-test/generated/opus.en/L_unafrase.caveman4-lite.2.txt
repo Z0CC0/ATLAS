@@ -1,0 +1,1 @@
+Yes. An empty list is falsy, so `if []:` doesn't run its body. Every empty collection works the same way: list, tuple, dict, set and string.

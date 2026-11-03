@@ -1,12 +1,10 @@
-Pool di connessioni esaurito, non query lenta. Connessioni perse sul percorso di errore.
+**Causa:** il connection pool si esaurisce. Il problema non è una query lenta.
 
-**Causa**
+**Bug:** in `db/session.py:47` il middleware rilascia la connessione solo nel percorso di successo. Se l'handler solleva un'eccezione, `release()` non viene mai raggiunto. La connessione resta occupata fino al timeout.
 
-Middleware in `db/session.py:47` rilascia connessione solo su percorso di successo. Se handler solleva eccezione, `release()` mai raggiunto. Connessione resta occupata fino al timeout. Dopo qualche centinaio di richieste fallite, pool vuoto. Ogni richiesta successiva va in attesa di connessione libera. Per questo vedi latenze crescenti, non errori immediati.
+**Perché rallenta invece di dare errore:** dopo qualche centinaio di richieste fallite il pool si svuota. Ogni richiesta successiva va in attesa di una connessione libera. Per questo vedi latenze crescenti e non errori immediati.
 
-**Fix**
-
-Avvolgi acquisizione in `try/finally`. Così rilascio avviene anche su percorso di errore:
+**Correzione:** avvolgi l'acquisizione in un `try/finally`. Così il rilascio avviene anche sul percorso di errore.
 
 ```python
 conn = pool.acquire()
@@ -16,13 +14,9 @@ finally:
     pool.release(conn)
 ```
 
-**Non aumentare `pool_size` come soluzione**
+**Non aumentare `pool_size` come soluzione.** Sembra risolvere, ma maschera soltanto il problema. Il pool si esaurisce più tardi, ma le connessioni continuano a perdersi. Aumenta `pool_size` solo dopo la correzione, e solo se il carico reale lo richiede.
 
-Aumento `pool_size` sembra risolvere, ma maschera solo problema. Sposta più in là momento di esaurimento pool. Perdita di connessioni resta. Aumenta `pool_size` solo dopo fix, e solo se carico reale lo richiede.
-
-**Verifica**
-
-Esegui prima e dopo modifica, per riprodurre comportamento:
+**Verifica:** esegui questo comando prima e dopo la modifica per riprodurre il comportamento:
 
 ```
 pytest tests/test_pool.py -k exhaustion -x

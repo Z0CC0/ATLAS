@@ -1,26 +1,16 @@
-`let` and `const` are both block scoped: each lives only inside its own `{ }`. `var` is not block scoped.
+Both `let` and `const` are block scoped. `var` is not.
 
-`let` allows reassignment:
-
+**`let`**: you can reassign the name.
 ```js
 let count = 1;
-count = 2; // ok
+count = 2; // OK
 ```
 
-`const` prevents reassigning the name:
-
-```js
-const max = 10;
-max = 20; // TypeError
-```
-
-`const` does not stop you from modifying the value. An object declared with `const` can change internally:
-
+**`const`**: you cannot reassign the name. The value itself can still change. An object declared with `const` can change internally.
 ```js
 const user = { name: "Ana" };
-user.name = "Bo";   // ok, object changes internally
-user = {};          // TypeError, name reassigned
+user.name = "Bo"; // OK, the object changes internally
+user = {};        // TypeError, reassignment not allowed
 ```
 
-- **`const`**: use it when the name must always point to the same value.
-- **`let`**: use it when you need to reassign the name.
+Use `const` when the name must always point to the same value. Use `let` when you need to reassign it.

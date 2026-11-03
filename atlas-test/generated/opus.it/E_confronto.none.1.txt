@@ -1,13 +1,15 @@
-Per un progetto piccolo scegli **Postgres**. Passa a Redis solo quando il volume lo richiede davvero.
+Per un progetto piccolo ti conviene **Postgres**. Passa a Redis solo quando il volume lo richiede davvero.
 
-**Perché Postgres basta:**
-- **Regge il tuo carico.** Con `SELECT ... FOR UPDATE SKIP LOCKED` gestisci fino a circa mille lavori al minuto, più di quanto serva di solito a un progetto piccolo.
-- **Il lavoro e i dati si salvano insieme.** Il lavoro viene messo in coda nella stessa transazione che scrive i dati. Se la scrittura viene annullata, il lavoro non parte.
-- **La persistenza ce l'hai già.** Se il processo muore, la coda è ancora nel database e non devi configurare niente.
+**Perché Postgres:**
 
-**Cosa offre Redis e quanto costa:**
+- **Basta per il tuo carico.** Con `SELECT ... FOR UPDATE SKIP LOCKED` più worker prendono lavori diversi senza pestarsi i piedi. Regge fino a circa mille lavori al minuto, molto più di quanto serve di solito a un progetto piccolo.
+- **Il lavoro sta nella stessa transazione dei dati.** Inserisci il job insieme alla scrittura che lo genera, quindi o vanno a buon fine tutti e due o nessuno. Non può succedere che il job parta mentre la scrittura viene annullata, e quindi un worker non lavora mai su dati che non esistono.
+- **La persistenza è già inclusa.** Se il processo muore, la coda è ancora lì e non devi configurare niente.
+
+**Cosa ti darebbe Redis, e cosa ti costerebbe:**
+
 - Regge molto più volume e ha una latenza più bassa, sotto il millisecondo.
-- Però è un servizio in più da gestire, monitorare e aggiornare.
-- La persistenza va configurata: se non attivi l'AOF, un riavvio ti fa perdere i lavori in coda.
+- È però un servizio in più da gestire, monitorare e aggiornare.
+- La persistenza va configurata: se AOF non è attivo, a un riavvio perdi i lavori in coda.
 
-Quindi parti con Postgres, che probabilmente usi già. Quando ti avvicini stabilmente a quel limite o ti serve una latenza molto bassa, allora vale la pena aggiungere Redis.
+Quindi parti con una tabella `jobs` su Postgres, che probabilmente usi già. Valuta Redis quando ti avvicini a quel limite di volume, o quando una latenza sotto il millisecondo diventa un requisito vero.

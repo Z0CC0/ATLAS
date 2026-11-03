@@ -1,19 +1,17 @@
 internal knowledge
 
-HTTPS is plain HTTP carried inside a channel that TLS encrypts. Before any HTTP is sent, client and server run a TLS handshake:
+HTTPS is plain HTTP sent through a channel that TLS encrypts. Before any page data moves, client and server run a handshake to set up that channel:
 
-1. Client opens the connection and states which TLS versions and ciphers it supports.
+1. Your browser (the client) opens the connection and lists the TLS versions and ciphers it supports.
 
-2. Server answers by picking one cipher and one version, and sends its certificate.
+2. The server picks one version and one cipher, then sends back its certificate.
 
-3. Client checks the certificate. It binds a domain name to a public key and is signed by a certificate authority. Client verifies that signature by following the chain up to a root it already holds.
+3. The certificate ties a domain name to a public key, and a certificate authority signs it. Your browser checks that signature by following the chain of signers up to a root certificate it already has.
 
-4. Both sides agree on a session key, today typically with an elliptic curve Diffie-Hellman exchange.
+4. Client and server agree on a session key. Today this is usually done with an elliptic curve Diffie-Hellman exchange.
 
-After that, traffic is encrypted and authenticated. Anyone in the middle can neither read it nor change it.
-
-Session key is symmetric because asymmetric encryption costs too much for real traffic.
+The session key is symmetric because asymmetric encryption is too slow for real traffic. Once the handshake is done, all traffic is encrypted and authenticated. Anyone in the middle can neither read it nor change it.
 
 TLS 1.3 completes the handshake in a single round trip. TLS 1.2 needs two.
 
-One limit: **the certificate says nothing about who runs the site.** It says only that the domain controls that key.
+**A valid certificate says nothing about who runs the site.** It only shows that whoever holds the key controls that domain.

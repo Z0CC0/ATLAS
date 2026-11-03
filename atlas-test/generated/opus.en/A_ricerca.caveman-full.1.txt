@@ -1,17 +1,16 @@
-Weather data comes from the web.
+**Weather**
+- Now 10:20 PDT. Scattered clouds this morning, clearing in afternoon.
+- High 86–93°F (30–34°C), depending on source and area. Downtown hottest. Coast stays cooler.
+- Overnight low around 69°F (21°C).
+- Air dry compared to New York, so heat feels milder at same temperature.
 
-**Weather in Los Angeles today** (it's 10:20 PDT now)
-- Scattered clouds this morning. Sky clears in the afternoon.
-- High between 86 and 93°F (30–34°C). The number depends on source and area.
-- Downtown is the hottest point. The coast stays cooler.
-- Air is dry compared to New York, so the heat feels milder at the same temperature.
-- Overnight low is around 69°F (21°C).
+**Dark**
+- Sunset 19:35, in about 9 h 15 min.
+- Full dark (end of civil twilight) 20:00, in about 9 h 40 min.
+- First quarter moon, 52% lit. Sky stays fairly dark early in night.
 
-**When it gets dark**
-- Sunset is at 19:35, about 9 hours 15 minutes from now.
-- Full dark (end of civil twilight) is at 20:00, about 9 hours 40 minutes from now.
-- The moon is at first quarter and 52% lit, so the sky stays fairly dark early in the night.
+**Tonight**
+- **Free jazz, Hammer Museum, Westwood.** Machado Mijiga, multi-instrumentalist, plays in open courtyard. Free and outdoors. Timing fits evening cool-down after hot day.
+- **Mt. Joy, Greek Theatre, 20:00.** Amphitheatre inside Griffith Park, one of city's best summer concert spots. Griffith Observatory sits short distance away. Arrive early to catch 19:35 sunset there before show.
 
-**What to do tonight**
-- **Free jazz at the Hammer Museum, Westwood:** Machado Mijiga, a multi-instrumentalist, plays in the open courtyard. It's free and outdoors, and the timing lets you catch the evening cooling.
-- **Mt. Joy at the Greek Theatre, 20:00:** The Greek is an amphitheatre inside Griffith Park and one of the best places in the city for a summer concert. It's a short distance from Griffith Observatory. Arrive early to watch the 19:35 sunset there before the show.
+**Check:** source data look like summer data. Today is 2 November 2026. Daylight time ended 1 November, so LA now on PST, not PDT. Real November sunset near 17:00, not 19:35. Confirm date and times before you plan your evening.

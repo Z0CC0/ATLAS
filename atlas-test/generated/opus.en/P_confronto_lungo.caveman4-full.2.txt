@@ -1,0 +1,19 @@
+Use local files plus a collector that ships them elsewhere. At 1,000 requests/minute this is the sensible choice: the app writes locally and never waits on a log write. Whatever you pick, writing the log must never sit in the request's critical path.
+
+**Files only**
+- Zero cost, no dependency.
+- Searching means grep.
+- You configure rotation by hand. Skip it and the disk fills.
+- No search across several machines. You connect to each one.
+
+**Managed service**
+- Instant search, alerts, automatic retention.
+- You pay by volume. At 1,000 requests/minute, volume grows fast.
+- Logs leave your own infrastructure. Strip personal data before they go.
+
+**Database**
+- Search is familiar and convenient.
+- Logs in the app's own database put two very different workloads in competition.
+- Under load, logs fill caches and connections that real requests needed.
+
+Local files with a collector give you cheap local writes. Your search backend stays separate from the request path. If the collector ships to a managed service, strip personal data in the collector, before it sends.

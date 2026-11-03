@@ -1,27 +1,23 @@
-Use `const` by default, and switch to `let` only when you need to reassign the variable.
+**Use `const` when the name should always point to the same value. Use `let` when you need to reassign it.**
 
-**`let`** lets you reassign the name:
+- **`let` allows reassignment.** You can point the name at a new value later.
+- **`const` prevents reassigning the name.** It does not stop you from modifying the value itself.
+- **So a `const` object can still change internally.** You can add, remove or update its properties. You just can't assign a different object to that name.
+- **Both are block scoped, unlike `var`.** A `let` or `const` declared inside `{ }` exists only inside that block.
+
 ```js
 let count = 1;
-count = 2; // fine
-```
+count = 2;            // fine: let allows reassignment
 
-**`const`** blocks reassigning the name, but you can still change the value it points to. So an object declared with `const` can change internally:
-```js
 const user = { name: "Ana" };
-user.name = "Luca"; // fine: the object changed internally
-user = {};          // TypeError: the name can't be reassigned
-```
+user.name = "Bo";     // fine: the object changes internally
+user = {};            // TypeError: the name can't be reassigned
 
-**What they share:** both are block scoped, which `var` is not. A `let` or `const` declared inside `{ }` doesn't exist outside it:
-```js
 if (true) {
   let a = 1;
   const b = 2;
-  var c = 3;
 }
-console.log(c); // 3
-console.log(a); // ReferenceError
+// a and b don't exist out here (block scoped)
 ```
 
-To test it, paste the `user` example into your browser console and watch the reassignment throw.
+Next: start with `const` by default, and switch a declaration to `let` only when you actually need to reassign it.

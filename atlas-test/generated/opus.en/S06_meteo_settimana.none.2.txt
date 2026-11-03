@@ -1,17 +1,19 @@
-Here's the New York forecast for this week:
+Here's the week ahead in New York:
 
-| Day | Conditions | High | Low |
-|---|---|---|---|
-| Monday | Clear | 24° | 17° |
-| Tuesday | Cloudy, light rain in the evening | 22° | 16° |
-| Wednesday | Rain for most of the day | 19° | 15° |
-| Thursday | Brighter spells | 21° | 14° |
-| Friday | Clear | 25° | 16° |
-| Saturday | Clear and warm | 28° | 19° |
-| Sunday | Thunderstorms in the afternoon | 26° | 18° |
+**Monday** starts clear, with a high of 24° and a low of 17°.
 
-Two days will bring a lot of rain. On **Wednesday** it rains most of the day, and it's also the coolest day at 19°. On **Sunday** thunderstorms are expected in the afternoon. Tuesday evening will also see some light rain, so carry an umbrella if you're out late.
+**Tuesday** turns cloudy, with a high of 22° and a low of 16°. Light rain moves in during the evening, so bring an umbrella if you'll be out late.
 
-The weekend is the warmest part of the week. Saturday is the best day, clear and warm with a high of 28°. Sunday is still warm, but plan outdoor activities for the morning, before the storms arrive. Friday is also clear, so it's a good day to be outside.
+**Wednesday** will be the wettest weekday, with rain for most of the day. It's also the coolest day, with a high of 19° and a low of 15°.
+
+**Thursday** brightens up, with sunny spells, a high of 21° and a low of 14°.
+
+**Friday** is clear again and warmer, with a high of 25° and a low of 16°.
+
+**Saturday** is clear and warm, with a high of 28° and a low of 19°. It's the best day of the week to be outside.
+
+**Sunday** stays warm, with a high of 26° and a low of 18°, but thunderstorms are expected in the afternoon. Plan anything outdoors for the morning.
+
+**Overall:** Wednesday and Sunday are the two days with significant rain. The weekend is the warmest part of the week, but only Saturday is likely to stay dry all day.
 
 *Source: web*

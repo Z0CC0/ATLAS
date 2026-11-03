@@ -1,9 +1,7 @@
-Usually not.
+Usually not. On a low-cardinality column, the planner normally ignores a B-tree index.
 
-A normal B-tree index on a column this low in cardinality usually goes unused.
-
-The planner picks a sequential scan when the filter matches more than about 5-10% of rows.
+It picks a sequential scan when the filter matches more than about 5-10% of rows, which is almost always true with three values.
 
 The index still costs extra writes and disk space.
 
-Exception: a partial index on the rare value does work.
+Exception: a partial index on the rare value does get used, e.g. `CREATE INDEX ON orders (status) WHERE status = 'failed';`

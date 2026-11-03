@@ -1,1 +1,1 @@
-Sì, una lista vuota è falsa in un contesto booleano. Lo stesso vale per tutte le collezioni vuote: lista, tupla, dizionario, insieme e stringa.
+Sì, in un contesto booleano una lista vuota è falsa. Lo stesso vale per tutte le collezioni vuote: lista, tupla, dizionario, insieme e stringa.
