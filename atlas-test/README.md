@@ -14,7 +14,9 @@ The bench behind the figures in the ATLAS README. It is not a plugin and you nev
 | `measure.mjs` | prints saving and details lost for the older judge | no |
 | `fixed-costs.mjs` | counts each build's descriptions and rules, and with `--billed` measures the first turn | only with `--billed` |
 | `session-table.mjs` | the session tables, by arithmetic over the two results files | no |
-| `results.opus.json` | the summary of the 2026-09-26 run | no |
+| `results.mjs` | gathers the results into `results.opus.json` and the plugin's `figures.json` | no |
+| `results.opus.json` | the summary of the 2026-11-03 run | no |
+| `readme-graphics.mjs` | draws the charts in the READMEs from those files | no |
 | `fixed-costs.<version>.json` | the billed and counted costs of each build at that version | no |
 | `verdicts.*.json`, `planted.*.json` | every verdict and every sensitivity trial, so each one can be contested | no |
 
@@ -25,13 +27,12 @@ The bench behind the figures in the ATLAS README. It is not a plugin and you nev
 
 ## How far to trust the judge
 
-A note of another question was called present 0 times in 1,440 calls. A sentence of the answer itself was called absent 2 times in 1,391. With the sentences carrying a note deleted from 120 real answers, the judge still called that note present 11 times, some because the information was stated elsewhere too, and it called a note left in absent 0 times of 104. Only notes marked absent get the second reading, so a wrong "present" in the first reading stays. The full run reported about $19 of usage.
+A note of another question was called present 0 times in 1,728 calls. A sentence of the answer itself was called absent 3 times in 1,666. With the sentences carrying a note deleted from 120 real answers, the judge still called that note present 13 times, some because the information was stated elsewhere too, and it called a note left in absent 0 times of 113. Only notes marked absent get the second reading, so a wrong "present" in the first reading stays.
 
 ## What it does not measure
 
 - Whether code or documents written with `atlas-code` are any better. No bench covers that.
 - The savings of any build other than `atlas` and `atlas-min`. The others are assumed to save what `atlas` saves.
-- The current rules. The answers come from an earlier revision of the rules on `claude-opus-5-5`, 2026-09-26. Rules at `low` count 1,408 tokens now and 1,409 then, but the wording was not compared line by line.
 - Other models. Sonnet 5 compressed more under every plugin, and the billed first turn changes with the model.
 
 ## Run it
@@ -39,6 +40,7 @@ A note of another question was called present 0 times in 1,440 calls. A sentence
 You need the Claude Code CLI on the PATH and logged in, and `node`. `fixed-costs.mjs` also needs Python with `tiktoken`.
 
 ```bash
+node generate.mjs --cases cases/opus.en.json --rounds 2 --dry-run
 node judge-notes.mjs --cases cases/opus.en.json --dry-run
 node judge-notes.mjs --cases cases/opus.en.json
 node judge-notes.mjs --cases cases/opus.en.json --second
@@ -47,7 +49,7 @@ node fixed-costs.mjs
 node session-table.mjs
 ```
 
-Every judging run resumes where it stopped, and stops by itself after three failures in a row. Regenerating the answers takes hours and about a subscription's worth of usage. It also needs only the plugin under test installed, because two plugins measure the sum of their rules.
+Every run resumes where it stopped with `--missing`, and stops by itself after three failures in a row. The whole bench, 1,728 answers and their judging, reported about $140 of usage and took about two hours. Each answer runs in an empty folder with only the plugin under test loaded, so nothing else you have installed is in the measure. caveman's level is one file for the whole machine, so its rows run one level at a time. A newer caveman is measured with `CAVEMAN_DIR=<folder> node generate.mjs --only caveman4-full`.
 
 ## A trap this bench fell into
 
