@@ -1,0 +1,29 @@
+La consistenza eventuale descrive come si comporta un sistema che tiene più copie (repliche) degli stessi dati. Quando scrivi qualcosa, le repliche non sono d'accordo subito: per un po' alcune hanno il dato nuovo e altre quello vecchio. Se le scritture si fermano, però, tutte arrivano allo stesso stato entro un tempo finito.
+
+## Perché esiste
+
+È un compromesso con la disponibilità. Se le repliche smettono di comunicare tra loro, un sistema che pretende la consistenza forte deve rifiutare le richieste, perché non può garantire di darti il dato aggiornato. Un sistema a consistenza eventuale invece continua a rispondere e accetta che, per un breve periodo, le risposte possano essere diverse.
+
+Per questo non va considerata un difetto da eliminare. È una scelta, e la maggior parte dei sistemi che scalano la fa di proposito.
+
+## Quando ti accorgi del problema
+
+Succede soprattutto a chi legge subito dopo aver scritto. Un utente pubblica un commento, ricarica la pagina e il commento non c'è. La scrittura è riuscita, ma la lettura è andata a una replica che non l'aveva ancora ricevuta. Per l'utente sembra che il sistema abbia perso il dato.
+
+Quanto dura questa finestra? Tra repliche nella stessa regione di solito resta sotto il secondo. Tra regioni diverse arriva a qualche secondo.
+
+## Come si risolve di solito
+
+La soluzione comune è mandare le letture alla replica primaria, ma solo per la sessione che ha appena scritto. Chi ha pubblicato il commento lo vede subito. Tutti gli altri continuano a leggere dalle repliche e possono vederlo con un po' di ritardo senza accorgersene. In questo modo il carico resta distribuito e il caso che dà fastidio è coperto.
+
+## Quando non va bene
+
+I casi in cui la consistenza eventuale non è accettabile sono pochi e facili da riconoscere:
+
+- **i saldi di un conto**
+- **la disponibilità di posti** (per esempio quando due persone non devono prenotare lo stesso posto)
+- **l'unicità di un identificativo** (quando due utenti non devono poter prendere lo stesso nome)
+
+## Perché ti riguarda
+
+Se progetti o usi un sistema con repliche, prima o poi i tuoi utenti vedranno dati vecchi per un momento. Ti conviene saperlo prima, così puoi coprire il caso "ho appena scritto e non lo vedo" e usare la consistenza forte solo dove serve davvero, invece di pagarne il costo in disponibilità ovunque.

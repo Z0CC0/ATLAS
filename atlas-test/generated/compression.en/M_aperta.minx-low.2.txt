@@ -1,0 +1,13 @@
+Before choosing any architecture, find out **which part of the monolith actually changes**. Stable parts gain nothing from being split.
+
+Next, map where transaction boundaries sit. A transaction that spans two services becomes a distributed problem, so draw service lines where transactions already end.
+
+Don't rewrite everything in parallel with the old system. That almost always fails, because the old one keeps changing and the copy never catches up.
+
+Strangle it progressively instead. Put a router in front and move one piece at a time. Keep the old system authoritative until the new piece is verified.
+
+Microservices cost more to operate. Every service needs releases, monitoring, logs, alerts and a person who looks after it. With fewer than five developers, that cost almost always exceeds the benefit.
+
+Look seriously at the modular monolith, the option nobody mentions. It gives you sharp internal boundaries and a single release, and you can still extract a module the day it's genuinely needed.
+
+The deciding question isn't technical: **what must your team be able to do a year from now that it can't do today?** Pick the architecture that answers that.

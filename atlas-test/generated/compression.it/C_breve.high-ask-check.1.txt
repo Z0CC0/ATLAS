@@ -1,0 +1,3 @@
+No. Bassa cardinalità: B-tree di norma non usato, planner preferisce seq scan quando il filtro seleziona oltre il 5-10% delle righe — con tre valori distinti è quasi sempre così. L'indice costa comunque scrittura e spazio senza contropartita.
+
+Eccezione: indice parziale sul valore raro dei tre — lì funziona.

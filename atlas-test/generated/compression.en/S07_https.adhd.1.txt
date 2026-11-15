@@ -1,0 +1,11 @@
+HTTPS is just HTTP running inside a channel that TLS has encrypted — the request/response part doesn't change at all, TLS is only the wrapper around it.
+
+Here's the sequence when your browser connects to a site. The client opens the connection and tells the server which TLS versions and which ciphers it's willing to support. The server picks one version and one cipher from that list and sends back its certificate. That certificate binds a domain name to a public key, and it's signed by a certificate authority. Your browser checks that signature by walking the chain of signatures upward until it reaches a root certificate it already has stored — that stored root is the actual anchor of trust in the whole system.
+
+Once the certificate checks out, client and server still need a shared secret to encrypt the actual traffic. They agree on one — today typically through an elliptic curve Diffie-Hellman exchange — and that becomes the session key. This session key is symmetric, not asymmetric: asymmetric encryption is too computationally expensive to use on every byte of real traffic, so it's only used earlier, for the key exchange itself.
+
+From that point on, everything sent over the connection is both encrypted and authenticated — meaning anyone sitting in the middle of the connection can neither read it nor alter it without being detected.
+
+One thing that's changed over time: TLS 1.3 gets all of this done in a single round trip, whereas TLS 1.2 needed two, so newer connections establish noticeably faster.
+
+One caveat worth keeping in mind: the certificate doesn't tell you anything about who actually runs the site — no company identity, no reputation check. All it certifies is that whoever holds the matching private key controls that domain name.

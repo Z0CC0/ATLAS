@@ -1,0 +1,15 @@
+Conoscenza interna.
+
+Non ti consiglio di mettere tutta la logica nei trigger: lascia nel database solo quello che protegge l'integrità e tieni la logica di business nell'applicazione, dietro un solo punto di ingresso.
+
+Il vantaggio che cerchi è reale: con i trigger nessun percorso applicativo può saltare la regola, nemmeno uno script eseguito a mano. Però il prezzo è alto:
+
+Chi legge il codice applicativo non vede i trigger, quindi una modifica che sembra semplice ne attiva altre senza lasciare traccia.
+
+Gli strumenti di test che il team usa già non bastano: servono prove che girano contro un database vero.
+
+Il debug diventa più difficile, perché un errore dentro un trigger arriva come fallimento della scrittura e non dice quale regola l'ha causato.
+
+Le migrazioni diventano fragili, perché l'ordine dei trigger conta ma non è dichiarato da nessuna parte.
+
+Nel database tieni vincoli, chiavi esterne, unicità e controlli di dominio. La logica di business mettila nell'applicazione, con un unico punto di ingresso. Se riservi l'accesso diretto al database alle sole migrazioni, quel punto di ingresso ti dà **la stessa garanzia del trigger**.

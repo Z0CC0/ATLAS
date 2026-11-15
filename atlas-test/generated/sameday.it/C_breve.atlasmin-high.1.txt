@@ -1,0 +1,7 @@
+No, di norma no: su una colonna a bassa cardinalità il planner di solito non usa l'indice B-tree.
+
+Se il filtro seleziona più del 5-10% circa delle righe, il planner preferisce una scansione sequenziale.
+
+Anche quando non viene usato, l'indice occupa spazio e rallenta le scritture.
+
+Fa eccezione l'indice parziale sul valore raro, che invece funziona.

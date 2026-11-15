@@ -1,0 +1,11 @@
+No. Offuscarla non serve: tutto ciò che arriva al browser si può leggere. Basta aprire gli strumenti per sviluppatori o guardare le richieste di rete per annullare l'offuscamento e vedere la chiave.
+
+Come fare:
+
+1. **Tieni la chiave sul server.** Il frontend chiama un endpoint del tuo backend. Il backend chiama il servizio esterno usando la chiave.
+2. **Metti un limite di frequenza su quell'endpoint.** Senza limite, chiunque può usare il tuo endpoint per sfruttare la tua chiave gratis.
+
+**Se hai già pubblicato la chiave:**
+
+- Considerala compromessa e ruotala subito. Toglierla dal codice non basta.
+- Rimuoverla con un nuovo commit non basta. La chiave resta nella cronologia del repository. Chi ha già un clone ce l'ha comunque.

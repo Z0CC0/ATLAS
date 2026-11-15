@@ -1,0 +1,9 @@
+At thousand requests per minute: local files plus collector shipping elsewhere. App never wait on log write.
+
+Files alone: zero cost, no dependency, but grep for search and manual rotation or disk fills. Also no cross-machine search — connect to each box separate.
+
+Managed service: instant search, alerts, auto retention — good — but you pay by volume, and at this rate volume grows fast. Also logs leave your infrastructure, so strip personal data before they go.
+
+Database: search familiar, but writing logs into app's own DB puts two workloads competing. Under load logs eat caches and connections real requests need. Skip this one.
+
+Rule that always hold: log write must never sit in request's critical path. Files + collector satisfies that — write local (cheap, fast), collector ships async to wherever you search/alert/retain.

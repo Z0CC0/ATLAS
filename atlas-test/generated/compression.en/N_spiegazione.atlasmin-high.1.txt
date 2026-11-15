@@ -1,0 +1,11 @@
+Eventual consistency: after write, replicas disagree briefly, converge within finite time once writes stop. Same region, under a second. Cross-region, seconds.
+
+Matters to you here: post a comment, reload, don't see it. You wrote it, hit a replica that hasn't caught up yet.
+
+Trade is against availability. Strong consistency forces refusal when replicas can't talk to each other.
+
+Fix: route the session that just wrote to the primary replica. Not everyone, just that session.
+
+Not a bug, a deliberate choice — most systems that scale take it on purpose.
+
+Unacceptable cases, few and recognisable: account balances, seat availability, uniqueness of an identifier.

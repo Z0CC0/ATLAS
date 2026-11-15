@@ -1,0 +1,3 @@
+Not worth it. On three distinct values the planner treats a B-tree as useless — with that little cardinality any single value likely covers well over 5-10% of rows, so a sequential scan wins and the index just sits there costing writes and disk space on every insert/update.
+
+Exception: a partial index on the rare value, if one of the three is uncommon enough to actually be selective.

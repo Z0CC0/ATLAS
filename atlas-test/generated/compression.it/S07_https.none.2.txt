@@ -1,0 +1,13 @@
+HTTPS è semplicemente HTTP, il protocollo che usi normalmente per navigare, fatto passare dentro un canale cifrato costruito da TLS. Il "come" della cifratura funziona così:
+
+Quando il tuo browser si collega a un sito, per prima cosa apre la connessione e dichiara quali versioni di TLS e quali cifrari è in grado di usare. Il server risponde scegliendo, tra quelli proposti, la versione e il cifrario da adottare, e a questo punto manda il proprio certificato.
+
+Il certificato è il pezzo che stabilisce la fiducia: lega un nome di dominio a una chiave pubblica, ed è firmato da un'autorità di certificazione. Il tuo client verifica questa firma risalendo la catena di certificazioni fino a una radice che ha già memorizzata come fidata. Se la catena regge, il client sa che quella chiave pubblica appartiene davvero a quel dominio.
+
+Attenzione però: il certificato non ti dice nulla su *chi* gestisce il sito. Dice solo che quel dominio controlla quella chiave — non è una garanzia di identità o affidabilità del proprietario, solo un legame tecnico dominio-chiave.
+
+A questo punto client e server devono mettersi d'accordo su una chiave di sessione, oggi tipicamente tramite uno scambio Diffie-Hellman su curve ellittiche. Questa chiave è simmetrica, e c'è un motivo preciso: la cifratura asimmetrica (quella con chiave pubblica/privata) è troppo costosa dal punto di vista computazionale per essere usata su tutto il traffico reale, quindi si usa solo per negoziare in sicurezza una chiave simmetrica, che poi cifra effettivamente i dati.
+
+Da quel momento in poi, tutto il traffico tra te e il server è cifrato e autenticato: chi si trova in mezzo alla connessione non può né leggerlo né modificarlo.
+
+Un'ultima nota sulle versioni: TLS 1.3 ha reso questo scambio più veloce rispetto a TLS 1.2, riducendolo a un solo giro di andata e ritorno (round trip) invece dei due richiesti dalla versione precedente — quindi la connessione sicura si stabilisce più rapidamente.

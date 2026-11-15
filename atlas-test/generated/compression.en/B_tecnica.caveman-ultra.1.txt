@@ -1,0 +1,20 @@
+API not slow, API stuck waiting for connections. Cause: connection pool exhaustion, not slow query.
+
+db/session.py:47 releases connection only on success path. Handler raises exception, release() never run, connection held until timeout. Few hundred failed requests later, pool empty, every new request waits. That's why latency rises instead of errors hitting immediately.
+
+Fix: wrap acquire in try/finally so release happens on error path too.
+
+```python
+conn = pool.acquire()
+try:
+    return handler(conn, request)
+finally:
+    pool.release(conn)
+```
+
+Don't just raise pool_size — masks leak, delays when pool empties, leak stays. Raise pool_size only after fix in, only if real load needs it.
+
+Verify before/after:
+```
+pytest tests/test_pool.py -k exhaustion -x
+```

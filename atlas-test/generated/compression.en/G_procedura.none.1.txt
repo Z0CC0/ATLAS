@@ -1,0 +1,21 @@
+Since you're on production with ten million rows, don't touch the column type directly — a plain `ALTER TABLE ALTER COLUMN TYPE` rewrites the entire table under an ACCESS EXCLUSIVE lock, so the service would be down for the whole operation. Here's the safe path instead:
+
+1. **Check convertibility first.** Count how many rows in the varchar column are *not* all digits. If that count isn't zero, you can't blindly cast — you'll need to deal with the bad rows before going further.
+
+2. **Add the new column.**
+   ```sql
+   ALTER TABLE t ADD COLUMN colonna_int integer;
+   ```
+
+3. **Backfill in batches of 10,000 rows.** Don't update all ten million rows in one statement — that would hold a long lock. Loop through in chunks of 10k, committing between batches.
+
+4. **Add a trigger to keep both columns in sync** for the duration of the migration, so any writes happening on the old `colonna` also update `colonna_int` (and vice versa, if needed) while the backfill is in progress.
+
+5. **Switch the application code to read from `colonna_int`**, and ship that deploy.
+
+6. **Only then, drop the old column:**
+   ```sql
+   ALTER TABLE t DROP COLUMN colonna;
+   ```
+
+Be careful with that last step — it's irreversible. Once `colonna` is dropped, the data is gone unless you restore from backup. Make sure the new column has been live and verified in production for a while before you drop the old one.

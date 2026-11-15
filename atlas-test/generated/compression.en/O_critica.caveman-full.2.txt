@@ -1,0 +1,11 @@
+Bad idea, mostly.
+
+Upside real: trigger fire always, even hand-run script skip nothing.
+
+But cost heavy:
+- Trigger invisible in app code. Simple change fire other trigger, no trace.
+- Not testable with team tool. Need real DB for test.
+- Debug worse. Error come back as failed write, no say which rule broke.
+- Migration fragile. Trigger order matter, order write nowhere.
+
+Better split: DB hold only integrity — constraint, foreign key, unique, domain check. Business logic live in app, behind one entry point. Entry point give same guarantee as trigger, long as direct DB access reserved for migration only.

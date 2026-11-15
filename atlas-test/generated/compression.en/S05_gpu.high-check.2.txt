@@ -1,0 +1,1 @@
+5080 vs 4080: Blackwell vs Ada Lovelace, GDDR7 vs GDDR6X. Bandwidth 717→960 GB/s. Power 320→360W, still 16-pin connector. Rasterisation only 10-15% faster — real gain sits in frame generation, not raw rendering.

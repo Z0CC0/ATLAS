@@ -1,0 +1,46 @@
+**In breve:** Bitcoin nasce nel 2008 da un documento firmato Satoshi Nakamoto. Il documento risolve un problema preciso: impedire che la stessa moneta digitale venga spesa due volte, senza un ente centrale che tenga il registro.
+
+## 1. Da dove viene: l'ambiente cypherpunk
+
+Il progetto nasce nell'ambiente cypherpunk. Prima di Bitcoin c'erano già stati altri tentativi di moneta digitale, come **b-money** e **bit gold**. Nessuno dei due risolveva il problema dell'**ordinamento**, cioè come mettere d'accordo tutti su quale transazione è avvenuta prima.
+
+## 2. Il documento del 2008
+
+- **Titolo:** *Bitcoin: A Peer-to-Peer Electronic Cash System*
+- **Autore:** Satoshi Nakamoto, uno pseudonimo che non è mai stato identificato
+- **Problema affrontato:** la **doppia spesa**. Nel denaro digitale serve qualcuno che registri chi ha speso cosa. Di solito è una banca o un ente centrale. Bitcoin vuole farne a meno.
+
+## 3. La soluzione: catena di blocchi + prova di lavoro
+
+- Le transazioni vengono raccolte in **blocchi** collegati tra loro in una **catena**.
+- L'ordine dei blocchi è fissato da una **prova di lavoro**.
+- Riscrivere il passato costa caro: chi modifica un blocco deve rifare la prova di lavoro per quel blocco **e per tutti quelli successivi**.
+
+Questo è il punto che b-money e bit gold non avevano risolto.
+
+## 4. Il 3 gennaio 2009: il primo blocco
+
+Il primo blocco contiene il titolo di un articolo del *Times* su un salvataggio bancario. Quel riferimento ha due funzioni:
+
+1. **Marca temporale:** dimostra che il blocco non può essere stato creato prima di quella data.
+2. **Dichiarazione di intenti:** richiama la crisi delle banche, cioè il sistema centralizzato a cui Bitcoin vuole offrire un'alternativa.
+
+## 5. Le regole di emissione
+
+- Chi genera un blocco riceve una ricompensa. All'inizio è di **50 bitcoin**.
+- La ricompensa **si dimezza ogni 210.000 blocchi**, cioè circa ogni quattro anni.
+- Per questo il totale dei bitcoin emessi si avvicina a **21 milioni** e non li supera mai.
+
+## 6. Il 2010: le due pizze
+
+È la prima transazione commerciale documentata: **due pizze pagate 10.000 bitcoin**.
+
+## 7. Il 2011: Satoshi si ritira
+
+Nel 2011 Satoshi smette di partecipare pubblicamente al progetto. I bitcoin in suo possesso **non sono mai stati spostati**.
+
+---
+
+**Riassunto in una riga:** idea cypherpunk → documento del 2008 → primo blocco nel 2009 → prima vendita nel 2010 → Satoshi si ritira nel 2011.
+
+Se vuoi approfondire, il punto più utile da capire bene è la sezione 3, cioè come la prova di lavoro impedisce di riscrivere il passato. Te la spiego con un esempio passo per passo?

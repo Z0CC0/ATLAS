@@ -1,0 +1,48 @@
+The story of x86 runs in two halves. For its first fifteen years or so, the instruction set really was the machine. After that, it became a contract that the hardware keeps while doing something quite different underneath.
+
+## The foundations: 8086 to 386
+
+It starts with the **8086 in 1978**, a 16-bit processor that grew out of the 8080. It wasn't binary-compatible with its predecessor, only compatible at source level: existing code could be carried over, but it had to be reassembled. Keeping a path open for old software is the idea that shapes everything that follows.
+
+The **80286 in 1982** introduced protected mode, the foundation for memory protection and proper multitasking. It had one awkward flaw: once the chip entered protected mode, the only way back to real mode was a reboot. That made it hard to mix the new world with the large body of older software.
+
+The **80386 in 1985** fixed this and much more. It took the architecture to 32 bits and added paged virtual memory. It also brought virtual 8086 mode, which let old real-mode programs run inside the protected environment instead of forcing a choice between the two. This is the point where x86 became a platform a modern operating system could be built on.
+
+## Pulling things onto the chip: 486 and Pentium
+
+The **486 in 1989** moved onto the processor two things that used to sit beside it: the first-level cache and the maths coprocessor. Fewer trips off-chip meant a faster machine.
+
+The **Pentium in 1993** was superscalar. It had two integer pipelines, so it could retire two instructions per cycle instead of one. This began the move from doing one thing faster to doing several things at once.
+
+## The turning point: Pentium Pro
+
+The **Pentium Pro in 1995** is the most important step in the whole story, even if it's less famous than some of the others. It introduced out-of-order execution, and it translated x86 instructions into internal micro-operations before running them.
+
+From then on, x86 is an interface, no longer the real machine underneath. Programs still speak x86, but the processor rewrites that into its own internal form and schedules it however it likes. Everything later builds on this separation.
+
+## The frequency race and its limit
+
+The **Pentium 4 in 2000** bet on clock speed, using a very long pipeline to push frequency as high as possible. It ran into the power wall: beyond a certain point, higher frequency costs more power and heat than it's worth.
+
+## 64 bits, from somewhere else
+
+In **2003 AMD extended the architecture to 64 bits with AMD64**, and Intel then adopted the same instruction set. This was the first time the dominant extension to x86 did not come from Intel, a real change in who got to steer the architecture.
+
+## More cores, wider vectors
+
+After the power wall, the industry changed course. From **2006, starting with the Core 2**, the goal shifted from higher frequency to more cores. Speed now came from parallelism rather than from a faster clock.
+
+Alongside this, the vector extensions grew from one generation to the next: **MMX, then SSE, then AVX, then AVX-512**. Each let a single instruction work on more data at once.
+
+## Where the complexity lives today
+
+Today the interesting engineering is mostly out of sight, in the layers below the instruction set: branch prediction, the cache hierarchy and speculative execution. These techniques keep the machine busy by guessing ahead and doing work before it's certain the work is needed.
+
+That guessing turned out to have a price. **Spectre and Meltdown in 2018** showed that speculative execution carried a security cost nobody had priced. Speculative work was supposed to be invisible, but it left traces that could be exploited.
+
+## The thread through it all
+
+Looking back, the arc is fairly clear:
+- **Early years:** each chip added a major capability: protection, 32 bits, paging, on-chip cache, parallel pipelines.
+- **From the Pentium Pro on:** x86 became a stable interface over an increasingly clever internal machine.
+- **Ever since:** performance has been won through parallelism, prediction and speculation. The last of these turned out to have hidden costs.

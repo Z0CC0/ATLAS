@@ -1,0 +1,18 @@
+Prima dell'architettura servono dati. Due in particolare.
+
+**1. Quale parte del monolite cambia davvero.** Spezzare parti stabili non porta nessun guadagno. Separa solo dove c'è movimento.
+
+**2. Dove stanno i confini delle transazioni.** Se una transazione attraversa due servizi, diventa un problema distribuito. Disegna i confini in modo che ogni transazione resti dentro un solo servizio.
+
+**Come migrare: evita la riscrittura completa in parallelo.** Quasi sempre fallisce. Il vecchio sistema continua a cambiare e la copia non lo raggiunge mai.
+
+Usa invece lo strangolamento progressivo:
+1. Metti un router davanti al monolite PHP.
+2. Sposta un pezzo per volta dietro il router.
+3. Il vecchio sistema resta autorevole finché il nuovo pezzo non è verificato.
+
+**Costo reale dei microservizi.** Costano di più in operatività. Ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupa. Se il team ha meno di cinque sviluppatori, quel costo supera quasi sempre il beneficio.
+
+**Opzione poco citata: il monolite modulare.** Ha confini interni netti e un solo rilascio. Quando un modulo ne ha davvero bisogno, lo estrai quel giorno, non prima. Spesso è il punto di partenza giusto, anche come tappa intermedia dello strangolamento.
+
+**Domanda decisiva, e non è tecnica:** cosa deve poter fare il team fra un anno che oggi non può? Parti da questa risposta. Poi scegli l'architettura che la rende possibile al costo più basso.

@@ -1,0 +1,185 @@
+{
+  "date": "2026-11-15",
+  "model": "claude-sonnet-5-5",
+  "rounds": 2,
+  "rows": [
+    {
+      "id": "tests",
+      "withHint": true,
+      "loaded": true,
+      "first": "Skill:atlas-code:atlas-test",
+      "tools": [
+        "Skill:atlas-code:atlas-test",
+        "Read",
+        "Read",
+        "Glob"
+      ],
+      "cost": 0.2431482,
+      "hintSeen": true,
+      "round": 1
+    },
+    {
+      "id": "tests",
+      "withHint": false,
+      "loaded": false,
+      "first": "Read",
+      "tools": [
+        "Read",
+        "Glob",
+        "Glob",
+        "Read"
+      ],
+      "cost": 0.1800034,
+      "hintSeen": false,
+      "round": 1
+    },
+    {
+      "id": "interface",
+      "withHint": true,
+      "loaded": true,
+      "first": "Skill:atlas-code:atlas-ui",
+      "tools": [
+        "Skill:atlas-code:atlas-ui",
+        "Read",
+        "Glob",
+        "Read"
+      ],
+      "cost": 0.24416,
+      "hintSeen": true,
+      "round": 1
+    },
+    {
+      "id": "interface",
+      "withHint": false,
+      "loaded": false,
+      "first": "Read",
+      "tools": [
+        "Read",
+        "Glob",
+        "Edit"
+      ],
+      "cost": 0.1747406,
+      "hintSeen": false,
+      "round": 1
+    },
+    {
+      "id": "pipeline",
+      "withHint": true,
+      "loaded": true,
+      "first": "Skill:atlas-code:atlas-ship",
+      "tools": [
+        "Skill:atlas-code:atlas-ship",
+        "Read",
+        "Glob",
+        "Glob"
+      ],
+      "cost": 0.1884506,
+      "hintSeen": true,
+      "round": 1
+    },
+    {
+      "id": "pipeline",
+      "withHint": false,
+      "loaded": false,
+      "first": "Glob",
+      "tools": [
+        "Glob",
+        "Glob",
+        "Read",
+        "Read"
+      ],
+      "cost": 0.22471420000000003,
+      "hintSeen": false,
+      "round": 1
+    },
+    {
+      "id": "tests",
+      "withHint": true,
+      "loaded": true,
+      "first": "Skill:atlas-code:atlas-test",
+      "tools": [
+        "Skill:atlas-code:atlas-test",
+        "Read",
+        "Read",
+        "Glob"
+      ],
+      "cost": 0.19234300000000001,
+      "hintSeen": true,
+      "round": 2
+    },
+    {
+      "id": "tests",
+      "withHint": false,
+      "loaded": false,
+      "first": "Read",
+      "tools": [
+        "Read",
+        "Glob",
+        "Read",
+        "Read"
+      ],
+      "cost": 0.18145679999999997,
+      "hintSeen": false,
+      "round": 2
+    },
+    {
+      "id": "interface",
+      "withHint": true,
+      "loaded": true,
+      "first": "Skill:atlas-code:atlas-ui",
+      "tools": [
+        "Skill:atlas-code:atlas-ui",
+        "Read",
+        "Read",
+        "Read"
+      ],
+      "cost": 0.2840458,
+      "hintSeen": true,
+      "round": 2
+    },
+    {
+      "id": "interface",
+      "withHint": false,
+      "loaded": false,
+      "first": "Read",
+      "tools": [
+        "Read",
+        "Glob",
+        "Edit"
+      ],
+      "cost": 0.2247576,
+      "hintSeen": false,
+      "round": 2
+    },
+    {
+      "id": "pipeline",
+      "withHint": true,
+      "loaded": true,
+      "first": "Skill:atlas-code:atlas-ship",
+      "tools": [
+        "Skill:atlas-code:atlas-ship",
+        "Glob",
+        "Glob",
+        "Read"
+      ],
+      "cost": 0.18272979999999997,
+      "hintSeen": true,
+      "round": 2
+    },
+    {
+      "id": "pipeline",
+      "withHint": false,
+      "loaded": false,
+      "first": "Glob",
+      "tools": [
+        "Glob",
+        "Glob",
+        "Read",
+        "Read"
+      ],
+      "cost": 0.1760654,
+      "hintSeen": false,
+      "round": 2
+    }
+  ]
+}

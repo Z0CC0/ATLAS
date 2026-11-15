@@ -1,0 +1,18 @@
+Non usare `ALTER TABLE ... ALTER COLUMN TYPE` diretto: riscrive tutta la tabella tenendo un `ACCESS EXCLUSIVE` lock, quindi il servizio resta fermo per tutta la durata della riscrittura.
+
+Esegui invece questi passi, nell'ordine indicato:
+
+1. **Verifica.** Controlla che ogni valore esistente sia convertibile: conta le righe che non contengono solo cifre. Se il conteggio non è zero, sistema quelle righe prima di procedere.
+2. **Nuova colonna.**
+   ```sql
+   ALTER TABLE t ADD COLUMN colonna_int integer;
+   ```
+3. **Riempimento.** Popola la colonna a blocchi da 10.000 righe per volta, così non tieni un lock lungo sulla tabella.
+4. **Trigger.** Aggiungi un trigger che tenga allineate le due colonne durante la migrazione, così le scritture arrivate nel frattempo non vanno perse.
+5. **Codice.** Modifica il codice perché legga da `colonna_int` e rilascialo.
+6. **Eliminazione della colonna vecchia.** Fallo solo dopo il passo 5.
+   ```sql
+   ALTER TABLE t DROP COLUMN colonna;
+   ```
+
+**Attenzione:** il passo 6 è irreversibile. Una volta eliminata la colonna, i dati tornano solo con un ripristino da backup. Esegui il passo solo quando il codice nuovo è in produzione e funziona.

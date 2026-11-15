@@ -1,0 +1,1 @@
+Const blocca riassegnazione del nome, non modifica del valore: un oggetto dichiarato const resta modificabile internamente. Let permette riassegnazione. Entrambi scope di blocco, var no.

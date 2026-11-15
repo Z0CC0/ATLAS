@@ -1,0 +1,15 @@
+Prima di scegliere architettura, cinque cose.
+
+Capisci quale parte del monolite cambia davvero. Parti stabili: spezzarle non porta guadagno.
+
+Trova confini delle transazioni. Transazione che attraversa due servizi diventa problema distribuito.
+
+Riscrittura completa in parallelo quasi sempre fallisce: vecchio sistema continua a cambiare, copia non lo raggiunge mai.
+
+Alternativa: strangolamento progressivo. Router davanti, sposti pezzo per volta, vecchio resta autorevole finché nuovo non verificato.
+
+Microservizi costano di più in operatività: ogni servizio vuole rilascio, monitoraggio, log, allarmi, persona dedicata. Sotto cinque sviluppatori, costo operativo quasi sempre supera beneficio.
+
+Opzione poco citata: monolite modulare. Confini interni netti, un solo rilascio, possibilità di estrarre modulo quando serve davvero.
+
+Domanda decisiva non è tecnica: cosa deve poter fare il team fra un anno che oggi non può.

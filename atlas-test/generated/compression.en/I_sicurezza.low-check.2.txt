@@ -1,0 +1,5 @@
+No. Anything shipped to the browser can be read — obfuscation doesn't survive someone opening dev tools or watching the network tab.
+
+Put the key on the server. Frontend calls your backend, backend calls the service. Rate-limit that backend endpoint, or it's a free tap into your key.
+
+If the key was ever published, treat it as compromised now and rotate it — removing it from a commit doesn't help, it's still sitting in repo history and anyone who already cloned has it.

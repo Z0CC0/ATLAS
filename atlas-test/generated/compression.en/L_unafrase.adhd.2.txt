@@ -1,0 +1,1 @@
+Yes — an empty list is falsy in Python. This applies to any empty collection, so an empty tuple, dict, set, or string are all falsy too.

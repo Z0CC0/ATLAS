@@ -1,0 +1,17 @@
+Diretto, ALTER TABLE ALTER COLUMN TYPE, riscrive tutta la tabella sotto ACCESS EXCLUSIVE lock: servizio fermo per tutta la durata. Con dieci milioni di righe, evitalo.
+
+Percorso sicuro:
+
+Prima verifica che ogni valore sia convertibile: conta le righe non fatte solo di cifre.
+
+Poi aggiungi una colonna nuova, ADD COLUMN colonna_int integer.
+
+Riempila a blocchi da diecimila righe, non tutta insieme, per non tenere un lock lungo.
+
+Nel frattempo un trigger allinea le due colonne, così i nuovi scritti restano coerenti durante la migrazione.
+
+Quando il backfill è completo, cambia il codice per leggere dalla colonna nuova e rilasciala.
+
+Solo a quel punto, DROP COLUMN sulla vecchia.
+
+Questo ultimo passo è irreversibile: colonna eliminata, dati persi salvo ripristino da backup. Tienilo come ultimo step, dopo aver confermato in produzione che tutto legge dalla colonna nuova senza problemi.

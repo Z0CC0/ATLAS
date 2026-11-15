@@ -1,0 +1,9 @@
+No. Chiave arriva a browser, chiunque legge — offuscamento sparisce con DevTools o guardando richieste rete.
+
+Chiave sta su server. Frontend chiama endpoint tuo backend, backend chiama servizio.
+
+Endpoint backend serve limite frequenza — senza, chiunque usa chiave tua gratis.
+
+Chiave gia' pubblicata? Considera compromessa, ruota subito. Non basta rimuovere da codice.
+
+Togliere da commit non basta pure — resta in cronologia repository, chiunque clone gia' ce l'ha.

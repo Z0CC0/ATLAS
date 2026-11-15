@@ -1,0 +1,32 @@
+**Consiglio: parti da Postgres da solo.** Aggiungi altri sistemi solo quando un carico specifico lo richiede, con numeri alla mano.
+
+## Le opzioni, carico per carico
+
+**Postgres** regge tutti e quattro i carichi in modo accettabile, nessuno in modo eccellente.
+- **Ordini:** dà transazioni serie. Per gli ordini sono un requisito non negoziabile.
+- **Catalogo:** lo gestisce senza problemi.
+- **Ricerca testuale:** è integrata e basta sotto il milione di documenti. Sopra diventa debole.
+- **Analisi:** regge fino a decine di milioni di righe. Oltre, le scansioni diventano lente.
+
+**MySQL** è equivalente a Postgres sugli ordini, ma è più debole su tipi di dato e query complesse. Non ha vantaggi che giustifichino sceglierlo al posto di Postgres.
+
+**MongoDB** semplifica il catalogo se i prodotti hanno schemi variabili. Però le transazioni multi-documento sono arrivate tardi e costano, e sugli ordini ti servono. Non è adatto come database principale per il tuo caso.
+
+**Elasticsearch** è molto superiore sulla ricerca testuale: rilevanza, sinonimi, tolleranza agli errori di battitura. Non è però un archivio autorevole. Va alimentato da un altro database, non lo sostituisce.
+
+**ClickHouse** è molto superiore sull'analisi: le sue scansioni colonnari sono ordini di grandezza più veloci. Non va usato per gli ordini, perché gli aggiornamenti puntuali sono il suo punto debole.
+
+## Dove si arriva di solito
+
+La configurazione tipica è Postgres come archivio autorevole, con Elasticsearch e ClickHouse alimentati da Postgres. È probabilmente la tua architettura finale, ma non il tuo punto di partenza.
+
+## Perché non partire subito con tutti e tre
+
+Ogni sistema in più porta due problemi: la sincronizzazione e l'allineamento dei dati. Il costo vero dei sistemi specializzati non è la licenza. È il tempo delle persone che li tengono in piedi.
+
+## Come procedere in pratica
+
+1. Metti ordini, catalogo, ricerca e analisi su Postgres.
+2. Misura il volume dei documenti cercabili. Aggiungere Elasticsearch prima del milione di documenti è quasi sempre prematuro.
+3. Misura i tempi delle query analitiche. Quando superi le decine di milioni di righe e le scansioni rallentano, aggiungi ClickHouse alimentato da Postgres.
+4. Gli ordini restano su Postgres in ogni caso.

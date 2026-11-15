@@ -1,0 +1,15 @@
+Diretto no: `ALTER TABLE ALTER COLUMN TYPE` riscrive tutta tabella con lock ACCESS EXCLUSIVE, servizio fermo per intera durata. Su dieci milioni righe, in produzione, serve migrazione a colonna parallela.
+
+1. Verifica convertibilità: conta righe con valori non solo-cifre.
+
+2. Aggiungi colonna nuova: `ALTER TABLE t ADD COLUMN colonna_int integer`.
+
+3. Riempi a blocchi da diecimila righe per volta, evita lock lungo.
+
+4. Aggiungi trigger che tiene allineate due colonne durante migrazione.
+
+5. Cambia codice per leggere da colonna nuova, rilascia.
+
+6. Solo dopo: elimina colonna vecchia, `ALTER TABLE t DROP COLUMN colonna`.
+
+Passo sei irreversibile: colonna eliminata, dati non tornano senza ripristino da backup.

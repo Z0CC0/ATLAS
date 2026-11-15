@@ -1,0 +1,9 @@
+Quando digiti un indirizzo che inizia con "https://", il browser non parla HTTP nudo con il server: lo fa passare dentro un canale cifrato costruito da TLS.
+
+Tutto parte con il client che apre la connessione e dichiara al server quali versioni di TLS conosce e quali cifrari e' disposto a usare. Il server risponde scegliendo una versione e un cifrario tra quelli proposti, e a quel punto manda il proprio certificato. Il certificato e' il documento che lega il nome di dominio (es. il sito che stai visitando) a una chiave pubblica, ed e' firmato da un'autorita' di certificazione. Il tuo client verifica quella firma risalendo la catena di certificati fino a trovare una radice che ha gia' memorizzata come fidata: se la catena regge, il certificato viene accettato.
+
+Da qui client e server devono mettersi d'accordo su una chiave di sessione, e oggi lo fanno tipicamente con uno scambio Diffie-Hellman su curve ellittiche. Questa chiave e' simmetrica, non asimmetrica come quella del certificato, perche' cifrare tutto il traffico vero e proprio con crittografia asimmetrica sarebbe troppo costoso in termini di calcolo. Una volta stabilita, tutto il traffico che passa da quel momento in poi e' cifrato e autenticato: chi si trova in mezzo alla connessione non puo' ne' leggerlo ne' modificarlo.
+
+Un dettaglio tecnico: con TLS 1.2 questo scambio richiedeva due giri di andata e ritorno tra client e server, mentre TLS 1.3 lo ha ridotto a un solo giro, rendendo la connessione piu' veloce da stabilire.
+
+C'e' pero' un punto importante da non fraintendere: il certificato non ti dice nulla su chi gestisce davvero il sito. Ti dice solo che quel determinato dominio controlla quella determinata chiave privata. Non e' una garanzia di affidabilita' o identita' del gestore, solo una prova crittografica di controllo sul dominio.

@@ -1,0 +1,5 @@
+Don't run ALTER TABLE ALTER COLUMN TYPE directly: it rewrites the whole table under an ACCESS EXCLUSIVE lock, so the service is down for the entire duration. Instead:
+
+Check every existing value in colonna is convertible first — count rows that aren't all digits. Then add a new column: ALTER TABLE t ADD COLUMN colonna_int integer. Fill it in batches of ten thousand rows, so no long lock is held on the table. Add a trigger keeping colonna and colonna_int in step while the migration runs, so nothing written during the batch fill gets missed. Once colonna_int is fully populated and in sync, change the code to read from it, and ship that. Only after that's live and stable, drop the old column: ALTER TABLE t DROP COLUMN colonna.
+
+Treat that last step as one-way — once colonna is dropped, its data isn't coming back without a restore from backup. Don't run it until you're confident the new column is correct and the app no longer touches the old one.

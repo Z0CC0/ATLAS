@@ -1,0 +1,40 @@
+**Consistenza eventuale**: dopo che scrivi un dato, le repliche del database non sono subito d'accordo tra loro. Se smetti di scrivere, si allineano entro un tempo finito.
+
+## Perché ti riguarda
+
+Te ne accorgi quando qualcuno legge un dato subito dopo averlo scritto:
+
+1. L'utente pubblica un commento
+2. Ricarica la pagina
+3. Il commento non c'è, perché la lettura è arrivata a una replica che non lo ha ancora ricevuto
+
+Per chi lo usa, sembra che il sito sia rotto.
+
+## Quanto dura
+
+- **Repliche nella stessa regione:** di solito meno di un secondo
+- **Repliche in regioni diverse:** si sale a qualche secondo
+
+## Perché i sistemi funzionano così
+
+È un compromesso con la disponibilità. Un sistema che vuole la consistenza forte deve rifiutare le richieste quando le repliche non riescono a comunicare tra loro. Quasi tutti i sistemi che scalano scelgono apposta la consistenza eventuale: non la considerano un difetto da eliminare.
+
+## La soluzione comune
+
+La sessione che ha appena scritto legge dalla **replica primaria**. Tutte le altre sessioni continuano a leggere dalle repliche normali.
+
+Così chi ha pubblicato il commento lo vede subito. Gli altri utenti lo vedranno tra meno di un secondo, o tra qualche secondo se sono in un'altra regione, e non se ne accorgono.
+
+## Quando non va bene
+
+I casi sono pochi e facili da riconoscere:
+
+- **Saldi di conto**
+- **Posti disponibili**
+- **Identificativi che devono essere unici**
+
+In questi casi due repliche in disaccordo, anche per poco, producono un errore vero: un saldo sbagliato, un posto venduto due volte, un ID duplicato.
+
+---
+
+**Prossimo passo:** prendi la tua app e cerca il punto in cui un utente scrive un dato e lo rilegge subito, per esempio un commento, un profilo o un carrello. Da lì comincia a leggere dalla replica primaria.

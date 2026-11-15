@@ -1,0 +1,9 @@
+Postgres.
+
+At small-project volume, `SELECT FOR UPDATE SKIP LOCKED` is enough, up to roughly a thousand jobs per minute.
+
+Job sits in same transaction as data: if write rolls back, job never starts. Redis cannot give that.
+
+Persistence free: process dies, queue still there. Redis needs AOF enabled, or restart loses queued jobs.
+
+Redis also means one more service to run, monitor and upgrade. Its advantage, far more volume and sub-millisecond latency, only matters once volume genuinely demands it. Move then, not before.

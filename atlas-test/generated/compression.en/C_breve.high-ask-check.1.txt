@@ -1,0 +1,1 @@
+No — B-tree unused at low cardinality. Planner picks seq scan once filter matches >~5-10% of rows, and three distinct values easily clears that. Index still costs writes and disk space for no benefit. Exception: partial index on the rare value works.

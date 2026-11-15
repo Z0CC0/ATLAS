@@ -1,0 +1,7 @@
+Ecco il meteo di New York per questa settimana.
+
+Si parte lunedì con cielo sereno, 24 gradi e minima di 17. Martedì diventa nuvoloso, 22 gradi, minima 16, con pioggia debole in serata. Mercoledì è la giornata più bagnata, con pioggia per gran parte del giorno, 19 gradi e minima 15. Giovedì torna il sereno con schiarite, 21 gradi e minima 14.
+
+Da venerdì si scalda: sereno, 25 gradi, minima 16. Il weekend è il tratto più caldo della settimana — sabato sereno e caldo con 28 gradi e minima 19, poi domenica arrivano temporali nel pomeriggio, con 26 gradi e minima 18.
+
+In sintesi: due giorni di pioggia significativa (mercoledì e domenica), e il caldo maggiore nel weekend.

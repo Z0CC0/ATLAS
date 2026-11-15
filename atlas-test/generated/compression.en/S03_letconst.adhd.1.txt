@@ -1,0 +1,3 @@
+`let` and `const` are both block-scoped — unlike `var`, they only exist inside the `{ }` where they're declared, not the whole function.
+
+The real difference is about reassignment. With `let`, you can point the variable at a new value later. With `const`, you can't reassign the name once it's set — but that only locks the binding, not the value itself. So if you declare an object with `const`, you can still change its contents (add properties, mutate fields, etc.) — you just can't make that `const` name point to a different object altogether.

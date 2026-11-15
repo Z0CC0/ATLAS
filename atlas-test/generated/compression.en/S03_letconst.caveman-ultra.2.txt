@@ -1,0 +1,5 @@
+`const` lock name, not value. Reassign `const x` fail. But object/array under `const` still mutate internally (push, property change fine).
+
+`let` allow reassign.
+
+Both `let`/`const` block scoped, `var` not.

@@ -1,0 +1,27 @@
+Here's the arc, and it's really a story about where the complexity lives — it keeps moving.
+
+It starts in 1978 with the 8086: a 16-bit chip that grew out of the 8080, kept enough source-level compatibility that existing code and habits carried forward. That compatibility instinct is the thread that holds the whole family together for the next four decades.
+
+The 80286 in 1982 adds protected mode, which sounds like a clean step forward, but it's a one-way door — once you're in protected mode, there's no way back to real mode without a reboot. It's a reminder that early x86 evolution was messy and pragmatic, not elegantly designed.
+
+The 80386 in 1985 is the real turning point of that first era: 32-bit computing, paged virtual memory, and virtual 8086 mode. That last piece mattered a lot — it let the chip run old real-mode software inside a protected-mode system, so backward compatibility didn't have to be sacrificed for the new capabilities.
+
+The 486 in 1989 is more about integration than new concepts: it pulls the first-level cache and the math coprocessor onto the chip itself, rather than as separate components. This is the beginning of the CPU absorbing what used to be surrounding infrastructure.
+
+The Pentium in 1993 goes superscalar — two integer pipelines that can retire two instructions per cycle. Now the chip isn't just doing one thing at a time faster; it's doing multiple things in parallel.
+
+The Pentium Pro in 1995 is arguably the most important architectural break in the whole history: it introduces out-of-order execution and starts translating x86 instructions into internal micro-operations. From this point on, x86 is an interface, not the real machine underneath. Everything the chip actually does internally is decoupled from the instruction set you're programming against — the ISA becomes a contract, not a description of the hardware.
+
+The Pentium 4 in 2000 chases raw clock frequency with a very long pipeline, and runs straight into the power wall — you can't keep scaling frequency without the chip cooking itself.
+
+That wall is what forces the next big shift. In 2003, AMD — not Intel — extends the architecture to 64 bit with AMD64, and Intel ends up adopting AMD's instruction set rather than pushing its own. It's the first time the dominant extension to x86 doesn't come from Intel, which says something about how the balance of architectural influence had shifted.
+
+Since the power wall couldn't be solved with frequency, from 2006 onward, starting with the Core 2, the industry pivots from frequency scaling to core count. Parallelism now happens across cores, not just within a pipeline.
+
+Running alongside all of this, generation after generation, the vector extensions keep growing — MMX, then SSE, then AVX, then AVX-512 — steadily widening how much data the chip can chew through per instruction.
+
+Which brings us to today: the actual complexity of an x86 chip has migrated almost entirely below the instruction set — into branch prediction, the cache hierarchy, and speculative execution. The ISA on the surface is almost incidental compared to what's happening underneath to make it fast.
+
+And that underlying complexity had a cost nobody had accounted for: Spectre and Meltdown in 2018 showed that speculative execution — the very thing that had been delivering performance since the Pentium Pro — carried a security price that had never been priced in.
+
+So the whole trajectory is: start as a straightforward instruction set, then gradually turn the instruction set into a facade over an increasingly independent, increasingly parallel, increasingly speculative machine — until that speculation itself became the new attack surface.

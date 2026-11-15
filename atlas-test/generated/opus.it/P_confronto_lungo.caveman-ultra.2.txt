@@ -1,0 +1,21 @@
+A mille richieste al minuto conviene una combinazione: **file locali più un raccoglitore** che li spedisce altrove. L'applicazione scrive su file e non aspetta mai la scrittura del log. Il raccoglitore poi inoltra i log a un servizio gestito o a un database.
+
+**Regola che vale sempre:** la scrittura del log non deve stare nel percorso critico della richiesta.
+
+**Solo file**
+- Costo zero, nessuna dipendenza.
+- La ricerca è `grep`.
+- La rotazione va configurata a mano, altrimenti il disco si riempie.
+- Con più macchine non puoi cercare in un punto solo: devi collegarti a ognuna.
+
+**Servizio gestito**
+- Dà ricerca immediata, allarmi e conservazione automatica.
+- Si paga per volume. A mille richieste al minuto il volume cresce in fretta, quindi tieni d'occhio la spesa.
+- I log escono dalla tua infrastruttura. Prima dell'invio devi togliere i dati personali.
+
+**Database**
+- La ricerca è comoda e la conosci già.
+- Se usi lo stesso database dell'applicazione, metti in competizione due carichi molto diversi.
+- Sotto carico, i log occupano cache e connessioni che servono alle richieste vere.
+
+Il raccoglitore risolve il limite principale dei file: la ricerca su più macchine. L'API resta protetta, perché scrive solo su file locali.

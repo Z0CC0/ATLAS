@@ -1,0 +1,29 @@
+Ecco un debounce senza librerie:
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Esempio d'uso:
+
+```js
+const onResize = debounce(() => console.log('resize finito'), 200);
+window.addEventListener('resize', onResize);
+```
+
+Ci sono tre dettagli che fanno funzionare il debounce:
+
+- **`clearTimeout(t)` va prima di ogni nuovo `setTimeout`.** Senza questa riga i timer si accumulano e `fn` parte più volte.
+- **`let t` sta nella chiusura, fuori dalla funzione restituita.** Se la metti dentro, ogni chiamata ha il suo timer e il debounce non avviene.
+- **Gli argomenti passano con lo spread (`...args`).** Senza spread, `fn` riceve gli argomenti vuoti.
+
+Due limiti:
+
+- Questa versione non restituisce niente. Se ti serve il valore di ritorno di `fn`, devi usare una Promise.
+- Il debounce aspetta che le chiamate finiscano e poi esegue. Se invece vuoi eseguire subito e poi ignorare le chiamate per un certo periodo, ti serve un throttle, che è un'altra funzione.

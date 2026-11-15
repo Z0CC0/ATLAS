@@ -1,0 +1,5 @@
+Ecco il meteo per New York questa settimana.
+
+Lunedì sereno, 24° con minima 17. Martedì nuvoloso, 22° con minima 16, pioggia debole in serata. Mercoledì pioggia per gran parte del giorno, 19° con minima 15. Giovedì schiarite, 21° con minima 14. Venerdì sereno, 25° con minima 16. Sabato sereno e caldo, 28° con minima 19. Domenica temporali nel pomeriggio, 26° con minima 18.
+
+Le uniche giornate con piogge significative sono mercoledì e domenica; il weekend è il tratto più caldo della settimana.

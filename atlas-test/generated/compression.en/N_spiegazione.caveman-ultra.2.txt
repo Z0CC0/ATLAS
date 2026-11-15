@@ -1,0 +1,11 @@
+Eventual consistency: after write, replicas disagree briefly, converge if writes stop. Same region, under a second. Cross region, few seconds.
+
+Trade: availability vs strong consistency. Strong consistency refuses requests when replicas can't talk. Eventual consistency keeps answering, just stale for a moment.
+
+Hits you here: post comment, reload, comment gone. Read right after your own write, before convergence.
+
+Fix: for session that just wrote, read from primary replica. Not for everyone, just that user.
+
+Not a bug, a choice. Systems that scale accept it on purpose.
+
+Where it's not acceptable, few cases: account balance, seat availability, unique identifier. Those need strong consistency, everywhere else eventual fine.

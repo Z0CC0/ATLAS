@@ -1,0 +1,5 @@
+With only three distinct values in that column, no, an index won't help you.
+
+Postgres estimates that any single value in a three-value column covers roughly a third of the table, and the planner only bothers with a B-tree index when a filter selects somewhere around 5-10% of rows or less. Above that, a sequential scan is cheaper, so the index you built just gets ignored at query time — meanwhile it still costs you on every write and takes up disk space, for no benefit.
+
+The one case where it's worth it is if one of those three values is genuinely rare (say, a status that only appears in 2% of rows) — a partial index built just on that value can still be useful, since it narrows things down to well below that selectivity threshold.

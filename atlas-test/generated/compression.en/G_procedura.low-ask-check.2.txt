@@ -1,0 +1,10 @@
+Don't run a plain `ALTER TABLE t ALTER COLUMN colonna TYPE integer` — that rewrites the whole table under an ACCESS EXCLUSIVE lock, so the service is down for as long as the rewrite takes. On ten million rows, do it as an online migration instead:
+
+1. First check every existing value is actually convertible — count the rows where the column isn't all digits, so you know upfront whether the migration is even safe to run.
+2. Add the new column: `ALTER TABLE t ADD COLUMN colonna_int integer`.
+3. Backfill it in batches of ten thousand rows at a time, rather than one big UPDATE, so no long lock is held on the table.
+4. While the backfill is running, add a trigger that keeps the old and new columns in sync, so any rows written during the migration don't fall out of step.
+5. Once the new column is fully populated and kept in sync, change the application code to read from `colonna_int` and ship that.
+6. Only after that's live and verified, drop the old column: `ALTER TABLE t DROP COLUMN colonna`.
+
+Treat step six as one-way: once `colonna` is dropped, that data is gone unless you restore from backup. Don't drop it until you're confident the new column is correct and the app is fully cut over.

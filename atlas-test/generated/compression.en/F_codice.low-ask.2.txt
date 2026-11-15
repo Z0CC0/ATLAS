@@ -1,0 +1,15 @@
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+`t` lives in closure, not inside returned function — else every call gets own timer, no debouncing happens. `clearTimeout` runs before every new `setTimeout`, or timers pile up and `fn` fires more than once. Args forwarded via spread, else called function receives nothing.
+
+Returns nothing. Need return value → wrap in Promise.
+
+Need immediate-fire-then-ignore instead → that's throttle, different function.

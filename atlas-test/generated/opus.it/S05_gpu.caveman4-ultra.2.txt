@@ -1,0 +1,9 @@
+**RTX 5080 vs RTX 4080**
+
+- **Architettura**: la 5080 è Blackwell, la 4080 Ada Lovelace.
+- **Memoria**: la 5080 ha GDDR7, la 4080 GDDR6X. La banda sale da circa 717 a circa 960 GB/s.
+- **Prestazioni**: il guadagno più grande è nella generazione di fotogrammi. In rasterizzazione pura la 5080 va circa il 10-15% più veloce.
+- **Consumo**: dichiarato a 360 W contro 320 W.
+- **Connettore**: resta a 16 pin, quindi non cambia nulla per l'alimentatore.
+
+Se giochi in rasterizzazione pura e non usi la generazione di fotogrammi, passare dalla 4080 alla 5080 porta un miglioramento modesto.

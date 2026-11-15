@@ -1,0 +1,12 @@
+La consistenza eventuale è un modello di replica. Dopo una scrittura le repliche non concordano subito. Se le scritture si fermano, convergono entro un tempo finito. Quel tempo di solito è sotto il secondo fra repliche nella stessa regione e sale a qualche secondo fra regioni diverse.
+
+**Perché esiste:** è un compromesso con la disponibilità. Se un sistema pretende consistenza forte, deve rifiutare richieste quando le repliche non riescono a comunicare. La consistenza eventuale invece continua a rispondere. Quindi non è un difetto da eliminare ma una scelta: la maggior parte dei sistemi che scalano la accetta di proposito.
+
+**Perché ti riguarda:** il problema tocca chi legge subito dopo aver scritto. Per esempio, l'utente pubblica un commento, ricarica la pagina e il commento non c'è. Di solito si risolve così: la sessione che ha appena scritto legge dalla replica primaria. Le altre sessioni no, perché farlo per tutte non serve.
+
+**Quando non va bene:** i casi sono pochi e facili da riconoscere:
+- saldi di conto
+- disponibilità di posti
+- unicità di un identificativo
+
+In questi casi serve consistenza forte. Negli altri puoi accettare la consistenza eventuale senza problemi.

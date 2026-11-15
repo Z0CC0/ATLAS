@@ -1,0 +1,16 @@
+**Cos'è**: dopo una scrittura, le repliche non concordano subito. Se le scritture si fermano, convergono entro un tempo finito.
+
+**Quanto dura**: con repliche nella stessa regione, di solito sotto il secondo. Fra regioni diverse sale a qualche secondo.
+
+**Perché esiste**: è un compromesso con la disponibilità. Un sistema che pretende consistenza forte deve rifiutare richieste quando le repliche non comunicano fra loro. Per questo non è un difetto da eliminare ma una scelta. La maggior parte dei sistemi che scalano la accetta di proposito.
+
+**Perché ti interessa**: colpisce chi legge subito dopo aver scritto. Esempio: l'utente pubblica un commento, ricarica la pagina e non lo vede. Per lui il commento è sparito.
+
+**Soluzione comune**: la sessione che ha appena scritto legge dalla replica primaria. Le altre sessioni continuano a leggere dalle repliche. Così l'autore vede subito la sua scrittura e il carico resta distribuito.
+
+**Dove non basta**: i casi sono pochi e riconoscibili:
+- saldi di conto
+- disponibilità di posti
+- unicità di un identificativo
+
+Lì serve consistenza forte. Nel resto dei casi, accettala e gestisci la lettura dopo la scrittura.

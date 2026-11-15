@@ -1,0 +1,12 @@
+Non fare `ALTER TABLE t ALTER COLUMN colonna TYPE integer` diretto: riscrive tutta la tabella sotto ACCESS EXCLUSIVE lock, servizio fermo per tutta la durata. Con dieci milioni di righe inaccettabile in produzione.
+
+Passi:
+
+1. Verifica convertibilità: conta righe dove il valore non è solo cifre (regex tipo `colonna !~ '^[0-9]+$'`). Se ce ne sono, fermati e decidi come trattarle prima di procedere.
+2. `ALTER TABLE t ADD COLUMN colonna_int integer` — aggiunta colonna, lock breve.
+3. Backfill a blocchi da diecimila righe (UPDATE con LIMIT/batch, commit tra un blocco e l'altro) invece che in un colpo solo, per non tenere lock lungo.
+4. Trigger che tiene sincronizzate `colonna` e `colonna_int` durante la migrazione, così le scritture concorrenti non disallineano i dati mentre il backfill è in corso.
+5. Cambia il codice applicativo per leggere/scrivere `colonna_int`, rilascia.
+6. Solo dopo, `ALTER TABLE t DROP COLUMN colonna`.
+
+Il passo sei è irreversibile: colonna eliminata, dati non tornano senza restore da backup. Non farlo finché il nuovo codice non è in produzione stabile da un po'.

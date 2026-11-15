@@ -1,0 +1,13 @@
+Eventual consistency is what you get when a system has multiple replicas of the same data and doesn't force them to agree the instant a write happens. Right after you write something, the replicas can disagree for a little while — but if no new writes come in, they're guaranteed to converge to the same state within a finite time. It's not "maybe" they converge — it's "eventually, yes."
+
+Why you should care comes down to a trade-off: the alternative, strong consistency, means a system has to refuse requests whenever replicas can't currently talk to each other, because it can't honestly guarantee a consistent answer otherwise. Eventual consistency is what you accept in exchange for keeping the system available under those conditions.
+
+The place this actually bites you is the read-after-write case: a user posts a comment, immediately reloads the page, and doesn't see their own comment because the reload happened to hit a replica that hasn't caught up yet. That's the concrete, annoying symptom.
+
+The standard fix isn't to abandon eventual consistency everywhere — it's to route around it selectively: for the session that just wrote, you read from the primary replica (or whichever one you know has the write), while everyone else keeps reading from whatever replica is convenient. So the person who just posted sees their comment; other users just see it appear a moment later.
+
+In practice that "moment later" is short. Replicas in the same region typically converge in under a second. Across regions, it stretches to a few seconds.
+
+The important mental shift is that this isn't a bug you're tolerating — it's a deliberate design choice. Most systems that need to scale accept eventual consistency on purpose, because demanding strong consistency everywhere would mean refusing traffic every time there's network trouble between replicas.
+
+Where it genuinely doesn't work, the list is short and easy to recognize: account balances, seat availability, and anything that depends on the uniqueness of an identifier. Those are the cases where "eventually correct" isn't good enough — you actually need strong consistency there.

@@ -1,0 +1,13 @@
+x86 moved from a 16-bit chip extending the 8080 to an instruction set that now sits on top of a very different machine. Its complexity has moved into layers programmers never see.
+
+**Foundations (1978–1985).** Story starts slightly before eighties: 8086 of 1978, 16-bit chip grown out of 8080 and compatible with it at source level. 80286 of 1982 added protected mode, but with a catch: once in protected mode, no way back to real mode without a reboot. 80386 of 1985 fixed much of that and set the template for decades: 32 bit, paged virtual memory, and virtual 8086 mode for running old code inside new environment.
+
+**Pulling more onto the chip (1989–1993).** 486 of 1989 brought first-level cache and maths coprocessor onto the chip itself. Pentium of 1993 went superscalar: two integer pipelines able to retire two instructions per cycle.
+
+**Turning point (1995).** Pentium Pro of 1995 introduced out-of-order execution and began translating x86 instructions into internal micro-operations. From then on, x86 is an interface, no longer the real machine underneath.
+
+**Frequency race and its end (2000–2006).** Pentium 4 of 2000 chased clock frequency with very long pipeline and hit the power wall. Meanwhile AMD extended the architecture to 64 bit in 2003 with AMD64, and Intel adopted the same instruction set. First time the dominant extension came from outside Intel. From 2006, with Core 2, direction shifted from frequency to core count.
+
+**Vector extensions.** Across those generations, vector capability kept growing: MMX, then SSE, then AVX, then AVX-512.
+
+**Today.** Complexity sits in layers below the instruction set: branch prediction, cache hierarchy, speculative execution. Spectre and Meltdown in 2018 showed that speculative execution carried a security cost nobody had priced.

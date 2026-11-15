@@ -1,0 +1,5 @@
+**`let`**: nome riassegnabile.
+
+**`const`**: nome non riassegnabile. Valore però modificabile: oggetto dichiarato con `const` può cambiare al suo interno.
+
+**Entrambi**: ambito di blocco, a differenza di `var`.

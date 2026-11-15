@@ -1,0 +1,51 @@
+# How x86 evolved, from the 8086 to today
+
+## The foundations (1978–1985)
+
+The story starts slightly before the eighties, with the **8086 in 1978**. It was a 16-bit processor that grew out of the older 8080. Intel made it compatible with the 8080 at the source level, so existing code could be carried over rather than thrown away. That choice set the pattern for everything that followed: each new generation kept the old software running.
+
+The **80286 in 1982** added **protected mode**. It had one awkward flaw: once the processor switched into protected mode, it couldn't return to real mode without a reboot. This shows how hard it was to add modern features while staying compatible.
+
+The **80386 in 1985** is where the architecture grew up. It brought:
+- **32-bit** operation
+- **paged virtual memory**
+- **virtual 8086 mode**, which let old 16-bit software run inside the new protected environment. This fixed much of what the 286 had left awkward.
+
+## Bringing things onto the chip (1989–1993)
+
+The **486 in 1989** was mostly about integration. The first-level cache and the maths coprocessor, which used to be separate parts, moved onto the processor itself.
+
+The **Pentium in 1993** was **superscalar**. It had two integer pipelines, so it could retire two instructions in one clock cycle instead of one.
+
+## The turning point: the Pentium Pro (1995)
+
+This is the most important change in the whole story. The **Pentium Pro** introduced **out-of-order execution**. It also started translating x86 instructions into internal **micro-operations**, and those micro-operations are what the hardware actually runs.
+
+After this, x86 became an **interface**, a contract with software, rather than the real machine underneath. The instruction set stayed the same for compatibility, while the internal design was free to change completely.
+
+## The frequency race and its limit (2000)
+
+The **Pentium 4 in 2000** chased clock speed with a very long pipeline. The approach ran into the **power wall**: pushing frequency higher cost more power than was practical.
+
+## 64-bit from AMD (2003)
+
+In **2003**, **AMD** extended the architecture to 64 bits with **AMD64**, and **Intel adopted the same instruction set**. It was the first time the dominant extension to x86 hadn't come from Intel.
+
+## From faster cores to more cores (2006 onward)
+
+Starting in **2006** with the **Core 2**, the goal changed from higher frequency to **more cores**. This was the industry's answer to the power wall the Pentium 4 had hit.
+
+Across all these generations the **vector extensions** kept growing, from **MMX** to **SSE**, then **AVX**, then **AVX-512**. Each one lets the processor do more work per instruction on data in parallel.
+
+## Today
+
+The instruction set itself is no longer where most of the complexity is. It's in the layers underneath:
+- **branch prediction**
+- the **cache hierarchy**
+- **speculative execution**
+
+In **2018**, **Spectre and Meltdown** showed that speculative execution had a **security cost nobody had priced in**. The techniques that made processors fast since the Pentium Pro turned out to be a way to leak data.
+
+## In short
+
+x86 went from a 16-bit chip that kept source compatibility with its predecessor to a stable interface on top of very complex hardware. Compatibility stayed constant the whole way through, while almost everything underneath was rebuilt, sometimes more than once.

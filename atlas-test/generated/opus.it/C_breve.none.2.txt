@@ -1,0 +1,7 @@
+Di solito no. Su una colonna con soli tre valori distinti un indice B-tree normale quasi sempre resta inutilizzato. Ognuno dei tre valori corrisponde a una fetta consistente della tabella. Quando un filtro seleziona più del 5-10% circa delle righe, il planner sceglie una scansione sequenziale perché gli conviene più che passare dall'indice.
+
+L'indice però ha un costo anche se nessuno lo usa. Occupa spazio e va aggiornato a ogni scrittura sulla tabella.
+
+C'è un'eccezione. Se uno dei tre valori è raro e le tue query cercano proprio quello, crea un **indice parziale** limitato a quel valore. In quel caso il filtro seleziona poche righe, quindi l'indice viene usato davvero. Inoltre è piccolo e pesa meno sulle scritture.
+
+In breve: evita l'indice classico su tutta la colonna. Valuta un indice parziale solo se interroghi spesso il valore poco frequente.

@@ -1,0 +1,24 @@
+**Parti da Postgres da solo.** Aggiungi altri sistemi solo quando un carico specifico lo impone, con numeri alla mano.
+
+**Perché Postgres come base**
+- Regge tutti e quattro i tuoi carichi in modo accettabile, nessuno in modo eccellente.
+- Ha transazioni serie. Sugli ordini non sono negoziabili, quindi l'archivio autorevole deve offrirle.
+- La ricerca testuale integrata basta sotto il milione di documenti. Sopra diventa debole.
+- L'analisi regge fino a decine di milioni di righe. Oltre, le scansioni rallentano.
+
+**Alternative come database principale**
+- **MySQL**: sugli ordini equivale a Postgres. È più debole su tipi di dato e query complesse. Non hai motivo di preferirlo.
+- **MongoDB**: con schemi variabili semplifica il catalogo. Le transazioni multi-documento però sono arrivate tardi e costano. Sugli ordini quindi è una scelta rischiosa.
+
+**Sistemi specializzati, da aggiungere dopo**
+- **Elasticsearch**: sulla ricerca testuale è molto superiore per rilevanza, sinonimi e tolleranza agli errori di battitura. Però non è un archivio autorevole. Lo alimenti da Postgres, non lo usi al suo posto. Aggiungerlo prima del milione di documenti è quasi sempre prematuro.
+- **ClickHouse**: sull'analisi è molto superiore. Le scansioni colonnari sono avanti di ordini di grandezza. Non usarlo per gli ordini, perché gli aggiornamenti puntuali sono il suo punto debole.
+
+**Dove arrivi di solito**
+La configurazione tipica ha Postgres come archivio autorevole. Elasticsearch e ClickHouse vengono alimentati da Postgres. Ogni sistema che aggiungi porta però due problemi: la sincronizzazione e l'allineamento dei dati. Il costo vero non è la licenza. È il tempo delle persone che tengono in piedi quei sistemi.
+
+**Quando aggiungere qualcosa**
+- Elasticsearch: quando il catalogo supera il milione di documenti, oppure quando la qualità della ricerca diventa un problema misurato.
+- ClickHouse: quando l'analisi supera le decine di milioni di righe e le scansioni su Postgres diventano lente.
+
+Prima di quelle soglie, ogni sistema in più ti dà soprattutto lavoro di manutenzione.

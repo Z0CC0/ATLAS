@@ -1,0 +1,17 @@
+Never run ALTER TABLE ALTER COLUMN TYPE directly: it rewrites the whole table under an ACCESS EXCLUSIVE lock, service down for the entire duration.
+
+Expand and contract, six steps, order matters.
+
+1. Check every value converts. Count rows not all digits; fix or decide on them before anything else.
+
+2. Add the new column: `ALTER TABLE t ADD COLUMN colonna_int integer`.
+
+3. Fill it in batches of ten thousand rows, so no long lock is held on the table.
+
+4. Add a trigger keeping the two columns in step for the whole migration.
+
+5. Change the code to read from the new column, ship it.
+
+6. Only then drop the old column: `ALTER TABLE t DROP COLUMN colonna`.
+
+Step six is irreversible. Once the column is dropped the data does not come back without a restore from backup.

@@ -1,0 +1,3 @@
+No — three distinct values gives the planner a filter that typically matches roughly a third of rows, far above the 5-10% threshold where it still prefers a sequential scan over the B-tree index. Below that threshold the index goes largely unused while still charging you for every insert/update/delete and for the disk space it occupies.
+
+The one case where it pays off: a partial index built only on the rare value, if one of your three values is much less common than the others.

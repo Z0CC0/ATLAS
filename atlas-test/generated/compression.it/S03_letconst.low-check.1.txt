@@ -1,0 +1,1 @@
+In JavaScript, const impedisce di riassegnare il nome a cui è stato dato un valore, ma non impedisce di modificare quel valore: se il valore è un oggetto, il suo contenuto può comunque cambiare. Con let, invece, il nome può essere riassegnato liberamente. Su un punto sono uguali: entrambi hanno ambito di blocco, a differenza di var.

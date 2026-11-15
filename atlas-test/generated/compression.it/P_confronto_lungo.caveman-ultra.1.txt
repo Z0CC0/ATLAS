@@ -1,0 +1,11 @@
+File locali più raccoglitore che spedisce altrove. Applicazione mai aspetta scrittura log — regola sempre valida.
+
+Perché non gli altri due da soli:
+
+**File puro**: costo zero, niente dipendenze, ma ricerca solo grep, rotazione manuale (altrimenti disco pieno). Con più macchine niente ricerca centralizzata, devi collegarti a ognuna una per una. A mille richieste/minuto con più istanze, problema serio.
+
+**Servizio gestito diretto**: ricerca immediata, allarmi, conservazione automatica — comodo. Ma paghi a volume, e mille richieste/minuto generano volume che cresce in fretta, costo sale. Più: log escono dalla tua infrastruttura, quindi devi ripulire dati personali prima che escano.
+
+**DB**: ricerca comoda e nota, ma log nello stesso DB dell'applicazione mette due carichi diversi in competizione. Sotto carico, log riempiono cache e connessioni che servivano richieste vere. Da evitare.
+
+Soluzione: applicazione scrive su file locale (veloce, non blocca), raccoglitore (es. Fluent Bit, Vector) legge i file e spedisce al servizio gestito o altrove in background. Prendi vantaggi di entrambi: scrittura mai nel percorso critico, ricerca centralizzata dove serve.

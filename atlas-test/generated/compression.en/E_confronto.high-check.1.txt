@@ -1,0 +1,7 @@
+Postgres.
+
+FOR UPDATE SKIP LOCKED covers ~1000 jobs/min. Job commits in same transaction as data — no start-before-rollback. Process dies, queue survives, free.
+
+Redis: sub-ms latency, way more volume, but extra service to run/monitor/upgrade, and loses queued jobs on restart unless AOF configured.
+
+Switch to Redis when volume actually exceeds Postgres's range.

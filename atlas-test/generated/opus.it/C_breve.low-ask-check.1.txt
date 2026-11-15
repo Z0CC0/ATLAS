@@ -1,0 +1,7 @@
+Conoscenza interna.
+
+Di norma no. Su colonna con soli tre valori distinti, indice B-tree in genere non viene usato: ogni valore copre gran parte della tabella, e quando filtro seleziona più di circa 5-10 per cento delle righe, planner preferisce scansione sequenziale.
+
+Indice però costa comunque: rallenta ogni scrittura e occupa spazio.
+
+Fa eccezione caso in cui uno dei tre valori sia raro e lo cerchi spesso. Lì serve **indice parziale** solo su quel valore, e funziona.

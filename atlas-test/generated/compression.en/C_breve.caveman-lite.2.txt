@@ -1,0 +1,3 @@
+No, not worth it. Three distinct values means each value covers roughly a third of rows — planner picks sequential scan whenever filter selects more than ~5-10% of rows, so B-tree index sits unused. Meanwhile index still costs you writes and disk space for nothing.
+
+Exception: if one of those three values is rare, partial index on just that value works fine.

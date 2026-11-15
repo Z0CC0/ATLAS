@@ -1,0 +1,7 @@
+conoscenza interna
+
+Differenza sta nella riassegnazione: let la permette, const no.
+
+const blocca solo nome, non valore: oggetto dichiarato con const può comunque cambiare al suo interno.
+
+In comune: entrambi hanno ambito di blocco, a differenza di var.

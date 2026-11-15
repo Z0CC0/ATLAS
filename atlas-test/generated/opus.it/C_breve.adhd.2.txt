@@ -1,0 +1,17 @@
+No, un indice B-tree normale su quella colonna di solito è inutile. Se uno dei tre valori è raro, crea un indice parziale solo su quel valore.
+
+**Perché l'indice normale non serve**
+- Con soli tre valori, un filtro di solito seleziona più del 5-10% circa delle righe.
+- Sopra quella soglia il planner sceglie una scansione sequenziale e non usa l'indice.
+- L'indice però ti costa comunque: lo paghi a ogni scrittura e occupa spazio.
+
+**L'eccezione: un valore raro**
+Se cerchi spesso un valore presente in poche righe, un indice parziale su quel valore funziona:
+
+```sql
+CREATE INDEX idx_ordini_sospesi ON ordini (id) WHERE stato = 'sospeso';
+```
+
+Le query con `WHERE stato = 'sospeso'` lo usano. Le altre non ne pagano il costo.
+
+Prossimo passo: guarda quante righe ha ogni valore, ad esempio con `SELECT stato, count(*) FROM ordini GROUP BY stato;`. Se un valore è sotto il 5% circa, è il candidato per l'indice parziale.

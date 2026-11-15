@@ -1,0 +1,1 @@
+`const` no allow rename var. Value inside still change — object with `const` can mutate fields. `let` allow reassign. Both block-scope, `var` not.

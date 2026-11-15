@@ -1,0 +1,11 @@
+A mille richieste al minuto, la scelta più sensata è: log su file locali, con un raccoglitore (collector/agent) che li spedisce altrove per l'analisi. In questo modo l'applicazione scrive su disco locale, veloce, e non resta mai in attesa che il log arrivi a destinazione — la scrittura del log non deve mai stare nel percorso critico della richiesta, questa è la regola che vale sempre, qualunque backend tu scelga poi.
+
+Perché non le altre due opzioni da sole:
+
+**Solo file** costa zero e non ha dipendenze, ma ha due limiti seri al tuo volume: cercare nei log vuol dire fare grep, e se hai più macchine (probabile a mille richieste/minuto, quindi con repliche) non esiste una ricerca unificata — devi collegarti a ognuna singolarmente. In più la rotazione dei file va configurata a mano, altrimenti il disco si riempie.
+
+**Servizio gestito puro** ti dà ricerca immediata, allarmi e conservazione automatica senza che tu debba gestire nulla, ma si paga a volume, e a mille richieste al minuto il volume cresce in fretta — quindi il costo può salire rapidamente. C'è anche un punto da non trascurare: i log escono dalla tua infrastruttura, quindi vanno ripuliti dai dati personali prima di uscire.
+
+**Database** è comodo perché la ricerca è nota (SQL), ma scrivere i log nello stesso database dell'applicazione mette in competizione due carichi molto diversi: sotto carico, i log finiscono per riempire cache e connessioni che servivano alle richieste vere, quindi rischi di degradare proprio le performance dell'API che vuoi osservare.
+
+La combinazione file + raccoglitore prende il meglio: scrittura locale economica e non bloccante, e poi è il raccoglitore (non la tua app) a occuparsi di spedire, ripulire e indicizzare i dati altrove — che tu scelga come destinazione finale un servizio gestito o altro.

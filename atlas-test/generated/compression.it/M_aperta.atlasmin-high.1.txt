@@ -1,0 +1,13 @@
+Prima capisci cosa cambia davvero nel monolite. Parti stabili non guadagnano da split.
+
+Poi mappa i confini delle transazioni. Transazione a cavallo tra due servizi diventa problema distribuito.
+
+Riscrittura completa in parallelo fallisce quasi sempre: vecchio continua a cambiare, copia non lo raggiunge mai.
+
+Alternativa: strangolamento progressivo. Router davanti, un pezzo alla volta, vecchio autorevole finché nuovo non verificato.
+
+Microservizi costano in operativita': ogni servizio vuole rilascio, monitoraggio, log, allarmi, owner. Sotto cinque sviluppatori quel costo supera quasi sempre il beneficio.
+
+Opzione poco citata: monolite modulare. Confini interni netti, un solo rilascio, modulo estraibile il giorno che serve davvero.
+
+Domanda decisiva non e' tecnica: cosa deve poter fare il team fra un anno che oggi non puo'.

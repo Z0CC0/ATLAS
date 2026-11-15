@@ -1,0 +1,11 @@
+File locali più un raccoglitore (agent) che li spedisce altrove. Così l'app non aspetta mai la scrittura del log — la regola che vale sempre: log fuori dal percorso critico della richiesta.
+
+Perché non le altre opzioni da sole:
+
+File puro: costo zero, nessuna dipendenza, ma ricerca solo grep, rotazione manuale (altrimenti disco pieno), e su più macchine niente ricerca centralizzata — devi collegarti a ognuna.
+
+Servizio gestito diretto: ricerca immediata, allarmi, retention automatica — ma a mille richieste/minuto il volume e il costo salgono in fretta, e i log escono dalla tua infrastruttura, quindi vanno ripuliti dai dati personali prima.
+
+Database: ricerca comoda e nota, ma se è lo stesso DB dell'app, log e traffico reale competono per cache e connessioni — sotto carico i log rubano risorse alle richieste vere.
+
+Il raccoglitore locale risolve questo: scrivi su file (veloce, nessuna dipendenza esterna nel percorso critico), poi il raccoglitore spedisce al servizio gestito in background — hai ricerca/allarmi centralizzati senza bloccare la richiesta, e puoi inserire la pulizia dei dati personali nel raccoglitore stesso.

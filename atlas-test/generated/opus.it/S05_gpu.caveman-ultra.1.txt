@@ -1,0 +1,9 @@
+RTX 5080 cambia architettura: Blackwell al posto di Ada Lovelace (4080).
+
+Memoria: GDDR7 sulla 5080, GDDR6X sulla 4080. Banda sale da circa 717 a circa 960 GB/s.
+
+Prestazioni: salto più grande è sulla generazione di fotogrammi, non sul rasterizzatore puro. In rasterizzazione guadagno reale circa 10-15%.
+
+Consumo dichiarato sale da 320 a 360 W. Connettore di alimentazione resta a 16 pin, quindi stesso cavo.
+
+In sintesi: giochi senza generazione di fotogrammi, salto modesto. Se usi generazione di fotogrammi, differenza molto più evidente.

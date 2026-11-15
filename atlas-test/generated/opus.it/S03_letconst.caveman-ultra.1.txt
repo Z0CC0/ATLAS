@@ -1,0 +1,14 @@
+`let` permette riassegnazione. `const` no: blocca nome, non valore.
+
+```js
+let n = 1;
+n = 2;          // ok
+
+const x = 1;
+x = 2;          // TypeError
+
+const obj = { a: 1 };
+obj.a = 2;      // ok: oggetto cambia dentro
+```
+
+Entrambi hanno ambito di blocco, `var` no.

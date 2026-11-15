@@ -1,0 +1,22 @@
+HTTPS is ordinary HTTP carried inside a channel that TLS encrypts. The web requests and responses are the same as with plain HTTP. What changes is that before any of them are sent, the browser and the server set up a secure channel. That setup is called the handshake.
+
+**The handshake**
+
+1. **The client says hello.** Your browser opens the connection and lists the TLS versions and ciphers it supports.
+2. **The server picks and shows its certificate.** The server chooses a version and a cipher from that list. It replies with its choice and sends its certificate.
+3. **The client checks the certificate.** A certificate binds a domain name to a public key, and a certificate authority signs it. The browser checks that signature by following the chain of signatures up to a root certificate it already has. If the chain doesn't reach a root it trusts, the check fails.
+4. **They agree on a session key.** Client and server work out a shared session key together. Today this is usually done with an elliptic curve Diffie-Hellman exchange.
+
+TLS 1.3 completes the handshake in a single round trip between client and server. TLS 1.2 needed two, so connections now start faster.
+
+**Why a separate session key**
+
+Public-key (asymmetric) encryption is too expensive to run on every byte of real traffic. It's used only to set up the connection. The data itself is protected with the session key, which is symmetric: both sides use the same key, and that is much faster.
+
+**What you get**
+
+Once the handshake is done, all traffic is both encrypted and authenticated. Someone in the middle of the connection can't read it and can't change it without being detected.
+
+**What the padlock doesn't mean**
+
+A valid certificate doesn't tell you who runs the site. It only proves that whoever controls that domain also controls that key. A phishing site can have a perfectly valid certificate for its own domain. HTTPS protects the connection to a site, but it doesn't tell you whether you can trust the people behind it.

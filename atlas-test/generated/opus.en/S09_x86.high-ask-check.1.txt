@@ -1,0 +1,33 @@
+internal knowledge
+
+x86 went through three stages: first it added features to the chip, then it hid a different machine behind the instruction set, and then it moved its complexity into layers the programmer never sees.
+
+**1978–1989: building the foundation**
+
+1978, 8086: 16 bit. It grew out of the 8080 and stayed compatible at source level, so existing code carried over.
+
+1982, 80286: introduced protected mode. There was no way back to real mode without a reboot.
+
+1985, 80386: brought 32 bit, paged virtual memory and virtual 8086 mode, which let old real-mode software run inside the new design.
+
+1989, 486: moved the first level cache and the maths coprocessor onto the chip.
+
+**1993–2000: the real machine goes under the surface**
+
+1993, Pentium: superscalar. Two integer pipelines could retire two instructions per cycle.
+
+1995, Pentium Pro: introduced out of order execution and translated x86 instructions into internal micro-operations. From then on x86 was an interface, no longer the real machine underneath.
+
+2000, Pentium 4: chased frequency with a very long pipeline and hit the power wall.
+
+**2003 to today: new directions**
+
+2003, AMD64: AMD extended the architecture to 64 bit, and Intel adopted the same instruction set. It was the first time the dominant extension did not come from Intel.
+
+2006, Core 2: the focus shifted from frequency to core count.
+
+Over the generations, vector extensions kept growing: MMX, SSE, AVX, AVX-512.
+
+Today the complexity sits in the layers below the instruction set: branch prediction, the cache hierarchy and speculative execution.
+
+2018: Spectre and Meltdown showed that speculative execution carried a security cost nobody had priced.

@@ -1,0 +1,21 @@
+Conoscenza interna.
+
+Consistenza eventuale: dopo una scrittura, repliche non concordano subito, ma convergono entro tempo finito se scritture si fermano.
+
+Ti riguarda perché si vede proprio a chi legge subito dopo aver scritto. Utente pubblica commento, ricarica pagina, e non lo vede: lettura finita su replica ancora non aggiornata.
+
+Quanto dura finestra: su repliche nella stessa regione di solito sotto il secondo; fra regioni diverse sale a secondi.
+
+Perché esiste: compromesso con disponibilità. Sistema che pretende consistenza forte deve rifiutare richieste quando repliche non si parlano. Quindi **non difetto da eliminare, ma scelta**: maggior parte dei sistemi che scalano la accetta di proposito.
+
+Soluzione comune al problema del commento sparito: leggere da replica primaria solo per sessione che ha appena scritto, non per tutte. Chi scrive vede subito proprio dato, tutti gli altri continuano a leggere da repliche.
+
+Dove invece non va accettata: casi pochi e riconoscibili.
+
+Saldi di conto
+
+Disponibilità di posti
+
+Unicità di un identificativo
+
+In pratica: **accettala come default**, gestisci lettura-dopo-scrittura per sessione, e pretendi consistenza forte solo in quei tre tipi di caso.

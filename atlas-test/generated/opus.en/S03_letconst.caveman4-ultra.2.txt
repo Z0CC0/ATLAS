@@ -1,0 +1,3 @@
+`let`: reassignment allowed. `const`: no reassignment of the name, but the value can still change. A `const` object can still have its contents modified.
+
+Both are block scoped. `var` is not.

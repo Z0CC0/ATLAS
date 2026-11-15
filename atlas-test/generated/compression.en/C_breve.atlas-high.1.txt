@@ -1,0 +1,1 @@
+No. Three distinct values, B-tree normally unused — planner picks sequential scan once a filter matches over ~5-10% of rows, and each value here matches far more. Index adds write cost and disk space for no read benefit. Exception: partial index on the rare value, if one of the three is rare — that one works.

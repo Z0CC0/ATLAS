@@ -1,0 +1,1 @@
+What's your current or expected scale — order volume, catalogue size, search corpus (doc count), and analytics row count? Determines whether you start Postgres-only or need Elasticsearch/ClickHouse from day one.

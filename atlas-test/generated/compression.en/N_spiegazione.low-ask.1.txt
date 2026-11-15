@@ -1,0 +1,11 @@
+Eventual consistency: write hits one replica, others not agreement immediate, converge given time if writes stop. Same region under a second typical, cross-region seconds.
+
+Why matter: trade against availability. Strong consistency, system refuses requests when replicas can't talk. Eventual consistency, keeps answering, price paying convergence lag.
+
+Hits you specifically right after own write: post comment, reload, comment missing — replica served read hasn't caught up yet.
+
+Fix: read-your-writes via primary — route just that session's reads to primary replica after write, not whole userbase.
+
+Not defect, choice — most systems scaling accept deliberately.
+
+Unacceptable cases: account balances, seat availability, uniqueness of identifier. There, need strong consistency despite availability cost.

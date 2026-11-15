@@ -1,0 +1,11 @@
+conoscenza interna
+
+Consistenza eventuale: dopo una scrittura, le repliche non concordano subito, ma convergono entro un tempo finito se le scritture si fermano.
+
+Ti interessa perché colpisce chi legge subito dopo aver scritto. Utente pubblica un commento, ricarica la pagina e non lo vede. Soluzione comune: la sessione che ha appena scritto legge dalla replica primaria. Vale solo per quella sessione, non per tutte.
+
+Finestra di disallineamento: con repliche nella stessa regione, tipicamente sotto il secondo. Fra regioni diverse sale a secondi.
+
+Perché esiste: compromesso con la disponibilità. Sistema che pretende consistenza forte deve rifiutare richieste quando le repliche non si parlano. Quindi consistenza eventuale non è difetto da eliminare, ma scelta. Maggior parte dei sistemi che scalano la accetta di proposito.
+
+Dove non è accettabile: pochi casi, facili da riconoscere. Saldi di conto, disponibilità di posti, unicità di un identificativo.

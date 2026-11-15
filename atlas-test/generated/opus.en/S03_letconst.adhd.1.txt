@@ -1,0 +1,23 @@
+**Use `let` if you'll reassign the variable later. Use `const` if you won't.**
+
+- **`let`**: you can reassign it.
+  ```js
+  let count = 1;
+  count = 2; // fine
+  ```
+- **`const`**: you can't reassign the name. You can still change the value it points to, so an object declared with `const` can change internally.
+  ```js
+  const user = { name: "Ana" };
+  user.name = "Bo"; // fine: the object changes internally
+  user = {};        // error: reassigning the name
+  ```
+- **What they share:** both are block scoped, so they only exist inside the `{ }` where you declare them. `var` is not block scoped.
+  ```js
+  if (true) {
+    let a = 1;
+    const b = 2;
+  }
+  // a and b don't exist out here
+  ```
+
+Next: in your code, change any `let` that never gets reassigned to `const`.

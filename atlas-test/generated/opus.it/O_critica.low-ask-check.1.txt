@@ -1,0 +1,15 @@
+*Conoscenza interna*
+
+Sconsiglio di metterci tutta la logica di business. Meglio tenere nel database solo l'integrità, e tutto il resto nell'applicazione.
+
+Vantaggio reale: nessun percorso applicativo può saltare la regola, nemmeno uno script eseguito a mano. Però il prezzo è alto:
+
+Trigger invisibili a chi legge il codice applicativo: una modifica che sembra semplice ne attiva altre, senza lasciare traccia.
+
+Non si testano con gli strumenti che il team usa già. Servono prove che girano contro un database vero.
+
+Debug peggiore: un errore dentro un trigger arriva come fallimento della scrittura, senza dire quale regola l'ha causato.
+
+Migrazioni fragili, perché l'ordine dei trigger conta e non è dichiarato da nessuna parte.
+
+Alternativa: in database solo ciò che protegge l'integrità, cioè vincoli, chiavi esterne, unicità e controlli di dominio. Logica di business nell'applicazione, dietro **un solo punto di ingresso**. Quel punto unico ti dà la stessa garanzia del trigger, purché l'accesso diretto al database resti riservato alle migrazioni.

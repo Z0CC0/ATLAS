@@ -1,0 +1,9 @@
+Use local files plus a collector that ships them elsewhere. The application never waits on a log write.
+
+The rule that always holds: writing the log must never sit in the request's critical path.
+
+**Files** cost nothing and add no dependency. Searching means grep. You have to set up rotation by hand, or the disk fills. You can't search across several machines, so you'd connect to each one.
+
+**Managed service** gives instant search, alerts and automatic retention. You pay by volume, and at 1,000 requests a minute the volume grows fast. The logs leave your infrastructure, so strip personal data before they go.
+
+Database: search is familiar and convenient. Putting logs in the application's own database makes two very different workloads compete. Under load, logs fill the caches and connections that real requests needed.

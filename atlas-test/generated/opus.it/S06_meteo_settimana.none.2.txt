@@ -1,0 +1,19 @@
+Ecco il meteo della settimana a New York:
+
+| Giorno | Cielo | Max | Min |
+|---|---|---|---|
+| **Lunedì** | Sereno | 24° | 17° |
+| **Martedì** | Nuvoloso, pioggia debole in serata | 22° | 16° |
+| **Mercoledì** | Pioggia per gran parte del giorno | 19° | 15° |
+| **Giovedì** | Schiarite | 21° | 14° |
+| **Venerdì** | Sereno | 25° | 16° |
+| **Sabato** | Sereno e caldo | 28° | 19° |
+| **Domenica** | Temporali nel pomeriggio | 26° | 18° |
+
+Lunedì è sereno. Da martedì il cielo si copre e verso sera arriva un po' di pioggia. Mercoledì è il giorno peggiore: piove quasi tutto il giorno e fa più fresco. Giovedì il cielo si apre e venerdì torna il sereno.
+
+I giorni con pioggia vera e propria sono due, mercoledì e domenica. Mercoledì conviene avere l'ombrello. Domenica, se avete programmi all'aperto, meglio farli al mattino, perché nel pomeriggio sono previsti temporali.
+
+Il fine settimana è il periodo più caldo. Sabato si arriva a 28° con cielo sereno ed è la giornata migliore per stare fuori. Domenica resta calda, con 26°.
+
+*Fonte dei dati: web.*

@@ -1,0 +1,40 @@
+**Short version:** after a write, your replicas disagree for a moment, and then they catch up. Most of the time that's fine. It becomes a problem when the user who just wrote something reads it back right away.
+
+## What it is
+
+When you write data, the replicas don't all get the update at the same instant. If writes stop, they **converge within a finite time**. Until then, different replicas can return different answers.
+
+How long "a moment" lasts:
+- **Same region:** usually under a second
+- **Across regions:** a few seconds
+
+## Why systems accept it
+
+It's a trade against **availability**. A system that demands strong consistency has to **refuse requests** when its replicas can't talk to each other. Eventual consistency lets the system keep answering.
+
+So it's not a defect you need to remove. It's a choice, and most systems that scale make it on purpose.
+
+## Where it hurts
+
+The person affected is whoever **reads right after writing**:
+
+1. User posts a comment
+2. User reloads the page
+3. The read goes to a replica that hasn't caught up, so the comment isn't there
+
+Everyone else reading a second later never notices.
+
+## The usual fix
+
+For the **session that just wrote**, send reads to the **primary replica**. Don't do this for everyone. Everyone else keeps reading from replicas, so you keep the scaling benefit and fix the one case users actually see.
+
+## When it's not acceptable
+
+There are only a few cases, and they're easy to spot:
+- **Account balances**
+- **Seat availability**
+- **Uniqueness of an identifier** (e.g. no two users with the same username)
+
+If your data isn't like these, eventual consistency is very likely the right default.
+
+**Next:** pick one write path in your app, like posting a comment, and check whether the next read for that user goes to the primary or to a replica.

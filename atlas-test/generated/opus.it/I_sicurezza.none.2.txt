@@ -1,0 +1,9 @@
+No, purtroppo no. Tutto ciò che arriva al browser si può leggere. Qualunque offuscamento si annulla in pochi secondi aprendo gli strumenti per sviluppatori o guardando le richieste di rete, dove la chiave compare in chiaro.
+
+**Come fare:**
+- Tieni la chiave sul server. Il frontend chiama un endpoint del tuo backend, e il backend chiama il servizio esterno usando la chiave. Così la chiave non arriva mai al browser.
+- Metti un limite di frequenza (rate limit) su quell'endpoint. Senza un limite, chiunque può usarlo per sfruttare gratis la tua chiave, anche se è nascosta.
+
+**Se l'hai già pubblicata:**
+- Considerala compromessa e cambiala subito (rotazione). Toglierla dal codice non basta.
+- Non basta neanche rimuoverla con un nuovo commit. Resta nella cronologia del repository, e chi ha già un clone ce l'ha. L'unica soluzione sicura è invalidarla e generarne una nuova.

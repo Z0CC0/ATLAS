@@ -1,0 +1,3 @@
+No. A normal B-tree index on a column with three values usually goes unused. The planner picks a sequential scan when a filter matches more than about 5-10% of rows. The index still costs writes and disk space.
+
+The exception is a partial index on the rare value, which the planner does use.

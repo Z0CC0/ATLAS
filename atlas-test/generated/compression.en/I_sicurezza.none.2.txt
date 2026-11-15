@@ -1,0 +1,7 @@
+No — anything that ends up in the frontend is readable by anyone who opens the browser's dev tools or just watches the network requests. Obfuscation doesn't change that; it just makes the key slightly more annoying to find, not actually hidden.
+
+The key needs to live on your server. Your frontend should call an endpoint on your own backend, and that backend is what calls the external service using the key. That way the key never leaves your infrastructure.
+
+Once you add that backend endpoint, put a rate limit on it — otherwise anyone can hit it as much as they want and effectively use your key for free.
+
+And since you mentioned obfuscating it, I'm guessing it's already out there in frontend code somewhere — if it's already been shipped or published, treat it as compromised right now and rotate it. Just removing it from the code isn't enough: if it was ever committed, it's still sitting in your repository's history, and anyone who already cloned the repo already has it regardless of what you do to the latest commit.

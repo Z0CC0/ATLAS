@@ -1,0 +1,24 @@
+**Recommendation:** Start with Postgres alone. Add Elasticsearch or ClickHouse later, and only when a specific workload proves it needs one with real numbers.
+
+**Why Postgres is the base**
+
+Postgres handles all four of your workloads acceptably. It isn't outstanding at any of them. It gives you real transactions, and on orders you can't do without those. That one requirement rules out most of the alternatives as your main store.
+
+**Option by option**
+
+- **Postgres:** Its built-in text search is good enough below about a million documents and weak above that. Analytics run fine up to tens of millions of rows, and after that the scans get slow.
+- **MySQL:** It's equivalent to Postgres on orders. It's weaker on data types and complex queries, so it offers no advantage here.
+- **MongoDB:** Variable schemas make the catalogue easier. However, multi-document transactions arrived late and are costly, which is a bad fit for orders.
+- **Elasticsearch:** It's far better at text search, with better relevance, synonyms and typo tolerance. It isn't an authoritative store, so it can't replace your main database. Another database has to feed it.
+- **ClickHouse:** It's far better at analytics, because its columnar scans are orders of magnitude faster. It's not suitable for orders, because point updates are its weak spot.
+
+**Where this usually ends up**
+
+The common mature setup is Postgres as the authoritative store, with Elasticsearch and ClickHouse fed from it. Don't build that on day one. Each system you add brings two problems: keeping it in sync and keeping its data aligned with Postgres. The real cost isn't the licence. It's the time your people spend keeping each system running.
+
+**When to add each one**
+
+- **Elasticsearch:** Add it when search quality or catalogue size outgrows Postgres. Below a million documents, adding it is almost always premature.
+- **ClickHouse:** Add it when your analytics pass tens of millions of rows and you can measure the scans getting slow.
+
+If you need to share this comparison with your team, I can turn it into a page.

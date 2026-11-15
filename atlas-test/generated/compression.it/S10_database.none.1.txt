@@ -1,0 +1,15 @@
+Ecco il confronto per il tuo caso — ordini, catalogo, ricerca testuale e analisi — basato sui carichi che hai descritto.
+
+**Postgres da solo** copre tutti e quattro i carichi in modo accettabile, ma nessuno in modo eccellente. Sugli ordini è l'unico che ti dà transazioni serie, e su quel carico non c'è margine di trattativa. Ha anche ricerca testuale integrata (sufficiente sotto il milione di documenti, debole sopra) e regge l'analisi fino a decine di milioni di righe, dopodiché le scansioni rallentano.
+
+**MySQL** è sostanzialmente equivalente a Postgres sugli ordini, ma più debole su tipi di dato e query complesse — non porta nessun vantaggio specifico per il tuo caso.
+
+**MongoDB** semplifica la gestione del catalogo grazie agli schemi variabili, ma le transazioni multi-documento sono arrivate tardi e costano — un problema proprio dove ti servono di più, cioè sugli ordini.
+
+**Elasticsearch** è molto superiore sulla ricerca testuale (rilevanza, sinonimi, tolleranza agli errori di battitura), ma non è un archivio autorevole: va alimentato da un altro database, non usato per sostituirlo.
+
+**ClickHouse** è molto superiore sull'analisi, con scansioni colonnari ordini di grandezza più veloci, ma non è adatto agli ordini: gli aggiornamenti puntuali sono il suo punto debole.
+
+**La configurazione tipica** in questo scenario è: Postgres come archivio autorevole, con Elasticsearch e ClickHouse alimentati da lì per ricerca e analisi. Attenzione però: ogni sistema che aggiungi porta con sé un problema di sincronizzazione e uno di allineamento dei dati. E il costo vero di questi sistemi specializzati non è la licenza, è il tempo delle persone che li devono tenere in piedi.
+
+**La mia raccomandazione pratica**: parti solo con Postgres, e aggiungi un sistema specializzato solo quando un carico specifico lo richiede con numeri alla mano — non prima. In particolare, aggiungere Elasticsearch prima del milione di documenti è quasi sempre prematuro. Fai crescere l'architettura sotto pressione reale, non per anticipazione.

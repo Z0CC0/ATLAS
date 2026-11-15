@@ -1,0 +1,9 @@
+A mille richieste al minuto: file locali più un raccoglitore che li spedisce altrove. La scrittura resta locale e veloce, l'applicazione non aspetta mai.
+
+Solo file non basta: ricerca a grep, rotazione manuale o disco pieno, e su più macchine niente ricerca centralizzata, ti devi collegare a ognuna.
+
+Solo servizio gestito: ricerca immediata, allarmi, conservazione automatica — ma paghi a volume, e a mille richieste/min il volume cresce in fretta. E i log escono dalla tua infrastruttura: vanno ripuliti dai dati personali prima.
+
+Database: ricerca comoda, ma log e app nello stesso DB competono per carichi diversi — sotto carico i log ti riempiono cache e connessioni che servivano alle richieste vere.
+
+Quindi: scrivi su file locale, un collector (es. Vector/Fluentd/Filebeat) inoltra al servizio gestito o al DB dedicato per la ricerca. Regola che vale sempre, qui e ovunque: la scrittura del log non sta nel percorso critico della richiesta.

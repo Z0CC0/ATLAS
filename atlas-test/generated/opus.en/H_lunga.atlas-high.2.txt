@@ -1,0 +1,15 @@
+Cache stores already-processed prefix of request; later requests starting same way don't pay for it again.
+
+Works only on prefix. One different character at start: no reuse from that point on.
+
+Stable parts first, changing parts after, never reverse.
+
+Cache write costs more than normal read, so first request more expensive.
+
+Gain starts from second request, grows with number of turns.
+
+**Pays off:** long conversations with large stable context, such as system instructions, attached documentation, tool definitions.
+
+**Doesn't pay off:** single requests differing from each other. You pay the write, never read it back.
+
+Watch system lines that change every turn, such as a clock. One kills reuse of everything after it.

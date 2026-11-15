@@ -1,0 +1,1 @@
+Sì, vale per liste, tuple, dizionari, insiemi e stringhe: vuote sono false in un contesto booleano.

@@ -1,0 +1,13 @@
+internal knowledge
+
+Cache keeps already-processed start of request; later requests beginning same way skip paying for it again.
+
+Prefix only: one different character at start, no reuse from that point on. So stable parts first, changing parts after, never reverse.
+
+Writing to cache costs more than normal read, so first request costs more. Gain starts from second request, grows with each turn.
+
+Pays off: long conversations with large stable context, such as system instructions, attached documentation, tool definitions.
+
+Does not pay off: single requests differing from each other. You pay write, never read it back.
+
+Trap: system line changing every turn, such as clock, kills reuse of everything after it.

@@ -1,0 +1,3 @@
+In JavaScript, sia `let` che `const` hanno ambito di blocco (a differenza di `var`), ma differiscono per la riassegnazione: con `let` puoi riassegnare il nome a un nuovo valore, mentre con `const` questo non è permesso.
+
+Attenzione però: `const` blocca solo la riassegnazione del nome, non la modifica del valore. Quindi se dichiari un oggetto con `const`, non puoi assegnare quel nome a un altro oggetto, ma puoi comunque modificarne le proprietà interne.

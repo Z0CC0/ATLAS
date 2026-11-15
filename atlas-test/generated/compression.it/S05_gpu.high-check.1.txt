@@ -1,0 +1,3 @@
+RTX 5080 su Blackwell, GDDR7, banda ~960 GB/s, consumo 360W. 4080 su Ada Lovelace, GDDR6X, ~717 GB/s, 320W. Connettore 16 pin su entrambe.
+
+Differenza reale in rasterizzazione pura: 10-15%. Il salto grosso è nella generazione fotogrammi, non lì.

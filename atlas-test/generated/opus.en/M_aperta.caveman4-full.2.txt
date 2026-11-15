@@ -1,0 +1,22 @@
+Start with one question, and it isn't technical: what must your team be able to do a year from now that it cannot do today? Every other choice should follow from the answer.
+
+**Before you pick an architecture, map two things:**
+
+1. **Which parts of the monolith actually change.** Stable parts gain nothing from being split. Leave them alone.
+2. **Where the transaction boundaries sit.** If one transaction spans two services, it becomes a distributed problem. Draw your service lines so that doesn't happen.
+
+**Don't do a full rewrite running in parallel with the old system.** This almost always fails. The old system keeps changing, and the copy never catches up.
+
+**Strangle it progressively instead:**
+- Put a router in front of the monolith.
+- Move one piece at a time behind it.
+- Keep the old system authoritative until the new piece is verified.
+
+**Count the operational cost of microservices honestly.** Every service needs releases, monitoring, logs, alerts and a person who looks after it. Below five developers, that cost almost always exceeds the benefit.
+
+**Consider the modular monolith.** It's the option nobody mentions:
+- sharp internal boundaries
+- one release
+- you can still extract a module the day it's genuinely needed
+
+If your team is small, or you can't yet point to which parts change, start with the modular monolith. Extract services only where your one-year goal needs it.

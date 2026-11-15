@@ -1,0 +1,1 @@
+Const locks the name, not the value — reassign fails, but an object's contents still change. Let allows reassignment. Both scope to the block, unlike var.

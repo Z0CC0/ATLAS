@@ -1,0 +1,29 @@
+Here's a debounce implementation with no dependencies:
+
+```javascript
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Wrap whatever function you want to debounce, and use the returned function as the handler instead:
+
+```javascript
+const debouncedSearch = debounce(search, 300);
+input.addEventListener('input', debouncedSearch);
+```
+
+A few things about why it's written this way:
+
+- **`clearTimeout(t)` runs before every new `setTimeout`.** If you skip it, each call schedules its own timer instead of cancelling the previous one, so the function ends up firing multiple times instead of once at the end.
+- **`t` is declared outside the returned function**, in the closure created by `debounce` itself. If you declared it inside the returned arrow function instead, every call would get a fresh, private `t`, there'd be nothing shared to clear, and you'd effectively get no debouncing at all.
+- **`...args` is used both when capturing and when calling `fn`.** Without the spread, the arguments the debounced function was called with never make it through, and `fn` gets called with nothing.
+
+Two limitations worth knowing:
+
+- **This version has no return value.** `setTimeout` is async, so the wrapper itself always returns `undefined`. If you need the result of `fn`, you have to wrap it in a `Promise` and resolve it inside the `setTimeout` callback.
+- **This is debounce, not throttle.** Debounce waits for a pause in calls before running once. If what you actually want is "run immediately, then ignore further calls for a while," that's throttle — a different function with different logic.

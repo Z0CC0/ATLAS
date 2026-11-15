@@ -1,0 +1,11 @@
+**Prompt caching** saves the part of a request that has already been processed, called the prefix. When a later request starts the same way, that part is reused and you don't pay to process it again.
+
+**It only works on the prefix.** Reuse runs from the start of the request up to the first character that differs. After that point nothing is reused, even if the rest is identical. So put the parts that stay the same first and the parts that change after them. If you do it the other way round, the cache has almost nothing to reuse.
+
+**The cost.** Writing to the cache costs more than a normal read, so the first request is more expensive than it would be without caching. You start saving from the second request, and the savings grow with each turn that reuses the prefix.
+
+**When it pays off:** long conversations with a large context that doesn't change, such as system instructions, attached documentation and tool definitions. You pay once to write that block and then read it cheaply on every later turn.
+
+**When it doesn't:** single requests that differ from each other. You pay the higher write cost and never read it back, so you lose money.
+
+**A common mistake:** putting something that changes every turn, like a clock or timestamp, in the system section. Everything after that line changes too, so none of it can be reused. Move anything that changes to the end, after the stable context.

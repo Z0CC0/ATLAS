@@ -1,0 +1,22 @@
+Use local files plus collector. At 1,000 requests/minute, application writes logs to local disk. Separate collector ships them elsewhere, so application never waits on log write.
+
+Core rule: log write must never sit in request's critical path. Whatever you pick, keep it out.
+
+**Files only**
+- Zero cost, no dependency.
+- Search means `grep`.
+- Configure rotation by hand, or disk fills.
+- No search across several machines. You connect to each one.
+
+**Managed service**
+- Instant search, alerts, automatic retention.
+- Cost grows with volume. At 1,000 requests/minute, volume grows fast.
+- Logs leave your infrastructure. Strip personal data before shipping.
+
+**Database**
+- Search familiar, convenient.
+- Logs in application's own database put two very different workloads in competition.
+- Under load, logs fill caches and connections that real requests need.
+- Avoid for this case.
+
+Local files plus collector gives you what files do well: cheap, no dependency, no wait on the write. Collector ships logs to one place for search, so you stop connecting to each machine. If collector targets managed service, watch volume cost and strip personal data first. Configure rotation either way.

@@ -1,0 +1,7 @@
+Postgres. SKIP LOCKED handle up to ~1000 jobs/minute, fine for small project.
+
+Job share transaction with data write. Rollback kill both together, no orphan job. Persistence free: process die, queue survive.
+
+Redis faster (sub-millisecond) higher throughput, but extra service to run/monitor/upgrade, and persistence need AOF config or restart lose queue.
+
+Switch to Redis only when volume actually demand it.

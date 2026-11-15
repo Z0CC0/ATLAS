@@ -1,0 +1,9 @@
+RTX 5080 is a newer generation with faster memory, but on rasterisation it's only about 10-15 per cent faster. Its biggest gain is in frame generation.
+
+Architecture: 5080 uses Blackwell, 4080 uses Ada Lovelace.
+
+Memory: GDDR7 on the 5080, GDDR6X on the 4080.
+
+Bandwidth: rises from about 717 to about 960 gigabytes per second.
+
+Power: rated draw goes from 320 to 360 watts. The power connector stays at 16 pins, so the cabling doesn't change.

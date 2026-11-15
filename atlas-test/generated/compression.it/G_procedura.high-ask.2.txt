@@ -1,0 +1,5 @@
+Diretto niente: `ALTER TABLE t ALTER COLUMN TYPE integer` riscrive tutta la tabella, ACCESS EXCLUSIVE lock, servizio fermo per la durata. Su dieci milioni di righe, non praticabile in produzione.
+
+Percorso corretto: prima verifica ogni valore convertibile, conta righe non solo-cifre. Poi `ALTER TABLE t ADD COLUMN colonna_int integer` — colonna nuova, lock breve. Riempi a blocchi da diecimila righe, mai tutta insieme, per non tenere lock lungo. Nel frattempo trigger che tiene le due colonne allineate, così scritture concorrenti non perdono dati durante la migrazione. Quando la nuova colonna è piena e allineata, cambia il codice per leggere da quella, rilascia.
+
+Solo dopo, e solo quando sei sicuro che tutto legga dalla nuova: `ALTER TABLE t DROP COLUMN colonna` per eliminare la vecchia. Questo passo è irreversibile — colonna eliminata, dati non tornano senza restore da backup. Fallo per ultimo, con margine, non appena finito il deploy.

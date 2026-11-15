@@ -1,0 +1,29 @@
+Ecco una versione minimale, senza dipendenze:
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Esempio d'uso:
+
+```js
+const onResize = debounce(() => console.log('resize finito'), 200);
+window.addEventListener('resize', onResize);
+```
+
+**Perché è scritta così**
+
+- **`clearTimeout(t)` prima di ogni `setTimeout`**: a ogni nuova chiamata annulla il timer precedente. Se lo togli, i timer si accumulano e la funzione parte più volte invece di una sola.
+- **`let t` sta nella chiusura**, fuori dalla funzione restituita. Così tutte le chiamate condividono lo stesso timer. Se la sposti dentro la funzione restituita, ogni chiamata ha il suo timer e il debounce non avviene.
+- **`...args` con lo spread** inoltra a `fn` gli argomenti ricevuti, per esempio l'evento. Senza lo spread `fn` li riceve vuoti.
+
+**Limiti di questa versione**
+
+- **Non restituisce niente.** Se ti serve il valore di ritorno di `fn`, devi far restituire una Promise alla funzione debounced.
+- **Esegue alla fine, non all'inizio.** Se ti serve il contrario, cioè eseguire subito e poi ignorare le chiamate per un certo periodo, ti serve un **throttle**, che è un'altra funzione.

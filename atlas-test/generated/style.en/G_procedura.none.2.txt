@@ -1,0 +1,23 @@
+Don't run a direct `ALTER TABLE t ALTER COLUMN colonna TYPE integer`. On ten million rows it rewrites the whole table while holding an ACCESS EXCLUSIVE lock, so your service is down for the entire rewrite. Do it in six steps instead, with the table live the whole time.
+
+1. **Check every value converts.** Count the rows whose value is not all digits. If the count is not zero, fix or decide what to do with those rows before anything else, or the fill in step 3 will fail.
+
+2. **Add a new column** next to the old one:
+
+```sql
+ALTER TABLE t ADD COLUMN colonna_int integer;
+```
+
+3. **Fill it in batches** of ten thousand rows. Each batch is a short transaction, so no long lock is ever held on the table and normal traffic keeps flowing.
+
+4. **Add a trigger** that keeps the two columns in step. Any insert or update that touches the old column during the migration also writes the new one, so nothing written while the backfill runs is lost.
+
+5. **Change the application** to read from the new column, and ship it. Run on it for a while so you are confident the new column is correct and complete.
+
+6. **Only then drop the old column:**
+
+```sql
+ALTER TABLE t DROP COLUMN colonna;
+```
+
+Step 6 is the irreversible one. Once the column is dropped the data does not come back without a restore from backup. Everything before it can be undone by dropping the new column and the trigger, so do not rush the last step. Take it only after the code has been reading from the new column in production without problems.

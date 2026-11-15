@@ -1,0 +1,21 @@
+internal knowledge
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+`clearTimeout` must run before every new `setTimeout`. Without it, timers pile up and the function fires more than once.
+
+`t` belongs in the closure, not inside the returned function. Inside, every call gets its own timer, so no debouncing happens.
+
+Arguments are passed on with the spread. Without it, `fn` receives nothing.
+
+Returns nothing. If you need the return value, use a Promise.
+
+To run immediately and then ignore calls for a period, use a throttle instead. That's a different function.

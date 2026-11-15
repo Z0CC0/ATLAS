@@ -1,0 +1,9 @@
+Usually no. B-tree index on low-cardinality column normally goes unused. Filter matching more than roughly 5-10% of rows makes planner choose sequential scan. Index still costs writes and disk space.
+
+Exception: one value is rare. Partial index on that rare value works:
+
+```sql
+CREATE INDEX orders_failed_idx ON orders (id) WHERE status = 'failed';
+```
+
+Queries filtering `status = 'failed'` use this index. Index stays small, and writes for other values skip it.

@@ -1,0 +1,7 @@
+File: costo zero, nessuna dipendenza, ricerca solo grep, rotazione manuale o disco pieno. Su piu' macchine niente ricerca centralizzata, serve collegarsi a ognuna.
+
+Servizio gestito: ricerca immediata, allarmi, conservazione automatica. Paga per volume, a mille richieste/minuto volume cresce in fretta. Log escono dall'infrastruttura, vanno ripuliti da dati personali prima.
+
+Database: ricerca comoda e nota, ma stesso database dell'app mette log e richieste vere in competizione per cache e connessioni.
+
+A mille richieste/minuto: file locali piu' raccoglitore che spedisce altrove. Scrittura log mai nel percorso critico della richiesta — questa regola vale sempre.

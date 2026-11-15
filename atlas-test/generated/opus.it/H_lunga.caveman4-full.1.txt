@@ -1,0 +1,16 @@
+La cache dei prompt conserva la parte iniziale di una richiesta (il prefisso) già elaborata. Le richieste successive che iniziano allo stesso modo non pagano di nuovo quel prefisso per intero.
+
+**Come funziona**
+- Il riuso vale solo per il prefisso. Se cambia anche un solo carattere all'inizio, tutto quello che segue non viene più riusato.
+- Metti quindi prima le parti stabili e dopo quelle che cambiano, non il contrario.
+- Una voce di sistema che cambia a ogni turno, per esempio un orario, impedisce il riuso di tutto ciò che viene dopo. Spostala in fondo o toglila.
+
+**Costi**
+- Scrivere nella cache costa più di una lettura normale, quindi la prima richiesta costa di più.
+- Il risparmio parte dalla seconda richiesta e cresce con il numero di turni.
+
+**Quando conviene**
+- Nelle conversazioni lunghe con un contesto grande che non cambia: istruzioni di sistema, documentazione allegata, definizioni degli strumenti.
+
+**Quando non conviene**
+- Con richieste singole e diverse tra loro. In quel caso paghi la scrittura nella cache e poi non la rileggi mai.

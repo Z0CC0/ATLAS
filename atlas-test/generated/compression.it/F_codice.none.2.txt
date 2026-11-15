@@ -1,0 +1,21 @@
+Puoi implementare il debounce così, senza bisogno di librerie esterne:
+
+```javascript
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Un paio di dettagli importanti su questa implementazione:
+
+- `clearTimeout(t)` va chiamato prima di ogni nuovo `setTimeout`: se lo ometti, i timer si accumulano e la funzione finisce per partire più volte invece che una sola.
+- La variabile `t` deve stare nella chiusura (closure) esterna, non dentro la funzione che viene restituita. Se la dichiarassi lì dentro, ogni chiamata creerebbe il proprio timer indipendente e il debounce semplicemente non funzionerebbe.
+- Gli argomenti vengono inoltrati con lo spread (`...args`): se te lo dimentichi, la funzione che invochi alla fine li riceve vuoti.
+
+Da tenere presente: questa versione non restituisce nulla. Se ti serve recuperare il valore di ritorno della funzione debounced, devi avvolgerla in una Promise.
+
+Infine, se il tuo caso è l'opposto — cioè vuoi che la funzione parta subito alla prima chiamata e poi venga ignorata per un certo periodo — quello che ti serve non è il debounce ma il throttle, che è un'implementazione diversa.

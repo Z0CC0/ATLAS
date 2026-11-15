@@ -1,0 +1,17 @@
+Sei passi.
+
+Primo, controlla che ogni valore esistente sia convertibile: conta le righe non tutte cifre.
+
+Secondo, aggiungi colonna nuova: ALTER TABLE t ADD COLUMN colonna_int integer.
+
+Terzo, riempila a lotti da diecimila righe, così nessun lock lungo sulla tabella.
+
+Quarto, aggiungi trigger che tiene le due colonne allineate durante la migrazione.
+
+Quinto, cambia il codice per leggere dalla colonna nuova, e rilascialo.
+
+Sesto e solo allora: ALTER TABLE t DROP COLUMN colonna.
+
+Il sesto passo è irreversibile: colonna droppata, dato non torna senza restore da backup.
+
+Motivo per cui non fare un ALTER TABLE ALTER COLUMN TYPE diretto: riscrive tutta la tabella tenendo lock ACCESS EXCLUSIVE, servizio giù per l'intera durata.

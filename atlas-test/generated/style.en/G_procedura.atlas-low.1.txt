@@ -1,0 +1,23 @@
+Never with a direct ALTER TABLE ALTER COLUMN TYPE on ten million rows in production: it rewrites the whole table under an ACCESS EXCLUSIVE lock, so the service is down for the entire rewrite. Do it in six steps, in this order, with the old column kept until the very end.
+
+1. Check that every existing value is convertible. Count the rows whose value is not all digits; until that count is zero the migration cannot start, because the conversion would fail on those rows.
+
+2. Add the new column alongside the old one:
+
+```sql
+ALTER TABLE t ADD COLUMN colonna_int integer;
+```
+
+3. Fill the new column in batches of ten thousand rows. Small batches mean no long lock is ever held on the table, so reads and writes keep flowing while the backfill runs.
+
+4. Add a trigger that keeps the two columns in step for the whole migration, so rows written while the backfill is running, and after it, land in both columns.
+
+5. Change the application code to read from the new column, and ship it.
+
+6. Only once the new code is live and reading from the new column, drop the old one:
+
+```sql
+ALTER TABLE t DROP COLUMN colonna;
+```
+
+This last step is irreversible. Once the column is dropped, the data does not come back without a restore from backup, so do not run it until steps one to five are complete and verified.

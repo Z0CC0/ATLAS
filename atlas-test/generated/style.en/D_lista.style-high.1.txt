@@ -1,0 +1,13 @@
+Strict-Transport-Security: max-age=31536000 or more, includeSubDomains. Forces HTTPS.
+
+Content-Security-Policy: default-src 'self'. Blocks third-party script injection.
+
+X-Content-Type-Options: nosniff. Stops content-type guessing.
+
+Referrer-Policy: strict-origin-when-cross-origin. Full path not leaked to other sites.
+
+X-Frame-Options: DENY, or frame-ancestors 'none' inside Content-Security-Policy. Against clickjacking.
+
+Permissions-Policy: camera, microphone, geolocation off if unused.
+
+Omit X-XSS-Protection: deprecated, modern browsers ignore it, older versions introduced vulnerabilities.

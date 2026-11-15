@@ -1,0 +1,7 @@
+Cache prompt conserva prefisso di richiesta già elaborato: richieste successive con stesso inizio non pagano rielaborazione completa. Funziona solo su prefisso — basta carattere diverso all'inizio, da lì in poi zero riuso. Per questo parti stabili vanno prima, parti variabili dopo, mai contrario. Nota: voce di sistema che cambia ogni turno (orario, ad esempio) annulla riuso di tutto ciò che segue.
+
+Scrittura in cache costa più di lettura normale — prima richiesta risulta più cara. Guadagno arriva da seconda richiesta in poi, cresce con numero di turni.
+
+Conviene: conversazioni lunghe, contesto grande e stabile — istruzioni di sistema, documentazione allegata, definizioni di strumenti.
+
+Non conviene: richieste singole e diverse tra loro — lì paghi scrittura senza mai rileggere.

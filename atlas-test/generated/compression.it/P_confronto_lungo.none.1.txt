@@ -1,0 +1,11 @@
+A mille richieste al minuto, la scelta più sensata è: log su file locali, con un raccoglitore (agent/forwarder) che li spedisce altrove per l'analisi. Ti spiego perché scartare le altre due opzioni pure.
+
+Il database lo escluderei per primo: se usi lo stesso database dell'applicazione, metti in competizione due carichi molto diversi, e sotto il tuo volume di traffico i log finiscono per riempire cache e connessioni che dovrebbero servire le richieste vere. È comodo per la ricerca, ma il costo in contesa di risorse non vale il vantaggio.
+
+Il servizio gestito da solo (senza passare da file) ti darebbe ricerca immediata, allarmi e conservazione automatica senza pensieri, ma a mille richieste al minuto il volume di log cresce in fretta e la bolletta sale con lui. In più, dato che i log escono dalla tua infrastruttura verso quella del provider, devi ripulirli dai dati personali prima che partano — un passaggio in più da presidiare sempre.
+
+Il file da solo, invece, ha costo zero e nessuna dipendenza, ma se hai più macchine (e a quel volume probabilmente ne hai più di una) non esiste una ricerca centralizzata: devi collegarti a ognuna singolarmente, oltre a dover configurare a mano la rotazione o rischi di riempire il disco.
+
+Ecco perché la combinazione vince: scrivi su file locali (scrittura veloce, nessuna dipendenza esterna nel momento critico) e lasci che un raccoglitore li spedisca in background verso dove ti serve — che sia un servizio gestito o altro. Così ottieni ricerca centralizzata e conservazione, ma senza che l'applicazione debba mai aspettare la scrittura del log.
+
+E questa è la regola che vale comunque, qualunque backend tu scelga alla fine: la scrittura del log non deve mai stare nel percorso critico della richiesta.

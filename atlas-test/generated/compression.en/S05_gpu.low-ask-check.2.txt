@@ -1,0 +1,5 @@
+Moving from a 4080 to a 5080 you get a real but not huge jump.
+
+Architecture changes: Blackwell instead of Ada Lovelace, with GDDR7 replacing GDDR6X — that pushes memory bandwidth from about 717 GB/s to about 960 GB/s. Rated power draw goes up too, from 320W to 360W, though the connector stays the same 16-pin.
+
+In pure rasterization — normal gaming performance without any AI trickery — expect only about 10-15% more speed. The much bigger difference shows up in frame generation, where the 5080 pulls ahead by a lot more than that gap suggests. So if you mostly care about raw horsepower, the upgrade is modest; if you care about frame-gen-driven performance, it's the main reason to move up.

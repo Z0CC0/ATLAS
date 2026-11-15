@@ -1,0 +1,13 @@
+internal knowledge
+
+At about a thousand requests a minute: local files plus a collector that ships them elsewhere. The application writes to disk and never waits on a log write.
+
+**Rule that always holds: writing the log must never sit in the critical path of the request.**
+
+Why the other options fall short:
+
+Files alone cost nothing and add no dependency. But searching means grep, and rotation has to be configured by hand or the disk fills. Across several machines there's no way to search at all: you connect to each one. The collector fixes this part.
+
+Managed service gives instant search, alerts and automatic retention. But you pay by volume, and at your rate volume grows fast. Logs also leave your own infrastructure, so personal data has to be stripped before they go.
+
+Database search feels familiar and convenient. But writing logs into the application's own database puts two very different workloads in competition. Under load, logs take up caches and connections that real requests needed.

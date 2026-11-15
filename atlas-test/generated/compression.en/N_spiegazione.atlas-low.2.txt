@@ -1,0 +1,7 @@
+Eventual consistency means that after a write, replicas don't agree right away, but converge within finite time once writes stop. In the same region that's typically under a second; across regions it stretches to seconds.
+
+It matters most right after you write: post a comment, reload, and it's not there — you hit a replica that hasn't caught up. Fix: route the session that just wrote back to the primary replica, not everyone.
+
+The trade is for availability. Strong consistency forces a system to refuse requests when replicas can't talk to each other; eventual consistency keeps serving instead. That's why most systems that scale choose it on purpose — not a flaw, a tradeoff.
+
+It's the wrong choice only in a few recognisable cases: account balances, seat availability, uniqueness of an identifier. There you want strong consistency, not eventual.

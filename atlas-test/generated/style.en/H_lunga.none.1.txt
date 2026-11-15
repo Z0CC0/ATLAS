@@ -1,0 +1,9 @@
+Prompt caching keeps the already-processed prefix of a request, so a later request that starts the same way does not pay for that part again. The word that matters is prefix. The cache matches from the first character forward, and the moment one character differs there is no reuse from that point on. That is why the layout of a request matters: stable parts go first and changing parts after, never the other way round.
+
+The economics are not free at the start. Writing to the cache costs more than a normal read, so the first request is more expensive than it would be without caching. The gain begins on the second request and grows with every turn that reuses the same prefix.
+
+It pays off on long conversations with a large stable context. System instructions, attached documentation and tool definitions are the typical examples: they are big, they do not change between turns, and every turn would otherwise reprocess them in full.
+
+It does not pay off on single requests that differ from each other. You pay the write cost and never read it back, so you end up spending more than without caching.
+
+One trap is worth watching for. A system line that changes every turn, such as a clock or a timestamp, breaks the match at that point and kills the reuse of everything after it. If you need something like that, put it after the stable content, or leave it out.

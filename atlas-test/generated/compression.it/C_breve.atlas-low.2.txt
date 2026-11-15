@@ -1,0 +1,5 @@
+No.
+
+Bassa cardinalita' → planner di norma scarta il B-tree, preferisce sequential scan quando filtro seleziona piu' di circa 5-10% righe. Indice costa comunque scrittura e spazio.
+
+Eccezione: indice parziale sul valore raro funziona.

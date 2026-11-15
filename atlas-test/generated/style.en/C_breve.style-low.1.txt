@@ -1,0 +1,3 @@
+No. Planner skips B-tree index on low cardinality column: with three values, filter selects far more than roughly 5-10 per cent of rows, so sequential scan wins. Index still costs writes and disk space, so net loss.
+
+Exception: partial index on the rare value, if one of the three values is rare. That one works.

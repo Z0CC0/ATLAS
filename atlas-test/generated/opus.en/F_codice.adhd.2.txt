@@ -1,0 +1,31 @@
+Copy this into your code:
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+How to use it:
+
+```js
+const onResize = debounce(() => console.log('resized'), 300);
+window.addEventListener('resize', onResize);
+```
+
+## Why each piece is there
+
+1. **`let t` sits outside the returned function.** It lives in the closure, so every call shares one timer. If you move it inside, each call gets its own timer and nothing gets debounced.
+2. **`clearTimeout(t)` runs before every `setTimeout`.** If you skip it, the timers stack up and `fn` runs more than once.
+3. **`...args` forwards the arguments.** Without the spread, `fn` gets called with no arguments.
+
+## Limits
+
+- **It returns nothing.** If you need `fn`'s return value, the debounced function has to return a Promise.
+- **It waits until the calls stop.** If you want it to run right away and then ignore calls for a while, you need a throttle. That's a different function.
+
+Next: paste the snippet in, wrap one noisy handler (resize, input, scroll), and check that it fires once after the calls stop.

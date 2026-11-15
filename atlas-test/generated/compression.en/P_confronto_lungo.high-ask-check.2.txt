@@ -1,0 +1,9 @@
+Local files, plus a collector shipping them elsewhere.
+
+Files alone: zero cost, no dependency. But no cross-machine search — grep each box separately — and rotation is manual, or disk fills.
+
+Managed service: instant search, alerts, retention automatic. Costs scale with volume, and at 1k req/min that volume grows fast. Also logs leave your infra — strip personal data first.
+
+Database: search feels convenient, but it shares the app's own DB — caches, connections — with real request traffic. Under load, logging competes with and starves the actual requests.
+
+At 1k/min: write to local files, ship async via a collector. Rule that always holds — log writes never sit in the request's critical path.

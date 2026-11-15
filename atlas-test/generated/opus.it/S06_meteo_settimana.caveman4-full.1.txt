@@ -1,0 +1,11 @@
+Meteo della settimana a New York (fonte: web):
+
+- **Lunedì**: sereno, massima 24°, minima 17°.
+- **Martedì**: nuvoloso, massima 22°, minima 16°. In serata arriva una pioggia debole.
+- **Mercoledì**: pioggia per gran parte del giorno, massima 19°, minima 15°.
+- **Giovedì**: schiarite, massima 21°, minima 14°.
+- **Venerdì**: sereno, massima 25°, minima 16°.
+- **Sabato**: sereno e caldo, massima 28°, minima 19°.
+- **Domenica**: temporali nel pomeriggio, massima 26°, minima 18°.
+
+Piove in modo significativo solo mercoledì e domenica. Quei due giorni serve l'ombrello. Il fine settimana sarà il periodo più caldo della settimana.

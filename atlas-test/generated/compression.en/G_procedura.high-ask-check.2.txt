@@ -1,0 +1,12 @@
+Not `ALTER TABLE ALTER COLUMN TYPE` direct — rewrites whole table, ACCESS EXCLUSIVE lock, service down entire duration.
+
+Steps:
+
+1. Count rows failing all-digits check — confirms every value convertible before touching schema.
+2. `ALTER TABLE t ADD COLUMN colonna_int integer` — new column, no rewrite.
+3. Backfill in batches of 10k rows — avoids long lock on ten million rows.
+4. Trigger syncing old/new column during migration — keeps writes consistent while backfill runs.
+5. Switch app code to read `colonna_int`, ship.
+6. Only then: `ALTER TABLE t DROP COLUMN colonna`.
+
+Step 6 irreversible — data gone without backup restore. Don't run it until step 5 confirmed stable in production.

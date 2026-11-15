@@ -1,0 +1,7 @@
+Biggest jump in frame generation, not raw rasterisation. Rasterisation gain only about 10-15 per cent.
+
+Blackwell architecture (5080), Ada Lovelace (4080).
+
+GDDR7 memory against GDDR6X; bandwidth from about 717 to about 960 GB/s.
+
+Rated power draw 320 W to 360 W; power connector still 16-pin.

@@ -1,0 +1,38 @@
+x86 begins slightly before the eighties, with the 8086 in 1978.
+
+**Origins: 16 bit and compatibility (1978–1982)**
+The 8086 is a 16-bit processor that grows out of the 8080. It is compatible with the 8080 at source level, not at binary level. That choice sets the pattern for everything after: each new chip must carry the old software forward.
+
+In 1982 the 80286 introduces protected mode. Protected mode is the basis for memory protection and multitasking. The design has one awkward gap. Once the chip enters protected mode, it cannot return to real mode without a reboot.
+
+**The 32-bit foundation (1985–1989)**
+The 80386 of 1985 is the chip that defines modern x86. It brings three things:
+- 32-bit registers and addressing.
+- Paged virtual memory, which modern operating systems still depend on.
+- Virtual 8086 mode, which runs old real-mode software inside the protected environment. This fixes the 286's one-way problem.
+
+In 1989 the 486 moves two separate parts onto the processor die: the first-level cache and the maths coprocessor. Before the 486, these were external chips.
+
+**Parallelism inside the core (1993–1995)**
+The Pentium of 1993 is superscalar. It has two integer pipelines, so it can retire two instructions per cycle.
+
+The Pentium Pro of 1995 is the deeper break. It executes instructions out of order. It also translates each x86 instruction into internal micro-operations, and the core executes those micro-operations instead. From this point, x86 is an interface. It is no longer the real machine underneath. The instruction set stays the same for software, but the hardware is free to change behind it.
+
+**The frequency race and its limit (2000)**
+The Pentium 4 of 2000 chases clock frequency with a very long pipeline. The strategy hits the power wall: higher frequency produces more heat and uses more power than the chip can handle.
+
+**64 bit from AMD (2003)**
+In 2003 AMD extends the architecture to 64 bit with AMD64. Intel then adopts the same instruction set. This is the first time the dominant x86 extension does not come from Intel.
+
+**From frequency to cores (2006 onward)**
+With the Core 2 in 2006, the direction changes. Performance now comes from more cores, not higher frequency.
+
+Over the same generations, the vector extensions grow: MMX, then SSE, then AVX, then AVX-512. Each one lets a single instruction work on more data at once.
+
+**Today: complexity below the interface**
+The instruction set is no longer where most of the design effort goes. The complexity sits in the layers below it: branch prediction, the cache hierarchy and speculative execution. These mechanisms keep the core busy by guessing ahead and doing work before it knows the work is needed.
+
+In 2018 Spectre and Meltdown expose the cost of that approach. Both attacks show that speculative execution carried a security cost that nobody had priced. Speculation leaves traces in the hardware, and attackers can read those traces.
+
+**The overall arc**
+x86 starts as a direct 16-bit design. Then it gains protection, 32-bit addressing, on-chip integration and superscalar execution. After the Pentium Pro it becomes a compatibility layer over a very different internal machine. The architecture now grows through 64-bit addressing, more cores and wider vectors. The newest problem comes from deep in the hardware: the speculation that makes these chips fast also makes them vulnerable.

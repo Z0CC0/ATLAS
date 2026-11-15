@@ -1,0 +1,3 @@
+Both block scoped, unlike var.
+
+let: reassignable. const: name locked, value not — an object made with const still mutates internally.

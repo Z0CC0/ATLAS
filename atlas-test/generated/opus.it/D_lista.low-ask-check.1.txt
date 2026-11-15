@@ -1,0 +1,27 @@
+*Conoscenza interna*
+
+Per un sito statico conviene impostare sei header, e omettere X-XSS-Protection.
+
+**Strict-Transport-Security**: usa un `max-age` di almeno 31536000 secondi e aggiungi `includeSubDomains`. Così il browser è obbligato a usare HTTPS.
+
+**Content-Security-Policy**: parti da `default-src 'self'`. È questo header a bloccare l'iniezione di script di terze parti.
+
+`X-Content-Type-Options: nosniff` impedisce al browser di indovinare il tipo di contenuto.
+
+`Referrer-Policy: strict-origin-when-cross-origin` evita che il percorso completo delle tue pagine venga inviato ad altri siti.
+
+Contro il clickjacking puoi usare `X-Frame-Options: DENY`, oppure aggiungere `frame-ancestors 'none'` dentro la Content-Security-Policy.
+
+Usa `Permissions-Policy` per spegnere camera, microfono e geolocalizzazione, se il sito non li usa.
+
+Non mettere `X-XSS-Protection`, perché è deprecato. I browser moderni lo ignorano, e nelle versioni vecchie introduceva vulnerabilità.
+
+Un esempio:
+
+```
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+Content-Security-Policy: default-src 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+```

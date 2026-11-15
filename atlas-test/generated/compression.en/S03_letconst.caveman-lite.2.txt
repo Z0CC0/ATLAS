@@ -1,0 +1,5 @@
+`const` fix name, not value. Can't reassign const variable, but if it's object, contents still change fine — properties add/edit/delete freely.
+
+`let` allow reassignment of variable itself.
+
+Both `let` and `const` block scoped (limited to `{}` they're in), unlike `var` which isn't.

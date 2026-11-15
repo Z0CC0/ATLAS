@@ -1,0 +1,3 @@
+No. Bassa cardinalita' (3 valori), B-tree di norma non usato. Planner preferisce scan sequenziale quando filtro seleziona piu' di circa 5-10% righe — con 3 valori distinti succede quasi sempre. Indice comunque costa scrittura e spazio, senza beneficio.
+
+Eccezione: indice parziale sul valore raro, quello funziona.

@@ -1,0 +1,5 @@
+No — anything that reaches the browser is readable, so obfuscating the key doesn't help; the moment someone opens dev tools or inspects the network requests, they can pull it out.
+
+The fix is to move the key server-side: your frontend calls an endpoint on your own backend, and that backend is the one calling the actual service with the key. Add a rate limit on that endpoint too, otherwise it just becomes a free way for anyone to burn through your key's quota.
+
+And if this key has already been out there in your frontend code, don't just remove it — treat it as compromised and rotate it right away. Pulling it out of a commit isn't enough either: it's still sitting in your repository's history, so anyone who already cloned the repo already has it.

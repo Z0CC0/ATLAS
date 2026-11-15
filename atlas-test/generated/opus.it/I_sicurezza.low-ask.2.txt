@@ -1,0 +1,7 @@
+No. Tutto quello che arriva al browser si può leggere, e per annullare l'offuscamento basta aprire gli strumenti per sviluppatori o guardare le richieste di rete.
+
+La soluzione è tenere la chiave sul server. Il frontend chiama un endpoint del tuo backend, ed è il backend a chiamare il servizio con la chiave.
+
+Su quell'endpoint metti un limite di frequenza. Altrimenti chiunque può usarlo per sfruttare la tua chiave senza pagare.
+
+Se la chiave è già stata pubblicata, considerala compromessa e ruotala subito. Toglierla dal codice non basta. Anche se la rimuovi con un nuovo commit, resta nella cronologia del repository, e chi ha già un clone ce l'ha.

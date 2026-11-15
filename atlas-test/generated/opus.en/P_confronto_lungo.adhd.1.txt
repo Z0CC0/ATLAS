@@ -1,0 +1,29 @@
+**Write logs to local files and run a collector that ships them elsewhere.** At 1,000 requests a minute this is the sensible setup, because the application never waits on a log write.
+
+Whatever you pick, writing a log line must never sit in the critical path of a request.
+
+## Why not the other two on their own
+
+**Files alone**
+- Free and no dependencies.
+- Searching means grep.
+- You have to set up rotation by hand, or the disk fills.
+- You can't search across several machines. You have to connect to each one.
+
+**A managed service alone**
+- Instant search, alerts and automatic retention.
+- You pay by volume, and at 1,000 requests a minute the volume grows fast.
+- Your logs leave your own infrastructure, so you must strip personal data before they're sent.
+
+**Your application's database**
+- Searching is familiar and convenient.
+- Logging and serving requests are very different workloads, and they end up competing in the same database.
+- Under load, logs take up cache and connections that real requests needed.
+
+## How the recommended setup fixes this
+
+- Files are a fast local write, so requests don't wait on logging.
+- The collector removes the "connect to each machine" problem because it gathers logs from every machine into one place.
+- If the collector sends to a managed service, the volume costs and the personal-data stripping still apply.
+
+**Next step (about 2 minutes):** check whether log rotation is already set up on your servers. If it isn't, that's your first task, because the disk will fill.

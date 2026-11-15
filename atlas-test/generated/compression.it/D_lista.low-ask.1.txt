@@ -1,0 +1,13 @@
+Attiva Strict-Transport-Security con max-age almeno 31536000 secondi e includeSubDomains: obbliga browser a usare HTTPS.
+
+Aggiungi Content-Security-Policy con default-src 'self': blocca iniezione script terze parti.
+
+Imposta X-Content-Type-Options a nosniff: impedisce a browser indovinare tipo contenuto.
+
+Imposta Referrer-Policy a strict-origin-when-cross-origin: evita far uscire percorso completo verso altri siti.
+
+Contro clickjacking, X-Frame-Options a DENY oppure frame-ancestors 'none' dentro CSP.
+
+Con Permissions-Policy spegni camera, microfono e geolocalizzazione se sito non li usa.
+
+X-XSS-Protection: deprecato, ometti. Browser moderni ignorano; vecchie versioni introducevano vulnerabilità.

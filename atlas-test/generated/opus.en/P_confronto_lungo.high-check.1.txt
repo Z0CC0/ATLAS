@@ -1,0 +1,13 @@
+internal knowledge
+
+Local files plus collector shipping them elsewhere. Application never waits on log write.
+
+**Rule that always holds: log write must not sit in request's critical path.**
+
+Files alone: zero cost, no dependency. But search means grep, rotation configured by hand or disk fills. No search across machines, you connect to each one.
+
+Managed service: instant search, alerts, automatic retention. Billed by volume, and at 1000 requests/minute volume grows fast. Logs leave your infrastructure, so personal data must be stripped before sending.
+
+Database: familiar, convenient search. In application's own database, two very different workloads compete. Under load, logs fill caches and connections real requests needed.
+
+Collector setup keeps files' cheap local write and still gets logs off each machine.

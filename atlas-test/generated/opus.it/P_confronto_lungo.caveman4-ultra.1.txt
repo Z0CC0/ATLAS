@@ -1,0 +1,19 @@
+A mille richieste al minuto: **file locali più un raccoglitore** che li spedisce altrove. L'applicazione così non aspetta mai la scrittura del log.
+
+**File**
+- Costo zero, nessuna dipendenza.
+- Ricerca solo con `grep`.
+- La rotazione va configurata a mano, altrimenti il disco si riempie.
+- Con più macchine non c'è una ricerca unica: devi collegarti a ognuna.
+
+**Servizio gestito**
+- Ricerca immediata, allarmi e conservazione automatica.
+- Si paga per volume, e a mille richieste al minuto il volume cresce in fretta.
+- I log escono dalla tua infrastruttura, quindi vanno ripuliti dai dati personali prima di uscire.
+
+**Database**
+- Ricerca comoda e già nota.
+- Se usi lo stesso database dell'applicazione, metti in competizione due carichi molto diversi.
+- Sotto carico, i log occupano cache e connessioni che servivano alle richieste vere.
+
+**Regola valida con qualsiasi scelta:** la scrittura del log non deve stare nel percorso critico della richiesta.

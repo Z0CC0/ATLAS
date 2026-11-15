@@ -1,0 +1,17 @@
+Before you pick an architecture, work through these in order:
+
+**Start by mapping what actually changes.** Look at the monolith and figure out which parts churn constantly and which have been stable for years. The stable parts gain nothing from being split out — splitting is only worth it where change (and the pain of change) is concentrated.
+
+**Then trace where your transactions actually sit.** Wherever a single transaction currently spans what you're thinking of as two services, that boundary is dangerous — you'd be turning an atomic operation into a distributed one, with all the consistency headaches that brings. Let transaction boundaries, not org charts or diagrams, tell you where the real seams are.
+
+**Don't attempt a full rewrite running in parallel with the old system.** It almost always fails, because the old system keeps changing while you're rebuilding, and the copy never catches up.
+
+**Use progressive strangling instead.** Put a router in front of the monolith, move one piece at a time behind it, and keep the old system authoritative until each new piece is verified. This gives you a working system at every step instead of a big-bang cutover.
+
+**Weigh the operational cost of microservices honestly.** Every service you create wants its own releases, monitoring, logs, alerts, and someone responsible for it. That cost is real and recurring, not a one-time tax.
+
+**If you're below five developers, this usually settles it.** Below that size, the operational overhead of microservices almost always exceeds whatever benefit you get from splitting.
+
+**Consider the modular monolith seriously — it's the option most people skip straight past.** Sharp internal boundaries, one release, one deployable, but the option to extract a module the day you genuinely need to. It gets you most of the discipline of microservices without the operational multiplication.
+
+**Finally, the question that should actually decide this isn't technical.** Ask: what does the team need to be able to do a year from now that it can't do today? If the honest answer is "ship features faster with clean boundaries," a modular monolith probably gets you there. If it's "scale one specific piece independently" or "let a separate team own and deploy a piece on its own schedule," that points toward pulling that piece out — and only that piece, guided by where the transaction boundaries and change patterns actually are.

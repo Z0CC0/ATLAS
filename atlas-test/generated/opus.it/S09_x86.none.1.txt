@@ -1,0 +1,40 @@
+# L'evoluzione di x86, dagli anni Ottanta a oggi
+
+## Il punto di partenza: l'8086
+
+Per capire gli anni Ottanta bisogna partire un po' prima, dall'8086 del 1978. Era un processore a 16 bit, pensato come evoluzione dell'8080. Non era compatibile con l'8080 a livello binario, ma lo era a livello di sorgente: il codice scritto per il chip precedente si poteva portare sul nuovo senza riscriverlo da capo. Questa attenzione alla continuità ha guidato tutta la storia di x86.
+
+## Gli anni Ottanta: modalità protetta e 32 bit
+
+Il primo grande passo è l'**80286** del 1982, che introduce la modalità protetta, cioè un modo di funzionare in cui il processore separa e protegge la memoria. Il limite era serio: una volta entrati in modalità protetta non si poteva tornare a quella reale senza riavviare la macchina.
+
+La svolta vera arriva con l'**80386** del 1985, che porta tre cose:
+- i 32 bit;
+- la memoria virtuale paginata;
+- la modalità virtuale 8086, che permette di eseguire il vecchio software in modalità reale dentro l'ambiente protetto.
+
+Con il 386 nasce di fatto l'x86 a 32 bit che sarebbe durato a lungo.
+
+Il **486** del 1989 punta sull'integrazione: porta dentro il chip la cache di primo livello e il coprocessore matematico, che prima erano componenti separati.
+
+## Gli anni Novanta: x86 diventa un'interfaccia
+
+Il **Pentium** del 1993 è superscalare. Ha due pipeline per le operazioni intere e può completare due istruzioni per ciclo invece di una.
+
+Il cambiamento più profondo, anche se meno visibile, arriva con il **Pentium Pro** del 1995. Introduce l'esecuzione fuori ordine e, soprattutto, traduce le istruzioni x86 in micro-operazioni interne. Da quel momento x86 è un'interfaccia, un contratto con il software, e non descrive più la macchina che esegue davvero il lavoro. Tutto quello che viene dopo nasce da questa separazione.
+
+## Gli anni Duemila: il muro del consumo e i 64 bit
+
+Il **Pentium 4** del 2000 scommette sulla frequenza, con una pipeline lunghissima pensata per far salire i clock il più possibile. La strategia si scontra con il muro del consumo: oltre una certa soglia, aumentare la frequenza costa troppa energia.
+
+Nel frattempo, nel 2003, **AMD** estende l'architettura a 64 bit con **AMD64**, e Intel adotta lo stesso insieme di istruzioni. Per la prima volta l'estensione dominante di x86 non viene da Intel.
+
+Dal 2006, con il **Core 2**, la direzione cambia: l'obiettivo non è più aumentare la frequenza ma il numero di nuclei.
+
+In parallelo, nel corso degli anni, crescono le estensioni vettoriali, che permettono di applicare la stessa operazione a più dati insieme. Si sono succedute per generazioni: **MMX**, **SSE**, **AVX** e **AVX-512**.
+
+## Oggi: la complessità sta sotto
+
+Oggi l'interfaccia x86 resta, ma la vera complessità è negli strati sottostanti: la predizione dei salti, la gerarchia di cache e l'esecuzione speculativa. È lì che si gioca la gran parte delle prestazioni.
+
+Questa complessità ha però avuto un costo. Nel 2018 **Spectre** e **Meltdown** hanno mostrato che l'esecuzione speculativa comportava un rischio per la sicurezza che nessuno aveva considerato. La speculazione era nata nel livello nascosto sotto l'interfaccia, quello creato dal Pentium Pro, e quel livello si è rivelato meno invisibile del previsto.

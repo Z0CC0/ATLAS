@@ -1,0 +1,3 @@
+No. B-tree unused below roughly 5-10% selectivity, and three distinct values sits far under that — planner picks sequential scan anyway. Index still costs writes and disk space for nothing.
+
+Exception: partial index on the rare value works.

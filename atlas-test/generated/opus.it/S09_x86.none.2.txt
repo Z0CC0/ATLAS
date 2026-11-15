@@ -1,0 +1,37 @@
+# L'evoluzione dell'x86, dagli anni Ottanta a oggi
+
+## Le origini: un'eredità da rispettare
+
+Per capire l'x86 degli anni Ottanta bisogna partire da poco prima, dall'**8086 del 1978**. Era un processore a 16 bit e nacque come evoluzione dell'8080. Non era compatibile a livello binario con il predecessore, ma lo era a livello di sorgente: il codice scritto per l'8080 si poteva riportare sul nuovo chip senza riscriverlo da zero. Questa attenzione per ciò che esisteva già è il filo conduttore di tutta la storia che segue.
+
+## Gli anni Ottanta: protezione e 32 bit
+
+L'**80286 del 1982** introdusse la **modalità protetta**, il primo passo verso sistemi operativi capaci di isolare i programmi tra loro. Il progetto però aveva un limite: una volta entrati in modalità protetta, non si poteva tornare alla modalità reale senza riavviare la macchina. Era un problema serio in un mondo in cui quasi tutto il software girava ancora in modalità reale.
+
+La svolta vera arrivò con l'**80386 del 1985**. Portò i **32 bit** e la **memoria virtuale paginata**, cioè le basi dei sistemi operativi moderni. Aggiunse anche la **modalità virtuale 8086**, che permetteva di eseguire i vecchi programmi in modalità reale dentro un ambiente protetto. In pratica risolveva il problema lasciato aperto dal 286.
+
+Il **486 del 1989** puntò sull'integrazione. Portò dentro il chip la **cache di primo livello** e il **coprocessore matematico**, che fino ad allora erano componenti separati.
+
+## Gli anni Novanta: il processore cambia natura
+
+Con il **Pentium del 1993** l'x86 diventò **superscalare**. Aveva due pipeline intere e poteva ritirare due istruzioni per ciclo di clock invece di una.
+
+Il cambiamento più profondo, anche se meno visibile, arrivò con il **Pentium Pro del 1995**. Introdusse l'**esecuzione fuori ordine**: il processore riordina le istruzioni per tenere sempre occupate le unità di calcolo. Soprattutto, iniziò a **tradurre le istruzioni x86 in micro-operazioni interne**, più semplici. Da quel momento l'x86 non è più la macchina reale. È un'interfaccia, un contratto con il software, mentre sotto lavora un motore di esecuzione diverso.
+
+## Gli anni Duemila: il muro e il cambio di rotta
+
+Il **Pentium 4 del 2000** scommise tutto sulla **frequenza**. Usava una pipeline lunghissima per spingere i gigahertz il più in alto possibile, ma andò a sbattere contro il **muro del consumo**: oltre una certa soglia, il calore e l'energia richiesti diventavano insostenibili.
+
+Nel frattempo successe una cosa senza precedenti. Nel **2003 AMD** estese l'architettura a **64 bit con AMD64**, e Intel adottò lo stesso insieme di istruzioni. Era la prima volta che l'estensione dominante dell'x86 non veniva da Intel.
+
+Dal **2006**, con il **Core 2**, la direzione cambiò in modo deciso. Le prestazioni non si cercavano più nella frequenza ma nel **numero di nuclei**, cioè più core sullo stesso chip.
+
+Lungo tutto questo percorso è cresciuta anche la capacità di calcolo vettoriale, una generazione dopo l'altra: **MMX**, poi **SSE**, poi **AVX** e infine **AVX-512**. Ognuna permette di applicare la stessa operazione a quantità sempre maggiori di dati in parallelo.
+
+## Oggi: la complessità sta sotto la superficie
+
+L'interfaccia x86 è ancora lì, ma la complessità vera si trova negli strati sottostanti: la **predizione dei salti**, la **gerarchia di cache** e l'**esecuzione speculativa**, in cui il processore porta avanti in anticipo il lavoro che probabilmente servirà.
+
+Proprio questa ricerca delle prestazioni ha mostrato il suo lato nascosto nel **2018**, con **Spectre e Meltdown**. Queste vulnerabilità hanno rivelato che l'esecuzione speculativa aveva un **costo di sicurezza** che nessuno aveva mai considerato. Le tracce lasciate dai calcoli fatti in anticipo, anche quelli poi scartati, potevano far trapelare dati che avrebbero dovuto restare protetti.
+
+In sintesi, l'x86 è passato dall'essere un'architettura semplice e visibile all'essere una facciata compatibile sopra macchine sempre più sofisticate. Spectre e Meltdown hanno ricordato che anche ciò che resta nascosto sotto quella facciata ha delle conseguenze.

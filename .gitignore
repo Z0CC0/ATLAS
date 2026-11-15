@@ -1,0 +1,9 @@
+# local state and scratch
+.DS_Store
+Thumbs.db
+node_modules/
+*.log
+*.err
+atlas-test/.user-state.json
+atlas-test/.user-state-judge.json
+atlas-test/prompts-to-paste.md

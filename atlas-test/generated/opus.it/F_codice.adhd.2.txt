@@ -1,0 +1,31 @@
+Copia questa funzione:
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Si usa così:
+
+```js
+const onResize = debounce(() => console.log('resize finito'), 300);
+window.addEventListener('resize', onResize);
+```
+
+## Perché è scritta così
+
+1. **`clearTimeout(t)` prima di ogni `setTimeout`.** Ogni nuova chiamata annulla il timer precedente. Se lo togli, i timer si accumulano e `fn` parte più volte.
+2. **`let t` sta nella chiusura, fuori dalla funzione restituita.** Così tutte le chiamate condividono lo stesso timer. Se lo sposti dentro, ogni chiamata ha un timer suo e il debounce non avviene.
+3. **`...args` con lo spread.** Passa a `fn` gli argomenti ricevuti. Senza lo spread, `fn` li riceve vuoti.
+
+## Limiti
+
+- **Nessun valore di ritorno.** Questa versione non restituisce niente. Se ti serve il risultato di `fn`, devi usare una Promise.
+- **Vuoi eseguire subito e poi ignorare le chiamate per un po'?** Quello è il caso opposto e richiede un throttle, che è un'altra funzione.
+
+Prossimo passo: incolla `debounce` nel tuo file e passagli la funzione che oggi viene chiamata troppe volte.

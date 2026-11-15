@@ -1,0 +1,19 @@
+internal knowledge
+
+On a static site, set these six headers and leave out X-XSS-Protection.
+
+Strict-Transport-Security: `max-age=31536000; includeSubDomains` or longer. This makes the browser always use HTTPS.
+
+Content-Security-Policy: `default-src 'self'`. This is the header that stops third-party scripts from being injected.
+
+X-Content-Type-Options: `nosniff`. This stops the browser from guessing the content type.
+
+Referrer-Policy: `strict-origin-when-cross-origin`. Other sites get only your origin, never the full path.
+
+X-Frame-Options: `DENY`, or add `frame-ancestors 'none'` to the Content-Security-Policy instead. Either one protects against clickjacking.
+
+Permissions-Policy: turn off camera, microphone and geolocation if the site doesn't use them, for example `camera=(), microphone=(), geolocation=()`.
+
+Don't send X-XSS-Protection. It's deprecated, modern browsers ignore it, and in older browsers it introduced vulnerabilities.
+
+I used only the facts you provided and didn't check any other sources.

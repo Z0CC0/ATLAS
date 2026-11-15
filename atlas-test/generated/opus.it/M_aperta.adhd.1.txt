@@ -1,0 +1,22 @@
+**Primo passo, oggi:** scrivi in una frase cosa deve poter fare il tuo team fra un anno che oggi non può. La scelta dell'architettura dipende da questa risposta, e non è una domanda tecnica.
+
+## Cosa raccogliere prima di decidere
+
+1. **Quali parti del monolite cambiano davvero.** Dividerle in servizi conviene solo per quelle. Le parti stabili non ci guadagnano nulla.
+2. **Dove finiscono le transazioni.** Se una transazione attraversa due servizi, diventa un problema distribuito. Traccia i confini dove le transazioni si chiudono, non dove sembra elegante.
+3. **Quanti sviluppatori siete.** Sotto i cinque, i microservizi costano quasi sempre più di quanto rendono. Ogni servizio richiede rilascio, monitoraggio, log, allarmi e una persona che lo segua.
+
+## Le opzioni, dalla più consigliata
+
+1. **Monolite modulare.** Se ne parla poco, ma è spesso la scelta giusta: confini interni netti e un solo rilascio. Il giorno in cui un modulo ha davvero bisogno di diventare un servizio, lo estrai.
+2. **Microservizi.** Hanno senso se le parti che cambiano sono chiare, le transazioni si possono separare e c'è abbastanza gente per gestirli.
+
+## Come migrare, qualunque sia la scelta
+
+- **Da evitare:** riscrivere tutto da zero in parallelo al vecchio sistema. Fallisce quasi sempre, perché il vecchio continua a cambiare e la copia non lo raggiunge mai.
+- **Da fare: strangolamento progressivo.**
+  1. Metti un router davanti al monolite
+  2. Sposta un pezzo per volta
+  3. Il vecchio sistema resta quello di riferimento finché il nuovo pezzo non è verificato
+
+**Prossimo passo (circa 2 minuti):** elenca i 3 moduli del monolite che hai modificato più spesso negli ultimi mesi. Da lì parte la mappa di cosa conviene separare.

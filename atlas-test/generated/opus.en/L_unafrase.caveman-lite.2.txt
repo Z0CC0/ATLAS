@@ -1,0 +1,6 @@
+Yes, an empty list is falsy. This is true for every empty collection: list, tuple, dict, set and string.
+
+```python
+if not []:
+    print("empty")  # this line runs
+```

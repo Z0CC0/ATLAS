@@ -1,0 +1,13 @@
+internal knowledge
+
+Eventual consistency: after write, replicas disagree for a while, then converge within finite time once writes stop.
+
+Why care: user posts comment, reloads, comment missing. Hits whoever reads right after writing.
+
+Convergence: usually under one second between replicas in same region. Across regions, seconds.
+
+Not a defect to eliminate. It's a choice, and most systems that scale accept it deliberately. Trade is against availability: system demanding strong consistency must refuse requests when replicas cannot talk.
+
+Common fix: send reads to primary replica only for session that just wrote, not for everyone.
+
+Unacceptable in few cases, easy to spot: account balances, seat availability, identifier uniqueness.

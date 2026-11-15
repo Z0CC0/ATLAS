@@ -1,0 +1,13 @@
+Prima dell'architettura, una domanda: cosa deve poter fare il team fra un anno che oggi non può? La domanda decisiva è questa, e non è tecnica.
+
+Poi due dati dal monolite.
+
+**Quali parti cambiano davvero.** Le parti stabili non guadagnano nulla a essere spezzate.
+
+**Dove stanno i confini delle transazioni.** Se una transazione attraversa due servizi, diventa un problema distribuito.
+
+Su come migrare: evita la riscrittura completa in parallelo. Fallisce quasi sempre, perché il vecchio sistema continua a cambiare e la copia non lo raggiunge mai. Meglio lo strangolamento progressivo: un router davanti, un pezzo spostato alla volta, e il vecchio resta autorevole finché il nuovo non è verificato.
+
+Sui microservizi, conta il costo operativo. Ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupi. Sotto i cinque sviluppatori quel costo supera quasi sempre il beneficio.
+
+C'è un'opzione poco citata: il monolite modulare. Confini interni netti, un solo rilascio, e puoi estrarre un modulo il giorno che serve davvero.

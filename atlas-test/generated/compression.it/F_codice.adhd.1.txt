@@ -1,0 +1,21 @@
+Ecco come si fa, senza bisogno di nessuna libreria:
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Come funziona: ogni volta che la funzione restituita viene chiamata, prima cancella con `clearTimeout` il timer eventualmente ancora in attesa, poi ne imposta uno nuovo con `setTimeout`. Il `clearTimeout` va fatto *prima* di ogni nuovo `setTimeout`: se lo ometti i timer si accumulano e la funzione finisce per partire più volte invece che una sola.
+
+La variabile `t` è dichiarata fuori, nella chiusura (closure) della funzione esterna, e non dentro la funzione che viene restituita. È un dettaglio che conta: se la mettessi dentro la funzione interna, ogni chiamata creerebbe il proprio timer locale e il debounce non funzionerebbe più, perché non ci sarebbe nessun timer condiviso da cancellare.
+
+Gli argomenti li inoltri con lo spread (`...args` in entrata e `fn(...args)` in uscita): se te ne dimentichi, la funzione che alla fine viene eseguita li riceve vuoti.
+
+Un limite di questa implementazione: non restituisce nulla. Se ti serve recuperare il valore di ritorno di `fn`, questa versione base non basta — ti servirebbe avvolgerla in una Promise.
+
+Infine, tieni presente che questo è il caso "aspetta la pausa e poi esegui". Se invece ti serve il comportamento opposto — eseguire subito alla prima chiamata e poi ignorare le chiamate successive per un certo periodo — quello è un throttle, che è una funzione diversa da scrivere a parte.

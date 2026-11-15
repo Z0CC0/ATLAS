@@ -1,0 +1,3 @@
+const: nome fisso, non riassegnabile. Valore interno modificabile — oggetto const cambia dentro.
+let: riassegnabile.
+Entrambi: scope blocco, non funzione — a differenza di var.

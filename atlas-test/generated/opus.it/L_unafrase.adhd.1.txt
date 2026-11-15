@@ -1,0 +1,8 @@
+Sì: in un contesto booleano una lista vuota è falsa.
+
+Vale per tutte le collezioni vuote:
+- lista
+- tupla
+- dizionario
+- insieme
+- stringa

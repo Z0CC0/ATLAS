@@ -1,0 +1,10 @@
+Sì: in un contesto booleano una lista vuota è falsa.
+
+Vale per tutte le collezioni vuote: lista, tupla, dizionario, insieme e stringa.
+
+Quindi per controllare se una lista è vuota basta scrivere:
+
+```python
+if not mia_lista:
+    print("vuota")
+```

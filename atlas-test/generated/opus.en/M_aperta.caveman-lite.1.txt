@@ -1,0 +1,24 @@
+Before you choose an architecture, answer a few questions about the system you have. Then answer one about your team.
+
+**1. Find out which parts of the monolith actually change.**
+Map where changes actually land. Stable parts gain nothing from being split out. Leave them where they are and focus on the areas that change often.
+
+**2. Locate your transaction boundaries.**
+Find where transactions start and end before you draw any service lines. If one transaction spans two services, it becomes a distributed problem. Put your boundaries where transactions are already separate, not across them.
+
+**3. Don't plan a big-bang rewrite.**
+A full rewrite running in parallel with the old system almost always fails. The old system keeps changing, and the copy never catches up.
+
+Use progressive strangling instead:
+- Put a router in front of the monolith.
+- Move one piece at a time behind it.
+- Keep the old system authoritative until the new piece is verified.
+
+**4. Count the operational cost honestly.**
+Microservices cost more to run. Every service needs releases, monitoring, logs, alerts, and a person who looks after it. With fewer than five developers, that cost almost always exceeds the benefit.
+
+**5. Consider the modular monolith.**
+People rarely mention this option, but it often fits best. You get sharp internal boundaries and still ship one release. You can extract a module into its own service on the day you really need to. You don't pay that cost in advance.
+
+**6. Ask the deciding question, which is not technical.**
+What must your team be able to do a year from now that it cannot do today? Pick the architecture that makes that possible. Everything above helps you answer it, but this question should decide.

@@ -1,0 +1,9 @@
+No. Obfuscation doesn't protect an API key in the frontend. Everything that reaches the browser can be read. Anyone who opens the developer tools or watches the network requests will see the key, however you disguise it.
+
+**What to do instead:**
+
+1. Keep the key on the server.
+2. Have the frontend call an endpoint on your own backend. That endpoint then calls the service using the key.
+3. Put a rate limit on that endpoint. Without one, anyone can use your endpoint to spend your key for free.
+
+**If the key has already been published:** treat it as compromised and rotate it now. Deleting it from the code isn't enough. Removing it in a new commit doesn't help either, because the key stays in the repository history, and anyone who already cloned the repo has it.

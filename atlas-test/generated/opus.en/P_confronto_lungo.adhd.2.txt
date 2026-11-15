@@ -1,0 +1,37 @@
+**Write logs to local files and run a collector that ships them somewhere else.** At a thousand requests a minute, this is the setup that keeps your app from ever waiting on a log write.
+
+## The rule
+
+Writing a log must never sit in the request's critical path, whichever storage you pick.
+
+## How the three options compare
+
+**Files only**
+- Costs nothing and adds no dependency.
+- Searching means `grep`.
+- You have to configure rotation yourself, or the disk fills up.
+- You can't search across several machines at once. You have to connect to each one.
+
+**Managed service**
+- Search is instant, and alerts and retention are handled for you.
+- You pay by volume, and at a thousand requests a minute that volume grows fast.
+- The logs leave your infrastructure, so you have to strip personal data before sending them.
+
+**Your application's database**
+- Searching is familiar and convenient.
+- Logs and real requests are very different workloads, and here they compete with each other.
+- Under load, logs take up cache and connections that your real requests needed.
+
+## Why files plus a collector wins
+
+- The app writes to a local file, which is fast and never blocks.
+- The collector moves the logs to wherever you search them. That fixes the files-only problem of logging into each machine separately.
+- You keep the database's capacity for real requests.
+
+## Steps
+
+1. Configure log rotation on each machine so the disk can't fill.
+2. Run a collector on each machine that ships the files to one central place.
+3. If that central place is a managed service, strip personal data before the logs leave your infrastructure, and watch the volume because you pay for it.
+
+Next: check whether log rotation is already configured on your API machines. That's step 1.

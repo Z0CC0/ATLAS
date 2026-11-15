@@ -1,0 +1,11 @@
+x86 grew by piling new capabilities on top of old ones without breaking compatibility. Around 1995 the instruction set stopped being the real machine and became an interface, and later the complexity moved to the layers underneath it.
+
+**Foundations, 1978–1989.** 8086 of 1978 was 16 bit and grew out of 8080, compatible at source level, so existing code could come across. 80286 of 1982 added protected mode, but offered no way back to real mode without reboot. 80386 of 1985 brought 32 bit, paged virtual memory and virtual 8086 mode, which let old real-mode code run inside protected environment. 486 of 1989 pulled first level cache and maths coprocessor onto chip.
+
+**Changing the machine underneath, 1993–1995.** Pentium of 1993 was superscalar: two integer pipelines able to retire two instructions per cycle. Pentium Pro of 1995 introduced out of order execution and translated x86 instructions into internal micro-operations. From that point x86 is an interface, no longer the real machine underneath. Processor runs its own internal machine and presents x86 on top.
+
+Frequency, then 64 bit, then cores, 2000–2006. Pentium 4 of 2000 chased frequency with very long pipeline and hit power wall. In 2003 AMD extended architecture to 64 bit with AMD64, and Intel adopted same instruction set. First time dominant extension did not come from Intel. From 2006, with Core 2, direction shifted from frequency to core count.
+
+Across these generations vector extensions kept growing: MMX, SSE, AVX, AVX-512.
+
+Today complexity sits in layers below instruction set: branch prediction, cache hierarchy, speculative execution. Spectre and Meltdown in 2018 showed speculative execution carried security cost nobody had priced.

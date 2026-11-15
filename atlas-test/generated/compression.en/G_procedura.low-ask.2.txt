@@ -1,0 +1,3 @@
+Don't run ALTER TABLE ALTER COLUMN TYPE directly — that rewrites whole table under ACCESS EXCLUSIVE lock, service down entire duration.
+
+Instead: first, verify every value convertible — count rows where value not all digits. Then ALTER TABLE t ADD COLUMN colonna_int integer, new nullable column, cheap, no rewrite. Backfill in batches of ten thousand rows at a time, avoids holding long lock. While backfilling, add trigger keeping colonna and colonna_int in sync, so writes during migration don't drift. Once fully backfilled, switch code to read colonna_int, ship that. Only after code running clean on new column, drop old: ALTER TABLE t DROP COLUMN colonna. That step irreversible — data gone unless restore from backup, so don't drop until confident.

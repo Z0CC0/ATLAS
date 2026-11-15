@@ -1,0 +1,13 @@
+Prima cosa: capire quale parte del monolite cambia davvero. Le parti stabili non guadagnano nulla dallo split, quindi non serve toccarle.
+
+Poi guardare dove stanno i confini transazionali: una transazione che attraversa due servizi diventa un problema distribuito.
+
+Riscrittura completa in parallelo al vecchio sistema quasi sempre fallisce: il vecchio continua a cambiare, la copia non lo raggiunge mai.
+
+L'alternativa è lo strangling progressivo: router davanti, si sposta un pezzo alla volta, il vecchio resta autorevole finché il nuovo non è verificato.
+
+I microservizi costano in operations: ogni servizio vuole release, monitoring, log, alert e qualcuno che se ne occupi. Sotto i cinque sviluppatori, quel costo operativo di solito supera il beneficio.
+
+C'è un'opzione che nessuno nomina: il monolite modulare — confini interni netti, una sola release, con la possibilità di estrarre un modulo il giorno in cui serve davvero.
+
+La domanda decisiva non è tecnica: cosa deve poter fare il team tra un anno che oggi non può fare.

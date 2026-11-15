@@ -1,0 +1,123 @@
+{
+  "version": "0.1.0",
+  "rows": {
+    "atlas": {
+      "items": 9,
+      "skills": 6,
+      "commands": 1,
+      "agents": 2,
+      "empty": [],
+      "desc": 837,
+      "descWithName": 864,
+      "rules_low": 1408,
+      "rem_low": 27,
+      "rules_high": 1530,
+      "rem_high": 32
+    },
+    "atlas-min": {
+      "items": 2,
+      "skills": 1,
+      "commands": 1,
+      "agents": 0,
+      "empty": [],
+      "desc": 30,
+      "descWithName": 34,
+      "rules_low": 1051,
+      "rem_low": 27,
+      "rules_high": 1173,
+      "rem_high": 32
+    },
+    "atlas-code": {
+      "items": 39,
+      "skills": 28,
+      "commands": 1,
+      "agents": 10,
+      "empty": [],
+      "desc": 3970,
+      "descWithName": 4106,
+      "rules_low": 1686,
+      "rem_low": 27,
+      "rules_high": 1808,
+      "rem_high": 32
+    },
+    "atlas-mem": {
+      "items": 17,
+      "skills": 11,
+      "commands": 1,
+      "agents": 5,
+      "empty": [],
+      "desc": 1684,
+      "descWithName": 1741,
+      "rules_low": 1410,
+      "rem_low": 27,
+      "rules_high": 1532,
+      "rem_high": 32
+    },
+    "atlas-video": {
+      "items": 11,
+      "skills": 8,
+      "commands": 1,
+      "agents": 2,
+      "empty": [],
+      "desc": 1059,
+      "descWithName": 1093,
+      "rules_low": 1409,
+      "rem_low": 27,
+      "rules_high": 1531,
+      "rem_high": 32
+    },
+    "atlas-max": {
+      "items": 43,
+      "skills": 32,
+      "commands": 1,
+      "agents": 10,
+      "empty": [],
+      "desc": 4489,
+      "descWithName": 4639,
+      "rules_low": 1686,
+      "rem_low": 27,
+      "rules_high": 1808,
+      "rem_high": 32
+    },
+    "_billed": {
+      "model": "claude-opus-5-5",
+      "none": 33260,
+      "atlas": {
+        "off": 1382,
+        "low": 3500,
+        "high": 3678,
+        "low-ask": 3875,
+        "low-check": 4730,
+        "low-ask-check": 5103,
+        "high-ask": 4091,
+        "high-check": 5076,
+        "high-ask-check": 5445
+      },
+      "atlas-min": {
+        "off": 18,
+        "low": 1629,
+        "high": 1812
+      },
+      "atlas-code": {
+        "off": 6307,
+        "low": 8814,
+        "high": 9036
+      },
+      "atlas-mem": {
+        "off": 2730,
+        "low": 4852,
+        "high": 5033
+      },
+      "atlas-video": {
+        "off": 1745,
+        "low": 3868,
+        "high": 4046
+      },
+      "atlas-max": {
+        "off": 7111,
+        "low": 9616,
+        "high": 9832
+      }
+    }
+  }
+}

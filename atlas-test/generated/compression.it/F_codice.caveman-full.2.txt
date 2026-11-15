@@ -1,0 +1,19 @@
+Debounce senza librerie: usa closure con timer.
+
+```javascript
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Punti chiave:
+
+- `clearTimeout` prima di ogni `setTimeout` nuovo. Senza, timer si accumulano, funzione parte piu' volte.
+- `t` sta nella chiusura esterna, non dentro funzione restituita. Altrimenti ogni chiamata avrebbe proprio timer, debounce non avverrebbe.
+- Argomenti inoltrati con spread (`...args`). Senza, funzione chiamata li riceve vuoti.
+- Questa versione non ritorna niente. Serve valore di ritorno? Serve Promise attorno.
+- Caso opposto — eseguire subito poi ignorare per periodo — non e' debounce, e' throttle. Funzione diversa.

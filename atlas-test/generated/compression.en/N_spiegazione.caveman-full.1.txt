@@ -1,0 +1,11 @@
+Eventual consistency: after write, replicas disagree briefly, converge within finite time if writes stop.
+
+Trade against availability. Strong consistency demands replicas agree now — so system refuse requests when replicas can't talk. Eventual consistency skip that, stay available, accept temporary disagreement instead.
+
+Bite you right after your own write: post comment, reload, comment gone. Convergence usually fast — under a second same region, few seconds cross-region — but that gap enough for user think their write got lost.
+
+Fix: read-your-writes — route the session that just wrote back to primary replica. Not everyone, only writer's own session.
+
+Not bug, choice. Most systems that scale pick this deliberately over strong consistency's availability cost.
+
+Few cases where unacceptable: account balances, seat availability, uniqueness checks (username, order ID). There, stale read means real damage — double-book seat, double-spend balance. Those need strong consistency; everything else, eventual usually fine.

@@ -1,0 +1,13 @@
+First: which parts of the monolith actually change. Stable parts, no benefit from splitting.
+
+Second: transaction boundaries. Split them across services, distributed transaction problem.
+
+Full rewrite in parallel with old system: almost always fails. Old one keeps changing, copy never catches up.
+
+Better: strangler pattern. Router in front, move one piece at a time, old system stays authoritative until new piece verified.
+
+Cost side: microservices mean ops overhead per service — releases, monitoring, logs, alerts, an owner. Below five devs, that cost usually beats the benefit.
+
+Overlooked option: modular monolith. Sharp internal boundaries, one release, extract a module later if actually needed.
+
+Real question, not technical: what must your team do in a year that it can't do today. Architecture follows that answer, not the other way round.

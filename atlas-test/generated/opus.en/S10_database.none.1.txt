@@ -1,0 +1,28 @@
+**Start with Postgres alone.** Add Elasticsearch or ClickHouse later, and only when one specific workload shows you numbers that justify it.
+
+## Why Postgres is the base
+
+You have four workloads. Postgres does all of them acceptably and none of them outstandingly. For a platform at an early or uncertain scale, that's the right trade. Orders are the deciding factor: they need real transactions, and Postgres has them.
+
+## How the alternatives compare
+
+| Option | Where it wins | Where it loses | Role in your platform |
+|---|---|---|---|
+| **Postgres** | Real transactions; covers all four workloads | Text search is weak above ~1M documents; analytics scans slow down past tens of millions of rows | The authoritative store |
+| **MySQL** | Same as Postgres on orders | Weaker on data types and complex queries | No reason to pick it over Postgres |
+| **MongoDB** | Variable schemas make the catalogue easier | Multi-document transactions arrived late and are costly, which is a problem for orders | Doesn't fit as the main store |
+| **Elasticsearch** | Much better text search: relevance, synonyms, typo tolerance | Not an authoritative store; it must be fed from another database | Added later for search |
+| **ClickHouse** | Much better analytics: columnar scans orders of magnitude faster | Point updates are its weak spot, so it's not for orders | Added later for analytics |
+
+The catalogue is the only place MongoDB is attractive. But you'd be giving up solid transactions on orders to make the catalogue a bit easier, which is a bad trade when orders are the part you can't compromise on.
+
+## Where this usually ends up
+
+The common mature setup is **Postgres as the authoritative store, plus Elasticsearch and ClickHouse fed from it**. That's a possible destination, not a starting point. Each system you add creates two new problems: keeping it in sync with Postgres, and keeping its data aligned. The main cost of specialised systems isn't licences. It's the time your people spend keeping them running.
+
+## When to add each one
+
+- **Elasticsearch:** when your catalogue or searchable content grows past about a million documents, or when you can show that relevance, synonyms or typo tolerance are hurting users. Below a million documents it's almost always premature. Postgres's built-in text search is good enough there.
+- **ClickHouse:** when analytics queries reach tens of millions of rows and you can measure the scans getting slow.
+
+Until one of those happens, a single Postgres instance is the cheapest setup that's good enough. If it would help, I can turn this into a page you can share with your team.

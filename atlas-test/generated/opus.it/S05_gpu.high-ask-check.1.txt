@@ -1,0 +1,11 @@
+conoscenza interna
+
+5080 va soprattutto più veloce nella generazione di fotogrammi; nel rasterizzatore puro guadagna solo circa 10-15%.
+
+Architettura: Blackwell sulla 5080, Ada Lovelace sulla 4080.
+
+Memoria: GDDR7 contro GDDR6X, con banda da circa 717 a circa 960 GB/s.
+
+Consumo dichiarato: da 320 a 360 W.
+
+Connettore di alimentazione: resta a 16 pin.

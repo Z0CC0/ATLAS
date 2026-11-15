@@ -1,0 +1,19 @@
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+`clearTimeout` prima di ogni nuovo `setTimeout`, sennò i timer si accumulano e la funzione parte più volte.
+
+`t` sta nella chiusura, non dentro la funzione restituita, sennò ogni chiamata ha il proprio timer e niente debounce.
+
+Argomenti inoltrati con lo spread, sennò `fn` li riceve vuoti.
+
+Nessun valore di ritorno: se serve, usa una Promise.
+
+Per eseguire subito e poi ignorare le chiamate per un periodo serve invece un throttle, che è un'altra funzione.

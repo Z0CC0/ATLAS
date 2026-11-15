@@ -1,0 +1,11 @@
+Before you touch the architecture, work out which parts of the monolith actually change. The stable parts gain nothing from being split out — splitting them just adds operational weight for no benefit.
+
+Then look at where your transaction boundaries currently sit. Any transaction that would end up spanning two services becomes a distributed transaction problem, so this should shape the split points, not be an afterthought.
+
+Avoid running a full rewrite in parallel with the old system — it almost always fails, because the old system keeps changing underneath you and the rewrite never catches up. The alternative that actually works is progressive strangling: put a router in front of the monolith, move one piece at a time behind it, and keep the old system authoritative until each new piece is verified in production.
+
+On the microservices question specifically: they cost more in operations, full stop. Every service wants its own releases, monitoring, logs, alerts, and someone responsible for it. Below five developers, that operational cost almost always exceeds whatever benefit you're chasing.
+
+There's a middle option worth considering that rarely comes up: a modular monolith. Sharp internal boundaries, one release, but you keep the option to extract any module the day it's genuinely needed.
+
+Underneath all of this, the real question isn't technical — it's what your team needs to be able to do a year from now that it can't do today. That answer should drive the choice, not the reverse.

@@ -1,0 +1,26 @@
+La consistenza eventuale è un modo di comportarsi dei sistemi che tengono più copie (repliche) degli stessi dati. Quando scrivi qualcosa, le repliche non sono d'accordo subito. Alcune hanno già il dato nuovo, altre no. Però se le scritture si fermano, tutte arrivano allo stesso stato entro un tempo finito. "Eventuale" vuol dire proprio questo: alla fine convergono, ma non nell'istante in cui scrivi.
+
+## Perché un sistema dovrebbe accettarlo
+
+È un compromesso con la disponibilità. Prendi un sistema che pretende consistenza forte, cioè tutte le repliche sempre allineate. Quando le repliche non riescono a parlarsi, quel sistema deve rifiutare le richieste, perché non può garantire di darti il dato giusto. Un sistema con consistenza eventuale invece continua a rispondere, accettando che per un po' le repliche non coincidano.
+
+Per questo non va visto come un difetto da eliminare: è una scelta. La maggior parte dei sistemi che scalano la accetta di proposito.
+
+## Perché dovrebbe interessarti
+
+Il problema lo vedi soprattutto quando qualcuno legge subito dopo aver scritto. Il caso classico è questo: l'utente pubblica un commento, ricarica la pagina e il commento non c'è. La scrittura è andata su una replica e la lettura è arrivata da un'altra che non l'ha ancora ricevuta. Per l'utente sembra che il commento sia sparito.
+
+La soluzione comune è mirata. Solo la sessione che ha appena scritto legge dalla replica primaria, mentre tutti gli altri continuano a leggere dalle repliche normali. Così chi ha scritto vede subito il proprio dato e il resto del sistema mantiene i vantaggi della consistenza eventuale.
+
+Quanto dura questa finestra di disallineamento:
+- **repliche nella stessa regione:** di solito meno di un secondo;
+- **repliche in regioni diverse:** si sale a qualche secondo.
+
+## Quando non va bene
+
+I casi in cui la consistenza eventuale non è accettabile sono pochi e facili da riconoscere:
+- **saldi di conto**, perché non puoi spendere due volte gli stessi soldi;
+- **disponibilità di posti**, perché non puoi vendere due volte lo stesso posto;
+- **unicità di un identificativo**, perché due utenti non possono avere lo stesso nome o codice.
+
+In pratica: per quasi tutto la consistenza eventuale va bene. Ti basta gestire il caso di chi rilegge subito ciò che ha scritto e trattare a parte quei pochi dati che devono essere sempre esatti.

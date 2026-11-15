@@ -1,0 +1,29 @@
+A couple of things to flag before the answer: I don't have file-reading tools active in this session, so I can't independently open `db/session.py` to confirm it — and the working directory here (`atlas-test`) looks like a text-compression project (`generate.mjs`, `measure.mjs`), not an API with a connection pool. So this diagnosis is built entirely from the details you supplied, not from something I went and verified in your code. Worth double-checking against the actual file before you act on it.
+
+That said, here's what's going on and how to fix it:
+
+**What's happening**
+
+This isn't a slow query — it's connection pool exhaustion. In your middleware, `db/session.py:47` only releases the connection on the success path. When a handler raises an exception, `release()` never runs, so that connection stays checked out until it eventually times out. Each failed request permanently (until timeout) eats one connection from the pool. After a few hundred of them, the pool is empty and every new request has to wait for one to free up — which is why you see latency climbing rather than an outright error the moment things go wrong. It looks like "the API is slow under load," but really it's "the API is quietly leaking connections every time a request errors."
+
+**The fix**
+
+Wrap the acquire/handle in a try/finally so release happens whether or not the handler raises:
+
+```python
+conn = pool.acquire()
+try:
+    return handler(conn, request)
+finally:
+    pool.release(conn)
+```
+
+That's the actual fix. Don't just bump `pool_size` — that only buys you more time before the pool empties again, it doesn't stop the leak. Raise `pool_size` afterward, and only if your real traffic actually needs a bigger pool.
+
+**To confirm it**
+
+```
+pytest tests/test_pool.py -k exhaustion -x
+```
+
+Run it before the change to see the exhaustion behavior, then after to confirm it's gone.

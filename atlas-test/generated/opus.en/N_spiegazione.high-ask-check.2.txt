@@ -1,0 +1,15 @@
+internal knowledge
+
+After a write, replicas don't agree right away. If writes stop, they converge within a finite time.
+
+Why care: it hits anyone who reads right after writing. A user posts a comment, reloads, and doesn't see it.
+
+Common fix: the session that just wrote reads from the primary replica. Everyone else keeps reading from the other replicas.
+
+Typical delay: under a second between replicas in the same region. Across regions it rises to seconds.
+
+The trade is against availability. A system that demands strong consistency has to refuse requests when its replicas can't talk to each other.
+
+**It's a choice, not a defect to eliminate.** Most systems that scale accept it deliberately.
+
+**It's unacceptable in only a few cases, and they're easy to spot:** account balances, seat availability, and uniqueness of an identifier.

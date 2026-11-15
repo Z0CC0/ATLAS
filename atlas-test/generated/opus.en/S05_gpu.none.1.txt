@@ -1,0 +1,16 @@
+The RTX 5080 is a newer generation than the 4080, but it's an incremental upgrade, not a big leap.
+
+**What's changed under the hood**
+- **Architecture:** The 5080 uses Nvidia's Blackwell architecture. The 4080 uses Ada Lovelace.
+- **Memory:** The 5080 has GDDR7 instead of the 4080's GDDR6X. Memory bandwidth goes from about 717 GB/s to about 960 GB/s.
+- **Power:** Rated power draw goes from 320 W to 360 W. Check that your power supply has some headroom.
+- **Connector:** Both cards use the same 16-pin power connector, so your cabling doesn't need to change.
+
+**What that means in games**
+The biggest improvement is in **frame generation**, not raw rendering speed. In traditional rasterised performance, the 5080 is only about **10–15% faster** than the 4080.
+
+**Should you upgrade?**
+- **From a 4080:** It's hard to justify unless you'll make heavy use of frame generation. A 10–15% raster gain is small for a new card.
+- **From an older card, or buying new:** The 5080 is the better pick. It has newer features, faster memory and better frame generation, and it costs only a bit more in power.
+
+These figures come from general knowledge, not from benchmarks I've checked.

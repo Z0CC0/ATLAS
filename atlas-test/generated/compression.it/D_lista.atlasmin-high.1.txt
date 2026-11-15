@@ -1,0 +1,15 @@
+Header consigliati per un sito statico:
+
+Strict-Transport-Security, max-age almeno 31536000, includeSubDomains — forza HTTPS
+
+Content-Security-Policy con default-src 'self' — blocca script di terze parti iniettati
+
+X-Content-Type-Options: nosniff — impedisce al browser di indovinare il tipo di contenuto
+
+Referrer-Policy: strict-origin-when-cross-origin — evita di far uscire il percorso completo verso altri siti
+
+X-Frame-Options: DENY (o frame-ancestors 'none' nella CSP) — contro clickjacking
+
+Permissions-Policy — spegni camera, microfono, geolocalizzazione se non usati
+
+X-XSS-Protection va omesso: deprecato, ignorato dai browser moderni, nelle versioni vecchie introduceva vulnerabilità

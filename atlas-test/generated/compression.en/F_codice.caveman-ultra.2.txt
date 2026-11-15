@@ -1,0 +1,19 @@
+Debounce delay function calls till pause happen. Closure hold timer:
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Key points:
+
+- `t` must live outside returned function, in closure. Inside, each call get own timer, no debounce happen.
+- `clearTimeout(t)` fire before every `setTimeout`, else timers pile up, `fn` run more than once.
+- `...args` forward call arguments to `fn`. Skip it, `fn` get nothing.
+- This version return nothing. Need return value → wrap in Promise.
+- Want run immediately then ignore calls for period, that's throttle, different function.

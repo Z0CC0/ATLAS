@@ -1,0 +1,27 @@
+Ecco un'implementazione senza librerie:
+
+```javascript
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Uso:
+
+```javascript
+const onResize = debounce(() => console.log('resize'), 200);
+window.addEventListener('resize', onResize);
+```
+
+Quattro dettagli contano:
+
+- **`clearTimeout` prima di ogni nuovo `setTimeout`.** Senza questa chiamata i timer si accumulano e la funzione parte più volte.
+- **`t` sta nella chiusura, fuori dalla funzione restituita.** Se la dichiari dentro, ogni chiamata ha il proprio timer e il debounce non avviene.
+- **Gli argomenti passano con lo spread (`...args`).** Senza lo spread, `fn` riceve argomenti vuoti.
+- **Questa versione non restituisce niente.** Se ti serve il valore di ritorno di `fn`, devi usare una Promise.
+
+Forse ti serve il caso opposto: eseguire subito e poi ignorare le chiamate per un certo periodo. In quel caso ti serve un throttle, che è una funzione diversa.

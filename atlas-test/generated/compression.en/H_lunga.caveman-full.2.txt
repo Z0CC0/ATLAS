@@ -1,0 +1,9 @@
+Prompt cache save processed prefix of request. Same-start later request skip reprocess, reuse cache instead.
+
+Cache prefix-only. One char differ at start, no reuse from there down. So order matter: stable stuff first (system instructions, docs, tool defs), changing stuff after. Reverse order and cache useless — one clock line change every turn wreck reuse for everything after it too.
+
+Cost: write to cache pricier than normal read. First request eat that cost, no gain yet. Gain start second request onward, grow with turn count.
+
+Pay off: long conversations, big stable context — system prompt, attached docs, tool definitions reused turn after turn.
+
+Not pay off: single one-off requests that differ each time. Pay write cost, never read back, net loss.

@@ -1,0 +1,13 @@
+Before anything technical: what does the team need to be able to do a year from now that it can't do today? That question decides the architecture.
+
+1. Which parts actually change. Stable parts gain nothing from being split out.
+
+2. Where transaction boundaries sit. A transaction spanning two services becomes a distributed problem.
+
+Avoid a full rewrite running parallel to the old system. It almost always fails, because the old one keeps changing and the copy never catches up.
+
+Strangle it progressively instead. Put a router in front and move one piece at a time. The old system stays authoritative until the new piece is verified.
+
+Microservices cost more to operate. Every service needs releases, monitoring, logs, alerts and an owner. Below five developers that cost almost always exceeds the benefit.
+
+Consider a modular monolith, the option nobody mentions. It has sharp internal boundaries and one release. You can still extract a module the day you actually need to.

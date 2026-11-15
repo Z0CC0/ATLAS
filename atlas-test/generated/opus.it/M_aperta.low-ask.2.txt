@@ -1,0 +1,11 @@
+Prima di scegliere l'architettura, chiarisci cosa il team deve poter fare fra un anno che oggi non può fare. Questa domanda decide, e non è tecnica. Le altre servono a rispondere a questa.
+
+Primo dato tecnico: quale parte del monolite cambia davvero. Le parti stabili non guadagnano nulla se le spezzi, quindi lasciale dove sono.
+
+Secondo: dove stanno i confini delle transazioni. Una transazione che attraversa due servizi diventa un problema distribuito, quindi i tagli vanno fatti dove le transazioni non si incrociano.
+
+Poi conta la dimensione del team. I microservizi costano di più da gestire: ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupa. Sotto i cinque sviluppatori quel costo supera quasi sempre il beneficio.
+
+Valuta anche il **monolite modulare**, l'opzione di cui si parla poco. Ha confini interni netti e un solo rilascio, e ti permette di estrarre un modulo il giorno che serve davvero.
+
+Sul come migrare, evita la riscrittura completa in parallelo al vecchio sistema. Fallisce quasi sempre, perché il vecchio continua a cambiare e la copia non lo raggiunge mai. Funziona meglio lo **strangolamento progressivo**: metti un router davanti, sposti un pezzo per volta, e il vecchio resta la fonte autorevole finché il nuovo non è verificato.

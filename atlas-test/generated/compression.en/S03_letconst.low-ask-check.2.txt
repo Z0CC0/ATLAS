@@ -1,0 +1,1 @@
+Both block scoped, unlike var. let allows reassigning the name to a new value; const blocks that reassignment — name stays bound once set. But const only locks the name, not the value: an object declared with const stays mutable internally, so its properties can still change, just can't rebind the variable itself to a different value.

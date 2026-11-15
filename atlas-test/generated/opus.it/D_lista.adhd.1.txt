@@ -1,0 +1,27 @@
+Aggiungi questi header alla configurazione del server (o del tuo hosting statico):
+
+```
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+Content-Security-Policy: default-src 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+```
+
+**X-XSS-Protection non va aggiunto.** È deprecato e i browser moderni lo ignorano. Nelle versioni vecchie, inoltre, introduceva vulnerabilità.
+
+## A cosa serve ciascuno
+
+**Protezioni principali**
+1. **Strict-Transport-Security**: obbliga il browser a usare HTTPS. Il `max-age` deve essere di almeno 31536000 secondi, cioè un anno.
+2. **Content-Security-Policy** con `default-src 'self'`: blocca l'iniezione di script di terze parti. È l'header più importante.
+3. **frame-ancestors 'none'**, dentro la CSP: protegge dal clickjacking. In alternativa puoi usare `X-Frame-Options: DENY`.
+
+**Protezioni aggiuntive**
+1. **X-Content-Type-Options: nosniff**: impedisce al browser di indovinare il tipo di contenuto.
+2. **Referrer-Policy: strict-origin-when-cross-origin**: quando un utente passa ad altri siti, non invia il percorso completo della pagina.
+3. **Permissions-Policy**: disattiva camera, microfono e geolocalizzazione. Se il sito usa una di queste funzioni, togli la voce corrispondente.
+
+Per aggiungerli e verificarli servono circa 10 minuti.
+
+Prossimo passo: aggiungi il blocco alla configurazione e ricarica il sito con DevTools aperti (scheda Network, poi Response Headers della pagina) per controllare che compaiano tutti e 5.

@@ -1,0 +1,26 @@
+**HTTPS is ordinary HTTP sent through a channel that TLS encrypts.** Before any web page loads, TLS sets up that channel with a short exchange called the handshake.
+
+## The handshake, step by step
+
+1. **Client says hello.** Your browser opens the connection and lists the TLS versions and ciphers it supports.
+2. **Server answers.** It picks one version and one cipher from that list and sends back its certificate.
+3. **Client checks the certificate.** The certificate links a domain name to a public key, and a certificate authority signs it. The browser checks that signature by following the chain of signers up to a root certificate it already has stored.
+4. **Both sides agree on a session key.** Today this is usually done with an elliptic curve Diffie-Hellman exchange.
+5. **Encrypted traffic starts.** From here on, every message is encrypted and authenticated. Anyone in the middle can't read it and can't change it.
+
+## Why the session key is symmetric
+
+Asymmetric encryption (public/private key pairs) costs too much to run on real traffic. TLS uses it only during setup. The actual data is protected with the shared symmetric session key, which is much cheaper.
+
+## TLS 1.3 vs TLS 1.2
+
+| Version | Handshake round trips |
+|---|---|
+| TLS 1.2 | 2 |
+| TLS 1.3 | 1 |
+
+Fewer round trips means the secure connection is ready sooner.
+
+## What the padlock does not tell you
+
+A certificate proves only that **whoever controls that domain also controls that key**. It says nothing about who runs the site. A valid HTTPS connection to a scam domain is still a scam. It is just an encrypted one.

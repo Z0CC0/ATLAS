@@ -1,0 +1,29 @@
+You only need a closure and a timer:
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Usage:
+
+```js
+const onResize = debounce(() => console.log('resized'), 200);
+window.addEventListener('resize', onResize);
+```
+
+## Why it works
+
+- **`clearTimeout(t)` runs before every new `setTimeout`.** Each call cancels the timer that's still pending, so only the last call in a burst runs. If you leave this out, the timers pile up and the function fires more than once.
+- **`t` is declared in the closure, outside the returned function.** All calls share that one timer, so a new call can cancel the previous one. If you declare `t` inside the returned function, each call gets its own timer and nothing gets debounced.
+- **The arguments are passed on with `...args`.** Whatever you pass to the debounced function reaches `fn`. Without the spread, `fn` is called with no arguments.
+
+## Limitations
+
+- **It doesn't return anything.** `fn` runs later inside the timeout, so the debounced function can't give you its result. If you need the return value, wrap the call in a Promise.
+- **It runs at the end of a burst, not the start.** If you want the function to run immediately and then ignore calls for a while, you need a throttle, which is a different function.

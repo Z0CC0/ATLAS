@@ -1,0 +1,5 @@
+**Differenza principale:** `let` permette di riassegnare la variabile, `const` no.
+
+**Attenzione:** `const` blocca solo il nome, non il valore. Non puoi assegnare un nuovo valore allo stesso nome. Il valore però resta modificabile. Per esempio, un oggetto dichiarato con `const` può cambiare al suo interno.
+
+**In comune:** `let` e `const` hanno ambito di blocco. `var` invece non ce l'ha.

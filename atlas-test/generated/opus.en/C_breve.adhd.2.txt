@@ -1,0 +1,15 @@
+Skip the plain index. If you query for one value that is rare, use a partial index on that value instead:
+
+```sql
+CREATE INDEX idx_orders_failed ON orders (status) WHERE status = 'failed';
+```
+
+**Why a normal index doesn't help:**
+
+1. **The planner usually won't use it.** A column with three distinct values has low cardinality, so a B-tree index on it is normally ignored.
+2. **It picks a sequential scan instead.** When a filter matches more than roughly 5–10% of the rows, a full table scan is cheaper than going through the index. With three values, most filters match far more than that.
+3. **You still pay for it.** The unused index slows down every write and takes up disk space.
+
+**When the partial index pays off:** it only works if one of the three values is rare, for example 2% of rows are `'failed'`. The index then covers only those rows, so it stays small and the planner will use it for `WHERE status = 'failed'`.
+
+Next: run `SELECT status, count(*) FROM your_table GROUP BY status;` to see if any value is rare enough.

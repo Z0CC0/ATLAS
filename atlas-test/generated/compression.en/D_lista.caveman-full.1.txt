@@ -1,0 +1,15 @@
+Static site headers, seven need:
+
+**Strict-Transport-Security**: `max-age=31536000; includeSubDomains` — force HTTPS.
+
+**Content-Security-Policy**: `default-src 'self'` — block third-party script injection.
+
+**X-Content-Type-Options**: `nosniff` — stop content-type guessing.
+
+**Referrer-Policy**: `strict-origin-when-cross-origin` — no full path leak to other sites.
+
+**X-Frame-Options**: `DENY` (or `frame-ancestors 'none'` in CSP) — anti-clickjacking.
+
+**Permissions-Policy**: disable camera, microphone, geolocation if unused.
+
+**X-XSS-Protection**: skip it. Deprecated, modern browsers ignore, old versions introduced vulns.

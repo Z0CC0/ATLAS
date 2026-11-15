@@ -1,0 +1,11 @@
+Eventual consistency: after you write, replicas disagree briefly, then converge if writes stop. Same-region convergence: under a second. Cross-region: seconds.
+
+Why it exists: trade against availability. Strong consistency forces a system to refuse requests when replicas can't talk to each other.
+
+Why you'd hit it: you post a comment, reload, don't see it — you're reading right after your own write, before convergence finishes.
+
+Fix: route the session that just wrote to the primary replica, not everyone — just that user, just briefly.
+
+Not a bug to eliminate. A deliberate choice most systems that scale make.
+
+Unacceptable it: account balances, seat availability, unique identifiers. Elsewhere, accept it.

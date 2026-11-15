@@ -1,0 +1,19 @@
+I'd advise against putting all of it in triggers, though I understand why the idea appeals.
+
+**What you'd gain.** No path through the application can skip a rule enforced in the database. That includes a script someone runs by hand.
+
+**What it would cost you:**
+
+- **Nobody can see it.** Someone reading the application code has no idea the triggers exist. A change that looks simple can set off a chain of other changes, and nothing in the code shows it happened.
+- **Your current tests won't cover it.** The tools your team already uses don't test triggers. You'd need a separate set of tests that run against a real database.
+- **Debugging gets harder.** When a trigger fails, you just see a failed write. It doesn't tell you which rule rejected it.
+- **Migrations get fragile.** The order triggers run in matters, but that order isn't written down anywhere. Every schema change risks breaking a dependency you can't see.
+
+**What I'd do instead:**
+
+1. **Keep integrity rules in the database:** constraints, foreign keys, uniqueness and domain checks. The database is good at these, and they don't hide behavior.
+2. **Put the business logic in the application, behind a single entry point** that every write has to go through.
+
+The single entry point gives you the same guarantee as a trigger, as long as you allow direct database access only for migrations. Once that rule is in place, nothing can bypass the logic. It also stays visible in the code, your current tools can test it, and errors can say which rule failed.
+
+So your goal of making the rules impossible to bypass is achievable. You get there by controlling who can access the database directly, not by moving all the logic into triggers.

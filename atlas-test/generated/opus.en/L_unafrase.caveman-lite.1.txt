@@ -1,0 +1,8 @@
+Yes. An empty list is falsy, so `if my_list:` runs only when the list has items.
+
+This holds for every empty collection: list, tuple, dict, set and string. `[]`, `()`, `{}`, `set()` and `""` are all falsy in a boolean context.
+
+```python
+for empty in ([], (), {}, set(), ""):
+    print(bool(empty))  # False each time
+```

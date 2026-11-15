@@ -1,0 +1,5 @@
+`let` permette di riassegnare la variabile. `const` invece impedisce di riassegnare il nome.
+
+`const` però non rende immutabile il valore. Un oggetto dichiarato con `const` può comunque cambiare al suo interno.
+
+Sia `let` sia `const` hanno ambito di blocco, a differenza di `var`.

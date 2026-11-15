@@ -1,0 +1,25 @@
+The story starts just before the eighties and keeps coming back to one theme: every generation stays compatible with the last, while the machine underneath changes completely.
+
+**Foundations (1978–1985)**
+- **8086 (1978):** 16 bit. It grows out of the 8080 and stays compatible with it at source level. From the start, x86 carries its past forward.
+- **80286 (1982):** introduces protected mode. There is no way back to real mode without a reboot. This one-way switch is its big limit.
+- **80386 (1985):** the real turning point. It brings 32 bit, paged virtual memory and virtual 8086 mode. Virtual 8086 mode fixes the 286's problem, because old 16 bit code now runs inside protected mode.
+
+**Integration and parallelism (1989–1995)**
+- **486 (1989):** puts the first level cache and the maths coprocessor on the chip. Parts that used to sit outside the processor move inside it.
+- **Pentium (1993):** superscalar. Two integer pipelines can retire two instructions per cycle, so the chip does more work per clock, not only more clocks.
+- **Pentium Pro (1995):** the deepest break. It adds out of order execution and translates x86 instructions into internal micro-operations. From here on, x86 is an interface. It is no longer the real machine underneath.
+
+**Frequency wall and the 64 bit shift (2000–2006)**
+- **Pentium 4 (2000):** chases clock frequency with a very long pipeline and hits the power wall. Raising frequency stops paying off.
+- **AMD64 (2003):** AMD extends the architecture to 64 bit, and Intel adopts the same instruction set. For the first time, the dominant x86 extension does not come from Intel.
+- **Core 2 (2006):** the direction changes from frequency to core count. More cores replace faster cores.
+
+**Vector extensions, across generations**
+- They grow step by step: MMX, then SSE, then AVX, then AVX-512. The instruction set keeps adding wider vector operations.
+
+**Today**
+- The complexity now sits in the layers below the instruction set: branch prediction, the cache hierarchy and speculative execution. That is where performance comes from.
+- **Spectre and Meltdown (2018)** show the downside. Speculative execution carried a security cost that nobody had priced in.
+
+**The arc in one line:** x86 starts as a real 16 bit machine. From the Pentium Pro on it becomes a compatibility interface over a speculative engine, and in 2018 that engine turns out to have a security bill.

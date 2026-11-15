@@ -1,0 +1,5 @@
+Don't run `ALTER TABLE ALTER COLUMN TYPE` directly — it rewrites the whole table under an ACCESS EXCLUSIVE lock, service down the whole time.
+
+Do it in steps instead. First, count rows where the value isn't all digits — confirms everything converts before you touch anything. Add the new column: `ALTER TABLE t ADD COLUMN colonna_int integer`. Backfill in batches of ten thousand rows, so no long lock is ever held. While backfilling, add a trigger keeping old and new columns in sync, so concurrent writes don't drift. Switch the code to read from the new column and ship it. Only then, `ALTER TABLE t DROP COLUMN colonna`.
+
+That last step is irreversible — once dropped, the data's gone unless you restore from backup.

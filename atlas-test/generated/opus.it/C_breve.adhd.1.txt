@@ -1,0 +1,14 @@
+No, di norma non conviene: su una colonna con solo tre valori distinti il planner di solito non usa l'indice B-tree.
+
+**Perché non serve**
+- Se il filtro seleziona più del 5-10% circa delle righe, il planner sceglie una scansione sequenziale. Con tre valori, ogni valore copre in genere una quota molto più alta.
+- L'indice costa comunque: rallenta le scritture e occupa spazio, anche quando nessuna query lo usa.
+
+**L'eccezione: un valore raro**
+Se uno dei tre valori compare in poche righe e lo filtri spesso, crea un indice parziale solo su quel valore. In questo caso l'indice viene usato.
+
+```sql
+CREATE INDEX idx_tabella_raro ON tabella (colonna) WHERE colonna = 'valore_raro';
+```
+
+Prossimo passo (2 minuti): controlla quante righe ha ciascun valore con `SELECT colonna, count(*) FROM tabella GROUP BY colonna;`. Se uno dei valori è sotto il 5% circa delle righe, crea l'indice parziale su quel valore. Se nessuno lo è, non creare l'indice.

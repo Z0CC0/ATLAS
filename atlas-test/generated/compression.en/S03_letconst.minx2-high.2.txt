@@ -1,0 +1,1 @@
+`let` lets you reassign the name. `const` doesn't, but it only locks the name, not the value: an object declared with `const` can still change inside. Both are block scoped, which `var` is not.

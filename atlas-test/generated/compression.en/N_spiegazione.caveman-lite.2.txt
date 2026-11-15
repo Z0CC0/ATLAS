@@ -1,0 +1,13 @@
+Eventual consistency: after write, replicas disagree briefly, but converge in finite time if writes stop.
+
+Trade-off: against availability. Strong consistency forces system to refuse requests when replicas can't talk.
+
+Matters here: you post comment, reload, don't see it. Read-after-write problem.
+
+Fix: read from primary replica for session that just wrote, not for everyone.
+
+Convergence time: same region, under a second. Cross-region, rises to seconds.
+
+Not a defect — a choice. Most systems accept it deliberately to scale.
+
+Unacceptable cases (few, recognisable): account balances, seat availability, uniqueness of identifier. There, strong consistency needed.

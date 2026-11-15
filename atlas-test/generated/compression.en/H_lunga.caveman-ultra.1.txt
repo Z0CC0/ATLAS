@@ -1,0 +1,8 @@
+Prompt caching store already-processed prefix of request. Later request start same way, skip reprocess that part, pay less.
+
+Key limit: prefix-only. One different char at start, cache miss from that point on. So order matter — stable stuff (system instructions, docs, tool definitions) first, changing stuff (user message, timestamp) last. One volatile line early, like a clock, kill reuse of everything after it.
+
+Cost shape: first write cost more than normal read. So request one always pricier. Gain start request two onward, grow with turn count.
+
+Pays off: long conversation, large stable context, many turns reusing same prefix.
+Doesn't pay off: single unrelated requests each different — pay write cost, never read back, net loss.

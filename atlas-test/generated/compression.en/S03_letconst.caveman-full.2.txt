@@ -1,0 +1,5 @@
+const: name reassign forbidden, value modify allowed. Object made with const, internals still change fine.
+
+let: reassign allowed.
+
+Both: block scoped, unlike var.

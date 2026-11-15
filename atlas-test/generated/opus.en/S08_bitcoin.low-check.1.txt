@@ -1,0 +1,15 @@
+internal knowledge
+
+Bitcoin started in 2008 with a paper titled *Bitcoin: A Peer-to-Peer Electronic Cash System*. It was signed Satoshi Nakamoto, a pseudonym that has never been tied to a real person.
+
+The idea came out of the cypherpunk scene. Earlier designs like b-money and bit gold had tried to create digital money, but none of them solved how to agree on the order of transactions. Without an agreed order, the same coin can be spent twice. Satoshi's paper took on that double-spending problem without relying on any central body to keep the ledger.
+
+**The answer was a chain of blocks ordered by proof of work.** Each block takes real computing effort to produce. To rewrite an old block, an attacker would have to redo the work for that block and for every block after it. That makes changing the past very expensive.
+
+The network went live on 3 January 2009, when the first block was created. That block contains the headline of a Times article about a bank bailout. The headline proves the block wasn't made before that date, and it also states why the project exists.
+
+The issuance rules were fixed from the start. Each new block paid a reward of 50 bitcoin. That reward halves every 210,000 blocks, which is roughly every four years. Because of this, the total supply approaches 21 million and can never go higher.
+
+The first documented purchase came in 2010, when someone paid 10,000 bitcoin for two pizzas.
+
+In 2011 Satoshi stopped taking part in public. The bitcoin linked to Satoshi have never been moved.

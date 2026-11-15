@@ -1,0 +1,11 @@
+Conoscenza interna, non verificata.
+
+Guadagno reale contenuto: rasterizzazione pura circa +10-15%. Salto più grande su generazione fotogrammi.
+
+Architettura: Blackwell sulla 5080, Ada Lovelace sulla 4080.
+
+Memoria: GDDR7 contro GDDR6X, banda da circa 717 a circa 960 GB/s.
+
+Consumo dichiarato: da 320 a 360 W.
+
+Connettore alimentazione: sempre 16 pin.

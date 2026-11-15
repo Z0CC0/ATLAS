@@ -1,0 +1,23 @@
+Parti da Postgres da solo. Aggiungi altri sistemi solo quando un carico specifico lo impone, con numeri alla mano.
+
+**Postgres.** Regge tutti e quattro i carichi in modo accettabile, nessuno in modo eccellente.
+- Ordini: transazioni serie. Sugli ordini non sono negoziabili.
+- Ricerca testuale: integrata, sufficiente sotto il milione di documenti, debole sopra.
+- Analisi: regge fino a decine di milioni di righe. Oltre, le scansioni diventano lente.
+
+**MySQL.** Sugli ordini è equivalente a Postgres. È più debole su tipi di dato e query complesse. Non ha vantaggi che giustifichino la scelta rispetto a Postgres.
+
+**MongoDB.** Semplifica il catalogo con schemi variabili. Però le transazioni multi-documento sono arrivate tardi e costano. Con gli ordini nello stesso sistema è un compromesso cattivo.
+
+**Elasticsearch.** Sulla ricerca testuale è molto superiore: rilevanza, sinonimi, tolleranza agli errori di battitura. Però non è un archivio autorevole. Va alimentato da un altro database, non lo sostituisce. Aggiungerlo prima del milione di documenti è quasi sempre prematuro.
+
+**ClickHouse.** Sull'analisi è molto superiore: le scansioni colonnari stanno ordini di grandezza avanti. Non serve per gli ordini, perché gli aggiornamenti puntuali sono il suo punto debole.
+
+**Configurazione finale tipica.** Postgres resta l'archivio autorevole. Elasticsearch e ClickHouse vengono alimentati da lì.
+
+**Percorso consigliato:**
+1. Oggi: solo Postgres, per ordini, catalogo, ricerca e analisi.
+2. Il catalogo supera il milione di documenti, o la qualità della ricerca diventa un problema misurabile: aggiungi Elasticsearch, alimentato da Postgres.
+3. L'analisi supera le decine di milioni di righe e le scansioni rallentano: aggiungi ClickHouse, alimentato da Postgres.
+
+**Costo da mettere in conto.** Ogni sistema aggiunto porta due problemi: tenerlo sincronizzato e tenere i dati allineati. Il costo vero dei sistemi specializzati non è la licenza. È il tempo delle persone che li tengono in piedi. Per questo ogni aggiunta va giustificata con i numeri, non anticipata.

@@ -1,0 +1,1 @@
+const stop rename, not value change. Object made with const still change inside (add/remove props, mutate fields) — only name-to-value binding locked. let allow rename anytime. Both const and let block-scoped, var not — var leak outside block.

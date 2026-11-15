@@ -1,0 +1,21 @@
+Static site still need these headers:
+
+- **Strict-Transport-Security**: `max-age=31536000; includeSubDomains` or longer. Browser then use HTTPS only.
+- **Content-Security-Policy**: `default-src 'self'`. This header block third-party script injection.
+- **X-Content-Type-Options**: `nosniff`. Browser then not guess content type.
+- **Referrer-Policy**: `strict-origin-when-cross-origin`. Full path not leak to other sites.
+- **Clickjacking protection**: `X-Frame-Options: DENY`, or `frame-ancestors 'none'` inside CSP.
+- **Permissions-Policy**: switch off camera, microphone, geolocation if site not use them.
+
+Do not set **X-XSS-Protection**. Header is deprecated. Modern browsers ignore it, and older versions introduced vulnerabilities.
+
+Example:
+
+```
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+Content-Security-Policy: default-src 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+X-Frame-Options: DENY
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+```

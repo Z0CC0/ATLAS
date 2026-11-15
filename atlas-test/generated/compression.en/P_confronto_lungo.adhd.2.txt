@@ -1,0 +1,13 @@
+For your traffic (~1,000 req/min), go with local files plus a collector that ships them elsewhere — not a database, not a direct-to-managed-service setup.
+
+Here's the reasoning that gets you there:
+
+A database is out because you'd be putting your logs into the same database that serves your actual requests. Those are two very different workloads, and under load the logs end up fighting the real requests for caches and connections — exactly the resources your API needs to stay fast. At your volume, that's not a hypothetical, it'll happen.
+
+A managed service alone is tempting — instant search, alerts, retention handled for you — but at a thousand requests a minute the log volume is large enough that you'll pay for it, and every log line leaving your infrastructure means personal data has to be stripped before it goes out. That's a real engineering step, not a checkbox.
+
+Plain files solve the write problem (zero cost, no dependency) but on their own they leave you with two annoyances: rotation you have to configure by hand or your disk fills, and no way to search across machines — you'd have to SSH into each one.
+
+The combination fixes both sides: the app writes to local files, so writing a log entry is fast and never blocks on the network or a remote service — and a separate collector process reads those files and ships them wherever you want centralized search and retention. That gets you the searchability of a managed service without the app ever waiting on it.
+
+The one rule underneath all of this, that stays true regardless of which storage you pick: writing the log must never sit in the critical path of the request. Files-plus-collector is just the setup that guarantees that by construction.

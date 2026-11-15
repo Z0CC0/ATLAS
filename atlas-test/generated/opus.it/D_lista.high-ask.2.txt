@@ -1,0 +1,21 @@
+Questi sei, più uno da togliere:
+
+`Strict-Transport-Security: max-age=31536000; includeSubDomains`
+Obbliga il browser a usare HTTPS. Il max-age deve essere almeno 31536000 secondi.
+
+`Content-Security-Policy: default-src 'self'`
+Blocca l'iniezione di script di terze parti.
+
+`X-Content-Type-Options: nosniff`
+Impedisce al browser di indovinare il tipo di contenuto.
+
+`Referrer-Policy: strict-origin-when-cross-origin`
+Evita che il percorso completo venga inviato ad altri siti.
+
+`X-Frame-Options: DENY`, oppure `frame-ancestors 'none'` dentro la Content-Security-Policy
+Protegge dal clickjacking.
+
+`Permissions-Policy`
+Spegne camera, microfono e geolocalizzazione, se il sito non li usa.
+
+`X-XSS-Protection` va omesso perché è deprecato. I browser moderni lo ignorano e nelle versioni vecchie introduceva vulnerabilità.

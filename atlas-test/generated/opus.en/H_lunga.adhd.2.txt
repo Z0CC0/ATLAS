@@ -1,0 +1,33 @@
+**Put whatever stays the same at the start of your requests and whatever changes at the end.** That's the rule that decides whether caching helps you.
+
+## How it works
+
+The model processes your request from start to finish. With caching, the processed version of the opening part (the **prefix**) is saved. If your next request starts with exactly the same content, that part isn't processed again and you don't pay for it again.
+
+It only works on the prefix. If even one character near the start is different, nothing after that character can be reused.
+
+- **Right:** stable instructions, then docs, then the user's new message
+- **Wrong:** the user's new message first, then the stable instructions. The change at the start blocks reuse of everything after it.
+
+## What it costs
+
+1. **First request:** costs more than normal, because writing to the cache costs more than a normal read.
+2. **Second request onward:** you start saving, because the cached prefix gets reused.
+3. **Each later turn:** the savings add up, so the more turns you have, the bigger the gain.
+
+## When it pays off
+
+**Pays off:** long conversations that carry a large context that doesn't change, such as:
+- system instructions
+- attached documentation
+- tool definitions
+
+**Doesn't pay off:** one-off requests that all differ from each other. You pay the extra write cost and never get to reuse the cache.
+
+## The common mistake
+
+A line in the system prompt that changes every turn, like a current time or clock, breaks reuse for everything after it. If it sits near the top, you pay the cache-write cost every turn and get almost no savings.
+
+Fix: move anything that changes per turn to the end, after all the stable content.
+
+**Next:** open your system prompt and look for a timestamp or other per-turn value near the top. If there is one, move it to the bottom.

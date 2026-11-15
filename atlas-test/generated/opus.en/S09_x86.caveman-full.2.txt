@@ -1,0 +1,31 @@
+x86 history splits into three eras. First, Intel adds features to the instruction set. Next, the hardware under the instruction set changes completely. Today, most of the complexity sits below the instruction set.
+
+**Foundations (1978–1985)**
+
+- **8086 (1978).** 16-bit. Grows out of 8080 and stays compatible at source level, so 8080 code ports with little effort. That choice starts x86's main habit: never break old code.
+- **80286 (1982).** Introduces protected mode. Flaw: no way back to real mode without reboot. Old software and new mode coexist badly.
+- **80386 (1985).** Big jump. 32 bit, paged virtual memory, and virtual 8086 mode. Virtual 8086 mode fixes the 286 problem: old real-mode programs run inside protected mode. Modern operating systems can build on this chip.
+
+**Integration and parallelism (1989–1995)**
+
+- **486 (1989).** Moves first-level cache and maths coprocessor onto the chip. Less waiting on external parts.
+- **Pentium (1993).** Superscalar. Two integer pipelines, so up to two instructions retire per cycle. Performance now comes from parallel work inside the chip, not only from clock speed.
+- **Pentium Pro (1995).** The turning point. Adds out-of-order execution. Translates x86 instructions into internal micro-operations. After this chip, x86 is an interface, not the real machine underneath. The core runs its own internal format, and x86 is the contract it keeps with software.
+
+**Limits and new directions (2000–2006)**
+
+- **Pentium 4 (2000).** Chases frequency with a very long pipeline. Hits power wall. Higher clock speeds cost too much power to keep going.
+- **AMD64 (2003).** AMD extends the architecture to 64 bit, and Intel adopts the same instruction set. First time the dominant extension does not come from Intel.
+- **Core 2 (2006).** Direction moves from frequency to core count. The power wall forces this: more cores, not faster clocks.
+
+**Vector extensions (across generations)**
+
+Vector units grow through MMX, SSE, AVX, then AVX-512. Each one widens data-parallel work on a single instruction stream.
+
+**Today**
+
+Complexity now sits in layers below the instruction set: branch prediction, cache hierarchy, speculative execution. Performance mostly comes from guessing ahead correctly and keeping data close to the core.
+
+In 2018, Spectre and Meltdown showed that speculative execution carried a security cost nobody had priced. The tricks that made x86 fast after the instruction set became an interface also opened new attack surface.
+
+**The thread through it all:** source compatibility with the 8080 in 1978 grew into a stable interface by 1995. Everything since has changed underneath that interface: frequency, then cores, then vectors, then speculation. Old code keeps running the whole time.

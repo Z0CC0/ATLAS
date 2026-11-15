@@ -1,0 +1,1 @@
+Con `const` non puoi riassegnare il nome a un nuovo valore, ma il valore stesso resta modificabile: se è un oggetto, puoi cambiarne le proprietà interne senza problemi. Con `let` invece puoi riassegnare liberamente. Su un punto sono uguali: entrambi hanno ambito di blocco, a differenza di `var`.

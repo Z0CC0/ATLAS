@@ -1,0 +1,9 @@
+internal knowledge
+
+Difference: `const` blocks reassigning the name, `let` allows it.
+
+`let`: you can reassign the variable later.
+
+`const`: you can't reassign the name, but you can still change the value it points to. An object declared with `const` can still change internally, for example by adding or editing properties.
+
+Both are block scoped, unlike `var`.

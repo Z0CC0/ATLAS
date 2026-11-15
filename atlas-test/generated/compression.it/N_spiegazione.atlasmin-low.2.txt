@@ -1,0 +1,13 @@
+Consistenza eventuale: dopo scrittura, repliche non concordano subito, ma convergono entro tempo finito se scritture si fermano.
+
+Perché interessa te: riguarda caso in cui leggi subito dopo aver scritto. Pubblichi commento, ricarichi pagina, non lo vedi — repliche che rispondono a te non hanno ancora ricevuto aggiornamento.
+
+Compromesso sottostante: con disponibilità. Sistema che pretende consistenza forte deve rifiutare richieste quando repliche non si parlano fra loro.
+
+Soluzione comune per read-after-write: leggere da replica primaria, ma solo per sessione che ha appena scritto, non per tutte — evita di sacrificare disponibilità globale per problema locale.
+
+Tempi tipici: sotto secondo fra repliche stessa regione, sale a secondi fra regioni diverse.
+
+Non è difetto da eliminare, è scelta deliberata — maggior parte sistemi che scalano la accetta di proposito.
+
+Casi dove non va accettata, pochi e riconoscibili: saldi di conto, disponibilità posti, unicità di identificativo.

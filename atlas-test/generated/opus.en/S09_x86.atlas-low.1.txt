@@ -1,0 +1,17 @@
+x86 started as 16-bit compatibility, picked up protected mode, 32 bits, caches and parallel pipelines, became an interface over a different machine underneath, then switched from chasing clock speed to adding cores.
+
+**Starting point.** Story begins slightly before eighties: 8086 of 1978, 16-bit chip grown out of 8080 and compatible with it at source level. That compatibility habit shapes everything after.
+
+**Protected mode.** 80286 of 1982 introduces protected mode, with one awkward flaw: once in it, no way back to real mode without reboot. 80386 of 1985 fixes direction of travel: 32 bits, paged virtual memory, and virtual 8086 mode, so old real-mode software runs inside new protected environment.
+
+**Integration and parallelism.** 486 of 1989 pulls first-level cache and maths coprocessor onto chip. Pentium of 1993 goes superscalar: two integer pipelines that can retire two instructions per cycle.
+
+**Turning point.** Pentium Pro of 1995 introduces out-of-order execution and translates x86 instructions into internal micro-operations. From there x86 becomes interface, no longer real machine underneath.
+
+**Frequency race and its end.** Pentium 4 of 2000 chases clock speed with very long pipeline and hits power wall. From 2006, with Core 2, direction shifts from frequency to core count.
+
+**64 bits.** In 2003 AMD extends architecture to 64 bits with AMD64, and Intel adopts same instruction set. First time dominant extension does not come from Intel.
+
+**Vectors.** Across generations vector extensions keep growing: MMX, SSE, AVX, AVX-512.
+
+**Today.** Complexity now sits in layers below instruction set: branch prediction, cache hierarchy, speculative execution. Spectre and Meltdown in 2018 showed that speculative execution carried security cost nobody had priced.

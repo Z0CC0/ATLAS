@@ -1,0 +1,13 @@
+internal knowledge
+
+**Postgres.** On a small project it covers everything a queue needs, and you add Redis later only if volume actually requires it.
+
+Throughput: `SELECT ... FOR UPDATE SKIP LOCKED` handles up to roughly a thousand jobs per minute, which is plenty for a small project.
+
+Consistency: the job goes in the same transaction as the data. If the write is rolled back, the job never starts.
+
+Durability: you get persistence for free. If the process dies, the queue is still there.
+
+Redis wins on volume and latency, which is under a millisecond. But it's one more service to run, monitor and upgrade. Its persistence also needs setting up: without AOF enabled, a restart loses the queued jobs.
+
+Switch to Redis when your job volume really outgrows Postgres.

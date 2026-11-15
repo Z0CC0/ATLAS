@@ -1,0 +1,27 @@
+Before choosing an architecture, answer these questions in this order.
+
+**1. Which part changes?**
+Map where change happens in the monolith. Only that part is worth restructuring. Stable parts gain nothing from being split, so leave them alone.
+
+**2. Where are your transaction boundaries?**
+Find which operations must commit together. A service boundary through a transaction turns it into a distributed problem. Draw boundaries around transactions, never through them.
+
+**3. How will you migrate?**
+Skip the parallel full rewrite. It almost always fails, because the old system keeps changing and the copy never catches up. Strangle the old system progressively instead:
+- Put a router in front of the monolith.
+- Move one piece at a time behind the router.
+- Keep the old system authoritative until the new piece is verified.
+
+**4. Can you afford microservices?**
+Each service needs releases, monitoring, logs, alerts, and one person who owns it. Below five developers, that operational cost almost always exceeds the benefit.
+
+**5. Have you considered a modular monolith?**
+Few people mention it, but it often fits best:
+- sharp internal boundaries between modules
+- one release
+- you can extract a module into a service when you really need to, not before
+
+**6. The deciding question is not technical.**
+Ask what your team must be able to do a year from now that it cannot do today. Pick the architecture that makes that possible, and nothing beyond it.
+
+If your team is small and the changing part is small, a modular monolith built by strangling the old system is probably the right start.

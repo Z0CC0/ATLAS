@@ -1,0 +1,5 @@
+No.
+
+Bassa cardinalita' (tre valori): B-tree normalmente non usato, planner preferisce sequential scan quando filtro seleziona piu' di circa 5-10% delle righe, e l'indice comunque costa scrittura e spazio.
+
+Eccezione: indice parziale su valore raro, quello funziona.

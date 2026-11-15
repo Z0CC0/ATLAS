@@ -1,0 +1,11 @@
+Yes. An empty list is falsy, so `if my_list:` is False when the list is empty. The same goes for every empty collection: lists, tuples, dicts, sets and strings.
+
+```python
+if not []:  print("empty list is falsy")
+if not (): print("empty tuple is falsy")
+if not {}:  print("empty dict is falsy")
+if not set(): print("empty set is falsy")
+if not "":  print("empty string is falsy")
+```
+
+This is why the usual Python way to check for emptiness is `if not items:` instead of `if len(items) == 0:`.

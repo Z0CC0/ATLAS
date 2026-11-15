@@ -1,0 +1,13 @@
+Consistenza eventuale: dopo scrittura repliche non concordano subito, convergono entro tempo finito se scritture si fermano.
+
+Compromesso con disponibilità: consistenza forte impone rifiuto richieste quando repliche non si parlano tra loro.
+
+Ti riguarda in caso read-after-write: utente pubblica commento, ricarica, non lo vede — repliche non ancora convergenti.
+
+Fix comune: sessione che ha scritto legge dalla replica primaria, non da tutte.
+
+Tempi tipici: stessa regione sotto il secondo, fra regioni fino a secondi.
+
+Non difetto — scelta deliberata, accettata dalla maggior parte dei sistemi che scalano.
+
+Eccezioni dove non va bene: saldi conto, disponibilità posti, unicità identificativo.

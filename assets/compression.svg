@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="386" viewBox="0 0 860 386" role="img" aria-label="Output saved per answer against no plugin">
+<title>Output saved per answer against no plugin</title>
+<rect x="0.5" y="0.5" width="859" height="385" rx="14" fill="#000000" stroke="#ffffff"/>
+<text x="28" y="34" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="17" fill="#f5f5f7" font-weight="600">Output saved per answer against no plugin</text>
+<text x="198" y="76" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#f5f5f7" text-anchor="end">atlas high</text>
+<rect x="210" y="62" width="542.1" height="19" rx="4" fill="#ff1f1f"/>
+<text x="762.0679342394609" y="76" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#f5f5f7" >51%</text>
+<text x="198" y="108" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#f5f5f7" text-anchor="end">atlas-min high</text>
+<rect x="210" y="94" width="550.0" height="19" rx="4" fill="#ff1f1f"/>
+<text x="770" y="108" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#f5f5f7" >52%</text>
+<text x="198" y="140" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#f5f5f7" text-anchor="end">atlas-min low</text>
+<rect x="210" y="126" width="455.3" height="19" rx="4" fill="#ff1f1f"/>
+<text x="675.3227355876047" y="140" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#f5f5f7" >43%</text>
+<text x="198" y="172" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#f5f5f7" text-anchor="end">atlas low</text>
+<rect x="210" y="158" width="431.4" height="19" rx="4" fill="#ff1f1f"/>
+<text x="651.4111937125338" y="172" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#f5f5f7" >40%</text>
+<text x="198" y="204" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" text-anchor="end">caveman 4.0.1 ultracave</text>
+<rect x="210" y="190" width="454.3" height="19" rx="4" fill="#6e6e73"/>
+<text x="674.3261617013193" y="204" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" >43%</text>
+<text x="198" y="236" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" text-anchor="end">caveman 4.0.1</text>
+<rect x="210" y="222" width="347.7" height="19" rx="4" fill="#6e6e73"/>
+<text x="567.7056923921884" y="236" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" >33%</text>
+<text x="198" y="268" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" text-anchor="end">caveman 2.7.0 ultra</text>
+<rect x="210" y="254" width="385.7" height="19" rx="4" fill="#6e6e73"/>
+<text x="605.7052661549999" y="268" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" >36%</text>
+<text x="198" y="300" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" text-anchor="end">caveman 2.7.0 full</text>
+<rect x="210" y="286" width="302.5" height="19" rx="4" fill="#6e6e73"/>
+<text x="522.4813345098889" y="300" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" >28%</text>
+<text x="198" y="332" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" text-anchor="end">caveman 2.7.0 lite</text>
+<rect x="210" y="318" width="214.3" height="19" rx="4" fill="#6e6e73"/>
+<text x="434.28241074360653" y="332" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" >20%</text>
+<text x="28" y="372" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#6e6e73" >Mean of English and Italian, 48 questions, 2 rounds, 2026-11-03, claude-opus-5-5. Visible tokens, thinking excluded.</text>
+</svg>

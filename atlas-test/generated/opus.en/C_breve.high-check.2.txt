@@ -1,0 +1,9 @@
+internal knowledge
+
+Usually no. A B-tree index on a low-cardinality column is normally not used.
+
+The planner picks a sequential scan when the filter selects more than roughly 5-10% of rows.
+
+The index still costs writes and disk space.
+
+Exception: if one value is rare and you filter on it, a partial index on that value does work.

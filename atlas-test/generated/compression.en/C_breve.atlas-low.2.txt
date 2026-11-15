@@ -1,0 +1,5 @@
+No, tre valori distinti sono troppo pochi.
+
+B-tree su colonna a bassa cardinalità di solito non viene usato: se il filtro seleziona più del 5-10% delle righe, il planner preferisce scansione sequenziale — e con solo tre valori è quasi sempre così per almeno uno di essi. L'indice intanto costa comunque in scritture e spazio su disco.
+
+Eccezione: indice parziale sul valore raro, quello funziona.

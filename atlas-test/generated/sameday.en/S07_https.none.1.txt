@@ -1,0 +1,15 @@
+HTTPS is ordinary HTTP sent through a channel that TLS encrypts. The web requests and responses stay the same. What changes is that they travel through a protected tunnel, and that tunnel is set up at the start of every connection.
+
+**1. The client says hello.** Your browser opens the connection and tells the server which TLS versions and ciphers it supports.
+
+**2. The server answers and identifies itself.** From that list the server picks a cipher and a version. It also sends its certificate. A certificate is a document that binds a domain name to a public key, and a certificate authority signs it.
+
+**3. The client checks the certificate.** The browser verifies the signature by following the chain of signers upward until it reaches a root certificate it already holds. If the chain ends at a root it trusts, it accepts that the public key really belongs to that domain.
+
+**4. Both sides agree on a session key.** Client and server now agree on a shared key. Today this is usually done with an elliptic curve Diffie-Hellman exchange. The key is symmetric, meaning both sides use the same key. Asymmetric encryption, the kind based on public keys, costs too much to use on real traffic, so it's only involved in setting up the connection.
+
+**5. Protected traffic flows.** From then on, all traffic is encrypted and authenticated. Someone in the middle can't read it and can't change it without being detected.
+
+**On speed:** in TLS 1.2 this setup took two round trips between client and server. TLS 1.3 cuts it to one, so secure connections open faster.
+
+**A common misconception:** the padlock doesn't tell you who runs the site. A certificate says nothing about the organization behind a domain. It only says that whoever controls that domain controls that key. You know you're talking privately to the domain you typed, but not whether the people behind it can be trusted.

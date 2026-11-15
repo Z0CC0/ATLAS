@@ -1,0 +1,11 @@
+Conoscenza interna.
+
+Con mille richieste al minuto conviene scrivere i log su **file locali, con un raccoglitore che li spedisce altrove**. Così l'applicazione non aspetta mai la scrittura del log.
+
+Regola che vale sempre: **la scrittura del log non deve stare nel percorso critico della richiesta**.
+
+Solo file: costo zero e nessuna dipendenza, ma per cercare hai solo grep. La rotazione va configurata a mano, altrimenti il disco si riempie. Con più macchine non puoi cercare in un punto solo e devi collegarti a ognuna.
+
+Servizio gestito: ricerca immediata, allarmi e conservazione automatica. Però si paga per volume, e a mille richieste al minuto il volume cresce in fretta. I log escono dalla tua infrastruttura, quindi prima vanno ripuliti dai dati personali.
+
+Database: cercare è comodo e già lo sai fare. Però se scrivi i log nello stesso database dell'applicazione metti in competizione due carichi molto diversi. Sotto carico i log occupano cache e connessioni che servivano alle richieste vere.

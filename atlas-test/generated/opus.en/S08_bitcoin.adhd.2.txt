@@ -1,0 +1,36 @@
+# How Bitcoin came about
+
+**Short version:** In 2008 someone writing as Satoshi Nakamoto found a way to stop the same digital money being spent twice, with no bank or other central body keeping the ledger. The first block ran in 2009, and the system has kept running since.
+
+## 1. Where it came from
+- Bitcoin grew out of the **cypherpunk scene**.
+- Earlier designs such as **b-money** and **bit gold** got close. None of them solved **ordering**: agreeing which transaction happened first.
+
+## 2. The paper (2008)
+- A paper appears titled **"Bitcoin: A Peer-to-Peer Electronic Cash System."**
+- It is signed **Satoshi Nakamoto**. That is a pseudonym, and the person behind it has never been identified.
+- **The problem it solves:** double spending. Digital money can be copied. Without a central body keeping the ledger, nothing stops someone spending the same coins twice.
+
+## 3. The fix: blocks plus proof of work
+- Transactions are grouped into a **chain of blocks**. A **proof of work** decides their order.
+- **Why this protects the past:** to change an old block, an attacker would have to redo the proof of work for that block and for every block after it. That cost makes rewriting history impractical.
+
+## 4. The first block (3 January 2009)
+- The first block contains the **headline of a Times article about a bank bailout**.
+- That headline does two jobs:
+  - **Timestamp:** it proves the block was made no earlier than that day.
+  - **Statement of intent:** it points at the banking system Bitcoin was built to work without.
+
+## 5. Supply rules
+- Each new block originally paid **50 bitcoin**.
+- That reward **halves every 210,000 blocks**, roughly every four years.
+- Because of the halvings, total supply approaches **21 million** and never goes past it.
+
+## 6. First real-world use (2010)
+- The first documented purchase: **two pizzas for 10,000 bitcoin**.
+
+## 7. The creator leaves (2011)
+- Satoshi **stops taking part publicly** in 2011.
+- Satoshi's bitcoin **have never been moved**.
+
+**In short:** an anonymous author solved the ordering problem that earlier cypherpunk designs could not. They launched Bitcoin with a fixed supply schedule and then left the public project.

@@ -1,0 +1,17 @@
+**Porta l'ombrello mercoledì e domenica.** Sono i due giorni con più pioggia.
+
+| Giorno | Cielo | Max | Min |
+|---|---|---|---|
+| Lunedì | Sereno | 24° | 17° |
+| Martedì | Nuvoloso, pioggia debole in serata | 22° | 16° |
+| Mercoledì | Pioggia per gran parte del giorno | 19° | 15° |
+| Giovedì | Schiarite | 21° | 14° |
+| Venerdì | Sereno | 25° | 16° |
+| Sabato | Sereno e caldo | 28° | 19° |
+| Domenica | Temporali nel pomeriggio | 26° | 18° |
+
+- **Il weekend è il periodo più caldo.** Sabato è il giorno migliore per stare all'aperto.
+- **Domenica fai le attività all'aperto la mattina.** Nel pomeriggio sono previsti temporali.
+- **Martedì sera** la pioggia sarà debole. Una giacca leggera può bastare.
+
+Fonte: previsioni dal web.

@@ -1,0 +1,11 @@
+No.
+
+Chiave arrivata al browser è leggibile: DevTools o tab rete la mostrano, offuscamento annullato in un click.
+
+Tienila sul server: frontend chiama endpoint del tuo backend, backend chiama il servizio.
+
+Quell'endpoint serve rate limit, altrimenti diventa uso gratuito della tua chiave per chiunque.
+
+Se già pubblicata: compromessa, va ruotata subito, non solo rimossa dal codice.
+
+Rimuoverla da un commit non basta: resta nella cronologia del repo, chi ha un clone la possiede già.

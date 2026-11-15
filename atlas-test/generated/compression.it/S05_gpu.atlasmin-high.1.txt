@@ -1,0 +1,7 @@
+RTX 5080: Blackwell, GDDR7, banda ~960 GB/s, consumo dichiarato 360W.
+
+RTX 4080: Ada Lovelace, GDDR6X, banda ~717 GB/s, consumo dichiarato 320W.
+
+Connettore 16 pin su entrambe.
+
+Rasterizzazione pura: guadagno reale 10-15%. Il salto grosso sta nella generazione di fotogrammi, non lì.

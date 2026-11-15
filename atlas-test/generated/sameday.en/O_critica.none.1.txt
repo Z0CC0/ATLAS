@@ -1,0 +1,15 @@
+I wouldn't do it. I'd get the same guarantee a different way.
+
+The upside you're after is real. With triggers, no application path can skip a rule, not even a script someone runs by hand. But putting all the business logic there has costs that build up:
+
+- **Nobody can see it.** Someone reading the application code has no idea the triggers exist. A change that looks simple can fire others and leave no trace.
+- **Your team's test tools won't cover it.** You'd need tests that run against a real database.
+- **Debugging gets worse.** An error inside a trigger shows up only as a failed write. It doesn't tell you which rule caused it.
+- **Migrations get fragile.** Trigger order matters, and nothing declares it anywhere.
+
+Instead, I'd split the work:
+
+- **In the database:** only what protects integrity. That means constraints, foreign keys, uniqueness and domain checks.
+- **In the application:** the business logic, behind a single entry point that every write goes through.
+
+That single entry point gives you the same "can't be bypassed" guarantee as the triggers, as long as you reserve direct database access for migrations. If nothing else can write to the database directly, nothing can get around the rules. You keep that guarantee and avoid the hidden behaviour, the debugging trouble and the migration risk.

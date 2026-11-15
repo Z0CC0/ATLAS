@@ -1,0 +1,18 @@
+Prima di scegliere l'architettura, chiariti questi punti.
+
+**1. Quale parte del monolite cambia davvero.** È il primo dato da raccogliere. Le parti stabili non guadagnano nulla dall'essere spezzate. Se un modulo non si tocca da anni, separarlo aggiunge solo costo.
+
+**2. Dove stanno i confini delle transazioni.** Se una transazione attraversa due servizi, diventa un problema distribuito. Mappa le operazioni che oggi stanno in una sola transazione sul DB. Quelle operazioni ti mostrano dove *non* tagliare.
+
+**3. Come migrare.** Non riscrivere tutto in parallelo al vecchio sistema. Quasi sempre fallisce: il vecchio continua a cambiare e la copia non lo raggiunge mai. Usa lo strangolamento progressivo:
+- metti un router davanti al monolite;
+- sposta un pezzo per volta;
+- il vecchio resta autorevole finché il nuovo non è verificato.
+
+**4. Quanto costano i microservizi in operatività.** Ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupa. Sotto i cinque sviluppatori, questo costo supera quasi sempre il beneficio. Conta quante persone hai davvero.
+
+**5. Il monolite modulare.** È l'opzione poco citata, ma spesso la più sensata. Ha confini interni netti e un solo rilascio. Ti lascia estrarre un modulo il giorno che serve davvero. Puoi fare la riscrittura PHP in questa forma e decidere dopo cosa separare.
+
+**6. La domanda decisiva non è tecnica.** Chiediti cosa deve poter fare il team fra un anno che oggi non può. Rispondi prima a questa domanda. La risposta ti dice quali parti meritano confini separati e quali no.
+
+In pratica: se il team è piccolo e le parti che cambiano sono poche, parti da un monolite modulare. Migra con lo strangolamento progressivo ed estrai servizi solo dove la risposta al punto 6 lo richiede.

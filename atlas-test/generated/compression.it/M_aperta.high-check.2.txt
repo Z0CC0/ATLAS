@@ -1,0 +1,13 @@
+Prima domanda, non tecnica: cosa deve fare il team fra un anno che oggi non può. Da lì derivi il resto.
+
+**Cosa cambia davvero.** Mappa il monolite per frequenza di modifica, non per bellezza del codice. Parti stabili: lasciale, spezzarle non rende nulla.
+
+**Confini delle transazioni.** Trova dove finiscono oggi. Una transazione che attraversa due servizi è un problema distribuito — consistenza eventuale, saga, compensazioni. Se non riesci a tracciare questi confini, non sei pronto a spezzare nulla lì.
+
+**Riscrittura parallela: evitala.** Costruire il nuovo mentre il vecchio continua a evolvere quasi sempre fallisce — il vecchio non sta fermo, la copia non lo raggiunge mai.
+
+**Strangolamento progressivo, invece.** Router davanti, un pezzo alla volta, il vecchio resta autorevole finché il nuovo non è verificato. Rischio incrementale, non big bang.
+
+**Costo dei microservizi.** Ogni servizio è rilascio, monitoraggio, log, allarmi, un responsabile. Sotto i cinque sviluppatori quel costo supera quasi sempre il beneficio.
+
+**L'opzione poco citata: monolite modulare.** Confini interni netti, un solo rilascio, e puoi estrarre un modulo il giorno che serve davvero — quando un pezzo specifico ha bisogno di scalare o rilasciare indipendentemente, non prima.

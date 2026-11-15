@@ -1,0 +1,13 @@
+internal knowledge
+
+Usually no. With only three distinct values, a plain B-tree index normally goes unused.
+
+Each value likely matches a big share of the table, and the planner picks a sequential scan once a filter selects more than roughly 5-10 per cent of the rows.
+
+The index still costs you on every write and still takes disk space, so you pay for it without getting anything back.
+
+The exception is when one value is rare and you query for it. A partial index on just that value does work, for example:
+
+```sql
+CREATE INDEX orders_failed_idx ON orders (status) WHERE status = 'failed';
+```

@@ -1,0 +1,11 @@
+Usually no. On a column with only three distinct values, the planner normally ignores a plain B-tree index. Each value matches a big share of the table. When a filter selects more than roughly 5-10% of rows, the planner prefers a sequential scan.
+
+The index still costs you something even when unused. Every write must update it, and it takes disk space.
+
+Exception: one value is rare and you query for it often. Then build a partial index on that rare value only, and the planner does use it. Example:
+
+```sql
+CREATE INDEX orders_failed_idx ON orders (id) WHERE status = 'failed';
+```
+
+Small index, cheap to maintain, fast for queries with `WHERE status = 'failed'`.

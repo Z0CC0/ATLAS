@@ -1,0 +1,44 @@
+x86 history has two big shifts. Until the mid-90s, each chip added features on top of the last one. From the Pentium Pro on, x86 became a front end for a different machine inside the chip.
+
+**Origins: 8086 (1978)**
+The 8086 is a 16-bit chip that grew out of the 8080. Compatibility was at source level only: 8080 code had to be reassembled, not run as-is. It came out in 1978, a little before the period you asked about, and everything later builds on it.
+
+**80286 (1982): protected mode**
+The 286 added protected mode. Its flaw: once in protected mode, the chip could not return to real mode without a reboot.
+
+**80386 (1985): the modern base**
+The 386 brought three things:
+- 32-bit operation
+- paged virtual memory
+- virtual 8086 mode, which ran old real-mode code inside protected mode
+
+That last one fixed the 286's one-way trap.
+
+**486 (1989): integration**
+The 486 moved the first-level cache and the maths coprocessor onto the chip. Both had been separate parts before.
+
+**Pentium (1993): superscalar**
+The Pentium had two integer pipelines and could retire two instructions per cycle.
+
+**Pentium Pro (1995): the turning point**
+The Pentium Pro added out-of-order execution. It also translated x86 instructions into internal micro-operations. From then on, x86 is an interface, not the real machine underneath. The instruction set stays fixed for compatibility while the hardware inside changes freely.
+
+**Pentium 4 (2000): the frequency dead end**
+The Pentium 4 chased clock speed with a very long pipeline. It hit the power wall: higher frequency made heat and power use too high.
+
+**AMD64 (2003): the extension from outside**
+AMD extended x86 to 64 bit with AMD64, and Intel adopted the same instruction set. It was the first time the dominant extension did not come from Intel.
+
+**Core 2 (2006): more cores, not more GHz**
+With the Core 2, the focus moved from frequency to core count.
+
+**Vector extensions across generations**
+SIMD support grew in steps: MMX, then SSE, then AVX, then AVX-512.
+
+**Today: the complexity is underneath**
+Most of the design effort now goes into the layers below the instruction set: branch prediction, the cache hierarchy and speculative execution.
+
+**Spectre and Meltdown (2018)**
+These attacks showed that speculative execution had a security cost nobody had priced. It is the same hidden machinery that made x86 fast after the Pentium Pro.
+
+**In short:** x86 grew from 16 to 32 to 64 bits and kept backward compatibility throughout. Since 1995 the real engineering has been hidden under that compatible interface, and in 2018 some of its costs became visible.

@@ -1,0 +1,3 @@
+No. Three distinct values = low cardinality, B-tree index normally skip, unless one value rare and others common — planner favor sequential scan when filter match more than ~5-10% rows. Index still cost writes + disk space, so plain index on this column not worth.
+
+Exception: partial index on just rare value works fine — small, planner use it when selective enough.

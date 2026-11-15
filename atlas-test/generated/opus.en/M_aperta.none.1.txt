@@ -1,0 +1,36 @@
+Before you pick an architecture, answer these questions in order. Each one narrows down what makes sense for you.
+
+## 1. What do you need to be able to do in a year that you can't do now?
+
+This is the question that decides everything, and it isn't a technical one. Maybe you need to ship one area of the product without touching the rest, onboard a second team, or handle a feature you can't build today. Write that goal down first. If an architecture doesn't serve it, you'd be paying for the rewrite and getting nothing back.
+
+## 2. Which parts of the monolith actually change?
+
+Look at where changes really land. The stable parts of the codebase gain nothing from being split into separate pieces, because they would just be more things to deploy and watch. The parts that change often are where clear boundaries pay off.
+
+## 3. Where are your transaction boundaries?
+
+Find every place where one database transaction covers more than one area of the business. If you split those areas into separate services, that transaction becomes a distributed problem, which is much harder to get right. Your service boundaries should follow your transaction boundaries, not cut across them.
+
+## 4. Can your team afford microservices?
+
+Every service needs its own releases, monitoring, logs, alerts, and a person who looks after it. That cost repeats for each service. With fewer than five developers, it almost always outweighs the benefit.
+
+## 5. Have you considered a modular monolith?
+
+People rarely mention this option, and it's often the right one. You keep a single codebase and a single release, but with strict internal boundaries between modules. If a module ever really needs to become its own service, you can pull it out then. Until that day, you avoid the operational cost.
+
+## 6. How will you get from the old system to the new one?
+
+Don't build a full rewrite alongside the old system and plan to switch over. That approach almost always fails, because the old system keeps changing and the copy never catches up.
+
+Replace it gradually instead (often called the strangler pattern):
+- Put a router in front of the monolith.
+- Move one piece at a time behind it.
+- Keep the old code as the source of truth for each piece until the new version has been checked.
+
+This works with whichever architecture you choose, and the migration can stop safely at any point.
+
+---
+
+**In short:** start from what the team needs to be able to do in a year. Split only the parts that change often, and keep each transaction inside one boundary. Unless you have more than five developers and a clear reason to split, choose a modular monolith. Migrate gradually, not with a parallel rewrite.

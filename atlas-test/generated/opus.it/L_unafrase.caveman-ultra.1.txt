@@ -1,0 +1,6 @@
+Sì, lista vuota è falsa in contesto booleano. Vale per tutte le collezioni vuote: lista, tupla, dizionario, insieme e stringa.
+
+```python
+if not []:
+    print("vuota")  # stampato
+```

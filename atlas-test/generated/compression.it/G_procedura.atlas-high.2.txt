@@ -1,0 +1,5 @@
+Con dieci milioni di righe in produzione, niente `ALTER TABLE ALTER COLUMN TYPE` diretto: riscrive tutta la tabella sotto ACCESS EXCLUSIVE lock, servizio fermo per l'intera durata.
+
+Percorso sicuro. Prima verifica che ogni valore esistente sia convertibile: conta le righe che non contengono solo cifre. Poi `ALTER TABLE t ADD COLUMN colonna_int integer`, colonna nuova accanto alla vecchia. Poi backfill a blocchi da diecimila righe per volta, per non tenere un lock lungo sulla tabella. Poi trigger che tiene allineate le due colonne durante la migrazione, così scritture concorrenti non si perdono. Poi codice aggiornato a leggere dalla colonna nuova, rilasciato. Solo a quel punto, `ALTER TABLE t DROP COLUMN colonna` per eliminare la vecchia.
+
+Quest'ultimo passo è irreversibile: colonna eliminata, dati non tornano senza ripristino da backup.

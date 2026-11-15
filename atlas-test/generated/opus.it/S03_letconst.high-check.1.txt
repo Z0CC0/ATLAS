@@ -1,0 +1,7 @@
+conoscenza interna
+
+`let`: variabile riassegnabile.
+
+`const`: nome non riassegnabile, valore però modificabile. Oggetto dichiarato con `const` può cambiare al suo interno.
+
+Entrambi: ambito di blocco, a differenza di `var`.

@@ -1,0 +1,1 @@
+const stops you reassigning the name — you can't point it at a new value. It doesn't freeze the value itself, so an object made with const can still have its properties changed. let lets you reassign the name to something else. Both, unlike var, are block scoped.

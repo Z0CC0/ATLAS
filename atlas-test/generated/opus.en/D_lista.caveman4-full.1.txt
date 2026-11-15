@@ -1,0 +1,10 @@
+Set these six headers. Skip the seventh.
+
+- **`Strict-Transport-Security: max-age=31536000; includeSubDomains`** forces the browser onto HTTPS. Use a `max-age` of at least 31536000 seconds (one year).
+- **`Content-Security-Policy: default-src 'self'; frame-ancestors 'none'`** blocks third-party script injection. `frame-ancestors 'none'` also blocks clickjacking.
+- **`X-Content-Type-Options: nosniff`** stops the browser from guessing the content type.
+- **`Referrer-Policy: strict-origin-when-cross-origin`** keeps the full path from leaking to other sites.
+- **`X-Frame-Options: DENY`** blocks clickjacking. It does the same job as `frame-ancestors 'none'`, so set either one.
+- **`Permissions-Policy: camera=(), microphone=(), geolocation=()`** turns off those features. Use it if the site does not use them.
+
+Do not set **`X-XSS-Protection`**. It is deprecated. Modern browsers ignore it, and in older browsers it introduced vulnerabilities.

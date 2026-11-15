@@ -1,0 +1,9 @@
+La cache dei prompt funziona così: quando fai una richiesta, il sistema conserva il prefisso di quella richiesta già elaborato, così se la richiesta successiva inizia allo stesso modo, quella parte non viene ripagata per intero.
+
+Il punto chiave è che funziona **solo sul prefisso**: basta che cambi anche un solo carattere all'inizio del testo, e da quel punto in poi il riuso salta completamente — tutto quello che segue non beneficia più della cache. Per questo conviene strutturare le richieste mettendo prima le parti stabili (istruzioni di sistema, documentazione, definizioni di strumenti) e dopo quelle che cambiano, mai il contrario. Attenzione in particolare a dettagli come un orario o un timestamp inseriti a inizio prompt: se cambiano a ogni turno, azzerano il riuso di tutto ciò che viene dopo.
+
+Sul costo: scrivere in cache costa più di una lettura normale, quindi la prima richiesta è più cara del solito. Il guadagno arriva dalla seconda richiesta in poi, e aumenta con il numero di turni.
+
+Quando conviene usarla, in pratica:
+- **Sì**: conversazioni lunghe con un contesto grande e stabile — istruzioni di sistema, documenti allegati, definizioni di strumenti che restano identici turno dopo turno.
+- **No**: richieste singole e diverse tra loro, dove finiresti solo per pagare il costo di scrittura senza mai arrivare a rileggere quella cache.

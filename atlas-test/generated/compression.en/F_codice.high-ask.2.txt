@@ -1,0 +1,17 @@
+Closure holds the timer, clear before every reschedule:
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+`t` lives outside the returned function — inside it, each call gets its own timer, no debouncing. `clearTimeout` before every `setTimeout`, else timers pile up, fn fires more than once. Spread forwards args — without it fn gets nothing.
+
+No return value here — need a Promise if that matters.
+
+Opposite case, fire immediately then ignore for a period: that's throttle, different function.

@@ -1,0 +1,11 @@
+Usually no. Planner normally ignores plain B-tree index on low-cardinality column.
+
+Three values means each value often matches big share of rows. Filter selecting more than roughly 5-10% of rows makes planner prefer sequential scan. Index still costs extra work on every write, plus disk space. You pay, get nothing.
+
+Exception: one value rare. Partial index on that rare value works:
+
+```sql
+CREATE INDEX orders_failed_idx ON orders (status) WHERE status = 'failed';
+```
+
+Index stays small. Planner uses it for queries filtering on that value.

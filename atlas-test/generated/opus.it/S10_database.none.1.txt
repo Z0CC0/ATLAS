@@ -1,0 +1,40 @@
+# Partire da Postgres da solo
+
+Ti consiglio di partire con **Postgres da solo**. Aggiungi un altro sistema solo quando un carico preciso lo richiede e hai i numeri per dimostrarlo.
+
+Postgres regge tutti e quattro i tuoi carichi in modo accettabile, anche se in nessuno è eccellente. All'inizio è proprio quello che serve.
+
+## I quattro carichi
+
+**Ordini.** Qui servono transazioni serie, e su questo non si tratta. Postgres le offre.
+- **MySQL** va altrettanto bene sugli ordini, ma è più debole su tipi di dato e query complesse. Per questo non ha senso sceglierlo al posto di Postgres.
+- **ClickHouse** non è adatto agli ordini, perché il suo punto debole sono gli aggiornamenti puntuali.
+
+**Catalogo.** **MongoDB** ti semplifica la vita se i prodotti hanno attributi molto diversi tra loro (schemi variabili). Però le transazioni su più documenti sono arrivate tardi e costano. Con ordini e catalogo nella stessa piattaforma, questo pesa più della comodità sugli schemi.
+
+**Ricerca testuale.** Postgres ha la ricerca testuale integrata: basta sotto il milione di documenti, diventa debole sopra.
+- **Elasticsearch** è molto superiore: rilevanza, sinonimi, tolleranza agli errori di battitura.
+- Elasticsearch non è un archivio autorevole. Va alimentato da un altro database, non lo sostituisce.
+- Aggiungerlo prima del milione di documenti è quasi sempre prematuro.
+
+**Analisi.** Postgres regge fino a qualche decina di milioni di righe, poi le scansioni rallentano. **ClickHouse** è molto superiore: con le scansioni colonnari è avanti di ordini di grandezza.
+
+## Dove si arriva crescendo
+
+La configurazione tipica, a regime, è questa:
+
+```
+Postgres (archivio autorevole: ordini, catalogo)
+   ├──► Elasticsearch (ricerca)
+   └──► ClickHouse (analisi)
+```
+
+Ci si arriva un pezzo alla volta, quando servono:
+- **Elasticsearch** quando il catalogo supera il milione di documenti, o quando la qualità della ricerca diventa un problema misurabile.
+- **ClickHouse** quando le query di analisi su decine di milioni di righe diventano troppo lente.
+
+## Il costo da mettere in conto
+
+Ogni sistema che aggiungi porta due problemi: tenere i dati sincronizzati e verificare che restino allineati. Il costo vero dei sistemi specializzati non è la licenza. È il tempo delle persone che li tengono in piedi.
+
+Quindi non chiederti "quale database è migliore per la ricerca?". Chiediti se oggi la ricerca in Postgres è abbastanza lenta o scadente da giustificare quel tempo. Finché la risposta è no, resta su Postgres da solo.

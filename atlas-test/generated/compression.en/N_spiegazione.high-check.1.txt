@@ -1,0 +1,9 @@
+Eventual consistency: after a write, replicas disagree briefly, converge if writes stop. Same-region convergence under a second, cross-region seconds.
+
+Trade-off: against availability. Strong consistency forces refusal when replicas can't communicate.
+
+Bites you right after your own write — post a comment, reload, it's gone (hit a stale replica).
+
+Fix: route the writer's own session to the primary replica; everyone else stays eventual.
+
+Not a bug — a deliberate choice most systems at scale make. Reject it only for account balances, seat availability, unique-identifier claims.

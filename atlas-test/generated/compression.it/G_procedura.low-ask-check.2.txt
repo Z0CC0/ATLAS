@@ -1,0 +1,5 @@
+Non farlo con `ALTER TABLE ALTER COLUMN TYPE` diretto: riscrive intera tabella tenendo ACCESS EXCLUSIVE lock, servizio fermo per tutta durata operazione.
+
+Percorso senza downtime: prima verifica ogni valore esistente convertibile, contando righe che non contengono solo cifre. Poi aggiungi colonna nuova, `ALTER TABLE t ADD COLUMN colonna_int integer`, e riempila a blocchi da diecimila righe per volta, per non tenere lock lungo su tabella intera. Durante migrazione aggiungi trigger che tenga allineate due colonne, così scritture nuove non si perdono mentre backfill procede. Quando backfill completo, cambia codice per leggere da colonna nuova, e rilascia.
+
+Solo a quel punto, come sesto passo, elimina colonna vecchia: `ALTER TABLE t DROP COLUMN colonna`. Questo passo è irreversibile — una volta eliminata colonna, dati non tornano senza ripristino da backup. Tienilo per ultimo e solo dopo aver confermato che codice nuovo funziona bene in produzione.

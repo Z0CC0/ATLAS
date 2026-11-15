@@ -1,0 +1,8 @@
+A mille richieste al minuto: file locali + raccoglitore che spedisce altrove. App non aspetta mai scrittura log.
+
+Perché non le altre due opzioni da sole:
+- File puro: costo zero, ma ricerca è grep, rotazione manuale (o disco pieno), e su più macchine niente ricerca centralizzata — devi collegarti a ognuna.
+- Servizio gestito diretto: ricerca immediata, allarmi, conservazione automatica — ma paghi per volume, e a questo traffico cresce in fretta. Più: log escono da tua infrastruttura, vanno ripuliti da dati personali prima.
+- Database: ricerca comoda, ma log e app competono per stesso carico. Sotto pressione, log riempiono cache e connessioni che servivano richieste vere. Evita.
+
+Regola che vale sempre: scrittura log mai nel percorso critico della richiesta. File locale scrive veloce, raccoglitore (Fluent Bit, Vector, ecc.) legge in background e spedisce a dove serve ricerca/allarmi — così ottieni vantaggi del servizio gestito senza bloccare l'app sul suo costo o latenza.

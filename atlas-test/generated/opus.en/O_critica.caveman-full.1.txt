@@ -1,0 +1,15 @@
+Don't put all of it in triggers. Upside real: no application path can skip rule, not even script run by hand. Cost high, though.
+
+**Problems:**
+- Triggers invisible to anyone reading application code. Change that looks simple can fire other triggers, with no trace.
+- Team's existing test tools don't cover triggers. Tests must run against real database.
+- Debugging worse. Error inside trigger arrives as failed write, and error doesn't say which rule caused it.
+- Migrations fragile. Trigger order matters, but nothing declares that order.
+
+**Better split:**
+- Database keeps only what protects integrity: constraints, foreign keys, uniqueness, domain checks.
+- Business logic lives in application, behind single entry point.
+
+Single entry point gives same guarantee as trigger, with one condition. Reserve direct database access for migrations only. Nobody else writes to DB directly, so nothing skips rule. Logic stays visible, testable with team's current tools, and errors name the rule that failed.
+
+**Next step:** lock down DB credentials so only application and migration tooling can write.

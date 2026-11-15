@@ -1,0 +1,3 @@
+No, usually not. The planner will normally ignore a B-tree index on a low-cardinality column, because it prefers a sequential scan whenever the filter matches more than roughly 5–10% of rows. You'd still pay for the index on every write and in disk space.
+
+Exception: if one of the three values is rare, a partial index on that value does work.

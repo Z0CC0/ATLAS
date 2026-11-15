@@ -1,0 +1,25 @@
+Usa `const` di default e passa a `let` solo quando devi riassegnare la variabile.
+
+**`let`**: puoi riassegnare il nome.
+```js
+let n = 1;
+n = 2; // ok
+```
+
+**`const`**: non puoi riassegnare il nome, ma puoi modificare il valore.
+```js
+const utente = { nome: "Ada" };
+utente.nome = "Grace"; // ok: l'oggetto cambia al suo interno
+utente = {};           // errore: riassegnazione del nome
+```
+
+**In comune**: entrambi hanno ambito di blocco. `var` invece no.
+```js
+if (true) {
+  let a = 1;
+  const b = 2;
+}
+// qui a e b non esistono
+```
+
+Prova adesso: incolla l'esempio di `const utente` nella console del browser (F12) e guarda quale riga dà errore.

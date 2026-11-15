@@ -1,0 +1,5 @@
+With `let` you can reassign what the variable points to later on; with `const` you can't — once you set it, that name stays bound to the same value for the rest of its scope.
+
+That said, `const` doesn't freeze the value itself. If you declare an object (or array) with `const`, you can still change its contents — add a property, update a field, push an item — you just can't point that variable at a completely different object.
+
+One thing they share: both `let` and `const` are block scoped, which sets them apart from the older `var`.

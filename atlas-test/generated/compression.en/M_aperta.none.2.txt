@@ -1,0 +1,17 @@
+Before you pick an architecture, work through these in order:
+
+**1. Map what actually changes.** Look at the monolith and identify which parts churn constantly and which have been stable for years. The stable parts gain nothing from being split out — splitting is only worth it where change (and the pain of change) is concentrated.
+
+**2. Find your transaction boundaries.** Trace where operations currently need atomicity — a single DB transaction touching multiple concerns. Any boundary you draw between services has to respect this, because a transaction that spans two services isn't a transaction anymore, it's a distributed systems problem (sagas, compensating actions, eventual consistency) — that complexity doesn't come for free.
+
+**3. Rule out running two systems in parallel.** A full rewrite built alongside the live monolith almost always fails, because the old system keeps changing while you build, and the rewrite never catches up — you're chasing a moving target indefinitely.
+
+**4. Plan for progressive strangling instead.** Put a router in front of the monolith, move one piece at a time behind it, and keep the old system authoritative until each new piece is verified in production. This is the only migration pattern that doesn't require the world to hold still while you work.
+
+**5. Price out the operational cost of microservices honestly.** Every service you carve out wants its own releases, monitoring, logs, and alerts, and someone has to actually own that. This isn't a one-time cost — it's ongoing, per service, forever.
+
+**6. Check your team size against that cost.** Below five developers, the operational overhead of microservices almost always outweighs whatever benefit you were hoping to get. If that's you, you probably shouldn't be doing microservices at all.
+
+**7. Consider the modular monolith seriously** — it's the option that rarely gets mentioned. Sharp internal module boundaries, one release pipeline, one thing to operate — but you keep the option to extract any single module into its own service the day you have a genuine, concrete reason to.
+
+**8. Answer the one question that actually decides this, and it isn't technical:** what does the team need to be able to do a year from now that it can't do today? That answer — not a diagram, not a trend — is what should determine the shape you pick.

@@ -1,0 +1,27 @@
+# How Bitcoin came about
+
+Bitcoin came out of the cypherpunk scene, a community that wanted to use cryptography to protect individual autonomy. People there had tried to create digital money before. Proposals such as b-money and bit gold got close, but none of them solved one key problem: getting everyone to agree on the order of transactions without trusting a central authority.
+
+## The paper
+
+In 2008 a paper appeared titled *Bitcoin: A Peer-to-Peer Electronic Cash System*. It was signed Satoshi Nakamoto, a pseudonym that has never been linked to a real person.
+
+The paper tackled **double spending**. Digital money is just data, and data can be copied, so something has to stop the same coin from being spent twice. Normally a bank or other central body keeps the ledger and settles disputes. Satoshi wanted a system that worked without one.
+
+The solution was a **chain of blocks ordered by proof of work**. Transactions are grouped into blocks, and each block is linked to the one before it. To add a block, participants have to spend real computational effort. This makes the history very hard to rewrite. To change an old block, an attacker would have to redo the proof of work for that block and for every block after it. The further back a transaction is, the more expensive it becomes to alter. This gave the network the reliable ordering that earlier attempts had lacked.
+
+## The first block
+
+The network started on 3 January 2009, when the first block was generated. It contained the headline of a Times article about a bank bailout. The headline did two jobs. It worked as a timestamp, proving the block couldn't have been created before that day. It was also a statement of intent: a new monetary system launched in the middle of a financial crisis, with a reminder of what it was meant to be an alternative to.
+
+## A fixed supply
+
+The issuance rules were built in from the start. Whoever produces a block receives a reward in new bitcoin. That reward started at 50 bitcoin and halves every 210,000 blocks, which is roughly every four years. Because of these halvings, the total number of bitcoin approaches 21 million and will never go past it.
+
+## First real-world use
+
+For a while bitcoin was mostly an experiment. The first documented commercial transaction came in 2010, when someone paid 10,000 bitcoin for two pizzas. It is often cited as the moment bitcoin was first used to buy something in the real world.
+
+## Satoshi steps away
+
+In 2011 Satoshi stopped taking part publicly. The bitcoin attributed to them have never been moved. Bitcoin carried on without its creator, which fits a system designed to need no central figure.

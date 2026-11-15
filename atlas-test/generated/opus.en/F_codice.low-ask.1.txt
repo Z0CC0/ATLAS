@@ -1,0 +1,32 @@
+Wrap function in closure that holds one timer and resets it on every call:
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Usage:
+
+```js
+const onResize = debounce(() => console.log('resized'), 200);
+window.addEventListener('resize', onResize);
+```
+
+What makes it work:
+
+`clearTimeout(t)` runs before every new `setTimeout`. Without it, timers pile up and function fires more than once.
+
+`t` lives in closure, outside returned function. Declared inside, every call would get its own timer and no debouncing would happen.
+
+`...args` forwards arguments. Without spread, `fn` receives nothing.
+
+Limits:
+
+This version returns nothing. If you need `fn`'s return value, wrap it in a Promise.
+
+If you want the opposite, running immediately and then ignoring calls for a period, you need throttle, which is a different function.

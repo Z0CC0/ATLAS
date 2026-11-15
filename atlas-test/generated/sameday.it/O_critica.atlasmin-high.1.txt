@@ -1,0 +1,15 @@
+Meglio di no. In database tieni solo ciò che protegge l'integrità, la logica di business nell'applicazione dietro un solo punto di ingresso.
+
+Il vantaggio c'è davvero: nessun percorso applicativo salta la regola, nemmeno uno script eseguito a mano.
+
+Costi:
+
+I trigger sono invisibili a chi legge il codice applicativo. Una modifica che sembra semplice ne attiva altre senza lasciare traccia.
+
+Non si testano con gli strumenti che il team usa già. Servono prove che girano contro un database vero.
+
+Il debug peggiora. Un errore dentro un trigger arriva come fallimento della scrittura, senza dire quale regola l'ha causato.
+
+Le migrazioni diventano fragili. L'ordine dei trigger conta, ma non è dichiarato da nessuna parte.
+
+In database vanno vincoli, chiavi esterne, unicità e controlli di dominio. Il punto di ingresso unico dà la stessa garanzia del trigger, **solo se** l'accesso diretto al database è riservato alle migrazioni.

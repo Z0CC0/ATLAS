@@ -1,0 +1,31 @@
+**Regola pratica:** metti all'inizio del prompt le parti che non cambiano e alla fine quelle che cambiano. Così la cache può riusarle.
+
+## Cosa fa
+
+La cache conserva la parte iniziale di una richiesta (il prefisso) già elaborata. Se la richiesta successiva comincia allo stesso modo, quella parte non la paghi di nuovo per intero.
+
+## Perché conta l'ordine
+
+Il riuso vale solo per il prefisso. Se cambia anche un solo carattere all'inizio, da quel punto in poi non si riusa più niente.
+
+Quindi:
+- **Prima:** le parti stabili (istruzioni di sistema, documentazione allegata, definizioni degli strumenti)
+- **Dopo:** le parti che cambiano (il messaggio dell'utente, i dati del turno)
+
+Un errore comune è mettere nel system prompt qualcosa che cambia a ogni turno, per esempio l'orario attuale. Basta quello per annullare il riuso di tutto ciò che viene dopo.
+
+## Quanto costa
+
+1. **Prima richiesta:** costa di più, perché scrivere nella cache costa più di una lettura normale.
+2. **Dalla seconda in poi:** cominci a risparmiare.
+3. **Più turni fai:** più il risparmio cresce.
+
+## Quando conviene
+
+| Conviene | Non conviene |
+|---|---|
+| Conversazioni lunghe | Richieste singole |
+| Contesto grande e stabile | Richieste tutte diverse fra loro |
+| Stesse istruzioni, documenti e strumenti a ogni turno | Paghi la scrittura nella cache e non la rileggi mai |
+
+**Da fare adesso:** apri il tuo system prompt e cerca qualcosa che cambia a ogni turno, come una data o un orario. Se c'è, spostalo in fondo alla richiesta.

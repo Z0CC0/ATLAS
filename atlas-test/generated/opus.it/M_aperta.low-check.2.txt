@@ -1,0 +1,17 @@
+conoscenza interna
+
+Prima ancora dell'architettura, chiediti cosa deve poter fare il tuo team fra un anno che oggi non può. È la domanda che decide, e non è tecnica.
+
+Poi servono due dati, in quest'ordine:
+
+1. Quali parti del monolite cambiano davvero. Le parti stabili non guadagnano niente dall'essere spezzate: lasciale dove sono.
+
+2. Dove passano i confini delle transazioni. Se una transazione finisce divisa tra due servizi, diventa un problema distribuito. Quindi i tagli vanno fatti lungo quei confini, non attraverso.
+
+Sul metodo, evita di riscrivere tutto in parallelo al vecchio sistema. Quasi sempre fallisce: il monolite PHP continua a cambiare e la copia non lo raggiunge mai.
+
+L'alternativa è lo strangolamento progressivo. Metti un router davanti, sposti un pezzo per volta e il vecchio sistema resta autorevole finché il nuovo non è verificato.
+
+Sulla forma finale, prima di scegliere i microservizi conta quante persone avete. Ogni servizio richiede rilascio, monitoraggio, log, allarmi e qualcuno che se ne occupi. Sotto i cinque sviluppatori quel costo operativo supera quasi sempre il beneficio.
+
+C'è anche un'opzione di cui si parla poco: il **monolite modulare**. Ha confini interni netti e un solo rilascio, e puoi estrarre un modulo il giorno in cui serve davvero. Se il team è piccolo, è probabilmente il punto di partenza giusto.

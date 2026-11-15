@@ -1,0 +1,3 @@
+No. Su colonna a bassa cardinalità l'indice B-tree tipicamente non viene usato dal planner: preferisce sequential scan quando il filtro seleziona più del 5-10% delle righe circa — con soli 3 valori distinti è sempre così. L'indice costerebbe scrittura e spazio senza beneficio.
+
+Eccezione: indice parziale sul valore raro (es. `WHERE stato = 'raro'`) — lì funziona, perché seleziona una frazione piccola.

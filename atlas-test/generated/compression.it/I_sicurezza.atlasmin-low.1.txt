@@ -1,0 +1,9 @@
+No.
+
+Qualsiasi cosa arrivi al browser è leggibile: offuscamento si annulla con dev tools o guardando le richieste di rete.
+
+Chiave va tenuta sul server. Frontend chiama endpoint del tuo backend, backend chiama il servizio.
+
+Endpoint deve avere rate limit, altrimenti diventa uso gratuito della chiave altrui.
+
+Se la chiave è già stata pubblicata: va considerata compromessa, va ruotata subito, non solo rimossa dal codice. Toglierla da un commit non basta, resta nella cronologia del repo e chiunque abbia un clone la possiede già.

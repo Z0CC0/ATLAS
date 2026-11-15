@@ -1,0 +1,36 @@
+Per un sito statico conviene impostare questi header.
+
+**Da mettere**
+
+- **`Strict-Transport-Security: max-age=31536000; includeSubDomains`**
+  Obbliga il browser a usare sempre HTTPS. Il `max-age` deve essere di almeno 31536000 secondi (un anno). Con `includeSubDomains` la regola vale anche per tutti i sottodomini.
+
+- **`Content-Security-Policy: default-src 'self'`**
+  È l'header che protegge di più: blocca l'iniezione di script di terze parti, perché il browser carica risorse solo dal tuo dominio.
+
+- **`X-Content-Type-Options: nosniff`**
+  Impedisce al browser di indovinare il tipo di contenuto di un file. Così usa solo quello che dichiari tu.
+
+- **`Referrer-Policy: strict-origin-when-cross-origin`**
+  Quando un visitatore passa dal tuo sito a un altro, il percorso completo della pagina non esce dal tuo dominio.
+
+- **Protezione dal clickjacking**, in uno di questi due modi:
+  - `X-Frame-Options: DENY`
+  - oppure aggiungi `frame-ancestors 'none'` alla Content-Security-Policy, così: `default-src 'self'; frame-ancestors 'none'`
+
+- **`Permissions-Policy: camera=(), microphone=(), geolocation=()`**
+  Spegne camera, microfono e geolocalizzazione. Su un sito statico che non li usa non c'è motivo di lasciarli attivi.
+
+**Da non mettere**
+
+- **`X-XSS-Protection`**: è deprecato e va omesso. I browser moderni lo ignorano, e nelle versioni vecchie introduceva vulnerabilità.
+
+**Il blocco completo**
+
+```
+Strict-Transport-Security: max-age=31536000; includeSubDomains
+Content-Security-Policy: default-src 'self'; frame-ancestors 'none'
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: camera=(), microphone=(), geolocation=()
+```

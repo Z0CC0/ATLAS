@@ -1,0 +1,26 @@
+Con la consistenza eventuale, dopo una scrittura le repliche non concordano subito. Se le scritture si fermano, le repliche convergono entro un tempo finito. Per qualche istante, quindi, repliche diverse possono restituire dati diversi.
+
+**Perché esiste**
+
+Il motivo è la disponibilità. Un sistema che pretende consistenza forte deve rifiutare le richieste quando le repliche non si parlano. Con la consistenza eventuale il sistema continua a rispondere e accetta un ritardo nell'allineamento. Non è un difetto da eliminare ma una scelta. La maggior parte dei sistemi che scalano la accetta di proposito.
+
+**Perché ti interessa**
+
+Il problema tocca chi legge subito dopo aver scritto. Un esempio tipico: l'utente pubblica un commento, ricarica la pagina e non lo vede. Per lui il commento è sparito, anche se la scrittura è riuscita.
+
+Quanto dura la finestra di incoerenza:
+- tra repliche nella stessa regione, di solito meno di un secondo;
+- tra regioni diverse, sale a qualche secondo.
+
+**Come si gestisce**
+
+La soluzione comune è far leggere dalla replica primaria la sessione che ha appena scritto. Le altre sessioni continuano a leggere dalle repliche. Così chi ha scritto vede subito il proprio dato e il resto del sistema mantiene i vantaggi delle repliche.
+
+**Quando non va bene**
+
+I casi in cui non è accettabile sono pochi e facili da riconoscere:
+- saldi di conto;
+- disponibilità di posti;
+- unicità di un identificativo.
+
+In questi casi serve consistenza forte. Altrove, la consistenza eventuale è quasi sempre la scelta giusta.

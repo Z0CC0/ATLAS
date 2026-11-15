@@ -1,0 +1,1 @@
+`const` locks the name, not the value — reassign it and it throws. Object/array under `const`? Still mutable internally, only the binding is frozen. `let` reassigns freely. Both `let` and `const` are block-scoped; `var` isn't.

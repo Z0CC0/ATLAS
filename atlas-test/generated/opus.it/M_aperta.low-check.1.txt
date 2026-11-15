@@ -1,0 +1,15 @@
+conoscenza interna
+
+Prima di tutto, chiediti cosa deve poter fare il tuo team fra un anno che oggi non può. **È la domanda decisiva, e non è tecnica.** Il resto serve a rispondere a quella.
+
+Poi due dati da raccogliere sul monolite.
+
+Quali parti cambiano davvero. Spezzare le parti stabili non porta nessun vantaggio.
+
+Dove passano i confini delle transazioni. Se una transazione finisce divisa fra due servizi, diventa un problema distribuito.
+
+Sul modo di riscrivere: evita di rifare tutto in parallelo al vecchio sistema. Fallisce quasi sempre, perché il vecchio continua a cambiare e la copia non lo raggiunge mai. Meglio lo strangolamento progressivo: metti un router davanti, sposti un pezzo per volta, e il vecchio resta autorevole finché il nuovo non è verificato.
+
+Sull'architettura finale, tieni conto del costo operativo. Ogni microservizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupi. Con meno di cinque sviluppatori quel costo supera quasi sempre il beneficio.
+
+Se sei in quella situazione, considera il **monolite modulare**, l'opzione di cui si parla poco. Ha confini interni netti e un solo rilascio, e il giorno che serve davvero puoi estrarre un modulo come servizio a parte.

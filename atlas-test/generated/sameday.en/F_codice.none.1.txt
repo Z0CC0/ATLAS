@@ -1,0 +1,31 @@
+Here's a debounce function you can drop into any project:
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Usage:
+
+```js
+const onResize = debounce(() => console.log('resized'), 200);
+window.addEventListener('resize', onResize);
+```
+
+Each call cancels the pending timer and starts a new one. `fn` only runs once the calls have stopped for `ms` milliseconds.
+
+**Why it's written this way:**
+
+- **`clearTimeout(t)` comes before every `setTimeout`.** Without it, the old timers keep running alongside the new ones and `fn` fires more than once. That defeats the purpose.
+- **`let t` sits outside the returned function**, in the closure. If you move it inside, each call gets its own timer and nothing gets debounced.
+- **`...args` passes the arguments through.** Without the spread, `fn` gets called with nothing, so an event handler would lose its `event` object.
+
+**Limitations:**
+
+- **It returns nothing.** Anything `fn` returns is lost. If you need the return value, you'll need to make it return a Promise instead.
+- **It isn't a throttle.** If you want `fn` to run right away and then ignore calls for a while, you need a throttle. That's a different function.

@@ -1,0 +1,10 @@
+Per un sito statico:
+
+- **`Strict-Transport-Security: max-age=31536000; includeSubDomains`**: il browser usa solo HTTPS. `max-age` deve essere di almeno 31536000 secondi.
+- **`Content-Security-Policy: default-src 'self'`**: blocca gli script iniettati da terze parti. Aggiungi `frame-ancestors 'none'` per proteggerti anche dal clickjacking.
+- **`X-Frame-Options: DENY`**: protegge dal clickjacking. Non serve se usi già `frame-ancestors 'none'` nella CSP.
+- **`X-Content-Type-Options: nosniff`**: il browser non prova a indovinare il tipo di contenuto.
+- **`Referrer-Policy: strict-origin-when-cross-origin`**: il percorso completo della pagina non viene inviato ad altri siti.
+- **`Permissions-Policy: camera=(), microphone=(), geolocation=()`**: spegne camera, microfono e geolocalizzazione, se il sito non li usa.
+
+**Non mettere `X-XSS-Protection`.** È deprecato e i browser moderni lo ignorano. Nelle versioni vecchie dei browser introduceva vulnerabilità.

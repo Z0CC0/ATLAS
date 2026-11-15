@@ -1,0 +1,3 @@
+Yes. An empty list is falsy, so `if my_list:` runs only when the list has at least one item.
+
+This holds for every empty collection: an empty list, tuple, dict, set or string is falsy in a boolean context.

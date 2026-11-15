@@ -1,0 +1,13 @@
+internal knowledge
+
+The story starts slightly before the eighties. In 1978 the 8086 was a 16-bit processor that grew out of the 8080, and it stayed compatible at source level, so existing code could be carried forward. That habit of keeping old code working shapes everything after it.
+
+The 80286 in 1982 added protected mode, with one awkward limit: once in protected mode, the only way back to real mode was a reboot. The 80386 in 1985 fixed most of that and changed far more. It brought 32 bit, paged virtual memory, and virtual 8086 mode, which let old real-mode software run inside the new protected environment.
+
+From there, chip designers moved more onto the chip and did more work per cycle. The 486 in 1989 put the first-level cache and the maths coprocessor on the chip itself. The Pentium in 1993 was superscalar: two integer pipelines that could retire two instructions per cycle.
+
+The Pentium Pro in 1995 is the real turning point. It added out-of-order execution and translated x86 instructions into internal micro-operations. From then on, x86 is an interface, no longer the real machine underneath. The instruction set stays fixed, and the hardware behind it is free to change.
+
+Next came the frequency race. The Pentium 4 in 2000 went after clock speed with a very long pipeline and hit the power wall. Meanwhile, in 2003, AMD extended the architecture to 64 bit with AMD64, and Intel adopted the same instruction set. It was the first time the dominant extension did not come from Intel. From 2006, starting with the Core 2, the focus moved from frequency to core count. Alongside all of this, the vector extensions grew with each generation: MMX, then SSE, AVX, and AVX-512.
+
+Today most of the complexity is in the layers below the instruction set: branch prediction, the cache hierarchy, and speculative execution. In 2018, Spectre and Meltdown showed that speculative execution had a security cost nobody had priced. The hidden machinery that made x86 fast for two decades turned out to have a downside of its own.

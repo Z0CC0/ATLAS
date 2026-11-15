@@ -1,0 +1,1 @@
+Yes. Every empty collection is falsy: list, tuple, dict, set and string. So `[]`, `()`, `{}`, `set()` and `""` all evaluate as `False` in a boolean context.

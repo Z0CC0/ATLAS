@@ -1,0 +1,11 @@
+La consistenza eventuale vuol dire che, dopo una scrittura, le repliche non sono subito d'accordo, ma convergono entro un tempo finito se le scritture si fermano.
+
+Nella stessa regione di solito convergono in meno di un secondo. Fra regioni diverse servono alcuni secondi.
+
+**Ti riguarda quando leggi subito dopo aver scritto:** l'utente pubblica un commento, ricarica la pagina e non lo vede.
+
+La soluzione comune è leggere dalla replica primaria solo per la sessione che ha appena scritto, non per tutte.
+
+Non è un difetto da eliminare ma una scelta. In cambio ottieni disponibilità: un sistema che pretende consistenza forte deve rifiutare richieste quando le repliche non si parlano. Per questo la maggior parte dei sistemi che scalano la accetta di proposito.
+
+**Pochi casi, facili da riconoscere, non la tollerano:** saldi di conto, posti disponibili, unicità di un identificativo.

@@ -1,0 +1,16 @@
+Prompt caching saves work on the part of a request that repeats. The cache stores the already-processed prefix of a request. A later request that starts the same way reuses that prefix and does not pay to process it again.
+
+**Only the prefix is reused.** Matching goes from the start of the request. If one character differs early on, nothing from that point onward is reused, even when the rest is identical. So the order of your request matters:
+
+- Put the stable parts first: system instructions, attached documentation, tool definitions.
+- Put the changing parts after them: the user's new message, per-turn data.
+
+If you reverse that order, the changing content sits at the front and nothing behind it gets reused.
+
+**Look out for volatile lines near the top.** A system line that changes every turn, such as a clock or timestamp, breaks reuse for everything after it. One line like that at the top of your instructions makes caching useless for the large stable context below it. Move that line to the end or remove it.
+
+**What it costs:** Writing to the cache costs more than a normal read, so the first request is more expensive than it would be without caching. The savings start with the second request. They grow with each turn that reuses the same prefix.
+
+**When it pays off:** Long conversations with a large stable context. Examples are a big system prompt, attached docs, or many tool definitions sent again on every turn. You pay the write once and get cheaper reads many times.
+
+**When it does not pay off:** Single requests that differ from each other. You pay the extra write cost and never read the cache back, so you spend more than you would without caching.

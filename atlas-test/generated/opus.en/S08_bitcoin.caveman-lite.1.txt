@@ -1,0 +1,13 @@
+Bitcoin grew out of the cypherpunk scene. That community had already tried to build digital money, with proposals such as b-money and bit gold. None of them solved one key problem: how to agree on the order of transactions.
+
+The order of transactions matters because of double spending. Digital money is just data, and data can be copied. Without some control, the same coin could be spent twice. The usual fix is a central body that keeps the ledger and decides which payment came first. The cypherpunks wanted a system that worked without that central body.
+
+In 2008 a paper titled *Bitcoin: A Peer-to-Peer Electronic Cash System* appeared. It was signed Satoshi Nakamoto, a pseudonym. The person or group behind that name has never been identified. The paper's answer to double spending is a chain of blocks, ordered by a proof of work. Each block takes real computational effort to produce, and each block builds on the one before it. To rewrite a past transaction, an attacker would have to redo the proof of work for that block and for every block after it. This makes rewriting history very expensive, so the agreed order of transactions becomes reliable without anyone in charge.
+
+The network started on 3 January 2009, when the first block was generated. That block contains the headline of a Times article about a bank bailout. The headline works as a timestamp, because it proves the block was not created before that date. It also works as a statement of intent: the block points at the financial system that Bitcoin offered an alternative to.
+
+The paper also fixed how new bitcoin are issued. Each new block pays a reward, which started at 50 bitcoin. The reward halves every 210,000 blocks, which is roughly every four years. Because of this halving, the total supply tends toward 21 million bitcoin and never goes beyond it.
+
+For a while, bitcoin had no practical price. The first documented commercial transaction came in 2010, when someone paid 10,000 bitcoin for two pizzas.
+
+In 2011 Satoshi stopped taking part publicly. The bitcoin attributed to Satoshi have never been moved.

@@ -1,0 +1,9 @@
+The RTX 5080 is a new generation, but most of its gain comes from frame generation. In plain rasterisation it's only about 10-15% faster than the 4080.
+
+Architecture: Blackwell on the 5080, Ada Lovelace on the 4080.
+
+Memory: GDDR7 instead of GDDR6X, and bandwidth rises from about 717 to about 960 GB/s.
+
+Rated power draw: 360 W, up from 320 W.
+
+Power connector: still 16-pin.

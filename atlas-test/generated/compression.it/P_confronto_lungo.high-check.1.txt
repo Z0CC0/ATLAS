@@ -1,0 +1,7 @@
+File locali + raccoglitore che spedisce altrove: a 1000 req/min è la scelta giusta. Regola sempre valida — scrittura log mai nel percorso critico della richiesta.
+
+File da solo: zero costo, zero dipendenze. Ricerca però è grep, rotazione manuale o disco pieno. Multi-macchina: nessuna ricerca centrale, ti colleghi a ognuna.
+
+Servizio gestito da solo: ricerca immediata, allarmi, retention automatica. Ma paghi a volume, e a 1000 req/min cresce in fretta. Log escono dalla tua infra → ripulire dati personali prima.
+
+Database: ricerca comoda e nota, ma log nello stesso DB dell'app = due carichi diversi in competizione. Sotto carico i log occupano cache e connessioni destinate alle richieste vere.

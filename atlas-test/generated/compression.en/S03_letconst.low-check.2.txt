@@ -1,0 +1,1 @@
+const locks name, not value—reassignment fails, but object declared with const still lets mutation: push array items, change properties. let permits reassignment, use when value changes over time. both const, let scoped to block, `{}`—unlike var, function-scoped, leaks outside if/for blocks.

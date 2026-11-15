@@ -1,0 +1,9 @@
+{
+  "output_tokens": 530,
+  "thinking_tokens": 116,
+  "cache_creation_input_tokens": 39246,
+  "cache_read_input_tokens": 0,
+  "input_tokens": 2,
+  "model": "claude-sonnet-5",
+  "duration_ms": 8535
+}

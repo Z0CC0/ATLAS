@@ -1,0 +1,13 @@
+A mille richieste al minuto: file locali + raccoglitore che li spedisce altrove. Applicazione non aspetta mai la scrittura del log.
+
+Perché scartare le altre due opzioni da sole:
+
+**Solo file**: costo zero, nessuna dipendenza, ma ricerca è solo grep e rotazione va configurata a mano (altrimenti disco si riempie). Su più macchine ricerca non esiste — devi collegarti a ognuna una per una.
+
+**Solo servizio gestito**: ricerca immediata, allarmi, conservazione automatica — comodo, ma paghi per volume e a mille richieste al minuto il volume cresce in fretta. In più i log escono dalla tua infrastruttura, quindi vanno ripuliti dai dati personali prima di uscire.
+
+**Database**: ricerca comoda e nota, ma scrivere log nello stesso database dell'applicazione mette in competizione due carichi molto diversi. Sotto carico, i log riempiono cache e connessioni che servivano alle richieste vere.
+
+La combinazione (file + raccoglitore) prende il meglio: scrittura locale veloce, poi il raccoglitore spedisce altrove per ricerca/allarmi/conservazione, senza il costo diretto del servizio gestito sul path critico.
+
+Regola che vale sempre, qui e ovunque: la scrittura del log non deve stare nel percorso critico della richiesta.

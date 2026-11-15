@@ -1,0 +1,13 @@
+L'architettura x86 nasce nel 1978 con l'8086: un processore a 16 bit pensato come evoluzione dell'8080, con cui mantiene compatibilità a livello di codice sorgente. È il punto di partenza di tutto.
+
+Nel 1982 arriva l'80286, che introduce la modalità protetta — ma con un limite pesante: una volta entrati, non si può tornare alla modalità reale senza riavviare il sistema. Il vero salto arriva nel 1985 con l'80386, che porta i 32 bit, la memoria virtuale paginata e la modalità virtuale 8086, superando i limiti del 286.
+
+Nel 1989 il 486 integra direttamente nel chip la cache di primo livello e il coprocessore matematico, componenti che prima erano esterni. Nel 1993 il Pentium fa un altro salto architetturale diventando superscalare: due pipeline intere permettono di ritirare due istruzioni per ciclo di clock.
+
+Il cambio più profondo arriva nel 1995 con il Pentium Pro: introduce l'esecuzione fuori ordine e traduce internamente le istruzioni x86 in micro-operazioni. Da quel momento x86 smette di essere "la macchina reale" e diventa un'interfaccia — sotto, il processore lavora in modo del tutto diverso da come appare da fuori.
+
+Nel 2000 il Pentium 4 punta tutto sulla frequenza, con una pipeline lunghissima, ma sbatte contro il muro del consumo energetico. Nel 2003 arriva una svolta significativa: è AMD, non Intel, a estendere l'architettura a 64 bit con AMD64, e Intel finisce per adottare lo stesso set di istruzioni — la prima volta che l'estensione dominante di x86 non viene da Intel.
+
+Dal 2006, con il Core 2, la direzione cambia ancora: non più rincorrere la frequenza, ma aumentare il numero di nuclei. In parallelo, generazione dopo generazione, crescono le estensioni vettoriali: MMX, SSE, AVX, AVX-512.
+
+Oggi la vera complessità dell'architettura non sta più nel set di istruzioni visibile, ma negli strati sotto: predizione dei salti, gerarchia di cache, esecuzione speculativa. Ed è proprio lì che nel 2018 Spectre e Meltdown hanno mostrato qualcosa di inatteso: l'esecuzione speculativa aveva un costo di sicurezza che per decenni nessuno aveva considerato.

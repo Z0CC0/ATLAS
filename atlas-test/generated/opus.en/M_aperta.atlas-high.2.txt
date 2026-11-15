@@ -1,0 +1,19 @@
+Start with the question that isn't technical: what must your team be able to do a year from now that it can't do today? Choose the architecture that answers it.
+
+**Before choosing:**
+
+First, which parts of the monolith actually change. Stable parts gain nothing from being split.
+
+Second, where the transaction boundaries sit. A transaction that spans two services becomes a distributed problem.
+
+**On team size:** microservices cost more to operate. Every service needs releases, monitoring, logs, alerts and a person who looks after it. Below five developers that cost almost always exceeds the benefit.
+
+The option nobody mentions is the modular monolith. It has sharp internal boundaries and one release, and you can still extract a module the day it's genuinely needed.
+
+On the migration itself, avoid a full rewrite running in parallel with the old system. It almost always fails, because the old system keeps changing and the copy never catches up.
+
+Strangle it progressively instead:
+
+1. Put a router in front of the old system.
+2. Move one piece at a time.
+3. Keep the old system authoritative until the new piece is verified.

@@ -1,0 +1,15 @@
+Sette header per un sito statico:
+
+**Strict-Transport-Security**: `max-age=31536000; includeSubDomains` — forza HTTPS nel browser.
+
+**Content-Security-Policy**: `default-src 'self'` — blocca script di terze parti iniettati.
+
+**X-Content-Type-Options**: `nosniff` — il browser non indovina il content-type.
+
+**Referrer-Policy**: `strict-origin-when-cross-origin` — non fa uscire il path completo verso altri domini.
+
+**X-Frame-Options**: `DENY` (o `frame-ancestors 'none'` nella CSP) — anti-clickjacking.
+
+**Permissions-Policy**: spegni camera, microfono, geolocalizzazione se non usati.
+
+**X-XSS-Protection**: omettilo, deprecato — ignorato dai browser moderni, nelle versioni vecchie era esso stesso vulnerabile.

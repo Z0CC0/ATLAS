@@ -1,0 +1,12 @@
+Idea comprensibile — ma prima di spostare tutta la logica nei trigger, considera i costi che comporta.
+
+Il vantaggio che cerchi è reale: nessun percorso applicativo può saltare la regola, nemmeno uno script lanciato a mano da qualcuno con accesso diretto al database. Su questo i trigger vincono davvero.
+
+Il problema è tutto quello che ci sta intorno:
+
+- **Diventano invisibili.** Chi legge il codice applicativo non vede i trigger. Una modifica che sembra innocua da quel lato può innescarne altri senza lasciare traccia nel punto dove stai guardando.
+- **Non si testano con gli strumenti che usate già.** Servono prove che girano contro un database vero, non i test unitari o i mock a cui il team è abituato — è un secondo binario di testing da mantenere.
+- **Il debug peggiora.** Se un trigger fallisce, quello che vedi è un errore di scrittura generico: non ti dice quale regola l'ha causato. Devi risalire a mano.
+- **Le migrazioni diventano fragili.** L'ordine di esecuzione dei trigger conta, ma non è dichiarato da nessuna parte: basta un cambio di ordine imprevisto per rompere qualcosa in modo silenzioso.
+
+L'alternativa che ti do la stessa garanzia senza questi costi: tieni nel database solo ciò che protegge l'integrità — vincoli, chiavi esterne, unicità, controlli di dominio — e sposta la logica di business nell'applicazione, dietro un **unico punto di ingresso**. Se poi riservi l'accesso diretto al database alle sole migrazioni (nessuno scrive a mano fuori da quel punto), quel punto di ingresso unico ti dà esattamente la stessa garanzia di inaggirabilità che cercavi dai trigger — ma con codice leggibile, testabile con gli strumenti normali, ed errori che dicono davvero cosa è andato storto.

@@ -1,0 +1,26 @@
+Wrap the connection handling in `db/session.py:47` in `try/finally`:
+
+```python
+conn = pool.acquire()
+try:
+    return handler(conn, request)
+finally:
+    pool.release(conn)
+```
+
+**What's happening:** your connection pool is running out. A slow query is not the cause.
+
+- The middleware only releases the connection when the request succeeds.
+- If the handler raises an exception, the code never reaches `release()`, so the connection stays held until it times out.
+- After a few hundred failed requests the pool is empty, and every request after that waits for a connection.
+- That's why latency keeps climbing until the API locks up, instead of requests failing right away with errors.
+
+**Steps (about 10 minutes):**
+
+1. Run `pytest tests/test_pool.py -k exhaustion -x` to reproduce the lockup before the change.
+2. Replace the acquire/release code at `db/session.py:47` with the snippet above.
+3. Run the same test again to confirm the fix.
+
+**Don't raise `pool_size` to fix this.** A bigger pool only delays the point where it empties. Connections still leak. Raise it only after the fix is in, and only if your real load needs more connections.
+
+Next: run the pytest command from step 1 and watch it fail.

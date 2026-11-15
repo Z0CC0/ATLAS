@@ -1,0 +1,11 @@
+A mille richieste al minuto, la scelta più ragionevole è: log su file locali più un raccoglitore (agent/collector) che li spedisce altrove. In questo modo l'applicazione non aspetta mai la scrittura del log — e questa è la regola che vale sempre, indipendentemente da dove i log finiscono: la scrittura del log non deve stare nel percorso critico della richiesta.
+
+Perché scartare le altre due opzioni come soluzione diretta:
+
+Il **database** lo eviterei come destinazione dei log applicativi: sì, la ricerca è comoda e ben nota, ma se scrivi i log nello stesso database dell'applicazione metti in competizione due carichi molto diversi. Sotto carico, i log finiscono per riempire cache e connessioni che servivano alle richieste vere — proprio quello che vuoi evitare con questo volume di traffico.
+
+Il **servizio gestito** puro (tutto diretto lì, senza intermediario) ha vantaggi reali — ricerca immediata, allarmi, conservazione automatica — ma si paga per volume, e a mille richieste al minuto il volume cresce in fretta, quindi i costi possono salire rapidamente. In più, dato che i log escono dalla tua infrastruttura, vanno ripuliti dai dati personali prima di uscire, il che aggiunge un passaggio da gestire.
+
+Il **file puro** (senza raccoglitore) ha il vantaggio del costo zero e nessuna dipendenza, ma da solo ha due limiti seri: la ricerca è grep e la rotazione va configurata a mano (altrimenti il disco si riempie), e se hai più macchine la ricerca su tutte insieme non esiste — devi collegarti a ognuna singolarmente.
+
+Ecco perché la combinazione funziona meglio delle opzioni singole: scrivi su file locali (scrittura veloce, zero attesa per l'applicazione), e lasci che sia il raccoggitore, in modo asincrono e fuori dal percorso della richiesta, a occuparsi di spedire i log altrove — che sia verso un servizio gestito (con la pulizia dei dati personali prima dell'invio) o altrove per la ricerca centralizzata. Così ottieni ricerca centralizzata e allarmi senza far dipendere la latenza delle richieste dalla velocità di scrittura o di rete del sistema di log.

@@ -1,0 +1,12 @@
+`let` allows reassignment. `const` blocks reassigning name only. Value itself still mutable: object declared with `const` can change internally.
+
+```js
+let count = 1;
+count = 2;            // OK
+
+const user = { name: "Ann" };
+user.name = "Bob";    // OK, object changes internally
+user = {};            // TypeError, name reassigned
+```
+
+Both block scoped, unlike `var`.

@@ -1,0 +1,7 @@
+Biggest jump is frame generation, not raw rasterisation. On rasterisation, real gain is roughly 10-15 per cent.
+
+5080 uses Blackwell architecture; 4080 uses Ada Lovelace.
+
+Memory moves from GDDR6X to GDDR7. Bandwidth rises from about 717 to about 960 GB/s.
+
+Rated power draw rises from 320 W to 360 W. Power connector stays at 16 pins.

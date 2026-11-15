@@ -1,0 +1,7 @@
+**No.** On a column with only three distinct values, the planner usually ignores a B-tree index.
+
+Each value matches far more than about 5–10% of rows, which is the point past which the planner picks a sequential scan instead.
+
+The index still costs writes and disk space.
+
+**Exception:** if one value is rare, a partial index on that value works.

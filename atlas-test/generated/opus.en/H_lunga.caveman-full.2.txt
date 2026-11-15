@@ -1,0 +1,18 @@
+Prompt caching saves the already-processed prefix of a request. A later request that starts with the same text skips paying for that part again.
+
+**How it works**
+- Reuse covers only the prefix. If one character differs near the start, nothing from that point on is reused.
+- Put stable parts first and changing parts after. Reversed order breaks reuse.
+- One system line that changes every turn, like a clock, kills reuse for everything after it. Move it to the end or remove it.
+
+**Cost**
+- Writing to the cache costs more than a normal read. The first request is more expensive.
+- Savings start from the second request. They grow with the number of turns.
+
+**When it pays off**
+- Long conversations with a big stable context: system instructions, attached documentation, tool definitions. You pay that block once and reuse it on every turn.
+
+**When it doesn't pay off**
+- Single requests that differ from each other. You pay the write cost and never read the cache back.
+
+**Rule of thumb:** use caching if the same big prefix repeats across many turns, and order the prompt from most stable to most changing. Skip caching for one-off requests that differ each time.

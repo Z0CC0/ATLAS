@@ -1,0 +1,24 @@
+x86 has kept one instruction set alive for nearly fifty years. Over that time the chip underneath was rebuilt several times, while the code written for it kept running.
+
+**Origins: 16 bit (1978–1982)**
+The 8086 arrived in 1978 as a 16-bit chip. It grew out of the 8080 and was compatible with it at source level, so the family carried its history forward from the very first chip. The 80286 followed in 1982 with protected mode. It had a catch: once the chip entered protected mode, there was no way back to real mode without a reboot.
+
+**32 bit and real memory management (1985–1989)**
+The 80386 of 1985 was the big jump. It brought 32-bit operation and paged virtual memory. It also added virtual 8086 mode, which let old real-mode code run inside the new protected environment. The 486 of 1989 moved two parts onto the chip that used to sit outside it: the first-level cache and the maths coprocessor.
+
+**Parallelism inside the core (1993–1995)**
+The Pentium of 1993 was superscalar. It had two integer pipelines, so it could retire two instructions per cycle. The Pentium Pro of 1995 made the deeper change. It added out-of-order execution and translated x86 instructions into internal micro-operations. From then on, x86 was an interface rather than the real machine underneath. The instruction set became a contract, and the hardware behind it was free to work differently.
+
+**The frequency dead end (2000)**
+The Pentium 4 of 2000 chased clock speed with a very long pipeline. It hit the power wall: higher frequency cost more power and heat than the design could absorb.
+
+**64 bit, from AMD (2003)**
+In 2003 AMD extended the architecture to 64 bit with AMD64, and Intel adopted the same instruction set. It was the first time the dominant extension to x86 did not come from Intel.
+
+**Cores instead of clock speed (2006 onward)**
+With the Core 2 in 2006, the industry stopped chasing frequency and started adding cores. Alongside that, the vector extensions grew from generation to generation: MMX, then SSE, then AVX, then AVX-512.
+
+**Today: the complexity sits below the interface**
+Most of the hard engineering now happens beneath the instruction set, in branch prediction, the cache hierarchy and speculative execution. That last one carried a hidden cost. In 2018, Spectre and Meltdown showed that speculative execution came with a security price nobody had accounted for. The same tricks that made the hidden machine fast could leak data.
+
+The pattern across the whole history is that the interface stayed stable while everything behind it changed. The Pentium Pro is where those two separated, and Spectre and Meltdown were the first time that hidden machine caused trouble for the code running above it.

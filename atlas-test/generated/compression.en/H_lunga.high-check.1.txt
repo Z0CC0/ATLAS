@@ -1,0 +1,11 @@
+Prompt caching stores the already-processed prefix of a request. Next request, same prefix — no reprocessing cost for that part.
+
+Prefix-only: one different character at the start, no reuse past that point. So stable content goes first — system instructions, docs, tool defs — variable content after. Reverse the order and caching breaks.
+
+First write costs more than a normal read. Gain starts second request, grows with turn count.
+
+Pays off: long conversations, large stable context.
+
+Doesn't pay off: single requests differing from each other — you pay the write, never read it back.
+
+Gotcha: a changing line early (a clock, timestamp) kills reuse for everything after it.

@@ -1,0 +1,5 @@
+let, const both block scoped, unlike var.
+
+const blocks reassigning name — can't point it at new value once declared. Doesn't freeze value: object declared with const still mutates internally, properties change fine.
+
+let allows reassignment.

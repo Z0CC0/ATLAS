@@ -1,0 +1,9 @@
+internal knowledge
+
+No. A B-tree index on a column with that few values is normally not used.
+
+The planner prefers a sequential scan when the filter selects more than roughly 5–10% of the rows.
+
+You still pay for the index in writes and disk space.
+
+The exception is a partial index on the rare value, which does work.

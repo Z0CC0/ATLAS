@@ -1,0 +1,9 @@
+When you visit a site over HTTPS, you're using ordinary HTTP, just running inside a channel that TLS encrypts.
+
+It starts with a handshake. Your browser opens the connection and tells the server which TLS versions and cipher suites it's willing to use. The server picks one of each and sends back its certificate — a document that binds a domain name to a public key, signed by a certificate authority. Your browser checks that signature by following the chain of authorities up to a root it already trusts. That's all the certificate proves: this domain controls this key. It says nothing about who actually operates the site.
+
+From there, client and server agree on a session key — nowadays usually via an elliptic curve Diffie-Hellman exchange. That key ends up symmetric, because asymmetric encryption is too expensive to use for all your actual traffic; it's only used to set things up.
+
+Once that key is in place, everything you send is both encrypted and authenticated, so anyone sitting in the middle can neither read it nor tamper with it.
+
+One practical difference between versions: TLS 1.2 needs two round trips to complete this handshake before any data flows; TLS 1.3 does it in one, which is why newer connections feel snappier to establish.

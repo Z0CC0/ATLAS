@@ -1,0 +1,11 @@
+Consistenza eventuale significa che dopo scrittura repliche non concordano subito, ma convergono entro tempo finito se scritture si fermano. Compromesso è con disponibilità: sistema che pretende consistenza forte deve rifiutare richieste quando repliche non si parlano tra loro.
+
+Ti riguarda perché colpisce proprio chi legge subito dopo aver scritto: pubblichi commento, ricarichi pagina, non lo vedi.
+
+Soluzione comune: leggere dalla replica primaria per sessione che ha appena scritto, non per tutte le sessioni.
+
+Tempo di convergenza tipico, tra repliche stessa regione, sotto secondo; tra regioni diverse, sale a secondi.
+
+Non è difetto da eliminare, è scelta: maggior parte sistemi che scalano accetta di proposito.
+
+Casi dove non è accettabile sono pochi e riconoscibili: saldi conto, disponibilità posti, unicità identificativo.

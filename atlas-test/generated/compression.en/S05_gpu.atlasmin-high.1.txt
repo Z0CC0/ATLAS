@@ -1,0 +1,5 @@
+5080 upgrades on architecture (Blackwell vs Ada Lovelace), memory (GDDR7 vs GDDR6X), and bandwidth (~960 vs ~717 GB/s).
+
+Raw rasterisation gain: 10-15%. The big leap is frame generation, not rasterisation.
+
+Power draw up 320W to 360W, connector stays 16-pin.

@@ -1,0 +1,13 @@
+Before picking an architecture, four things to settle, in this order.
+
+Which part of the monolith actually changes. Stable parts gain nothing from being split; only the parts under active change justify a boundary.
+
+Where transaction boundaries sit. A transaction that spans two services becomes a distributed problem, so any cut has to fall between transactions, never through one.
+
+How the move happens. A full rewrite running in parallel with the old system almost always fails: the old one keeps changing and the copy never catches up. Put a router in front instead, move one piece at a time, and keep the old system authoritative until the new piece is verified.
+
+What microservices cost to run. Every service wants releases, monitoring, logs, alerts and a person who looks after it. Below five developers that cost almost always exceeds the benefit.
+
+Option nobody mentions: modular monolith. Sharp internal boundaries, one release, and the option to extract a module the day it is genuinely needed.
+
+The deciding question is not technical: what must the team be able to do a year from now that it cannot do today. Answer that first, then choose the architecture that makes it possible.

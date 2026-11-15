@@ -1,0 +1,16 @@
+Prima di scegliere l'architettura, chiariti questi punti.
+
+**1. Cosa cambia davvero nel monolite.** Questo è il primo dato da raccogliere. Le parti stabili non guadagnano nulla dall'essere spezzate. Concentra lo sforzo sulle parti che cambiano spesso.
+
+**2. Dove stanno i confini delle transazioni.** Una transazione che attraversa due servizi diventa un problema distribuito. Se due parti del codice devono restare consistenti nella stessa transazione, tagliarle in servizi separati ti crea un problema che oggi non hai.
+
+**3. Come migrare, non solo verso cosa.** Evita la riscrittura completa in parallelo al vecchio sistema. Quasi sempre fallisce: il vecchio sistema continua a cambiare e la copia non lo raggiunge mai. L'alternativa è lo strangolamento progressivo:
+- metti un router davanti al monolite;
+- sposti un pezzo per volta;
+- il vecchio sistema resta autorevole finché il nuovo non è verificato.
+
+**4. Quanto costano i microservizi al tuo team.** Il costo operativo è più alto. Ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupa. Sotto i cinque sviluppatori, quel costo supera quasi sempre il beneficio.
+
+**5. Il monolite modulare come opzione.** Se ne parla poco. Ti dà confini interni netti e un solo rilascio. Ti lascia anche la possibilità di estrarre un modulo come servizio il giorno in cui serve davvero. Puoi quindi rimandare la scelta dei microservizi senza precluderla.
+
+**La domanda decisiva non è tecnica.** Chiediti cosa deve poter fare il team fra un anno che oggi non può. L'architettura giusta è quella che rende possibile proprio quello. Se non sai rispondere a questa domanda, è presto per scegliere.

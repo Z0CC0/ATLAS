@@ -1,0 +1,14 @@
+`let` permette di riassegnare la variabile, `const` no. Però `const` blocca solo il nome, non il valore.
+
+Un oggetto dichiarato con `const` può quindi cambiare al suo interno:
+
+```js
+let n = 1;
+n = 2;              // ok
+
+const obj = { a: 1 };
+obj.a = 2;          // ok: modifichi l'oggetto
+obj = {};           // TypeError: riassegni il nome
+```
+
+In comune hanno l'ambito di blocco, a differenza di `var`.

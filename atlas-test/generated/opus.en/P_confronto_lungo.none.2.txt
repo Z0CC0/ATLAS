@@ -1,0 +1,21 @@
+At a thousand requests a minute, write logs to local files and run a collector that ships them somewhere else. The application only ever writes to local disk, so it never waits on a log write. You still get logs in one searchable place.
+
+Whatever you choose, keep one rule: **writing the log must never sit in the critical path of the request.** If a request has to wait for a log line to land somewhere, your logging setup is now part of your latency and your outages.
+
+Here's why each option on its own falls short at your volume:
+
+**Files only.** They cost nothing and add no dependency. The downsides are practical:
+- Searching means grep.
+- You have to set up rotation by hand, or the disk fills.
+- If you run on more than one machine, there's no way to search across all of them. You end up connecting to each machine one by one.
+
+**Managed service only.** You get instant search, alerts and automatic retention, which is the experience you actually want. But you pay by volume, and at a thousand requests a minute the volume grows fast. The logs also leave your own infrastructure, so you have to strip personal data before they're sent.
+
+**Your database.** Searching with queries you already know is convenient. But if the logs go into the application's own database, two very different workloads compete with each other. Under load, logs take up cache space and connections that your real requests needed. Your logging ends up slowing down the thing it's supposed to observe.
+
+**Local files plus a collector** gives you most of the benefits with few of the drawbacks:
+- Writes are cheap and local, so requests aren't held up.
+- The collector moves logs off the machine in the background.
+- You can send them wherever you want to search them, including a managed service if that's worth the cost.
+- If you do use a managed service, strip personal data in the collector, before the logs leave your infrastructure.
+- Still configure rotation on the local files, so a slow or stopped collector can't fill the disk.

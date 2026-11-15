@@ -1,0 +1,21 @@
+L'x86 è nato a 16 bit. Col tempo è diventato un'interfaccia stabile, mentre la macchina reale sotto è cambiata più volte.
+
+**Origine (fine anni '70).** La storia parte un po' prima degli anni '80. L'8086 del 1978 è a 16 bit e deriva dall'8080. Con l'8080 è compatibile a livello di sorgente, non di binario. Da qui nasce il vincolo che segna tutta la famiglia: non rompere il passato.
+
+**Anni '80: protezione e 32 bit.**
+- **80286 (1982)**: introduce la modalità protetta. Però non si torna alla modalità reale senza riavviare, un limite pesante per il software esistente.
+- **80386 (1985)**: è il salto vero. Porta i 32 bit e la memoria virtuale paginata. Aggiunge anche la modalità virtuale 8086, che fa girare il vecchio codice dentro l'ambiente protetto. Risolve così il problema lasciato dal 286.
+- **486 (1989)**: porta dentro il chip la cache di primo livello e il coprocessore matematico, prima esterni.
+
+**Anni '90: il parallelismo interno.**
+- **Pentium (1993)**: è superscalare. Ha due pipeline intere e può ritirare due istruzioni per ciclo.
+- **Pentium Pro (1995)**: è la svolta concettuale. Esegue fuori ordine e traduce le istruzioni x86 in micro-operazioni interne. Da quel momento x86 è un'interfaccia, non più la macchina reale sotto.
+
+**Anni 2000: limiti fisici e cambio di guida.**
+- **Pentium 4 (2000)**: punta tutto sulla frequenza, con una pipeline lunghissima. Sbatte contro il muro del consumo.
+- **AMD64 (2003)**: AMD estende l'architettura a 64 bit e Intel adotta lo stesso insieme di istruzioni. È la prima volta che l'estensione dominante non viene da Intel.
+- **Core 2 (2006)**: la direzione cambia. Non si cerca più la frequenza, si aumenta il numero di nuclei.
+
+**Filo parallelo: i vettori.** Le estensioni vettoriali crescono per generazioni: MMX, SSE, AVX, AVX-512.
+
+**Oggi.** Il set di istruzioni resta il riferimento, ma la complessità sta negli strati sotto. Conta la predizione dei salti, la gerarchia di cache e l'esecuzione speculativa. Spectre e Meltdown, nel 2018, mostrano che l'esecuzione speculativa aveva un costo di sicurezza che nessuno aveva mai considerato.

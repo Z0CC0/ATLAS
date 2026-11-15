@@ -1,0 +1,11 @@
+Usually no. A plain B-tree index on a column with three distinct values normally goes unused. The planner picks a sequential scan when the filter matches more than roughly 5-10% of the rows. With three values, most filters match far more than that.
+
+The unused index still costs you. Every write has to update it, and it takes disk space.
+
+The exception is when one value is rare. A partial index on that value alone does get used:
+
+```sql
+CREATE INDEX orders_pending_idx ON orders (status) WHERE status = 'pending';
+```
+
+Queries that filter on `status = 'pending'` can use this index. Since it holds only the rare rows, it stays small and costs little to maintain.

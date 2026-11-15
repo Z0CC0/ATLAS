@@ -1,0 +1,5 @@
+No — anything that reaches the browser can be read, and no amount of obfuscation survives someone opening dev tools or watching the network tab. The key has to live on your server instead: the frontend calls your own backend endpoint, and that endpoint is the one that calls the actual service with the key.
+
+Put a rate limit on that endpoint too — without one, it's just a free way for anyone to burn through your quota using your key.
+
+And if this key has already made it into frontend code that's been served or committed, treat it as burned: rotate it now. Deleting it from the code isn't enough — if it was ever committed, it's still sitting in your repo history, and anyone who already cloned it already has it.

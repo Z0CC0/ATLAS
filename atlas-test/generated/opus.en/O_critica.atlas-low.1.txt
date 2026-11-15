@@ -1,0 +1,15 @@
+I wouldn't. Keep integrity in the database and put business logic in the application, behind a single entry point.
+
+The upside is real: no application path can skip a trigger, not even a script someone runs by hand. The cost is high, though.
+
+Nobody reading the application code can see triggers. A change that looks simple can fire others and leave no trace.
+
+You can't test them with the tools your team already uses. You need tests that run against a real database.
+
+Debugging gets worse. An error inside a trigger shows up only as a failed write, with nothing saying which rule caused it.
+
+Migrations become fragile. Trigger order matters, and nothing declares it.
+
+The alternative: keep in the database only what protects integrity. That means constraints, foreign keys, uniqueness and domain checks. Put the business logic in the application, behind one entry point.
+
+That entry point gives you the same guarantee as a trigger, **as long as direct database access is reserved for migrations**. That condition carries the whole guarantee. If people or scripts can write to the database directly, the rule can be bypassed again.

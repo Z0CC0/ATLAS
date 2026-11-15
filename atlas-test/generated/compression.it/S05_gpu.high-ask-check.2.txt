@@ -1,0 +1,1 @@
+5080 Blackwell, 4080 Ada Lovelace. GDDR7 contro GDDR6X, banda 960 GB/s contro 717. Consumo 360W contro 320. Rasterizzazione pura: +10-15%. Salto vero sta nella generazione di fotogrammi, non nel raster. Alimentazione invariata, 16 pin su entrambe.

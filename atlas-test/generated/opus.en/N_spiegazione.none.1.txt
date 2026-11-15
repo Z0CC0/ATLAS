@@ -1,0 +1,16 @@
+**Eventual consistency** describes what happens when your data lives on several replicas. After a write, the replicas don't all agree right away. If writes stop, they converge on the same value within a finite time. For a while, different replicas can give different answers to the same question.
+
+**Why systems accept it.** The alternative costs availability. A system that demands strong consistency has to refuse requests whenever its replicas can't talk to each other, because otherwise it might serve stale data. Eventual consistency keeps answering, accepting that some answers will briefly be out of date. That's why it isn't a defect to engineer away. It's a choice, and most systems that scale make it on purpose.
+
+**When you'll notice it.** It mostly hurts someone who reads right after writing. A user posts a comment, reloads the page, and the comment isn't there. Their read went to a replica that hadn't caught up yet. The data isn't lost, but to the user it looks broken.
+
+**How long the window lasts.** Between replicas in the same region, convergence usually takes under a second. Across regions it rises to seconds. That's short, but it's long enough to catch the "post then reload" case.
+
+**The usual fix.** You don't need strong consistency everywhere to solve this. Route reads to the primary replica only for the session that just wrote. The person who posted the comment sees it immediately. Everyone else keeps reading from replicas, and it doesn't matter to them if they see it a second later.
+
+**When it's genuinely not acceptable.** These cases are few and easy to recognise:
+- **Account balances:** two replicas can't each approve spending the same money.
+- **Seat availability:** you can't sell the same seat twice.
+- **Uniqueness of an identifier:** two users can't both claim the same username or ID.
+
+**Why you should care:** For most of your data, eventual consistency is the right trade, and fighting it costs you availability for nothing. Put your effort into two things: handle read-your-own-write with session-level reads from the primary, and pick out the few places, like money, inventory and unique IDs, that really need strong guarantees.

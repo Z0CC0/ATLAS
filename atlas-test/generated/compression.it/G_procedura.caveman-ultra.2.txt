@@ -1,0 +1,17 @@
+Con dieci milioni di righe, la cosa da evitare assolutamente è un `ALTER TABLE tabella ALTER COLUMN colonna TYPE integer` diretto: riscrive tutta la tabella tenendo un lock ACCESS EXCLUSIVE, quindi il servizio resta fermo per tutta la durata dell'operazione. In produzione va evitato.
+
+L'approccio sicuro è procedere per gradi.
+
+Per prima cosa verifica che i dati esistenti siano davvero convertibili: conta quante righe contengono valori non numerici (cioè non fatti solo di cifre), perché quelle andrebbero gestite o corrette prima di procedere.
+
+Poi aggiungi una colonna nuova accanto a quella vecchia, con `ALTER TABLE t ADD COLUMN colonna_int integer` — questa operazione è veloce e non blocca la tabella a lungo.
+
+A quel punto riempi la colonna nuova a blocchi, ad esempio diecimila righe per volta, invece che con un update unico su tutta la tabella: così eviti di tenere un lock lungo mentre il servizio continua a funzionare.
+
+Mentre la migrazione dei dati storici è in corso, aggiungi anche un trigger che tenga sincronizzate le due colonne, in modo che le scritture che arrivano nel frattempo aggiornino sia la colonna vecchia che quella nuova.
+
+Quando la colonna nuova è completamente popolata e allineata, cambi il codice applicativo perché legga dalla colonna nuova, e rilasci quella modifica.
+
+Solo dopo che il nuovo codice è in produzione e stabile, come ultimo passo, elimini la colonna vecchia con `ALTER TABLE t DROP COLUMN colonna`.
+
+Attenzione: questo sesto passo è irreversibile. Una volta eliminata la colonna, quei dati non tornano indietro se non ripristinando da un backup. Fallo solo quando sei sicuro che tutto funzioni correttamente sulla colonna nuova.

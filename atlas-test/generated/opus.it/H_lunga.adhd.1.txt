@@ -1,0 +1,28 @@
+**Regola pratica: metti in cima al prompt quello che non cambia e in fondo quello che cambia.** Il resto spiega perché.
+
+## Come funziona
+
+- La cache salva il **prefisso** di una richiesta già elaborato.
+- Se la richiesta successiva inizia allo stesso modo, quella parte non la paghi di nuovo per intero.
+- Il riuso vale **solo per il prefisso**. Se un solo carattere all'inizio è diverso, da quel punto in poi non si riusa più niente.
+
+## Come costruire il prompt
+
+1. **Prima le parti stabili:** istruzioni di sistema, documentazione allegata, definizioni degli strumenti.
+2. **Dopo le parti che cambiano:** il messaggio dell'utente, i dati del turno.
+3. **Niente valori variabili in alto.** Basta una voce di sistema che cambia a ogni turno, per esempio un orario, per perdere il riuso di tutto ciò che viene dopo.
+
+## Costi
+
+- **Prima richiesta: costa di più.** Scrivere nella cache costa più di una lettura normale.
+- **Dalla seconda in poi: risparmi.** Più turni fai, più il risparmio cresce.
+
+## Quando conviene
+
+| Conviene | Non conviene |
+|---|---|
+| Conversazioni lunghe | Richieste singole |
+| Contesto grande e stabile (istruzioni, documenti, strumenti) | Richieste tutte diverse fra loro |
+| Molti turni che riusano lo stesso inizio | Paghi la scrittura in cache e non la rileggi mai |
+
+**Prossimo passo:** apri il tuo prompt di sistema e cerca valori che cambiano a ogni richiesta, come data, ora o ID. Se ne trovi, spostali in fondo.

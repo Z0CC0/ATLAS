@@ -1,0 +1,18 @@
+Start with the question that isn't technical: **what does your team need to be able to do a year from now that it can't do today?** Ship one area without touching the rest? Scale one hot path? Let two teams work without stepping on each other? That answer should drive the architecture.
+
+Then look at the monolith in this order:
+
+**1. Which parts actually change.** Find the code that gets modified often and the code nobody touches. The stable parts gain nothing from being split out, so leave them alone. Put your effort where the change happens.
+
+**2. Where the transaction boundaries are.** Find the operations that have to commit or roll back together. If you draw a service line through one of them, a simple DB transaction becomes a distributed problem. Your boundaries should follow those transactions, not cut across them.
+
+**3. How you'll migrate.** Don't build a full rewrite in parallel with the old system. That approach almost always fails: the old system keeps changing and the copy never catches up. Strangle it progressively instead:
+- Put a router in front of the monolith.
+- Move one piece at a time behind it.
+- Keep the old system authoritative for each piece until the new one is verified.
+
+**4. Whether you can afford microservices.** Each service needs its own releases, monitoring, logs, alerts, and a person who looks after it. With fewer than five developers, that operational cost almost always exceeds the benefit.
+
+**5. The option nobody mentions: a modular monolith.** You draw sharp internal boundaries between modules and keep one release. Any module can still be extracted into its own service on the day you genuinely need that. You get most of the structural benefit without the operational cost, and you keep microservices open for later.
+
+In short: answer the one-year question first. Then map what changes and where the transactions sit. Migrate by strangling, not by rewriting. Default to a modular monolith unless your team size and needs clearly justify microservices.

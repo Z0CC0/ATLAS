@@ -1,0 +1,31 @@
+You can do it with one small wrapper function that uses a closure and a timer:
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Usage:
+
+```js
+const onResize = debounce(() => console.log('resized'), 200);
+window.addEventListener('resize', onResize);
+```
+
+**How it works:** every call cancels the timer that is waiting and starts a new one. `fn` only runs after `ms` milliseconds pass with no new calls.
+
+**What each part is for:**
+
+- **`clearTimeout(t)` comes before every `setTimeout`.** Without it, each call adds another timer and `fn` runs several times instead of once.
+- **`let t` sits outside the returned function, in the closure.** That way every call shares the same timer. If you declared `t` inside the arrow function, each call would get its own timer and nothing would be debounced.
+- **`...args` passes the arguments through.** The returned function collects them, and `fn(...args)` hands them to your function. Without the spread, `fn` gets no arguments, so you'd lose things like the event object.
+
+**Limitations:**
+
+- **It returns nothing.** The wrapper doesn't return `fn`'s result. If you need that value, change the wrapper to return a Promise that resolves when `fn` finally runs.
+- **It's not a throttle.** If you want the function to run right away and then ignore calls for a while, you need a throttle. That's a different function.

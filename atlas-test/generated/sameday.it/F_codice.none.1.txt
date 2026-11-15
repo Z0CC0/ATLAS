@@ -1,0 +1,28 @@
+Ecco una versione che funziona senza librerie:
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Esempio d'uso:
+
+```js
+const salva = debounce((testo) => console.log('Salvo:', testo), 300);
+input.addEventListener('input', (e) => salva(e.target.value));
+```
+
+La funzione parte solo quando smetti di chiamarla per `ms` millisecondi. Ci sono tre dettagli da non sbagliare:
+
+- **Chiama `clearTimeout(t)` prima di ogni nuovo `setTimeout`.** Senza questa chiamata i timer si accumulano e la funzione parte più volte invece di una sola.
+- **Dichiara `let t` fuori dalla funzione restituita**, cioè nella chiusura. Se la sposti dentro, ogni chiamata ha il suo timer e il debounce non avviene.
+- **Inoltra gli argomenti con lo spread (`...args`).** Senza lo spread `fn` li riceve vuoti.
+
+Questa versione non restituisce niente. Se ti serve il valore di ritorno di `fn`, devi farle restituire una Promise.
+
+Se invece ti serve il contrario, cioè eseguire subito e poi ignorare le chiamate per un certo periodo, ti serve un throttle, che è un'altra funzione.

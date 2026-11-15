@@ -1,0 +1,15 @@
+Con dieci milioni di righe e il servizio in produzione, la strada da evitare è quella diretta: un `ALTER TABLE ALTER COLUMN TYPE` che cambia il tipo sul posto riscrive tutta la tabella e per farlo tiene un lock ACCESS EXCLUSIVE — significa che il servizio resta fermo per tutta la durata dell'operazione, che su dieci milioni di righe non è banale.
+
+Il percorso sicuro è graduale.
+
+Prima di tutto verifica che la conversione sia davvero possibile: conta quante righe nella colonna varchar contengono qualcosa che non sono solo cifre. Se trovi valori non numerici, la migrazione si ferma qui finché non li sistemi.
+
+Poi aggiungi la nuova colonna a fianco della vecchia, con `ALTER TABLE t ADD COLUMN colonna_int integer` — un'operazione leggera che non blocca la tabella.
+
+A questo punto riempi la colonna nuova copiando i valori dalla vecchia, ma non in un colpo unico: procedi a blocchi da diecimila righe per volta, così non tieni mai un lock lungo e il traffico normale continua a passare tra un blocco e l'altro.
+
+Nel frattempo, per evitare che le due colonne vadano fuori sincrono mentre l'applicazione continua a scrivere sulla vecchia colonna, metti un trigger che le tenga allineate: ogni scrittura sulla colonna vecchia si riflette automaticamente su quella nuova, così quando finisci il riempimento a blocchi le due colonne sono coerenti anche per le righe modificate nel frattempo.
+
+Quando la colonna nuova è popolata e allineata, cambi il codice dell'applicazione perché legga dalla colonna nuova invece che dalla vecchia, e rilasci quella modifica.
+
+Solo dopo che il nuovo codice è in produzione e stabile puoi eliminare la colonna vecchia con `ALTER TABLE t DROP COLUMN colonna`. Tienilo bene a mente: questo passo è irreversibile, una volta eliminata la colonna quei dati non tornano se non ripristinando da un backup. Non è un passo da fare di fretta o come parte dello stesso rilascio del cambio di codice — vale la pena lasciarlo per ultimo, con un margine di tempo in cui verificare che tutto funzioni correttamente sulla colonna nuova.

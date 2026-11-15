@@ -1,0 +1,11 @@
+Main difference: frame generation, not raw rasterisation. Raster gain only about 10-15 per cent.
+
+Architecture: Blackwell (5080), Ada Lovelace (4080).
+
+Memory: GDDR7 instead of GDDR6X.
+
+Bandwidth: about 717 to about 960 GB/s.
+
+Rated power: 320 to 360 W.
+
+Power connector: still 16-pin.

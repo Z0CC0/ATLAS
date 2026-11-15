@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="860" height="290" viewBox="0 0 860 290" role="img" aria-label="What each build adds to the first turn at low, in tokens">
+<title>What each build adds to the first turn at low, in tokens</title>
+<rect x="0.5" y="0.5" width="859" height="289" rx="14" fill="#000000" stroke="#ffffff"/>
+<text x="28" y="34" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="17" fill="#f5f5f7" font-weight="600">What each build adds to the first turn at low, in tokens</text>
+<text x="198" y="76" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#f5f5f7" text-anchor="end">atlas-min</text>
+<rect x="210" y="62" width="93.2" height="19" rx="4" fill="#ff1f1f"/>
+<text x="313.1728369384359" y="76" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#f5f5f7" >1,629</text>
+<text x="198" y="108" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#f5f5f7" text-anchor="end">atlas</text>
+<rect x="210" y="94" width="200.2" height="19" rx="4" fill="#ff1f1f"/>
+<text x="420.1871880199667" y="108" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#f5f5f7" >3,500</text>
+<text x="198" y="140" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" text-anchor="end">atlas-video</text>
+<rect x="210" y="126" width="221.2" height="19" rx="4" fill="#6e6e73"/>
+<text x="441.2354409317803" y="140" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" >3,868</text>
+<text x="198" y="172" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" text-anchor="end">atlas-mem</text>
+<rect x="210" y="158" width="277.5" height="19" rx="4" fill="#6e6e73"/>
+<text x="497.5166389351081" y="172" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" >4,852</text>
+<text x="198" y="204" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" text-anchor="end">atlas-code</text>
+<rect x="210" y="190" width="504.1" height="19" rx="4" fill="#6e6e73"/>
+<text x="724.1285357737104" y="204" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" >8,814</text>
+<text x="198" y="236" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" text-anchor="end">atlas-max</text>
+<rect x="210" y="222" width="550.0" height="19" rx="4" fill="#6e6e73"/>
+<text x="770" y="236" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#98989d" >9,616</text>
+<text x="28" y="276" font-family="-apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="12" fill="#6e6e73" >Billed on claude-opus-5-5 at 0.1.0: one turn with the build on, minus the same turn with no plugin.</text>
+</svg>

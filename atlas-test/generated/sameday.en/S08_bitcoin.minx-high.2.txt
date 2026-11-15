@@ -1,0 +1,13 @@
+Bitcoin came out of the cypherpunk scene. Earlier attempts such as b-money and bit gold never solved how to order transactions.
+
+In 2008 a paper appeared, *Bitcoin: A Peer-to-Peer Electronic Cash System*, signed Satoshi Nakamoto. That is a pseudonym, and the person behind it has never been identified.
+
+It set out to stop double spending without a central body keeping the ledger. Its answer was a chain of blocks ordered by proof of work. Rewriting the past is expensive because the work would have to be redone for every later block.
+
+The first block was generated on 3 January 2009. It carries the headline of a Times article about a bank bailout, which serves as both a timestamp and a statement of intent.
+
+The block reward started at 50 bitcoin and halves every 210,000 blocks, roughly every four years. Total issuance approaches 21 million and never goes past it.
+
+The first documented commercial transaction came in 2010, when two pizzas were paid for with 10,000 bitcoin.
+
+In 2011 Satoshi stopped taking part publicly. Satoshi's bitcoin have never been moved.

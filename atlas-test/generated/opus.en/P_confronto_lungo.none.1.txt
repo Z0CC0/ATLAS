@@ -1,0 +1,18 @@
+At a thousand requests a minute, I'd go with **local files plus a collector that ships them somewhere else**. The application writes to disk and moves on. A separate process picks the logs up and forwards them. Your API never waits on a log write.
+
+Whatever you pick, one rule holds: **writing the log must never be in the critical path of the request.** Here's how the three options stack up against that rule and your volume.
+
+**Files alone** cost nothing and add no dependencies, but they get painful fast:
+- Searching means grep.
+- You have to set up rotation yourself, or the disk fills up.
+- If you run more than one machine, you can't search across them. You have to connect to each one.
+
+**A managed service** is the nicest to use. Search is instant, alerts and retention are built in, and you don't maintain anything. The downsides:
+- You pay by volume, and at a thousand requests a minute the volume grows fast. The bill can surprise you.
+- The logs leave your infrastructure, so you have to strip personal data before sending them.
+
+**The application's own database** is the one I'd avoid. Querying logs with SQL is familiar and convenient, but:
+- Log writes and real queries are very different workloads, and they end up competing.
+- Under load, logs take up the caches and connections your actual requests need. So your logging makes the API slower exactly when traffic peaks.
+
+**Files plus a collector** gives you the cheap, dependency-free writes of files without the search and multi-machine problems. The collector decides where the logs end up, which could be a managed service. If you go that way, you can strip personal data at the collector before anything leaves your infrastructure. You can also control volume there, so you only pay to ship what you actually need.

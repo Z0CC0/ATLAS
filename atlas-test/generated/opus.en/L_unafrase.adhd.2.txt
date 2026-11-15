@@ -1,0 +1,15 @@
+Yes. An empty list is falsy, so `if my_list:` skips the block when the list is empty.
+
+The same is true for every empty collection:
+
+- list `[]`
+- tuple `()`
+- dict `{}`
+- set `set()`
+- string `""`
+
+```python
+items = []
+if not items:
+    print("empty")  # this runs
+```

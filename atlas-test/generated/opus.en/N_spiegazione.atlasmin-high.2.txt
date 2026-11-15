@@ -1,0 +1,13 @@
+Replicas don't agree right after a write. They converge within a finite time once writes stop.
+
+Same region: usually under a second. Across regions: seconds.
+
+Why it exists: trade against availability. Strong consistency means refusing requests when replicas can't talk to each other.
+
+Why care: it bites whoever reads right after writing. User posts comment, reloads, doesn't see it.
+
+Common fix: read from primary replica for the session that just wrote, not for everyone.
+
+Not a defect to eliminate. A choice: most systems that scale accept it deliberately.
+
+Unacceptable only in few, recognisable cases: account balances, seat availability, identifier uniqueness.

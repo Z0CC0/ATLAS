@@ -1,0 +1,24 @@
+La consistenza eventuale è una proprietà dei sistemi che tengono più copie (repliche) degli stessi dati. Dopo una scrittura, le repliche non sono subito d'accordo tra loro. Se però le scritture si fermano, convergono tutte sullo stesso valore entro un tempo finito. Per un attimo qualcuno può leggere un dato vecchio, poi tutto si allinea.
+
+**Perché i sistemi funzionano così**
+
+Il motivo è un compromesso con la disponibilità. Un sistema che pretende consistenza forte deve rifiutare le richieste quando le repliche non riescono a comunicare tra loro, perché non può garantire di restituire il dato giusto. Un sistema a consistenza eventuale invece continua a rispondere. Per questo non è un difetto da eliminare ma una scelta, e la maggior parte dei sistemi che scalano la accetta di proposito.
+
+**Perché dovrebbe interessarti**
+
+Il problema si vede soprattutto quando qualcuno legge subito dopo aver scritto. L'esempio tipico: un utente pubblica un commento, ricarica la pagina e il commento non c'è. La lettura è finita su una replica non ancora aggiornata. Per lui sembra un bug, anche se il sistema sta facendo esattamente quello che deve.
+
+La soluzione più comune è mirata. Solo la sessione che ha appena scritto legge dalla replica primaria, mentre tutti gli altri continuano a leggere dalle repliche. Chi ha pubblicato vede subito il suo commento e il resto del traffico non pesa sulla primaria.
+
+**Quanto dura il ritardo**
+
+Con repliche nella stessa regione la convergenza di solito richiede meno di un secondo. Fra regioni diverse sale a qualche secondo. Nella maggior parte dei casi è un ritardo che nessuno nota, tranne appunto chi rilegge i propri dati subito dopo averli scritti.
+
+**Quando non va bene**
+
+I casi in cui la consistenza eventuale non è accettabile sono pochi e facili da riconoscere:
+- **saldi di conto**
+- **disponibilità di posti**
+- **unicità di un identificativo**
+
+Qui leggere un valore vecchio significa soldi spesi due volte, posti venduti due volte o identificativi duplicati. Per questi dati serve la consistenza forte. Per tutto il resto la consistenza eventuale di solito è la scelta giusta: basta sapere dove ti espone e gestire la lettura subito dopo la scrittura.

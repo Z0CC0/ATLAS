@@ -1,0 +1,5 @@
+internal knowledge
+
+No, usually not. With three values, each one tends to match a large share of rows. Planner prefers sequential scan once a filter selects more than roughly 5-10 per cent of rows, so a plain B-tree index on that column normally goes unused. You still pay for it on every write, and in disk space.
+
+Exception: when one of the three values is rare. A partial index covering only that value does get used.

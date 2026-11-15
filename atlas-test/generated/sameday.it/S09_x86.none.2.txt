@@ -1,0 +1,17 @@
+L'x86 nasce poco prima degli anni Ottanta, con l'**8086 del 1978**. È un processore a 16 bit, progettato come evoluzione dell'8080: non è compatibile a livello binario, ma lo è a livello di sorgente, quindi il software esistente si può portare ricompilandolo. Questa attenzione alla continuità segnerà tutta la storia dell'architettura.
+
+**La modalità protetta e i 32 bit.** Nel 1982 l'**80286** introduce la modalità protetta, cioè un modo di funzionamento pensato per sistemi più robusti. C'è però un limite: una volta entrati in modalità protetta non si può tornare alla modalità reale senza riavviare. Tre anni dopo, nel 1985, l'**80386** cambia le cose. Porta l'architettura a 32 bit e aggiunge la memoria virtuale paginata. Introduce anche la modalità virtuale 8086, che permette di far girare il vecchio software dentro il nuovo ambiente protetto. È la base su cui x86 si appoggerà per molti anni.
+
+**Più cose dentro il chip.** Il **486 del 1989** integra nel processore la cache di primo livello e il coprocessore matematico, che prima erano componenti separati. Nel 1993 il **Pentium** fa un passo diverso: è superscalare. Ha due pipeline intere e può ritirare due istruzioni per ciclo, invece di eseguirle una alla volta.
+
+**La svolta del Pentium Pro.** Il cambiamento più profondo arriva nel 1995. Il **Pentium Pro** introduce l'esecuzione fuori ordine e, soprattutto, traduce le istruzioni x86 in micro-operazioni interne. Da quel momento x86 diventa un'interfaccia: è il linguaggio che il software vede, non più la macchina reale che lavora sotto. Questo ha permesso di rinnovare l'hardware in profondità mantenendo la compatibilità.
+
+**Il muro della frequenza.** Il **Pentium 4 del 2000** scommette tutto sulla frequenza, con una pipeline lunghissima, e finisce contro il muro del consumo. Dal 2006, con il **Core 2**, la strategia cambia: non si cerca più di aumentare i gigahertz ma di moltiplicare i nuclei.
+
+**Il 64 bit arriva da AMD.** Intanto, nel 2003, **AMD** estende l'architettura a 64 bit con **AMD64**, e Intel adotta lo stesso insieme di istruzioni. È la prima volta che l'estensione dominante di x86 non viene da Intel.
+
+**Le estensioni vettoriali.** In parallelo cresce, generazione dopo generazione, la capacità di elaborare molti dati con una sola istruzione: prima **MMX**, poi **SSE**, poi **AVX** e infine **AVX-512**.
+
+**Oggi.** La complessità non sta più nell'insieme di istruzioni ma negli strati sottostanti: predizione dei salti, gerarchia di cache, esecuzione speculativa. Proprio quest'ultima ha mostrato un rischio nel 2018, quando **Spectre e Meltdown** hanno rivelato che l'esecuzione speculativa aveva un costo di sicurezza che nessuno aveva considerato.
+
+In sintesi, x86 è rimasto compatibile per oltre quarant'anni perché ha smesso presto di coincidere con l'hardware che lo esegue. Ma i meccanismi usati per renderlo veloce hanno portato con sé problemi che si sono visti solo molto tempo dopo.

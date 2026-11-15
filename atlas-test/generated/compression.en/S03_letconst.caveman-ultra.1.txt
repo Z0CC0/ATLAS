@@ -1,0 +1,5 @@
+const: name stuck, value not. Object made with const still change inside.
+
+let: name can get new value.
+
+Both stay inside block, unlike var.

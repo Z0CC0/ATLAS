@@ -1,0 +1,23 @@
+Not with a direct ALTER TABLE ALTER COLUMN TYPE: that rewrites the whole table while holding an ACCESS EXCLUSIVE lock, so the service is down for the entire rewrite. Add a parallel column instead, in this order.
+
+1. Check every existing value converts: count the rows where the value is not all digits. Any count above zero must be fixed before going on.
+
+2. Add the new column:
+
+```sql
+ALTER TABLE t ADD COLUMN colonna_int integer;
+```
+
+3. Fill it in batches of ten thousand rows, so no long lock is ever held on the table.
+
+4. Add a trigger that keeps the two columns in step while the migration runs, so rows written during the backfill do not drift.
+
+5. Change the code to read from the new column, and ship it.
+
+6. Only then drop the old column:
+
+```sql
+ALTER TABLE t DROP COLUMN colonna;
+```
+
+Step six cannot be undone. Once the column is dropped, the data does not come back without a restore from backup, so do it only after the new column is proven in production.

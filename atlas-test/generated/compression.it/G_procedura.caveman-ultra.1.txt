@@ -1,0 +1,23 @@
+Cambiare il tipo di colonna direttamente con un `ALTER TABLE t ALTER COLUMN TYPE integer` non è praticabile su una tabella da dieci milioni di righe in produzione: Postgres riscrive l'intera tabella e tiene un lock ACCESS EXCLUSIVE per tutta la durata, quindi il servizio resterebbe fermo finché l'operazione non finisce.
+
+L'approccio sicuro è farlo a fianco, senza toccare la colonna esistente finché tutto non è verificato.
+
+Prima di tutto verifica che la conversione sia possibile: conta quante righe della colonna varchar contengono valori non numerici (non solo cifre). Se ce ne sono, quella è la prima cosa da risolvere o isolare, prima di procedere.
+
+Poi aggiungi la colonna nuova senza toccare quella vecchia:
+```sql
+ALTER TABLE t ADD COLUMN colonna_int integer;
+```
+
+A questo punto riempi la colonna nuova a blocchi da diecimila righe alla volta (non in un unico UPDATE su tutta la tabella), così eviti un lock lungo e permetti al traffico normale di continuare a lavorare tra un blocco e l'altro.
+
+Mentre la migrazione è in corso, aggiungi un trigger che tenga sincronizzate le due colonne, così le righe scritte dall'applicazione durante il backfill non finiscono disallineate tra vecchia e nuova colonna.
+
+Quando la colonna nuova è popolata e allineata, cambia il codice applicativo per leggere e scrivere sulla colonna nuova, e rilascialo.
+
+Solo dopo che il nuovo codice è in produzione e stabile puoi eliminare la colonna vecchia:
+```sql
+ALTER TABLE t DROP COLUMN colonna;
+```
+
+**Attenzione:** questo ultimo passo è irreversibile. Una volta eliminata la colonna vecchia, i dati non tornano indietro se non ripristinando da un backup. Fallo solo quando sei certo che la colonna nuova sia corretta e il codice che la usa sia stabile in produzione da un po'.

@@ -1,0 +1,26 @@
+**Raccomandazione:** parti con Postgres e basta. Aggiungi un altro sistema solo quando un carico preciso lo richiede, e devi poterlo dimostrare con i numeri.
+
+**Carico per carico**
+
+| Carico | Postgres | Alternativa specializzata |
+|---|---|---|
+| Ordini | Transazioni serie, ed è il requisito che non puoi trattare | MySQL va bene uguale. ClickHouse no: è debole negli aggiornamenti puntuali |
+| Catalogo | Va bene | MongoDB rende più semplici gli schemi variabili. Però le transazioni multi-documento sono arrivate tardi e costano |
+| Ricerca testuale | Integrata. Basta sotto il milione di documenti, sopra diventa debole | Elasticsearch è molto più forte: rilevanza, sinonimi, tolleranza agli errori di battitura |
+| Analisi | Regge fino a decine di milioni di righe, poi le scansioni rallentano | ClickHouse è molto più forte: le scansioni colonnari sono avanti di ordini di grandezza |
+
+Postgres gestisce tutti e quattro i carichi in modo accettabile, nessuno in modo eccellente.
+
+**Le altre opzioni come database principale**
+- **MySQL:** sugli ordini è equivalente a Postgres. È più debole su tipi di dato e query complesse, quindi non c'è un motivo per preferirlo.
+- **MongoDB:** il catalogo ti verrebbe più comodo, ma lo pagheresti sugli ordini, cioè dove le transazioni sono indispensabili.
+- **Elasticsearch:** non è un archivio autorevole. Deve essere alimentato da un altro database, non può sostituirlo.
+- **ClickHouse:** non va bene per gli ordini.
+
+**Come crescere**
+La configurazione tipica: Postgres come archivio autorevole, con Elasticsearch e ClickHouse alimentati da lì.
+- **Elasticsearch:** aggiungilo quando superi il milione di documenti e la rilevanza della ricerca diventa un problema. Prima di quella soglia è quasi sempre prematuro.
+- **ClickHouse:** aggiungilo quando superi le decine di milioni di righe e le scansioni analitiche diventano lente.
+
+**Il costo vero**
+Ogni sistema in più ti porta due problemi: la sincronizzazione e l'allineamento dei dati. Il costo non è la licenza. È il tempo delle persone che devono tenere in piedi quei sistemi.

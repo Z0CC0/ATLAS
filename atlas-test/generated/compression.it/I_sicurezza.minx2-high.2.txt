@@ -1,0 +1,9 @@
+No. Tutto ciò che arriva al browser si può leggere, e l'offuscamento non regge: basta aprire gli strumenti per sviluppatori o guardare le richieste di rete per vedere la chiave in chiaro.
+
+La chiave va tenuta sul server. Il frontend chiama un endpoint del tuo backend, e il backend chiama il servizio usando la chiave.
+
+Quell'endpoint deve avere un limite di frequenza. Senza, chiunque può usarlo per consumare la tua chiave gratis.
+
+Se la chiave è già finita nel frontend o nel repository, considerala compromessa. Ruotala subito, non limitarti a toglierla dal codice.
+
+Rimuoverla con un nuovo commit non basta. La chiave resta nella cronologia del repository, e chiunque abbia già un clone ce l'ha.

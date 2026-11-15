@@ -1,0 +1,9 @@
+No.
+
+Chiave nel frontend, offuscata o no: arriva al browser, quindi leggibile. DevTools o traffico di rete la espongono.
+
+Tienila sul server. Frontend chiama endpoint proprio, quello chiama il servizio.
+
+Endpoint con rate limit, altrimenti chiunque usa gratis la tua chiave.
+
+Se e' gia' pubblicata: compromessa, va ruotata subito. Rimuoverla dal codice non basta, resta nella cronologia — chi ha un clone ce l'ha gia'.

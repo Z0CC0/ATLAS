@@ -1,0 +1,25 @@
+internal knowledge
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Usage: `const onResize = debounce(handleResize, 200);`
+
+Three details make it work:
+
+Call `clearTimeout` before every new `setTimeout`. Without it, timers pile up and the function fires more than once.
+
+Keep `t` in the closure, not inside the returned function. Otherwise every call gets its own timer and nothing gets debounced.
+
+Pass the arguments through with the spread (`...args`). Otherwise the called function receives nothing.
+
+This version returns nothing. If you need the return value, use a Promise.
+
+If you want the function to run immediately and then ignore calls for a while, that's a throttle, which is a different function.

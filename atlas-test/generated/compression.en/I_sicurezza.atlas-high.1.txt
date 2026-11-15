@@ -1,0 +1,7 @@
+No. Anything shipped to the browser is readable — dev tools or a network trace exposes it regardless of obfuscation.
+
+Keep the key server-side. Frontend calls your backend, backend calls the service.
+
+Rate-limit that backend endpoint, or it's free unlimited use of your key.
+
+Already leaked? Rotate now — removing it from the code doesn't help. It stays in repo history, and anyone who already cloned has it.

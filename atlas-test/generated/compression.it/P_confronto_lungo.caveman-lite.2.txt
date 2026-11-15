@@ -1,0 +1,8 @@
+File locali più raccoglitore (agente tipo Fluent Bit/Vector) che spedisce altrove. Applicazione non aspetta mai scrittura log.
+
+Perché non gli altri:
+- Solo file: grep lento, rotazione manuale, e su più macchine devi collegarti a ognuna una per una.
+- Solo servizio gestito: ricerca e allarmi comodi, ma costo cresce in fretta a mille richieste/minuto, e devi ripulire dati personali prima che escano dalla tua infrastruttura.
+- Database: ricerca nota, ma log competono con l'applicazione per cache e connessioni sotto carico — due carichi diversi nello stesso posto.
+
+Regola che vale sempre: scrittura log mai nel percorso critico della richiesta.

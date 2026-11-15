@@ -1,0 +1,22 @@
+Ten million rows is too many to touch with a single `ALTER TABLE ... ALTER COLUMN TYPE` — that rewrites the entire table under an ACCESS EXCLUSIVE lock, so the service would be down for the whole operation. Do it as an online migration instead:
+
+1. **Validate first.** Count how many existing values are NOT all-digit strings — those wouldn't convert cleanly to integer. Fix or flag those before touching schema.
+
+2. **Add the new column** alongside the old one:
+   ```sql
+   ALTER TABLE t ADD COLUMN colonna_int integer;
+   ```
+   Adding a nullable column is fast and doesn't lock the table for long.
+
+3. **Backfill in batches of 10,000 rows** rather than one big `UPDATE`, so you never hold a long lock on the table.
+
+4. **Add a trigger** that keeps `colonna` and `colonna_int` in sync for any rows written during the migration, so nothing falls out of step between the backfill and cutover.
+
+5. **Switch the application code** to read from `colonna_int`, and ship that.
+
+6. **Only then, drop the old column:**
+   ```sql
+   ALTER TABLE t DROP COLUMN colonna;
+   ```
+
+**Warning:** step 6 is irreversible — once `colonna` is dropped, that data is gone unless you restore from backup. Don't run it until you're confident the new column is fully correct and the code cutover has been running cleanly for a while.

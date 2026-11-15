@@ -1,0 +1,13 @@
+RTX 5080 is a newer generation. Biggest gain is frame generation, not raw rasterisation.
+
+Architecture: Blackwell, up from Ada Lovelace on 4080.
+
+Memory: GDDR7, up from GDDR6X.
+
+Bandwidth: about 717 GB/s up to about 960 GB/s.
+
+Rasterisation: real gain about 10–15 per cent.
+
+Rated power draw: 320 W up to 360 W.
+
+Power connector: still 16-pin.

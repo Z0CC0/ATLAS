@@ -1,0 +1,25 @@
+**1978, 8086.** 16 bit. Grows out of 8080, compatible at source level, not binary level. Everything after keeps faith with this base.
+
+**1982, 80286.** Adds protected mode. Catch: no way back to real mode without reboot. Half-step.
+
+**1985, 80386.** Big jump. 32 bit, paged virtual memory, virtual 8086 mode. Virtual 8086 mode lets old real-mode code run inside protected mode, which fixes the 286 dead end. Modern x86 shape starts here.
+
+**1989, 486.** Integration. First level cache and maths coprocessor move onto chip. Before 486, both sat outside the CPU.
+
+**1993, Pentium.** Superscalar. Two integer pipelines, up to two instructions retired per cycle. Speed now come from parallelism inside the chip, not only from clock.
+
+**1995, Pentium Pro.** Turning point. Out of order execution. Decoder translates x86 instructions into internal micro-operations. From here x86 is interface, not real machine underneath. Instruction set becomes contract. Engine below free to change.
+
+**2000, Pentium 4.** Bet on frequency. Very long pipeline for high clocks. Hits power wall: more frequency costs too much heat and energy.
+
+**2003, AMD64.** AMD extends architecture to 64 bit. Intel adopts same instruction set. First time dominant extension does not come from Intel.
+
+**2006, Core 2.** Direction shifts from frequency to core count. Power wall forces it. More cores, not faster single core.
+
+**Vector extensions, across generations.** MMX, SSE, AVX, AVX-512. Each widens data processed per instruction.
+
+**Today.** Complexity sits in layers below interface: branch prediction, cache hierarchy, speculative execution. Visible x86 surface changes slowly. Hidden machine carries most engineering.
+
+**2018, Spectre and Meltdown.** Bill arrives. Speculative execution carried security cost nobody had priced. Same hidden layer that bought performance since Pentium Pro also leaks data.
+
+**Arc:** source-compatible 16 bit chip, then 32 bit protected OS platform, then superscalar, then x86 as translation layer over hidden engine. After that: frequency race lost to power, 64 bit from AMD, multicore, wider vectors. Last lesson: hidden speculation costs security.

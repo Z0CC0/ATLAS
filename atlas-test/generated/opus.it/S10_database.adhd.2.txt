@@ -1,0 +1,34 @@
+**Usa solo Postgres.** Aggiungi un altro sistema solo quando un carico specifico lo richiede, con dei numeri che lo dimostrano.
+
+## Confronto per carico
+
+| Carico | Postgres | Alternativa migliore | Quando conviene cambiare |
+|---|---|---|---|
+| **Ordini** | Transazioni solide, e sugli ordini non si può rinunciare | Nessuna. MySQL è equivalente qui | Mai |
+| **Catalogo** | Va bene | MongoDB, più semplice con schemi variabili | Quasi mai, vedi sotto |
+| **Ricerca testuale** | Integrata, basta sotto 1 milione di documenti | Elasticsearch: molto meglio su rilevanza, sinonimi ed errori di battitura | Sopra 1 milione di documenti |
+| **Analisi** | Regge fino a decine di milioni di righe | ClickHouse: scansioni colonnari più veloci di ordini di grandezza | Quando le scansioni diventano lente |
+
+Postgres gestisce tutti e quattro i carichi in modo accettabile, ma nessuno in modo eccellente. Proprio per questo è il punto di partenza giusto.
+
+## Le alternative da scartare come database principale
+
+- **MySQL:** sugli ordini è uguale a Postgres, ma è più debole su tipi di dato e query complesse. Non ti dà nulla in più.
+- **MongoDB:** semplifica il catalogo, ma le transazioni su più documenti sono arrivate tardi e costano. Sugli ordini è un rischio.
+- **Elasticsearch:** non è un archivio autorevole. Va alimentato da un altro database, non può sostituirlo.
+- **ClickHouse:** gli aggiornamenti puntuali sono il suo punto debole, quindi non va bene per gli ordini.
+
+## Dove arrivi se cresci
+
+La configurazione tipica è Postgres come archivio autorevole, con Elasticsearch e ClickHouse alimentati da Postgres.
+
+Ogni sistema che aggiungi però porta due problemi: la sincronizzazione e l'allineamento dei dati. Il costo vero non è la licenza, è il tempo delle persone che tengono in piedi quei sistemi. Per questo aggiungere Elasticsearch prima del milione di documenti è quasi sempre prematuro.
+
+## Le due soglie da controllare
+
+1. **Documenti da cercare oltre 1 milione?** Allora valuta Elasticsearch.
+2. **Righe da analizzare oltre qualche decina di milioni, con scansioni lente?** Allora valuta ClickHouse.
+
+Se la risposta è no a entrambe, ti basta Postgres.
+
+Prossimo passo: stima quanti prodotti avrai nel catalogo e quante righe di ordini prevedi tra un anno (5 minuti). Poi confronta i due numeri con le soglie qui sopra.

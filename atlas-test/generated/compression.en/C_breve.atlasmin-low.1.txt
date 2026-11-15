@@ -1,0 +1,3 @@
+No — planner ignores B-tree on low-cardinality columns like that, since it prefers seq scan whenever filter selects roughly 5-10%+ of rows, and each distinct value here is ~33%. Index still costs writes and disk space for no benefit.
+
+Exception: partial index on the rare value works, if one value is much rarer than the others.

@@ -1,0 +1,13 @@
+Eventual consistency: after write, replicas don't agree right away, but converge in finite time if writes stop.
+
+Trade: against availability. System demanding strong consistency must refuse requests when replicas can't talk to each other.
+
+Matters to you right after write: post comment, reload, don't see it. That's your case hitting a replica that hasn't caught up.
+
+Fix: read from primary replica for session that just wrote, not for everyone. Only your own read-after-write path needs it.
+
+Convergence time: under a second same region, rises to seconds across regions.
+
+Not a defect. Choice — most systems at scale accept it deliberately for availability.
+
+Unacceptable cases, few and recognisable: account balances, seat availability, uniqueness of identifier. Those need strong consistency, not eventual.

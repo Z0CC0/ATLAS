@@ -1,0 +1,11 @@
+Consistenza eventuale: dopo una scrittura le repliche non concordano subito, convergono entro tempo finito se le scritture si fermano. Stesso datacenter: convergenza sotto il secondo. Fra regioni: secondi.
+
+Perché esiste: compromesso con la disponibilità. Consistenza forte forza il sistema a rifiutare richieste quando le repliche non comunicano.
+
+Perché ti riguarda: read-after-write. Utente pubblica commento, ricarica, non lo vede — sintomo tipico.
+
+Mitigazione comune: dopo una scrittura, quella sessione legge dalla replica primaria — non tutte le sessioni, solo quella che ha scritto.
+
+Non è un bug, è scelta di design: la maggioranza dei sistemi scalabili la adotta apposta.
+
+Dove NON va bene, pochi casi: saldi conto, disponibilità posti, unicità di un identificativo.

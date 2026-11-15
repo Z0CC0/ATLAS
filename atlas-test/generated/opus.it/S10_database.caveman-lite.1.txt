@@ -1,0 +1,29 @@
+**Consiglio:** parti con solo Postgres. Aggiungi Elasticsearch o ClickHouse solo quando un carico preciso lo impone e hai i numeri per dimostrarlo.
+
+**Postgres**
+Regge in modo accettabile tutti e quattro i tuoi carichi, ma nessuno in modo eccellente.
+- **Ordini:** le transazioni sono solide. Sugli ordini non puoi rinunciarci.
+- **Catalogo:** lo gestisce senza problemi.
+- **Ricerca testuale:** è integrata e basta sotto il milione di documenti. Sopra diventa debole.
+- **Analisi:** regge fino a decine di milioni di righe. Oltre, le scansioni diventano lente.
+
+**MySQL**
+Sugli ordini equivale a Postgres. È più debole sui tipi di dato e sulle query complesse. Rispetto a Postgres non ti dà niente in più.
+
+**MongoDB**
+Rende più semplice il catalogo, perché accetta schemi variabili. Però le transazioni su più documenti sono arrivate tardi e costano. Per una piattaforma che gestisce ordini è un compromesso sbagliato.
+
+**Elasticsearch**
+Sulla ricerca testuale è molto superiore: rilevanza, sinonimi, tolleranza agli errori di battitura. Non è però un archivio autorevole. Lo alimenti da un altro database, non lo usi al posto suo. Se lo aggiungi prima del milione di documenti, quasi sempre è prematuro.
+
+**ClickHouse**
+Sull'analisi è molto superiore: con le scansioni colonnari è avanti di ordini di grandezza. Non va bene per gli ordini, perché gli aggiornamenti puntuali sono il suo punto debole.
+
+**Come cresce di solito l'architettura**
+La configurazione tipica è Postgres come archivio autorevole, con Elasticsearch e ClickHouse alimentati da Postgres. Ogni sistema che aggiungi porta due problemi: la sincronizzazione e l'allineamento dei dati. Il costo vero dei sistemi specializzati non è la licenza. È il tempo delle persone che li tengono in piedi.
+
+**In pratica**
+1. Oggi: solo Postgres per ordini, catalogo, ricerca e analisi.
+2. Quando i documenti superano il milione e la ricerca diventa un problema misurabile: aggiungi Elasticsearch, alimentato da Postgres.
+3. Quando l'analisi supera le decine di milioni di righe e le scansioni rallentano: aggiungi ClickHouse, alimentato da Postgres.
+4. Gli ordini restano sempre su Postgres.

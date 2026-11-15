@@ -1,0 +1,16 @@
+Don't run `ALTER TABLE ... ALTER COLUMN TYPE` directly. On a table this size it rewrites the whole table while holding an `ACCESS EXCLUSIVE` lock, so your service is down until it finishes. Do the change in steps instead:
+
+1. **Check that every value converts.** Count the rows in `colonna` that aren't all digits. If the count isn't zero, fix those rows before you go on.
+2. **Add the new column:**
+   ```sql
+   ALTER TABLE t ADD COLUMN colonna_int integer;
+   ```
+3. **Fill it in batches of 10,000 rows.** Small batches mean no long lock is held on the table, so traffic keeps flowing.
+4. **Add a trigger that keeps `colonna` and `colonna_int` in step** while the migration runs. Without it, writes that land during the backfill would leave the two columns out of sync.
+5. **Change your code to read from `colonna_int`, and ship it.**
+6. **Only after that, drop the old column:**
+   ```sql
+   ALTER TABLE t DROP COLUMN colonna;
+   ```
+
+**Warning:** step 6 can't be undone. Once you drop the column, the only way to get that data back is to restore from backup. Before you run it, confirm the new code is live and reading from `colonna_int`.

@@ -1,0 +1,33 @@
+Paste this into your code:
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+To use it, wrap your function once and call the wrapped version:
+
+```js
+const onResize = debounce(() => console.log('resized'), 300);
+window.addEventListener('resize', onResize);
+```
+
+## Why it's written this way
+
+Each of these three lines matters:
+
+1. **`clearTimeout(t)` runs before every new `setTimeout`.** If you leave it out, the timers pile up and `fn` runs more than once.
+2. **`let t` sits in the closure, outside the returned function.** If you move it inside, every call gets its own timer and nothing is debounced.
+3. **`...args` passes the arguments through.** Without the spread, `fn` gets no arguments.
+
+## Limits
+
+- **It returns nothing.** If you need `fn`'s return value, you'll have to change it to return a Promise.
+- **It's the wrong tool if you want "run right away, then ignore calls for a while."** That's a throttle, which is a different function.
+
+Next: wrap one handler that fires too often, like `resize`, `scroll` or an input's `keyup`, and check the console to see that it runs only once after you stop.

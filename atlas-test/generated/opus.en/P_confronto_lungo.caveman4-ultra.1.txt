@@ -1,0 +1,21 @@
+**Local files plus a collector that ships them elsewhere.** At 1000 req/min, the app never waits on a log write.
+
+**Rule that always holds:** writing the log must not sit in the request's critical path.
+
+**Files alone:**
+- Zero cost, no dependency.
+- Searching means grep.
+- Configure rotation by hand, or the disk fills.
+- No search across several machines. You have to connect to each one.
+
+**Managed service:**
+- Instant search, alerts, automatic retention.
+- You pay by volume, and at 1000 req/min the volume grows fast.
+- Logs leave your own infrastructure, so you have to strip personal data before they go.
+
+**Application's own database:** avoid it.
+- Searching is familiar and convenient.
+- Log writes and real requests are two very different workloads, and they compete.
+- Under load, logs fill the caches and connections your real requests needed.
+
+The collector can feed a managed service. In that case, strip personal data at the collector and keep an eye on volume cost.

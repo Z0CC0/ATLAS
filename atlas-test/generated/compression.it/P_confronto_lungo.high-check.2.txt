@@ -1,0 +1,9 @@
+File: costo zero, nessuna dipendenza, ma ricerca solo grep e rotazione manuale — altrimenti disco pieno. Su più macchine niente ricerca centralizzata, bisogna collegarsi a ognuna.
+
+Servizio gestito: ricerca immediata, allarmi, retention automatica — ma paghi a volume, e a mille richieste/minuto il volume sale in fretta. I log escono dalla tua infrastruttura: vanno ripuliti dai dati personali prima.
+
+Database: ricerca comoda e nota, ma se scrivi log nello stesso DB dell'app, competi con lui — sotto carico i log ti mangiano cache e connessioni che servivano alle richieste vere.
+
+Per il tuo volume: file locali + un raccoglitore che li spedisce altrove. Così l'app non aspetta mai la scrittura del log.
+
+Regola che vale sempre: la scrittura del log non deve stare nel percorso critico della richiesta.

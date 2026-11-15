@@ -1,0 +1,11 @@
+Before choosing architecture, find out which parts of monolith actually change. Stable parts gain nothing from being split, so leave them.
+
+Then locate transaction boundaries. Transaction spanning two services becomes distributed problem, not refactor.
+
+Do not run full rewrite in parallel with old system. Old one keeps changing, copy never catches up, approach almost always fails. Strangle progressively instead: router in front, move one piece at a time, old system stays authoritative until new piece verified.
+
+Count operational cost before picking microservices. Every service wants releases, monitoring, logs, alerts and person looking after it. Below five developers, cost almost always exceeds benefit.
+
+Option nobody mentions: modular monolith. Sharp internal boundaries, one release, extract module day it genuinely needed.
+
+Deciding question not technical: what must team be able to do year from now that it cannot do today. Answer that first, architecture follows.

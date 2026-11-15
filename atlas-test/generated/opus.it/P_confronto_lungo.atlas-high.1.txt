@@ -1,0 +1,9 @@
+**File locali più un raccoglitore che li spedisce altrove.** Così l'applicazione non aspetta mai la scrittura del log. Regola sempre valida: scrittura del log fuori dal percorso critico della richiesta.
+
+Le singole opzioni, da sole:
+
+File: costo zero, nessuna dipendenza. Ricerca solo con grep e niente ricerca su più macchine: bisogna collegarsi a ognuna. Rotazione da configurare a mano, altrimenti disco pieno.
+
+Servizio gestito: ricerca immediata, allarmi, conservazione automatica. Si paga per volume, e a mille richieste al minuto il volume cresce in fretta. I log escono dalla tua infrastruttura, quindi vanno ripuliti dai dati personali prima di uscire.
+
+Database: ricerca comoda e nota. Nello stesso database dell'applicazione però due carichi molto diversi competono, e sotto carico i log occupano cache e connessioni che servivano alle richieste vere.

@@ -1,0 +1,17 @@
+internal knowledge
+
+Domanda decisiva non tecnica: cosa deve poter fare tuo team fra un anno che oggi non può.
+
+Prima di scegliere architettura:
+
+1. Quale parte del monolite cambia davvero. Parti stabili non guadagnano nulla dall'essere spezzate.
+
+2. Dove stanno confini delle transazioni. Transazione che attraversa due servizi diventa problema distribuito.
+
+Riscrittura completa in parallelo al vecchio sistema: fallisce quasi sempre. Vecchio continua a cambiare, copia non lo raggiunge mai.
+
+Alternativa: strangolamento progressivo. Router davanti, un pezzo per volta, vecchio resta autorevole finché nuovo non è verificato.
+
+Microservizi costano di più in operatività: ogni servizio vuole rilascio, monitoraggio, log, allarmi e una persona che se ne occupa. Sotto cinque sviluppatori costo supera quasi sempre beneficio.
+
+Opzione poco citata: **monolite modulare**. Confini interni netti, un solo rilascio, modulo estraibile il giorno che serve davvero.

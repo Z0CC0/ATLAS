@@ -1,0 +1,1 @@
+`const` blocca riassegnazione del nome, non modifica del valore. Oggetto con `const` puo' cambiare internamente. `let` permette riassegnazione. Entrambi ambito di blocco, `var` no.

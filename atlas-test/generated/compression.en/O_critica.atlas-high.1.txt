@@ -1,0 +1,3 @@
+Real upside: nothing bypasses it, not even a manual script. Cost: triggers are invisible in the codebase — a small change fires others with no trace. No testing with your normal tools — needs a real database. Debugging degrades — a trigger error surfaces as a failed write, no indication which rule fired. Migrations get fragile — trigger order matters, declared nowhere.
+
+Better: database holds only integrity — constraints, FKs, uniqueness, domain checks. Business logic lives in the app, behind one entry point. Same bypass-proof guarantee, as long as direct DB access stays reserved for migrations.

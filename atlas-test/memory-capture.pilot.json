@@ -1,0 +1,401 @@
+{
+ "runs": {
+  "builtin.passing.1": {
+   "config": "builtin",
+   "mode": "passing",
+   "round": 1,
+   "work": {
+    "cost": 2.2703286,
+    "input": 386281,
+    "turns": 23
+   },
+   "answers": {
+    "contact": {
+     "answer": "Contact Marta Bianchi. The client's owner doesn't read anything about invoices, so a message sent there would probably be ignored.",
+     "right": true,
+     "cost": 0.2234334,
+     "input": 52723
+    },
+    "friday": {
+     "answer": "No. Per your notes, there are no Friday deploys because the client closes the books on Fridays, so ship it Thursday or wait until Monday.",
+     "right": true,
+     "cost": 0.0389836,
+     "input": 26105
+    },
+    "pdf": {
+     "answer": "No. We already dropped wkhtmltopdf for invoice PDFs because it broke the totals on invoices that ran past one page, so we should stick with a different renderer.",
+     "right": true,
+     "cost": 0.0392916,
+     "input": 26106
+    },
+    "backup": {
+     "answer": "No. The client contract forbids cloud storage for backups, so they have to keep going to the client's NAS at 02:00, and moving them to S3 would breach it.",
+     "right": true,
+     "cost": 0.0383996,
+     "input": 26097
+    },
+    "language": {
+     "answer": "It should be in Italian, because everything the client can see has to be in Italian, error messages included.",
+     "right": true,
+     "cost": 0.0379476,
+     "input": 26098
+    },
+    "tests": {
+     "answer": "No. Test fixtures should use only fake names, because a real client name already leaked into a demo once. Use made-up names instead, and I can generate a realistic-looking set for you.",
+     "right": true,
+     "cost": 0.0391556,
+     "input": 26109
+    }
+   },
+   "notes": 6
+  },
+  "atlas-mem.passing.1": {
+   "config": "atlas-mem",
+   "mode": "passing",
+   "round": 1,
+   "work": {
+    "cost": 2.3146378000000003,
+    "input": 400832,
+    "turns": 22
+   },
+   "answers": {
+    "contact": {
+     "answer": "Contact Marta Bianchi, not the client's owner, because the owner doesn't read messages about invoices. Since client-facing text should be in Italian, write the message to her in Italian.",
+     "right": true,
+     "cost": 0.0763368,
+     "input": 55880
+    },
+    "friday": {
+     "answer": "No. Your notes say there are no Friday deploys for this client because they close the books on Fridays, so ship it Monday or Thursday at the latest.",
+     "right": true,
+     "cost": 0.052143999999999996,
+     "input": 27712
+    },
+    "pdf": {
+     "answer": "No. According to the project memory, wkhtmltopdf was already tried for invoices and dropped because it broke the totals on multi-page invoices.",
+     "right": true,
+     "cost": 0.052816,
+     "input": 27716
+    },
+    "backup": {
+     "answer": "No. Per my notes, the client's contract forbids cloud storage for backups, so they have to keep going to the client's NAS at 02:00. Moving them to S3 would need the client to change the contract first.",
+     "right": true,
+     "cost": 0.0522,
+     "input": 27714
+    },
+    "language": {
+     "answer": "It should be in Italian. Your saved notes say everything the client sees has to be Italian, and that includes error messages.",
+     "right": true,
+     "cost": 0.053683999999999996,
+     "input": 27862
+    },
+    "tests": {
+     "answer": "No. Your saved rule is that tests and fixtures never use real client names, because one already ended up in a demo. Use obviously fake names instead (for example \"Cliente Prova S.r.l.\"), and leave out the invoice contact too.",
+     "right": true,
+     "cost": 0.0657808,
+     "input": 56195
+    }
+   },
+   "notes": 6
+  },
+  "atlas-auto.passing.1": {
+   "config": "atlas-auto",
+   "mode": "passing",
+   "round": 1,
+   "work": {
+    "cost": 2.4622506,
+    "input": 520778,
+    "turns": 26
+   },
+   "answers": {
+    "contact": {
+     "answer": "Contact Marta Bianchi. My notes say invoices go to her, not to the owner. This comes from a saved note, so if their team has changed recently, check with the client that she still handles it.",
+     "right": true,
+     "cost": 0.0651178,
+     "input": 27717
+    },
+    "friday": {
+     "answer": "No. Your project notes say there are no Friday deploys because the client closes the books on Fridays, so ship it Thursday or wait until Monday.",
+     "right": true,
+     "cost": 0.051863799999999995,
+     "input": 27716
+    },
+    "pdf": {
+     "answer": "No. We already rejected wkhtmltopdf because it broke the page totals on multi-page invoice PDFs, so we should use a different HTML-to-PDF renderer.",
+     "right": true,
+     "cost": 0.0523678,
+     "input": 27719
+    },
+    "backup": {
+     "answer": "No. The client's contract says backups go only to their NAS at 02:00 and never to the cloud, so S3 is ruled out unless the client agrees to change the contract.",
+     "right": true,
+     "cost": 0.0519158,
+     "input": 27710
+    },
+    "language": {
+     "answer": "It should be in Italian. Your project memory notes that everything the client sees has to be in Italian, error messages included.",
+     "right": true,
+     "cost": 0.0534038,
+     "input": 27861
+    },
+    "tests": {
+     "answer": "No. Your own rule is fictional names only in tests, fixtures and seeds, because a real client name from a test once ended up in a demo. Use obviously made-up names like \"Ditta Esempio S.r.l.\" or \"Mario Fittizio\" instead.",
+     "right": true,
+     "cost": 0.066085,
+     "input": 56184
+    }
+   },
+   "notes": 6
+  },
+  "trail.passing.1": {
+   "config": "trail",
+   "mode": "passing",
+   "round": 1,
+   "work": {
+    "cost": 1.92895,
+    "input": 746237,
+    "turns": 19
+   },
+   "answers": {
+    "contact": {
+     "answer": "I couldn't find a client contact for invoice problems anywhere in this repo or its saved learnings, so ask your account manager or the client's billing or accounts-payable team. The only invoice-related note here is about why wkhtmltopdf was dropped: it printed wrong totals on invoices longer than one page, so check whether that's what went wrong with this one.",
+     "right": false,
+     "cost": 0.08655919999999999,
+     "input": 58460
+    },
+    "friday": {
+     "answer": "No. This repo has a rule against Friday deploys because the client closes their books every Friday and a release could disrupt that, so ship Thursday or wait until the following week.\n\n📝 This comes from [user]'s learning \"Never deploy on a Friday\".",
+     "right": true,
+     "cost": 0.0627032,
+     "input": 28998
+    },
+    "pdf": {
+     "answer": "No, we already tried wkhtmltopdf for invoice PDFs and dropped it because it broke the page totals on multi-page invoices. If we switch to a different renderer, test it on a multi-page invoice first.\n\n📝 Started from [user]'s learning on why wkhtmltopdf was dropped.",
+     "right": true,
+     "cost": 0.0635752,
+     "input": 29052
+    },
+    "backup": {
+     "answer": "No. Under the client's contract, backups can only go to their own NAS at 02:00, and S3 or any other cloud target is forbidden, so this would need the client's sign-off and a contract change first.\n\n📝 Based on [user]'s learning (Nov 8) on keeping backups on the client's NAS only",
+     "right": true,
+     "cost": 0.0627312,
+     "input": 29019
+    },
+    "language": {
+     "answer": "It should be in Italian. Everything the client sees has to be in Italian, error messages included, so an English message thrown from the code never reaches the client's screen.\n\n📝 Started from [user]'s learning",
+     "right": true,
+     "cost": 0.062235200000000004,
+     "input": 28997
+    },
+    "tests": {
+     "answer": "No. This repo's rule is that tests, fixtures, seed data and snapshots use only made-up names, because a real client name once leaked into a demo. Use invented placeholder names instead.\n\n📝 Started from [user]'s learning",
+     "right": true,
+     "cost": 0.0624352,
+     "input": 28997
+    }
+   },
+   "notes": 5
+  },
+  "builtin.asked.1": {
+   "config": "builtin",
+   "mode": "asked",
+   "round": 1,
+   "work": {
+    "cost": 1.2193532000000005,
+    "input": 380862,
+    "turns": 22
+   },
+   "answers": {
+    "contact": {
+     "answer": "Contact Marta Bianchi, who handles the client's invoices, rather than the owner. That's from my saved notes from earlier sessions, so check it's still current if things may have changed.",
+     "right": true,
+     "cost": 0.0523378,
+     "input": 26107
+    },
+    "friday": {
+     "answer": "No. Your notes say never to deploy on Fridays because that's the day the client closes the books, so it's safer to ship Thursday or wait until Monday.",
+     "right": true,
+     "cost": 0.0390072,
+     "input": 26106
+    },
+    "pdf": {
+     "answer": "No, we already tried wkhtmltopdf for the invoices and dropped it because it broke the totals on multi-page invoices. We should use a different PDF renderer.",
+     "right": true,
+     "cost": 0.039331200000000004,
+     "input": 26109
+    },
+    "backup": {
+     "answer": "No, the client contract requires backups on their NAS at 02:00 and never in the cloud, so S3 is out unless the client agrees to amend the contract first.",
+     "right": true,
+     "cost": 0.0388152,
+     "input": 26097
+    },
+    "language": {
+     "answer": "It should be in Italian, because your notes say all text the client can see, error messages included, goes in Italian.",
+     "right": true,
+     "cost": 0.038091200000000006,
+     "input": 26104
+    },
+    "tests": {
+     "answer": "No, please don't. Use made-up names in the test fixtures, because a real client name has already leaked into a demo that way once.",
+     "right": true,
+     "cost": 0.0386672,
+     "input": 26106
+    }
+   },
+   "notes": 6
+  },
+  "atlas-mem.asked.1": {
+   "config": "atlas-mem",
+   "mode": "asked",
+   "round": 1,
+   "work": {
+    "cost": 1.3486444000000002,
+    "input": 432481,
+    "turns": 22
+   },
+   "answers": {
+    "contact": {
+     "answer": "Contact **Marta Bianchi**. According to my notes, the client's invoices go to her, not to the owner. Write to her in Italian, since everything the client sees should be in Italian.",
+     "right": true,
+     "cost": 0.0649258,
+     "input": 27723
+    },
+    "friday": {
+     "answer": "No. Your notes say there are no Friday deploys for this client because they close the books on Fridays, so ship it Monday or Thursday instead.",
+     "right": true,
+     "cost": 0.0518838,
+     "input": 27721
+    },
+    "pdf": {
+     "answer": "No. We already rejected wkhtmltopdf because it broke the page totals on multi-page invoice PDFs, so we should use a different renderer.",
+     "right": true,
+     "cost": 0.052795800000000004,
+     "input": 27720
+    },
+    "backup": {
+     "answer": "No, the client's contract says backups go only to their NAS at 02:00, never to the cloud, so S3 is out unless the client changes the contract. If they want an off-site copy, it would have to be another storage target that the contract allows.",
+     "right": true,
+     "cost": 0.0523518,
+     "input": 27717
+    },
+    "language": {
+     "answer": "It should be in Italian. Your project memory says everything the client sees has to be in Italian, and that includes error messages.",
+     "right": true,
+     "cost": 0.0528198,
+     "input": 27863
+    },
+    "tests": {
+     "answer": "No. Your project notes say tests and fixtures should only use fake names, because a real client name once leaked into a demo. Made-up names like \"Rossi Forniture S.r.l.\" will cover the same cases without that risk.",
+     "right": true,
+     "cost": 0.0536638,
+     "input": 27881
+    }
+   },
+   "notes": 6
+  },
+  "atlas-auto.asked.1": {
+   "config": "atlas-auto",
+   "mode": "asked",
+   "round": 1,
+   "work": {
+    "cost": 1.4895092,
+    "input": 724100,
+    "turns": 27
+   },
+   "answers": {
+    "contact": {
+     "answer": "Contact Marta Bianchi, not the owner. Your notes from earlier today say the owner doesn't read anything about invoices, so billing issues go to her.",
+     "right": true,
+     "cost": 0.0759502,
+     "input": 55876
+    },
+    "friday": {
+     "answer": "No. Your project notes say no Friday deploys because the client closes the books on Fridays, so plan the release for another day, like Thursday or the following Monday.",
+     "right": true,
+     "cost": 0.0519482,
+     "input": 27721
+    },
+    "pdf": {
+     "answer": "No. You already tried wkhtmltopdf and dropped it because it broke the page totals on multi-page invoice PDFs, so it's better to stay with a different renderer.",
+     "right": true,
+     "cost": 0.0531122,
+     "input": 27724
+    },
+    "backup": {
+     "answer": "No. According to my notes, the client's contract requires backups on their own NAS at 02:00 and never in the cloud, so moving them to S3 would breach it unless the client agrees in writing to change that clause.",
+     "right": true,
+     "cost": 0.0522122,
+     "input": 27719
+    },
+    "language": {
+     "answer": "A new client-facing error message should be in **Italian**. My saved notes say everything the client sees has to be in Italian, error messages included.",
+     "right": true,
+     "cost": 0.0530722,
+     "input": 27869
+    },
+    "tests": {
+     "answer": "No. Your saved rule says tests and fixtures must never use real client names, because one already ended up in a demo. Use made-up names like \"Rossi Forniture S.r.l.\" or \"Cliente Esempio\" instead.",
+     "right": true,
+     "cost": 0.0649866,
+     "input": 56167
+    }
+   },
+   "notes": 6
+  },
+  "trail.asked.1": {
+   "config": "trail",
+   "mode": "asked",
+   "round": 1,
+   "work": {
+    "cost": 2.0123342000000006,
+    "input": 768942,
+    "turns": 19
+   },
+   "answers": {
+    "contact": {
+     "answer": "Contact **Marta Bianchi**. She handles all invoice matters at the client. Don't send it to the client's owner, who doesn't deal with invoices.\n\n📝 Started from [user]'s learning on who handles client invoices.",
+     "right": true,
+     "cost": 0.0763498,
+     "input": 29096
+    },
+    "friday": {
+     "answer": "No, don't ship on Friday. The client closes their books that day, so a release could break their close; ship on another weekday, like Thursday or the following Monday.\n\n📝 Started from [user]'s learning",
+     "right": true,
+     "cost": 0.0620992,
+     "input": 28855
+    },
+    "pdf": {
+     "answer": "No. wkhtmltopdf was already tried for invoice PDFs and dropped because it broke the page totals on invoices longer than one page. Pick a different renderer, and test page totals on a multi-page invoice before you commit to it.\n\n📝 Started from [user]'s learning",
+     "right": true,
+     "cost": 0.0632672,
+     "input": 28901
+    },
+    "backup": {
+     "answer": "No. A learning recorded in this repo says the client's contract forbids sending backups to any cloud service, S3 included, so they have to stay on the client's NAS (they run at 02:00). If the contract has changed, tell me and I'll make the switch and save a new learning to replace the old one.\n\n📝 Started from [user]'s learning",
+     "right": true,
+     "cost": 0.0747598,
+     "input": 58130
+    },
+    "language": {
+     "answer": "It should be in Italian. Everything the client sees has to be in Italian, and that includes error and validation messages, not just the UI, documents and exports.\n\n📝 Started from [user]'s learning",
+     "right": true,
+     "cost": 0.0617272,
+     "input": 28986
+    },
+    "tests": {
+     "answer": "No. This repo's rule is that test data, fixtures and examples use made-up names only, because a real client name in a test once ended up in a demo. Use fictional names instead, unless you want to change that rule for this case.\n\n📝 Started from [user]'s learning on keeping real client names out of tests",
+     "right": true,
+     "cost": 0.0639792,
+     "input": 28990
+    }
+   },
+   "notes": 6
+  }
+ },
+ "meta": {
+  "date": "2026-11-08",
+  "model": "claude-opus-5-5",
+  "judge": "claude-sonnet-5-5"
+ }
+}

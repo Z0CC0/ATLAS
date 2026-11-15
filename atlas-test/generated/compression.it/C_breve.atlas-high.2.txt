@@ -1,0 +1,3 @@
+No. Colonna a bassa cardinalità (3 valori), B-tree di norma non usato: planner preferisce seq scan quando il filtro seleziona più del 5-10% delle righe — con 3 valori è quasi sempre così. L'indice costerebbe comunque scrittura e spazio senza guadagno.
+
+Eccezione: indice parziale sul valore raro (es. `WHERE stato = 'raro'`), utile se quel valore è una piccola frazione delle righe.

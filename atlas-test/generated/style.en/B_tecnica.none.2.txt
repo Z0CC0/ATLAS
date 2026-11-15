@@ -1,0 +1,23 @@
+Your pool is leaking connections, so the slowdown is pool exhaustion rather than a slow query.
+
+**What is happening.** The middleware at `db/session.py:47` releases the connection only on the success path. When the handler raises, the release call is never reached and the connection stays held until it times out. After a few hundred failed requests the pool is empty and every later request waits for a connection to come back. That is why you see latency climbing instead of immediate errors, right up to the point where everything locks up.
+
+**The fix.** Wrap the acquisition in try/finally so the connection is released on the error path as well:
+
+```python
+conn = pool.acquire()
+try:
+    return handler(conn, request)
+finally:
+    pool.release(conn)
+```
+
+**What not to do.** Raising the pool size looks like it helps, but it only pushes back the moment the pool empties. The leak is still there. Raise it only after the fix is in, and only if your real load actually calls for it.
+
+**To see it before and after** the change, run the exhaustion test:
+
+```
+pytest tests/test_pool.py -k exhaustion -x
+```
+
+It should fail on the current code and pass once the try/finally is in place.

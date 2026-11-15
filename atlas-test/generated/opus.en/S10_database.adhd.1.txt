@@ -1,0 +1,29 @@
+**Pick Postgres, and run it alone for now.** Add another system only when one specific workload proves with real numbers that Postgres can't keep up.
+
+## How the options compare
+
+| Option | Orders | Catalogue | Text search | Analytics | Catch |
+|---|---|---|---|---|---|
+| **Postgres** | Real transactions | Acceptable | Built in. Good below 1M docs, weak above | Fine up to tens of millions of rows, then scans get slow | Handles all four acceptably, none outstandingly |
+| **MySQL** | Same as Postgres | Weaker data types | No advantage | Weaker on complex queries | No reason to choose it over Postgres |
+| **MongoDB** | Multi-document transactions arrived late and are costly | Easier, because the schema can vary | — | — | Risky for orders |
+| **Elasticsearch** | Not suitable | — | Far better: relevance, synonyms, typo tolerance | — | Can't be the main store. It has to be fed from another database |
+| **ClickHouse** | Not suitable: point updates are its weak spot | — | — | Far better: columnar scans are orders of magnitude faster | Only an add-on |
+
+Orders are what decide it. Real transactions are not optional there, and Postgres has them. MySQL matches Postgres on orders but is weaker everywhere else. MongoDB only makes the catalogue easier, and it costs you on orders, which is the one workload where you can't compromise.
+
+## When to add a second system
+
+The usual end state is Postgres as the main store (the source of truth), with Elasticsearch and ClickHouse kept in sync from it. Add each one only when its trigger is met:
+
+1. **Elasticsearch:** when you have more than about 1M searchable documents, or users need relevance ranking, synonyms or typo tolerance. Adding it below 1M documents is almost always premature.
+2. **ClickHouse:** when analytics queries pass tens of millions of rows and you can measure the slowdown.
+
+## What each extra system costs
+
+- Each one adds a sync job to run and a way for its data to drift from Postgres.
+- The licence is not the main cost. The main cost is the hours your people spend keeping that system running.
+
+**Next step (2 minutes):** write down your current document count and largest table row count. If both are under 1M and tens of millions, the decision is just Postgres.
+
+I can turn this into a shareable page if someone else needs to sign off on it.

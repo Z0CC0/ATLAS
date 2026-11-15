@@ -1,0 +1,9 @@
+5080 vs 4080, chip nuovo vs vecchio:
+
+5080 Blackwell, memoria GDDR7, banda ~960 GB/s. 4080 Ada Lovelace, GDDR6X, banda ~717 GB/s.
+
+Rasterizzazione pura: solo 10-15% guadagno, non tanto. Salto vero sta in generazione fotogrammi (frame generation), lì differenza grande.
+
+Consumo: 5080 tira 360W, 4080 320W. Connettore stesso, 16 pin su entrambe.
+
+Riassunto: se conta gioco "raw", differenza moderata. Se conta frame generation, salto netto.

@@ -1,0 +1,18 @@
+Prompt caching saves the part of a request that the model has already processed, called the prefix. A later request that starts with the same text reuses that saved work and does not pay for it again.
+
+**Only the prefix is reused.** Matching runs from the first character forward. If one character differs near the start, nothing after that point is reused, even if the rest is identical.
+
+**So order matters.** Put the stable parts first and the parts that change after them. If you do it the other way round, the changing part breaks the match early and the stable content behind it gets processed again every time.
+
+A common mistake is a system line that changes every turn, such as the current time. That one line stops reuse of everything after it. Move it to the end or remove it.
+
+**Cost profile:**
+- Writing to the cache costs more than a normal read, so the first request is more expensive than it would be without caching.
+- The savings start with the second request that reuses the prefix.
+- The savings grow with each additional turn.
+
+**When it pays off:** long conversations with a large stable context, such as system instructions, attached documentation and tool definitions. You pay to write that block once, then every later turn reads it back cheaply.
+
+**When it doesn't:** single requests that differ from each other. Each one pays the extra write cost, and the cached prefix is never read back, so caching only adds cost.
+
+As a rule of thumb, cache a large prefix that you will reuse across several turns. Skip caching for one-off requests.

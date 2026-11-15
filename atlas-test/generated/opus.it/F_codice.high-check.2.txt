@@ -1,0 +1,25 @@
+conoscenza interna
+
+```js
+function debounce(fn, ms) {
+  let t;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), ms);
+  };
+}
+```
+
+Uso: `const salva = debounce(salvaBozza, 300);` e poi chiami `salva()` quante volte vuoi.
+
+Tre dettagli da non sbagliare:
+
+`clearTimeout(t)` va chiamato prima di ogni nuovo `setTimeout`. Senza, i timer si accumulano e `fn` parte più volte.
+
+`t` deve stare nella chiusura, cioè fuori dalla funzione restituita. Se la sposti dentro, ogni chiamata ha il suo timer e il debounce non funziona.
+
+`...args` va inoltrato con lo spread. Senza, `fn` riceve argomenti vuoti.
+
+Limite: questa versione non restituisce niente. Se ti serve il valore di ritorno di `fn`, devi usare una Promise.
+
+Se invece vuoi eseguire subito e poi ignorare le chiamate per un certo periodo, ti serve un throttle, che è un'altra funzione.

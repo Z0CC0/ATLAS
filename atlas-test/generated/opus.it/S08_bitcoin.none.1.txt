@@ -1,0 +1,33 @@
+## Come è nato Bitcoin
+
+**Le radici: l'ambiente cypherpunk**
+
+Bitcoin nasce nell'ambiente cypherpunk, una comunità interessata a usare la crittografia per difendere la privacy e l'autonomia individuale. Prima di Bitcoin c'erano già stati tentativi di creare una moneta digitale indipendente, come **b-money** e **bit gold**. Nessuno dei due però risolveva un problema decisivo: come mettere tutti d'accordo sull'**ordine** in cui avvengono le transazioni.
+
+**Il documento del 2008**
+
+Nel 2008 esce un documento intitolato *Bitcoin: A Peer-to-Peer Electronic Cash System*, firmato **Satoshi Nakamoto**. È uno pseudonimo, e chi ci sia dietro non è mai stato scoperto.
+
+Il documento affronta il problema della **doppia spesa**. Un file digitale si copia facilmente, quindi bisogna impedire che qualcuno spenda due volte la stessa moneta. Di solito ci pensa un ente centrale, per esempio una banca, che tiene il registro dei movimenti. Satoshi voleva ottenere lo stesso risultato senza nessun intermediario.
+
+**La soluzione: blocchi e prova di lavoro**
+
+La proposta è una **catena di blocchi**: le transazioni vengono raccolte in blocchi, e ogni blocco si aggancia al precedente. L'ordine dei blocchi è stabilito da una **prova di lavoro**, cioè un calcolo costoso che bisogna completare per aggiungere un blocco.
+
+Questo meccanismo protegge la storia delle transazioni. Per modificare un blocco passato non basta rifare la prova di lavoro di quel blocco: bisogna rifarla anche per tutti i blocchi successivi. Più il blocco è vecchio, più lavoro servirebbe per riscriverlo, e il costo diventa presto proibitivo.
+
+**Il primo blocco**
+
+Il **3 gennaio 2009** viene generato il primo blocco della catena. Al suo interno c'è il titolo di un articolo del *Times* su un salvataggio bancario. Il riferimento ha due funzioni. È una **marca temporale**, perché dimostra che il blocco non può essere stato creato prima di quel giorno. Ed è una **dichiarazione di intenti**, perché ricorda le crisi del sistema bancario tradizionale, da cui Bitcoin vuole essere un'alternativa.
+
+**Le regole di emissione**
+
+Chi genera un blocco riceve in cambio dei bitcoin nuovi. All'inizio la ricompensa è di **50 bitcoin** per blocco, e si **dimezza ogni 210.000 blocchi**, cioè circa ogni quattro anni. Per questo il numero totale di bitcoin si avvicina a **21 milioni** e non li supererà mai.
+
+**Il primo acquisto**
+
+Nel **2010** avviene la prima transazione commerciale documentata: **due pizze pagate 10.000 bitcoin**.
+
+**La scomparsa di Satoshi**
+
+Nel **2011** Satoshi Nakamoto smette di partecipare pubblicamente al progetto. Da allora i bitcoin che possedeva **non sono mai stati spostati**.

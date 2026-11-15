@@ -1,0 +1,15 @@
+Prompt caching saves the start of a request that has already been processed. Later requests that begin exactly the same way don't pay for that part again.
+
+It only works on the prefix. If one character near the start is different, nothing is reused from that point on.
+
+So put the stable parts first and the changing parts after them. The other way round loses the cache.
+
+Writing to the cache costs more than a normal read, so the first request is more expensive.
+
+The savings start with the second request and grow with each turn.
+
+It pays off on long conversations with a large context that stays the same, such as system instructions, attached documentation and tool definitions.
+
+It doesn't pay off when you send single requests that differ from each other. You pay for the cache write and never read it back.
+
+Watch for a system line that changes every turn, such as a clock. It stops everything after it from being reused.
