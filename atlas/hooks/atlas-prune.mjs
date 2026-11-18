@@ -32,22 +32,21 @@ export async function settings($) {
   };
 }
 
-export const register = (on) => {
-  on('session.compact', async ($, e, next) => {
-    if (e.agentId || e.instructions) return next(e);
-    try {
-      const cfg = await settings($);
-      if (!cfg) return next(e);
-      const r = prune(e.messages, cfg);
-      if (r.ratio < cfg.min) {
-        $.ui.log(`atlas prune: summary instead, under the ${Math.round(cfg.min * 100)}% minimum (${line(r)})`);
-        return next(e);
-      }
-      $.ui.log(`atlas prune: no summary, ${line(r)}`);
-      return { messages: r.messages };
-    } catch (err) {
-      $.ui.log(`atlas prune: summary instead (${err && err.message ? err.message : String(err)})`);
+/** The hook on `session.compact`. Registered in atlas-modules.mjs. */
+export async function compact($, e, next) {
+  if (e.agentId || e.instructions) return next(e);
+  try {
+    const cfg = await settings($);
+    if (!cfg) return next(e);
+    const r = prune(e.messages, cfg);
+    if (r.ratio < cfg.min) {
+      $.ui.log(`atlas prune: summary instead, under the ${Math.round(cfg.min * 100)}% minimum (${line(r)})`);
       return next(e);
     }
-  });
-};
+    $.ui.log(`atlas prune: no summary, ${line(r)}`);
+    return { messages: r.messages };
+  } catch (err) {
+    $.ui.log(`atlas prune: summary instead (${err && err.message ? err.message : String(err)})`);
+    return next(e);
+  }
+}

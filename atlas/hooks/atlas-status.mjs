@@ -47,13 +47,14 @@ export const slug = (root) => String(root).replace(/[^A-Za-z0-9]/g, '-');
 /** `atlas low · ask · check · silent · prune`, or undefined when there is nothing to show. */
 export function text(raw, prune = false) {
   const [level, rigour, check, silent] = String(raw || '').trim().toLowerCase().split(':');
-  const on = [];
-  if (level === 'low' || level === 'high') on.push(level);
-  if (rigour === 'ask') on.push('ask');
-  if (check === 'on') on.push('check');
-  if (silent === 'on') on.push('silent');
-  if (prune) on.push('prune');
-  return on.length ? `atlas ${on.join(' · ')}` : undefined;
+  // Not called `on`: that name is the registration function's, here and in every hooks module.
+  const shown = [];
+  if (level === 'low' || level === 'high') shown.push(level);
+  if (rigour === 'ask') shown.push('ask');
+  if (check === 'on') shown.push('check');
+  if (silent === 'on') shown.push('silent');
+  if (prune) shown.push('prune');
+  return shown.length ? `atlas ${shown.join(' · ')}` : undefined;
 }
 
 const roots = new Map();
@@ -72,15 +73,14 @@ export async function line($) {
   return text(raw, cfg.prune === true);
 }
 
-// Declared here and not inside `register`: the engine follows `$` only into functions of the
-// file's top level.
+// Function declarations at the file's top level: the engine follows `$` only into those.
 async function draw($) {
   try { $.ui.status(await line($)); } catch { /* a status line is never worth a turn */ }
 }
 
-export const register = (on) => {
-  on('session.start', async ($, e, next) => { const r = await next(e); await draw($); return r; });
-  // The command hooks change the state while the prompt is submitted: read it after they ran.
-  on('prompt.submit', async ($, e, next) => { const r = await next(e); await draw($); return r; });
-  on('turn.complete', async ($, e, next) => { const r = await next(e); await draw($); return r; });
-};
+/** The hook: lets the rest of the chain answer, then draws. Registered in atlas-modules.mjs. */
+export async function redraw($, e, next) {
+  const r = await next(e);
+  await draw($);
+  return r;
+}

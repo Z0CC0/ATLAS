@@ -25,7 +25,7 @@ restarts, in `~/.claude/atlas-state/`, outside the plugin.
 /plugin install atlas-min@atlas
 ```
 
-`node` must be on the PATH: the hooks are JavaScript. No dependencies, no build step, no
+`node` must be on the PATH (the hooks are JavaScript), with Claude Code 2.1.139 or later. No dependencies, no build step, no
 telemetry, no network.
 
 ## What it costs

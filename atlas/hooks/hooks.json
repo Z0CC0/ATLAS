@@ -1,3 +1,76 @@
 {
-  "modules": ["./atlas-modules.mjs"]
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/atlas-activate.js",
+              "--part",
+              "1"
+            ],
+            "timeout": 5,
+            "statusMessage": "ATLAS"
+          },
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/atlas-activate.js",
+              "--part",
+              "2"
+            ],
+            "timeout": 5,
+            "statusMessage": "ATLAS"
+          },
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/atlas-activate.js",
+              "--part",
+              "3"
+            ],
+            "timeout": 5,
+            "statusMessage": "ATLAS"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/atlas-tracker.js"
+            ],
+            "timeout": 5,
+            "statusMessage": "ATLAS"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Skill|Agent|Task",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node",
+            "args": [
+              "${CLAUDE_PLUGIN_ROOT}/hooks/atlas-usage.js"
+            ],
+            "timeout": 5
+          }
+        ]
+      }
+    ]
+  },
+  "modules": [
+    "./atlas-modules.mjs"
+  ]
 }

@@ -8,6 +8,8 @@
 /plugin install atlas@atlas
 ```
 
+It needs `node` on the PATH and Claude Code 2.1.139 or later.
+
 Then, in any chat: `atlas low` or `atlas high`.
 
 **One answer from the bench, as it came out.** The question was "Is it worth putting an index on a column that has only three distinct values?", with the same sheet of facts for both.

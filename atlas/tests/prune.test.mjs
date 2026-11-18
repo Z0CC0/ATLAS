@@ -167,8 +167,7 @@ function engine(file, env = {}) {
     fs: { read: async (p) => { if (p !== '/cfg/atlas.json' || file === undefined) throw new Error('missing'); return file } },
     ui: { log: (t) => logs.push(t) },
   }
-  let hookFn
-  hook.register((event, fn) => { assert.equal(event, 'session.compact'); hookFn = fn })
+  const hookFn = hook.compact
   const run = (e) => hookFn($, e, async () => ({ messages: [{ role: 'user', text: 'SUMMARY', toolUses: [] }] }))
   return { run, logs }
 }

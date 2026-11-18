@@ -67,9 +67,7 @@ once more with the nearest technical term, then stop.
 
 The command not found, or the path not resolved: the same sources by hand, output to a
 file in the scratch directory, never to the terminal.
-`curl -sS "https://skills.sh/api/search?q=<words>&limit=8"`, or
-`DO_NOT_TRACK=1 npx -y skills find "<words>"` (on Windows it can exit non-zero after
-printing everything);
+`curl -sS "https://skills.sh/api/search?q=<words>&limit=8"`;
 `curl -sS "https://registry.modelcontextprotocol.io/v0.1/servers?search=<name>&version=latest&limit=8"`;
 the two `marketplace.json` files under `.claude-plugin/` of
 `anthropics/claude-plugins-official` and `anthropics/claude-plugins-community` on

@@ -300,14 +300,20 @@ check('no terms section when the file is absent', !activate.build({ level: 'low'
 // --- the 10 KB hook cap: every state arrives whole, in parts ------------------
 
 {
-  const manifest = JSON.parse(readFileSync(join(ROOT, '.claude-plugin', 'plugin.json'), 'utf8'));
+  // Declared in hooks/hooks.json and nowhere else: the manifest carries no `hooks` key.
+  check('the manifest declares no hooks of its own', !('hooks' in JSON.parse(readFileSync(join(ROOT, '.claude-plugin', 'plugin.json'), 'utf8'))));
+  const manifest = JSON.parse(readFileSync(join(ROOT, 'hooks', 'hooks.json'), 'utf8'));
+  const every = Object.values(manifest.hooks).flatMap((groups) => groups.flatMap((g) => g.hooks));
+  // Exec form: the program in `command`, the file first in `args`. No shell, no quoting.
+  check('every command hook is node with its file in args', every.length > 0
+    && every.every((h) => h.type === 'command' && h.command === 'node' && Array.isArray(h.args) && /^\$\{CLAUDE_PLUGIN_ROOT\}\/hooks\/atlas-[a-z]+\.js$/.test(h.args[0])));
   // The parts are the commands that run the rules hook. A build registers other SessionStart
   // hooks beside them (atlas-mem: the harvest re-read and the stale notes; atlas-code: the
   // profile of the repository); those are not parts. Counting every group without a matcher
   // passed in this source tree and failed in the builds that add one.
-  const starts = manifest.hooks.SessionStart.flatMap((g) => g.hooks.map((h) => h.command)).filter((c) => /atlas-activate\.js/.test(c));
+  const starts = manifest.hooks.SessionStart.flatMap((g) => g.hooks.map((h) => h.args)).filter((a) => /atlas-activate\.js/.test(a[0]));
   check('the manifest registers one session-start command per part', starts.length === activate.PARTS
-    && starts.every((c, i) => c.includes(`--part ${i + 1}`)));
+    && starts.every((a, i) => a[1] === '--part' && a[2] === String(i + 1)));
   check('the part limit leaves room under the 10 KB cap', activate.PART_LIMIT <= 8000);
   let worst = 0; let whole = true; let nparts = 0;
   for (const level of ['off', 'low', 'high']) for (const rigour of ['off', 'ask']) for (const chk of ['off', 'on']) for (const silent of ['off', 'on']) {
