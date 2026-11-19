@@ -26,7 +26,8 @@ now in front of both of you.
 for X", "what could host this for nothing", "is there already a skill / a plugin / an MCP server
 that does this": first run the catalogue command here, where no web page is in context —
 `node "${CLAUDE_PLUGIN_ROOT}/tools/catalog.mjs" <kind> "<two or three words>"` (`kind`: `skills`,
-`mcp`, `plugins`, `extras` or `all`; at most eight lines per source) — then delegate to
+`mcp`, `plugins`, `extras` or `all`; at most eight lines per source; with `skills`,
+`--owner <publisher>` when the person names one) — then delegate to
 `atlas-research` with those lines and the absolute path of `search/catalog.md` beside this
 file (`${CLAUDE_PLUGIN_ROOT}/skills/atlas-search/search/catalog.md`), the file that holds the
 sources and the checks. The agent reads pages and runs nothing. It finds; the install command

@@ -117,6 +117,40 @@ function compression() {
     rows.map(([label, k]) => [label, saving(k), label.startsWith('atlas'), `${saving(k).toFixed(0)}%`]));
 }
 
+/** How atlas media works with THE STUDIO: four steps, and the notes that go back to the commands. No figure in it. */
+function howItWorks() {
+  const w = 860, h = 312, top = 64, bw = 178, bh = 164, gap = 30;
+  const xs = [0, 1, 2, 3].map((i) => 28 + i * (bw + gap));
+  const hair = (o) => `stroke="${C.line}" stroke-opacity="${o}"`;
+  const box = (x, y, bw2, bh2, r, o) => `<rect x="${x + 0.5}" y="${y + 0.5}" width="${bw2 - 1}" height="${bh2 - 1}" rx="${r}" fill="none" ${hair(o)}/>`;
+  const head = (i, lines) => lines.map((l, k) => text(xs[i] + 16, top + 30 + k * 19, l, 15, C.text, 'font-weight="600"')).join('\n')
+    + text(xs[i] + bw - 16, top + 30, String(i + 1), 13, C.faint, 'text-anchor="end"');
+  const lines = (i, y, ls, fill = C.dim, size = 13) => ls.map((l, k) => text(xs[i] + 16, y + k * 18, l, size, fill)).join('\n');
+  const arrow = (x1, x2, y) => `<line x1="${x1}" y1="${y}" x2="${x2 - 6}" y2="${y}" stroke="${C.dim}" stroke-width="1.5"/><path d="M${x2} ${y} l-7 -4.5 v9 z" fill="${C.dim}"/>`;
+  const pill = (y, a, b) => box(xs[1] + 12, y, bw - 24, 40, 6, 0.22)
+    + text(xs[1] + 24, y + 17, a, 13, C.text) + text(xs[1] + 24, y + 33, b, 11, C.faint);
+  const body = [text(28, 38, 'How atlas media makes a video with THE STUDIO', 17, C.text, 'font-weight="600"')];
+  xs.forEach((x) => body.push(box(x, top, bw, bh, 10, 0.28)));
+  for (let i = 0; i < 3; i++) body.push(arrow(xs[i] + bw + 5, xs[i + 1] - 5, top + bh / 2));
+  body.push(head(0, ['You ask']), lines(0, top + 58, ['in plain words, in', 'the chat:']),
+    lines(0, top + 104, ['“a 30-second video', 'that explains this', 'project”'], C.text));
+  body.push(head(1, ['Commands drive', 'the editor']), pill(top + 64, 'without a window', 'the default'), pill(top + 112, 'in the window', 'you watch every step'));
+  body.push(head(2, ['You leave notes']), lines(2, top + 58, ['a marker with a', 'comment, on either', 'timeline, while it', 'works or after']));
+  const got = ['the film', 'an effects project', 'a montage project'];
+  body.push(head(3, ['You get']));
+  got.forEach((g, k) => {
+    const y = top + 50 + k * 28;
+    body.push(text(xs[3] + 16, y + 18, g, 13, C.text));
+    if (k) body.push(`<line x1="${xs[3] + 16}" y1="${y}" x2="${xs[3] + bw - 16}" y2="${y}" ${hair(0.16)}/>`);
+  });
+  body.push(lines(3, top + 146, ['both open in the window'], C.faint, 12));
+  // The notes go back to the commands: the one red line in the picture.
+  const from = xs[2] + bw / 2, to = xs[1] + bw / 2, y0 = top + bh + 4, y1 = top + bh + 30;
+  body.push(`<path d="M${from} ${y0} V${y1} H${to} V${y0 + 8}" fill="none" stroke="${C.red}" stroke-width="1.5"/><path d="M${to} ${y0} l-4.5 7 h9 z" fill="${C.red}"/>`);
+  body.push(text((from + to) / 2, y1 + 22, '“resolve the notes”: each one is done and closed, or left open with the reason', 13, C.text, 'text-anchor="middle"'));
+  return frame(w, h, body.join('\n'), 'How atlas media works: you ask, commands drive THE STUDIO without a window or in it while you watch, you leave notes on the timeline, the notes are resolved, and you get the film and two project files');
+}
+
 const out = process.argv[2];
 const repo = process.argv[3];
 if (!out || !repo) { console.error('usage: node readme-graphics.mjs <output folder> <repo name>'); process.exit(2); }
@@ -144,7 +178,7 @@ const PAGES = {
   'ATLAS-video': {
     tagline: 'Video made on your machine: written with a framework, or recorded with a camera that follows you.',
     stats: [['8', 'commands'], ['0', 'uploads'], [n(m('atlas-video').low), 'tokens on the first turn at low'], [pct(low('atlas-video')), 'over 295 turns at low']],
-    charts: () => { save('first-turn.svg', firstTurn(['atlas-video'])); },
+    charts: () => { save('first-turn.svg', firstTurn(['atlas-video'])); save('how-it-works.svg', howItWorks()); },
   },
   'ATLAS-max': {
     tagline: 'All of it, in one install.',

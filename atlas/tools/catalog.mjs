@@ -7,6 +7,7 @@
  * source, so `atlas-research` (catalogue mode) spends one command instead of a dozen fetches.
  *
  *   node catalog.mjs skills  "changelog commits"
+ *   node catalog.mjs skills  pdf --owner anthropics   one publisher only
  *   node catalog.mjs mcp     postgres
  *   node catalog.mjs plugins "code review"
  *   node catalog.mjs extras  "status line"
@@ -75,6 +76,20 @@ function parseCsv(text) {
   return rows;
 }
 
+/** The publisher of a skills.sh entry is the first segment of its `source` ("owner/repo"). */
+const ownerOf = (source) => String(source || '').split('/')[0].toLowerCase();
+
+/** Keep the entries of one publisher; no owner keeps them all. */
+function byOwner(skills, owner) {
+  if (!owner) return skills;
+  const want = owner.toLowerCase();
+  return skills.filter((s) => ownerOf(s.source) === want);
+}
+
+// Asked for when a publisher is named: the index ranks by installs, so the named publisher's
+// entries can sit far below the first eight; a hundred is the most it returns in one answer.
+const OWNER_LIMIT = 100;
+
 const SOURCES = {
   // skills.sh answers this without a key, but the endpoint is not in its documentation:
   // when it stops answering, `npx skills find` is the documented way in.
@@ -82,9 +97,9 @@ const SOURCES = {
     {
       name: 'skills.sh',
       note: 'install count is popularity, not safety; read the SKILL.md before naming one',
-      async search(q) {
-        const j = await get(`https://skills.sh/api/search?q=${encodeURIComponent(q)}&limit=${LIMIT}`);
-        return (j.skills || []).map((s) => `${s.source}@${s.name} | ${num(s.installs || 0)} installs | skills.sh/${s.id}`);
+      async search(q, { owner } = {}) {
+        const j = await get(`https://skills.sh/api/search?q=${encodeURIComponent(q)}&limit=${owner ? OWNER_LIMIT : LIMIT}`);
+        return byOwner(j.skills || [], owner).slice(0, LIMIT).map((s) => `${s.source}@${s.name} | ${num(s.installs || 0)} installs | skills.sh/${s.id}`);
       },
     },
   ],
@@ -199,13 +214,30 @@ for (const media of ASSET_KINDS) {
   }];
 }
 
-async function run(kind, query) {
+/** `<kind> <words…> [--owner <name>]`; null when the arguments cannot be a search. */
+function parseArgs(argv) {
+  const args = [...argv];
+  let owner = '';
+  const at = args.indexOf('--owner');
+  if (at !== -1) {
+    owner = (args.splice(at, 2)[1] || '').trim();
+    if (!owner || owner.startsWith('-')) return null;
+  }
+  const [kind, ...rest] = args;
+  const query = rest.join(' ').trim();
+  if (!kind || !query || !(kind === 'all' || kind in SOURCES)) return null;
+  // Only the skills index carries a publisher per entry; elsewhere the filter would silently match nothing.
+  if (owner && kind !== 'skills') return null;
+  return { kind, query, owner };
+}
+
+async function run(kind, query, opts = {}) {
   // `all` is every catalogue of extensions; pictures and sounds are asked for by name.
   const kinds = kind === 'all' ? Object.keys(SOURCES).filter((k) => !ASSET_KINDS.includes(k)) : [kind];
   const jobs = kinds.flatMap((k) => SOURCES[k].map((source) => ({ k, source })));
   const done = await Promise.all(jobs.map(async ({ k, source }) => {
     try {
-      return { k, source, lines: await source.search(query) };
+      return { k, source, lines: await source.search(query, opts) };
     } catch (err) {
       return { k, source, error: err.name === 'AbortError' ? `no answer in ${TIMEOUT_MS / 1000} s` : clean(err.message) };
     }
@@ -223,13 +255,12 @@ async function run(kind, query) {
 
 // Nothing runs on import: a test that loads this file must not start a search.
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  const [kind, ...rest] = process.argv.slice(2);
-  const query = rest.join(' ').trim();
-  if (!kind || !query || !(kind === 'all' || kind in SOURCES)) {
-    console.error(`usage: node catalog.mjs <${Object.keys(SOURCES).join('|')}|all> <words>`);
+  const parsed = parseArgs(process.argv.slice(2));
+  if (!parsed) {
+    console.error(`usage: node catalog.mjs <${Object.keys(SOURCES).join('|')}|all> <words>   (skills only: --owner <publisher>)`);
     process.exit(2);
   }
-  process.stdout.write(await run(kind, query));
+  process.stdout.write(await run(parsed.kind, parsed.query, { owner: parsed.owner }));
 }
 
-export { parseCsv, matcher, clip, num, run, SOURCES, assetLine, ASSET_KINDS };
+export { parseCsv, matcher, clip, num, run, SOURCES, assetLine, ASSET_KINDS, byOwner, parseArgs };

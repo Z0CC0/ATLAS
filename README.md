@@ -1,3 +1,4 @@
+<p align="center"><img src="assets/atlas-logo.svg" alt="The ATLAS mark: a red disc broken by a slot that runs from its centre up through the rim" width="72"></p>
 <p align="center"><img src="assets/banner.svg" alt="ATLAS: four dials for how a coding assistant talks to you" width="860"></p>
 <p align="center"><img src="assets/stats.svg" alt="ATLAS in numbers" width="860"></p>
 

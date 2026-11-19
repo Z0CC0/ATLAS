@@ -65,6 +65,13 @@ What it searches, and what to know about each:
 Every word of the query must match, so two precise words find more than five. No result:
 once more with the nearest technical term, then stop.
 
+When the user names a publisher ("anything from anthropics for PDFs"), the caller adds
+`--owner <name>` to a `skills` search: the tool asks the index for 100 results and keeps
+only those whose source starts with that name, so the named publisher's skill is not pushed
+out of the eight lines by more popular ones. Lines handed over without the filter: keep that
+publisher's lines only, and say that the eight may have missed some of theirs.
+(The publisher filter: vercel-labs/skills, find-skills, MIT.)
+
 The command not found, or the path not resolved: the same sources by hand, output to a
 file in the scratch directory, never to the terminal.
 `curl -sS "https://skills.sh/api/search?q=<words>&limit=8"`;
@@ -82,6 +89,17 @@ no `/plugin install`, no edit to an MCP configuration. A skill or a plugin is a 
 instructions the assistant will then follow with the user's permissions, and an MCP server
 is a program that runs with them; adding one is the user's decision, made after reading
 it. The answer carries the install command as text, for them to run.
+
+**Say where an install puts a skill, and what it costs.** `npx skills add` without `-g`
+installs into the current project: the files go to `.agents/skills/<name>`, and Claude Code
+reads them through a link at `.claude/skills/<name>`. With `-g` the skill goes to
+`~/.claude/skills/<name>` and its description is loaded in every session of every project.
+The command handed over is the project one; `-g` only when the user asks for it, and never
+`-y`, which answers the installer's questions for them. Each skill carries its scope and the
+length of its description in tokens, counted from the `SKILL.md` that was read (characters
+divided by four, said as about), because that description is paid in every session the
+scope covers. (Checked on vercel-labs/skills, `src/agents.ts` and `src/installer.ts`,
+2026-11-19.)
 
 **Read before naming.** For each candidate that goes in the answer, read what it does: the
 `SKILL.md`, the plugin's README, the server's repository page. What it tells the assistant
@@ -112,6 +130,13 @@ is almost never in the list itself.
 
 If none of that can be established, say so rather than passing on the list's own blurb.
 
+**Which comes first.** A candidate that was read and is alive comes before one that was not.
+Among those, a skill with under 100 installs from a publisher not known to you is marked
+`little used` and never comes first while a read and alive alternative exists. A copy of
+another skill (the same name and the same text under another publisher) comes after its
+original whatever the counts, because an install count does not tell a copy from its source.
+(The order between candidates: vercel-labs/skills, find-skills, MIT.)
+
 ## Output
 
 Two or three candidates, best first. One block each.
@@ -135,6 +160,7 @@ example-org/skills@changelog — skill: writes a changelog from the commits
   12.4K installs · skills.sh/example-org/skills/changelog · publisher not known to me
   reads `git log`, writes one file; runs nothing else, sends nothing
   to install, your call:  npx skills add example-org/skills@changelog
+  scope: project (.claude/skills) · description about 45 tokens, every session here
   from: skills.sh, SKILL.md read
 
 example-db — plugin: manages an Example database from Claude Code
@@ -154,6 +180,10 @@ Nothing suitable:
 NOTHING SUITABLE  every free option in the list needs a card on file.
 Searched: public-apis (currency, finance), free-for-dev (APIs).
 ```
+
+When what was asked for was a skill, a plugin or a hook, the block ends with one fixed line,
+so the user leaves with a next step: `I can do this directly, or draft a skill for it with
+atlas-brief.` (The next step after nothing found: vercel-labs/skills, find-skills, MIT.)
 
 Never recommend more than three. A list of twelve is the problem the caller delegated,
 handed back.

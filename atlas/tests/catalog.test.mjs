@@ -8,7 +8,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const tool = path.join(here, '..', 'tools', 'catalog.mjs');
-const { parseCsv, matcher, clip, num, SOURCES, assetLine, ASSET_KINDS } = await import(pathToFileURL(tool).href);
+const { parseCsv, matcher, clip, num, SOURCES, assetLine, ASSET_KINDS, byOwner, parseArgs } = await import(pathToFileURL(tool).href);
 
 test('importing the tool starts no search', () => {
   // Reaching this line is the test: the import above returned without a network call
@@ -101,4 +101,44 @@ test('pictures and sounds are kinds of their own, asked only for open licences, 
   }
   const usage = spawnSync(process.execPath, [tool], { encoding: 'utf8' });
   assert.match(usage.stderr, /images\|audio/);
+});
+
+test('byOwner keeps one publisher, by the first segment of the source, in any case', () => {
+  const list = [{ source: 'anthropics/skills', name: 'pdf' }, { source: 'someone/anthropics-copy', name: 'pdf' }, { source: 'Anthropics/knowledge', name: 'view-pdf' }];
+  assert.deepEqual(byOwner(list, 'anthropics').map((s) => s.name), ['pdf', 'view-pdf']);
+  assert.equal(byOwner(list, '').length, 3);
+  assert.deepEqual(byOwner([{ name: 'no source' }], 'anthropics'), []);
+});
+
+test('--owner is read anywhere in the arguments and only for skills', () => {
+  assert.deepEqual(parseArgs(['skills', 'pdf', '--owner', 'anthropics']), { kind: 'skills', query: 'pdf', owner: 'anthropics' });
+  assert.deepEqual(parseArgs(['skills', '--owner', 'anthropics', 'pdf', 'forms']), { kind: 'skills', query: 'pdf forms', owner: 'anthropics' });
+  assert.deepEqual(parseArgs(['mcp', 'postgres']), { kind: 'mcp', query: 'postgres', owner: '' });
+  assert.equal(parseArgs(['skills', 'pdf', '--owner']), null);
+  assert.equal(parseArgs(['skills', 'pdf', '--owner', '--x']), null);
+  assert.equal(parseArgs(['mcp', 'postgres', '--owner', 'acme']), null);
+  assert.equal(parseArgs(['skills', '--owner', 'anthropics']), null);
+});
+
+test('an owner with no value prints the usage and exits 2', () => {
+  const r = spawnSync(process.execPath, [tool, 'skills', 'pdf', '--owner'], { encoding: 'utf8' });
+  assert.equal(r.status, 2);
+  assert.match(r.stderr, /--owner <publisher>/);
+});
+
+test('the skills search asks for more results when a publisher is named, then keeps eight', async () => {
+  const real = globalThis.fetch;
+  const asked = [];
+  const skills = Array.from({ length: 30 }, (_, i) => ({ source: i % 2 ? 'acme/skills' : 'other/skills', name: 's' + i, installs: 1, id: 'x/' + i }));
+  globalThis.fetch = async (url) => { asked.push(String(url)); return { ok: true, json: async () => ({ skills }) }; };
+  try {
+    const lines = await SOURCES.skills[0].search('pdf', { owner: 'acme' });
+    assert.match(asked[0], /limit=100/);
+    assert.equal(lines.length, 8);
+    assert.ok(lines.every((l) => l.startsWith('acme/skills@')));
+    await SOURCES.skills[0].search('pdf');
+    assert.match(asked[1], /limit=8(&|$)/);
+  } finally {
+    globalThis.fetch = real;
+  }
 });

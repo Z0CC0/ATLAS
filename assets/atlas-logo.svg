@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000" role="img" aria-label="ATLAS: a red dial, a disc cut by a slot that runs from its centre out through the top">
+<title>ATLAS</title>
+<mask id="cut"><rect width="1000" height="1000" fill="#fff"/><circle cx="500" cy="500" r="170" fill="#000"/><rect x="426" y="0" width="148" height="500" fill="#000"/></mask>
+<circle cx="500" cy="500" r="380" fill="#ff1f1f" mask="url(#cut)"/>
+</svg>

@@ -94,6 +94,11 @@ claims. Say which one you mean.
    release notes, the repository, the vendor's pricing page.
 4. When two sources disagree, say so and give both. Silently picking one is the failure
    mode that makes research worse than no research.
+5. A fetch that returns something other than the page is not a page read: a login wall, an
+   anti-bot check ("Just a moment", "verify you are human"), or an app shell whose text is
+   under about 80 characters or only its title. It is written `not read`, with which of the
+   three, in the coverage or the sources, and nothing in it is summarised. It is never
+   reported as "the post gives no details". (The wall rule: Panniantong/Agent-Reach, MIT.)
 
 **Check the date on anything that changes.** A version number in a 2023 blog post is not
 a current version number. If the page carries no date, say the date is unknown.
